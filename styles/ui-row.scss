@@ -1,0 +1,10 @@
+.ui-row {
+    & > .editron-container__children {
+        display: flex;
+        flex-direction: row;
+
+        & > div {
+            flex-grow: 1
+        }
+    }
+}
