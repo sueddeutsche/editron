@@ -24,5 +24,14 @@
     "mithril": "lhorie/mithril.js#next",
     "mithril-material-forms": "sueddeutsche/mithril-material-forms#develop",
     "mitt": "^1.1.2"
+  },
+  "ava": {
+    "files": [
+      "test/**/*.test.js"
+    ],
+    "require": [
+      "./test/support/setupBrowserEnv.js"
+    ],
+    "verbose": true
   }
 }

@@ -1,0 +1,37 @@
+{
+    "type": "object",
+    "properties": {
+        "modules": {
+            "type": "array",
+            "items": {
+                "type": "number"
+            }
+        },
+        "switch": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "required": ["image"],
+                    "properties": {
+                        "image": { "type": "string" }
+                    }
+                },
+                {
+                    "type": "object",
+                    "required": ["video"],
+                    "properties": {
+                        "video": { "type": "string" }
+                    }
+                }
+            ]
+        },
+        "scriptEditor": {
+            "type": "string",
+            "format": "css"
+        },
+        "wysiwyg": {
+            "type": "string",
+            "format": "html"
+        }
+    }
+}

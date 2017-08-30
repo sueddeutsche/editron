@@ -1,0 +1,9 @@
+@import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/form";
+
+
+.editron-value {
+    @include with-form(); // set default styles on form container (group of label, content, description)
+    padding: 2 * $mmf-unit;
+    box-sizing: border-box;
+}
