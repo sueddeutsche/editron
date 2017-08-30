@@ -1,9 +1,9 @@
 const m = require("mithril");
 
-const CheckboxForm = require("mithril-material-forms/components/checkboxForm");
-const SelectForm = require("mithril-material-forms/components/selectForm");
-const TextareaForm = require("mithril-material-forms/components/textareaForm");
-const InputForm = require("mithril-material-forms/components/inputForm");
+const CheckboxForm = require("mithril-material-forms/components/checkboxform");
+const SelectForm = require("mithril-material-forms/components/selectform");
+const TextareaForm = require("mithril-material-forms/components/textareaform");
+const InputForm = require("mithril-material-forms/components/inputform");
 const UISchema = require("../../utils/UISchema");
 
 
