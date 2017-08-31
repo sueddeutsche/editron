@@ -25,7 +25,7 @@ test.beforeEach((t) => {
 });
 
 
-test("should be independent of other controllers", (t) => {
+test.skip("should be independent of other controllers", (t) => {
     const controller = t.context.controller;
     const controller2 = new Controller(controller.schema().get(), controller.data().get(), editors);
 
