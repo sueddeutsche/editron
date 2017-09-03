@@ -16,10 +16,14 @@ const getID = require("./utils/getID");
  */
 class Controller {
 
-    constructor(schema = {}, data = {}, editors) {
+    constructor(schema = {}, data = {}, options) {
         schema = UISchema.extend(schema);
 
-        this.editors = editors;
+        this.options = Object.assign({
+            editors: require("./editors")
+        }, options);
+
+        this.editors = this.options.editors;
         this.instances = {};
         this.schemaService = new SchemaService(schema, data);
         this.validationService = new ValidationService(schema);
