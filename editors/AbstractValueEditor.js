@@ -39,12 +39,22 @@ class AbstractValueEditor {
         this.controller = controller;
 
         const schema = controller.schema().get(pointer);
-        const type = options.editorValueType || (schema.enum ? "select" : schema.type);
+
+        options = Object.assign({
+            viewModel: null,
+            title: null,
+            description: null,
+            editorValueType: schema.enum ? "select" : schema.type,
+            editorElementProperties: null
+        }, options);
 
         // create main DOM-element for view-generation
-        this.$element = controller.createElement(`.editron-value.editron-value--${type}`, Object.assign({
-            name: `editor-${pointer}`
-        }, options.editorElementProperties));
+        this.$element = controller.createElement(
+            `.editron-value.editron-value--${options.editorValueType}`,
+            Object.assign({
+                name: `editor-${pointer}`
+            }, options.editorElementProperties)
+        );
 
         // use this model to generate the view. may be customized with `options.viewModel`
         this.viewModel = Object.assign({
