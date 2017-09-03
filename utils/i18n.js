@@ -4,6 +4,12 @@ translate.strings = {};
 translateError.strings = {};
 
 
+function renderKey(key, fallback, data) {
+    const string = translate(key, fallback);
+    return render(string, data);
+}
+
+
 function translate(key, fallback) {
     if (translate.strings[key]) {
         return translate.strings[key];
@@ -27,7 +33,8 @@ function translateError(controller, error) {
 
 const i18n = {
     translate,
-    translateError
+    translateError,
+    renderKey
 };
 
 module.exports = i18n;
