@@ -25,12 +25,13 @@ test.beforeEach((t) => {
 });
 
 
-test.skip("should be independent of other controllers", (t) => {
+test("should have independent data services", (t) => {
     const controller = t.context.controller;
     const controller2 = new Controller(controller.schema().get(), controller.data().get(), editors);
 
     controller2.data().set("#/list/0", { title: "new" });
 
     t.true(controller.data().get("#/list/0/title") === "first", "controllers should not share same data");
+    t.true(controller2.data().get("#/list/0/title") === "new", "controllers should not share same data");
 });
 
