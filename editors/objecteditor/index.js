@@ -22,6 +22,7 @@ class ObjectEditor {
             pointer,
             icon: options.icon,
             errors: [],
+            attrs: {},
             hideTitle: options.hideTitle,
             title: options.title,
             description: options.description
