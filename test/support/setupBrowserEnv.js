@@ -1,2 +1,2 @@
 const browserEnv = require("browser-env");
-browserEnv(["window", "document", "HTMLElement", "navigator", "getComputedStyle"]);
+browserEnv(["window", "document", "Element", "HTMLElement", "navigator", "getComputedStyle"]);
