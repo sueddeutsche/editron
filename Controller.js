@@ -4,6 +4,7 @@ const SchemaService = require("json-data-services").SchemaService;
 const ValidationService = require("json-data-services").ValidationService;
 const SyncService = require("json-data-services/lib/SyncService");
 const LocationService = require("./services/LocationService");
+const State = require("json-data-services/lib/State");
 const selectEditor = require("./utils/selectEditor");
 const _createElement = require("./utils/createElement");
 const addItem = require("./utils/addItem");
@@ -16,16 +17,21 @@ const getID = require("./utils/getID");
  */
 class Controller {
 
-    constructor(schema = {}, data = {}, editors) {
+    constructor(schema = {}, data = {}, options = {}) {
         schema = UISchema.extend(schema);
 
-        this.editors = editors;
+        this.options = Object.assign({
+            editors: require("./editors")
+        }, options);
+
+        this.editors = this.options.editors;
+        this.state = new State();
         this.instances = {};
         this.schemaService = new SchemaService(schema, data);
-        this.validationService = new ValidationService(schema);
+        this.validationService = new ValidationService(this.state, schema);
         // merge given data with template data
         data = this.schemaService.addDefaultData(data, schema);
-        this.dataService = new DataService(data);
+        this.dataService = new DataService(this.state, data);
         // start validation after data has been updated
         this.onAfterDataUpdate = this.dataService
             .on(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
