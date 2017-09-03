@@ -1,4 +1,6 @@
 @import "mithril-material-forms/lib/typography";
+@import "mithril-material-forms/lib/colors";
+
 
 .editron-container__header {
 
@@ -53,5 +55,21 @@
             color: $mmf-color--error;
             cursor: pointer;
         }
+    }
+}
+
+/**
+ * header of card
+ */
+.mmf-card > .editron-container__header {
+    border-bottom: 1px solid $mmf-input__border-color;
+
+    h2 {
+        @include font-regular();
+        color: #424242;
+    }
+
+    .mmf-icon {
+        color: #424242;
     }
 }

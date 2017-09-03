@@ -194,8 +194,4 @@ class Controller {
 }
 
 
-// @debug
-window.state = require("json-data-services/lib/state"); // eslint-disable-line
-
-
 module.exports = Controller;

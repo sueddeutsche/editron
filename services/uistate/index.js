@@ -14,7 +14,7 @@ const EVENTS = {
 class UIState {
 
     constructor() {
-        this.id = State.createId("ui");
+        this.id = "ui";
         this.state = new State();
         this.emitter = mitt();
         this.state.register(this.id, uiReducer);
