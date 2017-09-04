@@ -7,7 +7,7 @@
 
 .mmf-card {
     & > .editron-container__title {
-        border-bottom: 1px solid $color-card-separator;
+        // border-bottom: 1px solid $color-card-separator;
     }
 
     div:last-child {
@@ -26,24 +26,22 @@
     }
 
     .editron-container {
+        // border-bottom: 1px solid $color-card-separator;
 
         // subtitle (within a card) - separates card contents
         .editron-container__header {
             padding: 0;
-            border-top: 1px solid $color-card-separator;
-            margin-top: -1px; // hide line ob object-bottom
+            // border-top: 1px solid $color-card-separator;
+            // margin-top: -1px; // hide line ob object-bottom
 
             h2 {
                 // @include font-bold();
                 text-transform: uppercase;
                 padding: 2 * $mmf-unit;
                 font-size: 0.7rem;
-                line-height: 1em;
                 box-sizing: border-box;
                 min-height: $mmf-block;
             }
         }
-
-        border-bottom: 1px solid $color-card-separator;
     }
 }
