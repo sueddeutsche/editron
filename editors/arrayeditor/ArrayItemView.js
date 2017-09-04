@@ -9,7 +9,7 @@ const ArrayItemView = {
         return [
             // CONTROLS
             m("ul.editron-container__controls.editron-container__controls--child",
-                (vnode.move === false || vnode.attrs.index === 0) ? "" : m("li",
+                (vnode.attrs.move === false || vnode.attrs.index === 0) ? "" : m("li",
                     { onclick: () => vnode.attrs.onmove(vnode.attrs.index - 1) },
                     m("i.mmf-icon", "arrow_upward")
                 ),
