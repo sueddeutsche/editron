@@ -3,12 +3,10 @@ const getID = require("../../utils/getID");
 
 
 function getClass({ title, icon, hasAction }) {
-    let className = title ? "withTitle" : "noTitle";
-    className += ` ${hasAction ? "withActions" : "noActions"}`;
-    if (icon) {
-        className += " withIcon";
-    }
-    return className;
+    let classname = `${title ? "withTitle" : "noTitle"}`;
+    classname += ` ${hasAction ? "withActions" : "noActions"}`;
+    classname += ` ${icon ? "withIcon" : "noIcon"}`;
+    return classname;
 }
 
 

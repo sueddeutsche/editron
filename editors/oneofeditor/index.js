@@ -3,6 +3,7 @@ const gp = require("gson-pointer");
 const Select = require("mithril-material-forms/components/select");
 const getId = require("../../utils/getID");
 const View = require("../../components/container");
+const UI_PROPERTY = require("../../utils/UISchema").UI_PROPERTY;
 
 
 class OneOfEditor {
@@ -15,7 +16,7 @@ class OneOfEditor {
         const childSchema = controller.schema().get(pointer);
         // @special case. Our options lie in `schema.oneOfSchema`
         const schema = childSchema.oneOfSchema;
-        const attrs = gp.get(schema, "#/ui/attrs");
+        const attrs = gp.get(schema, `#/${UI_PROPERTY}/attrs`);
 
         this.schema = schema;
         this.childSchema = childSchema;

@@ -10,6 +10,8 @@ const _createElement = require("./utils/createElement");
 const addItem = require("./utils/addItem");
 const UISchema = require("./utils/UISchema");
 const getID = require("./utils/getID");
+const UI_PROPERTY = require("./utils/UISchema").UI_PROPERTY;
+
 
 /**
  * Main component to build editors. Each editor should receive the controller, which carries all required services
@@ -71,9 +73,9 @@ class Controller {
         // ensure valid pointer
         pointer = gp.join(pointer);
 
-        // merge schema.ui object with options. options precede
+        // merge schema["editron:ui"] object with options. options precede
         const schema = this.schema().get(pointer);
-        options = Object.assign({ id: getID(pointer) }, schema.ui, options);
+        options = Object.assign({ id: getID(pointer) }, schema[UI_PROPERTY], options);
 
         // find a matching editor
         const Editor = selectEditor(this.getEditors(), pointer, this, options);

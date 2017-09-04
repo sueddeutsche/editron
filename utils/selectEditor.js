@@ -1,3 +1,6 @@
+const UI_PROPERTY = require("./UISchema").UI_PROPERTY;
+
+
 function select(editorViews, pointer, controller, options) {
     if (/_id$/.test(pointer)) {
         return false;
@@ -12,11 +15,12 @@ function select(editorViews, pointer, controller, options) {
         return false;
     }
 
-    if (schema.ui == null) {
+    if (schema[UI_PROPERTY] == null) {
         // console.warn(`Missing ui-object in schema ${pointer}:`, schema);
 
-    // @ui-option hidden
-    } else if (schema.ui.hidden === true) {
+    // @ui-option hidden and
+    // @legacy support: jdorn/json-editor
+    } else if (schema[UI_PROPERTY].hidden === true || (schema.options && schema.options.hidden === true)) {
         return false;
     }
 
@@ -25,6 +29,7 @@ function select(editorViews, pointer, controller, options) {
             return editorViews[i];
         }
     }
+
     return undefined;
 }
 
