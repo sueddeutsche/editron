@@ -1,6 +1,33 @@
 const m = require("mithril");
 const getId = require("../utils/getID");
 
+const convert = {
+    "boolean": (value) => {
+        if (value === "true") {
+            return true;
+        }
+        if (value === "false") {
+            return false;
+        }
+        return value;
+    },
+    integer: (value) => {
+        const converted = parseInt(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    },
+    number: (value) => {
+        const converted = parseFloat(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    }
+};
+
+
 /**
  * Convenience class, which registers required events and base methods for value-editors (not object, array)
  *
@@ -66,7 +93,12 @@ class AbstractValueEditor {
             schema,
             errors: [],
             onfocus: () => controller.location().setCurrent(pointer),
-            onchange: (value) => this.setValue(value)
+            onchange: (value) => {
+                if (convert[schema.type]) {
+                    value = convert[schema.type](value);
+                }
+                this.setValue(value);
+            }
         }, options.viewModel);
 
         // in order to deregister callbacks in destroy(), bind all callbacks to this class
