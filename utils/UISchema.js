@@ -116,7 +116,7 @@ function addUIOptions(schema, pointer) { // eslint-disable-line no-unused-vars
 }
 
 function getIcon(schema) {
-    return gp.get(schema, `${UI_PROPERTY}/icon`) | "";
+    return gp.get(schema, `${UI_PROPERTY}/icon`) || "";
 }
 
 
