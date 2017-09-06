@@ -5,8 +5,6 @@
 .editron-container__header {
 
     display: flex;
-    // font-size: 1.2rem;
-    // line-height: $mmf-block;
     color: #999;
 
     font-size: 1rem;
@@ -43,7 +41,7 @@
         width: 100%;
 
         h2 {
-            @include font-light();
+            @include font-regular();
             text-transform: inherit;
             margin: 0;
             font-size: inherit;
@@ -58,21 +56,5 @@
             color: $mmf-color--error;
             cursor: pointer;
         }
-    }
-}
-
-/**
- * header of card
- */
-.mmf-card > .editron-container__header {
-    // border-bottom: 1px solid $mmf-input__border-color;
-
-    h2 {
-        @include font-regular();
-        color: #424242;
-    }
-
-    .mmf-icon {
-        color: #424242;
     }
 }

@@ -1,6 +1,6 @@
 # ArrayEditor
 
-Builds a form based of an array. Besides delegating childEditors takes
+Builds a form based of an array. Besides delegating childEditors it
 
 - adds an additional header
 - adds configurable controls to edit the array
@@ -53,5 +53,5 @@ new ArrayEditor(pointer, controller, {
 
 ## Sidenotes
 
-- Each editor is wrapped in a separate class to provide the array item actions and headers. Thus the Arrayeditor does not hold the the editors in its childlist. They may be access through arrayEditor.children[0].editor (@see ArrayItemEditor)
+- Each editor is wrapped in a separate class to provide the array item actions and headers. Thus the Arrayeditor does not hold the the editors in its childlist. They may be access through `arrayEditor.children[childIndex].editor` (@see ArrayItemEditor)
 
