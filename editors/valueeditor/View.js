@@ -28,6 +28,9 @@ function chooseInput(attrs) {
     if (schema.type === "string" && schema.format === "html") {
         return m(TextareaForm, config);
     }
+    if (schema.type === "string" && schema.format === "textarea") {
+        return m(TextareaForm, config);
+    }
     return m(InputForm, config);
 }
 
