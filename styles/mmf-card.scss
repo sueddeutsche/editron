@@ -62,9 +62,13 @@
 // FLOATING ADD BUTTON
 .mmf-card {
     // separator button inner layers (inside of card)
-    .editron-container__button--add .mmf-icon {
-        color: $color-text__header--inner;
-        text-shadow: none;
+    .editron-container__button--add {
+        @include with-form(); // set same style as form to visually group add-button to item
+
+        .mmf-icon {
+            color: $color-text__header--inner;
+            text-shadow: none;
+        }
     }
 }
 
