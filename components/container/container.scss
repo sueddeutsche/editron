@@ -1,11 +1,19 @@
-@import "editron-core/sass/export-once";
 @import "mithril-material-forms/lib/units";
 @import "mithril-material-forms/lib/colors";
+@import "mithril-material-forms/lib/typography";
+@import "../../sass/export-once";
 @import "../containerheader/container-header";
 @import "../containererrors/container-errors";
 
 
 @if export-once("editron-core/components/container") {
+
+    .editron-container__description {
+        padding: 2 * $mmf-unit;
+        color: #999;
+        font-size: $mmf-text-size--meta;
+        line-height: 1.3em;
+    }
 
     .editron-container {
 
@@ -27,7 +35,6 @@
         color: white;
         position: absolute;
         top: 0;
-        // right: - ($mmf-block + $mmf-unit);
         right: - 2 * $mmf-block-padding;
         display: flex;
         flex-direction: column;

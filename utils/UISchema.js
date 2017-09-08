@@ -1,6 +1,8 @@
 // @TODO iterate over all schema definitions
 const iterateSchema = require("json-schema-library").iterateSchema;
 const gp = require("gson-pointer");
+const UI_PROPERTY = "editron:ui";
+
 
 function isPointer(string) {
     return /(#?\/.+|\.\.\/)/.test(string);
@@ -24,8 +26,8 @@ function requiredTitle(title, schema) {
 
 function getTitle(schema, titlePointer = "title", sanitize = false) {
     let title;
-    if (hasValue(gp.get(schema, "#/ui/title"))) {
-        title = schema.ui[titlePointer];
+    if (hasValue(gp.get(schema, `#/${UI_PROPERTY}/title`))) {
+        title = schema[UI_PROPERTY][titlePointer];
     } else if (hasValue(schema.title)) {
         title = schema.title;
     }
@@ -40,8 +42,8 @@ function getTitle(schema, titlePointer = "title", sanitize = false) {
 
 function getDescription(schema) {
     let description;
-    if (hasValue(schema.ui.description)) {
-        description = schema.ui.description;
+    if (hasValue(schema[UI_PROPERTY].description)) {
+        description = schema[UI_PROPERTY].description;
     } else if (hasValue(schema.description)) {
         description = schema.description;
     }
@@ -50,13 +52,13 @@ function getDescription(schema) {
 
 function enumOptions(schema) {
     let options;
-    if (schema.ui.enum) {
+    if (schema[UI_PROPERTY].enum) {
         options = schema.enum.map((value, index) => ({
-            title: schema.ui.enum[index] || schema.enum[index],
+            title: schema[UI_PROPERTY].enum[index] || schema.enum[index],
             value: schema.enum[index]
         }));
     } else if (schema.options && schema.options.enum_titles) {
-        // jdorn
+        // @legacy support jdorn/json-editor
         options = schema.enum.map((value, index) => ({
             title: schema.options.enum_titles[index] || schema.enum[index],
             value: schema.enum[index]
@@ -99,12 +101,12 @@ function resolveReference(pointer, controller, pointerToResolve) {
 
 function addUIOptions(schema, pointer) { // eslint-disable-line no-unused-vars
     const options = schema.options || {}; // legacy jdorn-json-editor
-    schema.ui = schema.ui || {};
-    schema.ui = Object.assign(schema.ui, {
+    schema[UI_PROPERTY] = schema[UI_PROPERTY] || {};
+    schema[UI_PROPERTY] = Object.assign(schema[UI_PROPERTY], {
         title: getTitle(schema),
         // "title-overview": getTitle(schema, "title-overview", true) || getTitle(schema),
         description: getDescription(schema),
-        hidden: schema.ui.hidden === true || options.hidden === true
+        hidden: schema[UI_PROPERTY].hidden === true || options.hidden === true
         // icon
         // attrs.class
         // ENUM OPTIONS
@@ -113,9 +115,13 @@ function addUIOptions(schema, pointer) { // eslint-disable-line no-unused-vars
     return schema;
 }
 
+function getIcon(schema) {
+    return gp.get(schema, `${UI_PROPERTY}/icon`) || "";
+}
+
 
 /**
- * Ensures each schema contains a valid schema.ui object
+ * Ensures each schema contains a valid schema[UI_PROPERTY] object
  * @param  {Object} schema
  * @return {Object} extended clone of json-schema
  */
@@ -127,9 +133,11 @@ function extend(schema) {
 
 
 module.exports = {
+    UI_PROPERTY,
     extend,
     getTitle,
     getDescription,
+    getIcon,
     addUIOptions,
     requiredTitle,
     enumOptions,

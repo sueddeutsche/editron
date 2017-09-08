@@ -1,6 +1,33 @@
 const m = require("mithril");
 const getId = require("../utils/getID");
 
+const convert = {
+    "boolean": (value) => {
+        if (value === "true") {
+            return true;
+        }
+        if (value === "false") {
+            return false;
+        }
+        return value;
+    },
+    integer: (value) => {
+        const converted = parseInt(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    },
+    number: (value) => {
+        const converted = parseFloat(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    }
+};
+
+
 /**
  * Convenience class, which registers required events and base methods for value-editors (not object, array)
  *
@@ -39,12 +66,22 @@ class AbstractValueEditor {
         this.controller = controller;
 
         const schema = controller.schema().get(pointer);
-        const type = options.editorValueType || (schema.enum ? "select" : schema.type);
+
+        options = Object.assign({
+            viewModel: null,
+            title: null,
+            description: null,
+            editorValueType: schema.enum ? "select" : schema.type,
+            editorElementProperties: null
+        }, options);
 
         // create main DOM-element for view-generation
-        this.$element = controller.createElement(`.editron-value.editron-value--${type}`, Object.assign({
-            name: `editor-${pointer}`
-        }, options.editorElementProperties));
+        this.$element = controller.createElement(
+            `.editron-value.editron-value--${options.editorValueType}`,
+            Object.assign({
+                name: `editor-${pointer}`
+            }, options.editorElementProperties)
+        );
 
         // use this model to generate the view. may be customized with `options.viewModel`
         this.viewModel = Object.assign({
@@ -56,7 +93,12 @@ class AbstractValueEditor {
             schema,
             errors: [],
             onfocus: () => controller.location().setCurrent(pointer),
-            onchange: (value) => this.setValue(value)
+            onchange: (value) => {
+                if (convert[schema.type]) {
+                    value = convert[schema.type](value);
+                }
+                this.setValue(value);
+            }
         }, options.viewModel);
 
         // in order to deregister callbacks in destroy(), bind all callbacks to this class

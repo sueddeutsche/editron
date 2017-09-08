@@ -1,14 +1,16 @@
 @import "mithril-material-forms/lib/typography";
+@import "mithril-material-forms/lib/colors";
+
 
 .editron-container__header {
 
     display: flex;
-    font-size: 1.2rem;
-    line-height: $mmf-block;
-    padding-left: $mmf-unit;
-    padding-right: $mmf-unit;
     color: #999;
 
+    font-size: 1rem;
+    line-height: 1em;
+    text-transform: uppercase;
+    padding-top: 0.1em; // visually center title text vertically (uppercase only)
 
     &.noTitle.noActions {
         display: none;
@@ -26,7 +28,7 @@
         }
     }
 
-    &.withIcon {
+    &.withIcon .editron-container__title h2 {
         padding-left: 0;
     }
 
@@ -39,14 +41,15 @@
         width: 100%;
 
         h2 {
-            @include font-light();
-            text-transform: uppercase;
+            @include font-regular();
+            text-transform: inherit;
             margin: 0;
-            font-size: 1rem;
+            font-size: inherit;
             line-height: inherit;
             flex-grow: 2;
             display: inline-block;
             align-self: center;
+            padding: 2 * $mmf-unit;
         }
 
         .mmf-icon--delete:hover {

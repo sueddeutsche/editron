@@ -1,6 +1,6 @@
 module.exports = {
     Controller: require("./Controller"),
-    editor: require("./editor"),
+    editors: require("./editors"),
     services: require("./services"),
     utils: require("./utils")
 };

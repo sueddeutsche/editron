@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+
+    <head>
+
+        <title>Editron - Multiple Editors</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+        <link href="../build/core.css" rel="stylesheet" type="text/css" />
+        <style type="text/css">
+
+            * {
+                margin:             0;
+                padding:            0;
+            }
+
+            .editor {
+                max-width: 640px;
+                margin: 24px auto;
+                padding: 24px;
+                border-radius: 2;
+                background: #eee;
+
+                font-family: "Roboto";
+            }
+
+        </style>
+
+        <script type="text/javascript" src="../build/editron.js"></script>
+
+    </head>
+
+    <body>
+
+        <div id="editor-01" class="editor"></div>
+        <div id="editor-02" class="editor"></div>
+
+        <script type="text/javascript">
+            var Controller = editron.Controller;
+
+            var editor1 = new Controller({
+                type: "object", properties: {
+                    title: {
+                        title: "Any string value",
+                        type: "string"
+                    },
+                    value: {
+                        title: "A number between 0 - 100",
+                        type: "number",
+                        "default": 1,
+                        minimum: 0,
+                        maximum: 100
+                    } }
+            }, {});
+
+            editor1.createEditor("#", document.querySelector("#editor-01"));
+
+
+            var editor2 = new Controller({
+                type: "object", properties: {
+                    title: {
+                        title: "Any string value",
+                        type: "string"
+                    },
+                    value: {
+                        title: "A number between 0 - 100",
+                        type: "number",
+                        "default": 1,
+                        minimum: 0,
+                        maximum: 100
+                    } }
+            }, {});
+
+            editor2.createEditor("#", document.querySelector("#editor-02"));
+
+        </script>
+
+    </body>
+
+</html>

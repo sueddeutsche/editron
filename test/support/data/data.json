@@ -1,0 +1,10 @@
+{
+    "modules": [
+        1, 2
+    ],
+    "switch": {
+        "video": ""
+    },
+    "scriptEditor": "",
+    "wysiwygEditor": ""
+}

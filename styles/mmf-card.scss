@@ -2,48 +2,81 @@
 @import "mithril-material-forms/lib/typography";
 @import "mithril-material-forms/lib/form";
 @import "mithril-material-forms/lib/elevation";
+@import "mithril-material-forms/theme/card";
+@import "../sass/color-palettes";
 @import "../sass/colors";
 
-
 .mmf-card {
-    & > .editron-container__title {
-        border-bottom: 1px solid $color-card-separator;
-    }
-
-    div:last-child {
-        border-bottom: none;
-    }
-
     margin-bottom: $mmf-block;
+    background-color: bluegrey(5);
 }
 
-.mmf-card {
-
-    // @temp sublist separation
-    .editron-container__children .editron-container__children > .editron-container__child {
-        // box-shadow: 0 4px 8px #000;
-        @include elevation(4);
+// CARD HEADER
+.mmf-card > .editron-container__header {
+    h2 {
+        @include font-regular();
+        color: $color-text__header;
     }
 
-    .editron-container {
+    .mmf-icon {
+        color: $color-text__header;
+    }
+}
 
-        // subtitle (within a card) - separates card contents
-        .editron-container__header {
-            padding: 0;
-            border-top: 1px solid $color-card-separator;
-            margin-top: -1px; // hide line ob object-bottom
+// CARD HEADERS
+.mmf-card {
+    // LEVEL 1 - first header is outside of card (.editron-container)
 
-            h2 {
-                // @include font-bold();
-                text-transform: uppercase;
-                padding: 2 * $mmf-unit;
-                font-size: 0.7rem;
-                line-height: 1em;
-                box-sizing: border-box;
-                min-height: $mmf-block;
-            }
+    // LEVEL 2 - card header
+    > .editron-container__header {
+        h2 {
+            color: $color-text__header;
         }
 
-        border-bottom: 1px solid $color-card-separator;
+        .mmf-icon {
+            color: $color-text__header;
+        }
+    }
+
+    // LEVEL 3 - nested header within card
+    .editron-container .editron-container__header {
+        padding: 0;
+
+        h2 {
+            @include font-regular();
+            text-transform: uppercase;
+            padding: 2 * $mmf-unit;
+            font-size: 0.7rem;
+            box-sizing: border-box;
+            min-height: $mmf-block;
+            color: $color-text__header--inner;
+        }
+
+        .mmf-icon {
+            color: $color-text__header--inner;
+        }
+    }
+}
+
+
+// FLOATING ADD BUTTON
+.mmf-card {
+    // separator button inner layers (inside of card)
+    .editron-container__button--add {
+        @include with-form(); // set same style as form to visually group add-button to item
+
+        .mmf-icon {
+            color: $color-text__header--inner;
+            text-shadow: none;
+        }
+    }
+}
+
+
+// NESTED LISTS
+.mmf-card {
+    // @temp sublist separation
+    .editron-container__children .editron-container__children > .editron-container__child .editron-container__header {
+        box-shadow: inset 0 10px 20px rgba(0,0,0,0.19), inset 0 6px 6px rgba(0,0,0,0.23);
     }
 }

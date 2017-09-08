@@ -3,7 +3,7 @@ const createElement = require("./createElement");
 const LocationService = require("../services/LocationService");
 const OverlayService = require("../services/OverlayService");
 const SelectTileComponent = require("../components/overlayselecttiles");
-
+const UISchema = require("./UISchema");
 
 /**
  * Request to insert an array child item at the given pointer. If multiple options are present, a dialogue is opened to
@@ -32,9 +32,9 @@ module.exports = function addItem(dataService, schemaService, pointer, index = 0
     // multiple options, ask user
     const element = createElement(".overlay__item");
     const selection = selectOptions.map((item, oneOfIndex) => ({
-        icon: item.ui.icon,
-        title: item.ui.title,
-        description: item.ui.description || "",
+        icon: UISchema.getIcon(item),
+        title: UISchema.getTitle(item),
+        description: UISchema.getDescription(item),
         value: oneOfIndex
     }));
 
