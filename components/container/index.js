@@ -1,6 +1,7 @@
 const m = require("mithril");
 const ContainerHeader = require("../containerheader");
 const ContainerErrors = require("../containererrors");
+const ContainerDescription = require("../containerdescription");
 
 
 /**
@@ -16,9 +17,8 @@ module.exports = {
     view(vnode) {
         return [
             vnode.attrs.hideTitle === true ? null : m(ContainerHeader, vnode.attrs),
-            vnode.attrs.description == null ? "" : m(".editron-container__description.mmf-meta", vnode.attrs.description),
+            m(ContainerDescription, vnode.attrs),
             vnode.children,
-            // vnode.attrs.description ? m(".mmf-meta", vnode.attrs.description) : "",
             m(ContainerErrors, vnode.attrs),
             m(this.childContainerSelector)
         ];
