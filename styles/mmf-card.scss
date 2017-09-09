@@ -3,16 +3,13 @@
 @import "mithril-material-forms/lib/form";
 @import "mithril-material-forms/lib/elevation";
 @import "mithril-material-forms/theme/card";
+@import "mithril-material-forms/lib/colors";
 @import "../sass/color-palettes";
 @import "../sass/colors";
 
 .mmf-card {
     margin-bottom: $mmf-block;
     background-color: $color-secondary__background;
-}
-
-.mmf-card .mmf-icon:hover {
-    color: $color-primary__text--highlight;
 }
 
 // CARD HEADER
@@ -24,6 +21,9 @@
 
     .mmf-icon {
         color: $color-primary__text--header;
+        &:hover {
+            color: $mmf-color--primary;
+        }
     }
 }
 
@@ -39,6 +39,9 @@
 
         .mmf-icon {
             color: $color-primary__text--header;
+            &:hover {
+                color: $mmf-color--primary;
+            }
         }
     }
 
@@ -58,6 +61,9 @@
 
         .mmf-icon {
             color: $color-secondary__text--header;
+            &:hover {
+                color: $mmf-color--primary;
+            }
         }
     }
 }
