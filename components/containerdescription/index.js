@@ -6,6 +6,6 @@ module.exports = {
         if (vnode.attrs.description == null) {
             return "";
         }
-        return m(".editron-container__description.mmf-meta", vnode.attrs.description);
+        return m(".editron-container__description.mmf-meta", m.trust(vnode.attrs.description));
     }
 };
