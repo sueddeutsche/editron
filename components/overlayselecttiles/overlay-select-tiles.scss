@@ -5,7 +5,7 @@
 $tiles-size: 4 * $mmf-block;
 
 
-.jed-form-tiles {
+.editron-form-tiles {
     max-width: 4 * $tiles-size;
 
     display: flex;
@@ -14,21 +14,21 @@ $tiles-size: 4 * $mmf-block;
     justify-content: center;
 }
 
-.jed-form-box {
+.editron-form-box {
     box-sizing: border-box;
 }
 
-.jed-form-box {
+.editron-form-box {
     box-sizing: border-box;
     cursor: pointer;
 
-    &:hover .jed-form-box__content {
+    &:hover .editron-form-box__content {
         color: #fff;
         background-color: $color-focus;
     }
 }
 
-.jed-form-box__content {
+.editron-form-box__content {
     box-sizing: border-box;
     margin: $mmf-unit;
     width: $tiles-size - 2 * $mmf-unit;
@@ -43,7 +43,7 @@ $tiles-size: 4 * $mmf-block;
     transition: background-color 0.1s linear;
 }
 
-.jed-form-box__title {
+.editron-form-box__title {
     @include font-bold();
     font-size: $mmf-text-size--base;
     text-align: center;
@@ -58,7 +58,7 @@ $tiles-size: 4 * $mmf-block;
     }
 }
 
-.jed-form-box__description {
+.editron-form-box__description {
     @include font-regular();
     font-size: $mmf-text-size--meta;
     line-height: 1.2em;
