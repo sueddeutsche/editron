@@ -1,25 +1,20 @@
 @import "./color-palettes";
 
-$color-border: grey(2);
-$color-border-input: grey(2);
-$color-text: #333;
-$color-text-light: #9B9B9B;
-$color-focus: #5BC0DE;
-$color-error: #D0011B;
 
-$color-elevation0: #004D40;
-$color-elevation8: #F7F7F7;
+$color-primary__text: #333;
+$color-primary__text--header: #424242;
+$color-primary__text--highlight: grey(0); // used for indicators, hover
+$color-primary__background: #fff; // primary background color used e.g. on mmf-card input-fields
+$color-primary__background--highlight: bluegrey(-4);
 
-$color-primary: #009688;
-$color-primary-light: #80CBC4;
+$color-secondary__text: #999;
+$color-secondary__text--header: #666;
+$color-secondary__text--highlight: bluegrey(5); // used for indicators, hover
+$color-secondary__background: bluegrey(5); // secondary background color as is used on mmf-card
+$color-secondary__background--highlight: bluegrey(1); // secondary background color as is used on mmf-card
 
-$color-text__header: #424242;
-$color-text__header--inner: #666;
+$color-highlight: #80CBC4;
 
-$color-card-separator: grey(1);
-
-$color-background: grey(4);
-$color-background-light: grey(5);
-$color-elevation-0: bluegrey(-3);
-$color-elevation-4: bluegrey(-3);
-$color-elevation-8: bluegrey(-2);
+$color-elevation-0: bluegrey(-3); // application background
+$color-elevation-4: bluegrey(-3); // first layer above background (header-bar)
+$color-elevation-8: bluegrey(-2); // second layer above background (navigation-bar)

@@ -8,18 +8,22 @@
 
 .mmf-card {
     margin-bottom: $mmf-block;
-    background-color: bluegrey(5);
+    background-color: $color-secondary__background;
+}
+
+.mmf-card .mmf-icon:hover {
+    color: $color-primary__text--highlight;
 }
 
 // CARD HEADER
 .mmf-card > .editron-container__header {
     h2 {
         @include font-regular();
-        color: $color-text__header;
+        color: $color-primary__text--header;
     }
 
     .mmf-icon {
-        color: $color-text__header;
+        color: $color-primary__text--header;
     }
 }
 
@@ -30,11 +34,11 @@
     // LEVEL 2 - card header
     > .editron-container__header {
         h2 {
-            color: $color-text__header;
+            color: $color-primary__text--header;
         }
 
         .mmf-icon {
-            color: $color-text__header;
+            color: $color-primary__text--header;
         }
     }
 
@@ -49,11 +53,11 @@
             font-size: 0.7rem;
             box-sizing: border-box;
             min-height: $mmf-block;
-            color: $color-text__header--inner;
+            color: $color-secondary__text--header;
         }
 
         .mmf-icon {
-            color: $color-text__header--inner;
+            color: $color-secondary__text--header;
         }
     }
 }
@@ -66,7 +70,7 @@
         @include with-form(); // set same style as form to visually group add-button to item
 
         .mmf-icon {
-            color: $color-text__header--inner;
+            color: $color-secondary__text--header;
             text-shadow: none;
         }
     }

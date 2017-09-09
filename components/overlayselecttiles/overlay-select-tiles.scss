@@ -23,8 +23,8 @@ $tiles-size: 4 * $mmf-block;
     cursor: pointer;
 
     &:hover .editron-form-box__content {
-        color: #fff;
-        background-color: $color-focus;
+        color: $color-secondary__text--highlight;
+        background-color: $color-secondary__background--highlight;
     }
 }
 
@@ -33,7 +33,7 @@ $tiles-size: 4 * $mmf-block;
     margin: $mmf-unit;
     width: $tiles-size - 2 * $mmf-unit;
     height: $tiles-size - 2 * $mmf-unit;
-    background-color: $color-border;
+    background-color: $color-secondary__background;
 
     display: flex;
     flex-direction: column;
