@@ -1,10 +1,8 @@
 $imported-once-files: () !default;
 
 @function export-once($name) {
-  $imported-once-files: $imported-once-files !global;
-  $module_index: index($imported-once-files, $name);
-  @if (($module_index == null) or ($module_index == false)) {
-    $imported-once-files: append($imported-once-files, $name);
+  @if (index($imported-once-files, $name) == null) {
+    $imported-once-files: append($imported-once-files, $name) !global;
     @return true;
   }
   @return false;
