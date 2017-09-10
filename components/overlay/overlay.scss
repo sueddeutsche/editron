@@ -64,6 +64,7 @@
             flex-grow: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            max-width: 20 * $mmf-block;
         }
 
         .ui-card__footer {
