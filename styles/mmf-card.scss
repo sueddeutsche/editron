@@ -25,6 +25,12 @@
             color: $mmf-color--primary;
         }
     }
+
+    // deactivate hover on dummy icons
+    .editron-container__title .mmf-icon:hover {
+        color: $color-primary__text--header;
+        cursor: default;
+    }
 }
 
 // CARD HEADERS
