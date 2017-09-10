@@ -36,6 +36,7 @@
         width: auto;
         align-self: center;
 
+        max-width: 20 * $mmf-block;
         min-height: 3 * $mmf-block;
         max-height: 96vh;
 
@@ -64,7 +65,6 @@
             flex-grow: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            max-width: 20 * $mmf-block;
         }
 
         .ui-card__footer {
