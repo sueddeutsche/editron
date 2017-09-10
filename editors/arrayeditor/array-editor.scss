@@ -1,4 +1,5 @@
 @import "mithril-material-forms/lib/interface";
+@import "mithril-material-forms/lib/colors";
 @import "../../sass/colors";
 
 // separator button inner layers (inside of card)
@@ -9,5 +10,9 @@
     .mmf-icon {
         color: $color-secondary__text--highlight;
         text-shadow: 0 4px 8px #333;
+    }
+
+    &:hover .mmf-icon {
+        color: $mmf-color--primary;
     }
 }
