@@ -1,67 +1,72 @@
 @import "mithril-material-forms/lib/units";
 @import "mithril-material-forms/lib/typography";
 @import "../../sass/colors";
+@import "../../sass/export-once";
 
-$tiles-size: 4 * $mmf-block;
+
+@if export-once("editron-core/components/overlay-select-tiles") {
+
+    $tiles-size: 4 * $mmf-block;
 
 
-.editron-form-tiles {
-    max-width: 4 * $tiles-size;
+    .editron-form-tiles {
+        max-width: 4 * $tiles-size;
 
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.editron-form-box {
-    box-sizing: border-box;
-}
-
-.editron-form-box {
-    box-sizing: border-box;
-    cursor: pointer;
-
-    &:hover .editron-form-box__content {
-        color: $color-secondary__text--highlight;
-        background-color: $color-secondary__background--highlight;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
     }
-}
 
-.editron-form-box__content {
-    box-sizing: border-box;
-    margin: $mmf-unit;
-    width: $tiles-size - 2 * $mmf-unit;
-    height: $tiles-size - 2 * $mmf-unit;
-    background-color: $color-secondary__background;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    transition: background-color 0.1s linear;
-}
-
-.editron-form-box__title {
-    @include font-bold();
-    font-size: $mmf-text-size--base;
-    text-align: center;
-    padding: $mmf-unit;
-
-    .mmf-icon {
-        width: auto;
-        height: auto;
-        line-height: inherit;
-        font-size: 0.8rem;
-        padding-right: $mmf-unit;
+    .editron-form-box {
+        box-sizing: border-box;
     }
-}
 
-.editron-form-box__description {
-    @include font-regular();
-    font-size: $mmf-text-size--meta;
-    line-height: 1.2em;
-    text-align: center;
-    padding: $mmf-unit;
+    .editron-form-box {
+        box-sizing: border-box;
+        cursor: pointer;
+
+        &:hover .editron-form-box__content {
+            color: $color-secondary__text--highlight;
+            background-color: $color-secondary__background--highlight;
+        }
+    }
+
+    .editron-form-box__content {
+        box-sizing: border-box;
+        margin: $mmf-unit;
+        width: $tiles-size - 2 * $mmf-unit;
+        height: $tiles-size - 2 * $mmf-unit;
+        background-color: $color-secondary__background;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        transition: background-color 0.1s linear;
+    }
+
+    .editron-form-box__title {
+        @include font-bold();
+        font-size: $mmf-text-size--base;
+        text-align: center;
+        padding: $mmf-unit;
+
+        .mmf-icon {
+            width: auto;
+            height: auto;
+            line-height: inherit;
+            font-size: 0.8rem;
+            padding-right: $mmf-unit;
+        }
+    }
+
+    .editron-form-box__description {
+        @include font-regular();
+        font-size: $mmf-text-size--meta;
+        line-height: 1.2em;
+        text-align: center;
+        padding: $mmf-unit;
+    }
 }

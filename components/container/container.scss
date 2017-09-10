@@ -35,6 +35,7 @@
         max-height: $mmf-block + $mmf-block-padding;
 
         i.mmf-icon {
+            color: $color-secondary__text;
             font-size: 18px;
             line-height: 1.5em;
             width: 0.5 * $mmf-block;
