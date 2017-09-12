@@ -77,7 +77,7 @@
             @include with-form(); // set same style as form to visually group add-button to item
 
             .mmf-icon {
-                color: $mmf-opacity--secondary;
+                color: $mmf-color--secondary;
                 text-shadow: none;
             }
         }
