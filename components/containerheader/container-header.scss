@@ -8,7 +8,7 @@
     .editron-container__header {
 
         display: flex;
-        color: #999;
+        color: $mmf-color__contrast--darker;
 
         font-size: 1rem;
         line-height: 1em;
@@ -53,11 +53,6 @@
                 display: inline-block;
                 align-self: center;
                 padding: 2 * $mmf-unit;
-            }
-
-            .mmf-icon--delete:hover {
-                color: $mmf-color--error;
-                cursor: pointer;
             }
         }
     }

@@ -13,26 +13,19 @@
 
     .mmf-card {
         margin-bottom: $mmf-block;
-        background-color: $color-secondary__background;
+        background-color: $mmf-color__contrast;
     }
 
     // CARD HEADER
     .mmf-card > .editron-container__header {
         h2 {
             @include font-regular();
-            color: $color-primary__text--header;
-        }
-
-        .mmf-icon {
-            color: $color-primary__text--header;
-            &:hover {
-                color: $mmf-color--primary;
-            }
+            color: $mmf-color--primary;
         }
 
         // deactivate hover on dummy icons
         .editron-container__title .mmf-icon:hover {
-            color: $color-primary__text--header;
+            color: $mmf-color--primary;
             cursor: default;
         }
     }
@@ -44,13 +37,13 @@
         // LEVEL 2 - card header
         > .editron-container__header {
             h2 {
-                color: $color-primary__text--header;
+                color: $mmf-color--primary;
             }
 
             .mmf-icon {
-                color: $color-primary__text--header;
+                color: $mmf-color--primary;
                 &:hover {
-                    color: $mmf-color--primary;
+                    color: $mmf-color-primary;
                 }
             }
         }
@@ -66,13 +59,13 @@
                 font-size: 0.7rem;
                 box-sizing: border-box;
                 min-height: $mmf-block;
-                color: $color-secondary__text--header;
+                color: $mmf-color--secondary;
             }
 
             .mmf-icon {
-                color: $color-secondary__text--header;
+                color: $mmf-color--secondary;
                 &:hover {
-                    color: $mmf-color--primary;
+                    color: $mmf-color-primary;
                 }
             }
         }
@@ -86,7 +79,7 @@
             @include with-form(); // set same style as form to visually group add-button to item
 
             .mmf-icon {
-                color: $color-secondary__text--header;
+                color: $mmf-opacity--secondary;
                 text-shadow: none;
             }
         }

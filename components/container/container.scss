@@ -35,11 +35,15 @@
         max-height: $mmf-block + $mmf-block-padding;
 
         i.mmf-icon {
-            color: $color-secondary__text;
+            color: $mmf-color__contrast--darker;
             font-size: 18px;
             line-height: 1.5em;
             width: 0.5 * $mmf-block;
             height: 0.5 * $mmf-block;
+
+            &:hover {
+                color: $mmf-color-primary;
+            }
         }
     }
 }

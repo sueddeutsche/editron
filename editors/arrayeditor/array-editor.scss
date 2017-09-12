@@ -8,11 +8,15 @@
     text-align: center;
 
     .mmf-icon {
-        color: $color-secondary__text--highlight;
+        color: $mmf-color__contrast;
         text-shadow: 0 4px 8px #333;
+
+        &:hover {
+            color: $mmf-color-primary;
+        }
     }
 
-    &:hover .mmf-icon {
-        color: $mmf-color--primary;
-    }
+    // &:hover .mmf-icon {
+    //     color: $mmf-color-primary;
+    // }
 }

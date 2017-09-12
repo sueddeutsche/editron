@@ -27,8 +27,8 @@
         cursor: pointer;
 
         &:hover .editron-form-box__content {
-            color: $color-secondary__text--highlight;
-            background-color: $color-secondary__background--highlight;
+            color: $mmf-color-primary__contrast--lighter;
+            background-color: $mmf-color-primary--darker;
         }
     }
 
@@ -37,7 +37,9 @@
         margin: $mmf-unit;
         width: $tiles-size - 2 * $mmf-unit;
         height: $tiles-size - 2 * $mmf-unit;
-        background-color: $color-secondary__background;
+
+        color: $mmf-color;
+        background-color: $mmf-color__contrast;
 
         display: flex;
         flex-direction: column;
@@ -49,7 +51,6 @@
 
     .editron-form-box__title {
         @include font-bold();
-        font-size: $mmf-text-size--base;
         text-align: center;
         padding: $mmf-unit;
 

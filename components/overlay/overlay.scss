@@ -50,7 +50,6 @@
 
         h1 {
             @include font-regular();
-            font-size: $mmf-text-size--title;
             line-height: 1em;
             margin: 0;
         }
