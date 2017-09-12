@@ -1,6 +1,6 @@
-@import "../../sass/export-once";
 @import "mithril-material-forms/lib/units";
 @import "mithril-material-forms/lib/typography";
+@import "../../sass/export-once";
 
 
 @if export-once("editron-core/components/container-description") {
