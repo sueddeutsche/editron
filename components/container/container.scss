@@ -10,6 +10,7 @@
 @if export-once("editron-core/components/container") {
 
     .editron-container {
+        color: inherit;
 
         &.withAddButton .mmf-card {
             margin-bottom: 0;
