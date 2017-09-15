@@ -1,14 +1,18 @@
 @import "mithril-material-forms/lib/units";
+@import "../sass/export-once";
 
 
-.ui-row {
-    & > .editron-container__children {
-        display: flex;
-        flex-direction: row;
+@if export-once("editron-core/styles/ui-row") {
 
-        & > div {
-            flex-grow: 1;
-            min-width: 2 * $mmf-block;
+    .ui-row {
+        & > .editron-container__children {
+            display: flex;
+            flex-direction: row;
+
+            & > div {
+                flex-grow: 1;
+                min-width: 2 * $mmf-block;
+            }
         }
     }
 }

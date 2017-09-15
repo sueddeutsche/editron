@@ -1,5 +1,6 @@
 @import "mithril-material-forms/lib/interface";
-@import "../../sass/colors";
+@import "mithril-material-forms/lib/colors";
+
 
 // separator button inner layers (inside of card)
 .editron-container__child .editron-container__button--add {
@@ -7,7 +8,12 @@
     text-align: center;
 
     .mmf-icon {
-        color: $color-elevation8;
-        text-shadow: 0 4px 8px #333;
+        color: rgba($mmf-color--light, $mmf-opacity--primary);
+        text-shadow: 0 3px 6px rgba($mmf-color--dark, 0.16), 0 3px 6px rgba($mmf-color--dark, 0.23);
+    }
+
+    &:hover .mmf-icon {
+        color: $mmf-color--light;
+        text-shadow: 0 14px 28px rgba($mmf-color--dark, 0.25), 0 10px 10px rgba($mmf-color--dark, 0.22);
     }
 }

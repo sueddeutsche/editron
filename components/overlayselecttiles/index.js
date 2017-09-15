@@ -3,19 +3,19 @@ const m = require("mithril");
 
 const Tile = {
     view(vnode) {
-        return m(".jed-form-box",
+        return m(".editron-form-box",
             {
                 "data-value": vnode.attrs.value,
                 "data-type": vnode.attrs.title.toLowerCase() // @uitest
             },
-            m(".jed-form-box__content",
-                m(".jed-form-box__title",
+            m(".editron-form-box__content",
+                m(".editron-form-box__title",
                     [
                         vnode.attrs.icon ? m(".mmf-icon", vnode.attrs.icon) : "",
                         vnode.attrs.title
                     ]
                 ),
-                m(".jed-form-box__description", vnode.attrs.description)
+                m(".editron-form-box__description", vnode.attrs.description)
             )
         );
     }
@@ -26,7 +26,7 @@ function getDataValue(node) {
     while (
         node.parentNode &&
         node.getAttribute("data-value") == null &&
-        node.className.includes("jed-form-tiles") === false
+        node.className.includes("editron-form-tiles") === false
     ) {
         node = node.parentNode;
     }
@@ -46,7 +46,7 @@ module.exports = {
             onchange: Function.prototype
         }, vnode.attrs);
 
-        return m(".jed-form-tiles",
+        return m(".editron-form-tiles",
             {
                 onclick: (e) => {
                     const value = getDataValue(e.target);
@@ -58,7 +58,7 @@ module.exports = {
                     active: attrs.value === tile.value,
                     title: tile.title,
                     icon: tile.icon,
-                    description: tile.description,
+                    description: m.trust(tile.description), // allow html
                     value: tile.value
                 })
             )

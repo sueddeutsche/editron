@@ -1,9 +1,15 @@
-.editron-container__errors {
-    padding: $mmf-unit 2 * $mmf-unit;
-    font-size: $mmf-text-size--meta;
-    color: $mmf-color--error;
+@import "../../sass/export-once";
 
-    .is-warning {
-        color: $mmf-color--warning;
+
+@if export-once("editron-core/components/container-error") {
+
+    .editron-container__errors {
+        padding: $mmf-unit 2 * $mmf-unit;
+        font-size: $mmf-text-size--meta;
+        color: $mmf-color--error;
+
+        .is-warning {
+            color: $mmf-color--warning;
+        }
     }
 }

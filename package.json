@@ -1,11 +1,16 @@
 {
   "name": "editron-core",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Editron - json-editor core functionality",
   "main": "index.js",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "dist": "NODE_ENV=production webpack",
+    "test": "ava"
   },
+  "pre-commit": [
+    "test"
+  ],
   "keywords": [],
   "author": "Sascha Goldhofer <noreply@saschagoldhofer.de> (https://github.com/sagold/)",
   "license": "ISC",
@@ -25,6 +30,7 @@
     "html-loader": "^0.5.1",
     "json-loader": "^0.5.4",
     "node-sass": "^4.5.0",
+    "pre-commit": "^1.2.2",
     "sass-loader": "^6.0.6",
     "sinon": "^3.2.1",
     "style-loader": "^0.18.2",
@@ -39,10 +45,10 @@
   },
   "dependencies": {
     "gson-pointer": "^2.1.1",
-    "json-data-services": "sueddeutsche/json-data-services#develop",
+    "json-data-services": "^1.1.0",
     "json-schema-library": "sagold/json-schema-library#develop",
     "mithril": "lhorie/mithril.js#next",
-    "mithril-material-forms": "sueddeutsche/mithril-material-forms#develop",
+    "mithril-material-forms": "^2.0.0",
     "mitt": "^1.1.2"
   },
   "ava": {
