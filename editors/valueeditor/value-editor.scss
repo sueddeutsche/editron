@@ -7,5 +7,6 @@
     padding: 2 * $mmf-unit;
     box-sizing: border-box;
 
-    background-color: $mmf-color-primary__contrast--lighter;
+    background-color: $mmf-color--light;
+    border-radius: $mmf-radius; // workaround, card may not have overflow hidden to clip border radius
 }

@@ -10,23 +10,27 @@
 @if export-once("editron-core/styles/mmf-card") {
 
     .mmf-card {
+        color: $mmf-color--dark;
         margin-bottom: $mmf-block;
-        background-color: $mmf-color__contrast;
-    }
+        background-color: $mmf-color--contrast;
 
-    // CARD HEADER
-    .mmf-card > .editron-container__header {
-        h2 {
-            @include font-regular();
-            color: $mmf-color--primary;
+        .editron-container__header {
+            opacity: $mmf-opacity--primary;
+
+            h2 {
+                color: $mmf-color--dark;
+            }
         }
 
         // deactivate hover on dummy icons
         .editron-container__title .mmf-icon:hover {
-            color: $mmf-color--primary;
+            color: $mmf-color--dark;
             cursor: default;
         }
     }
+
+    // CARD MAIN HEADER
+    .mmf-card > .editron-container__header {}
 
     // CARD HEADERS
     .mmf-card {
@@ -34,14 +38,11 @@
 
         // LEVEL 2 - card header
         > .editron-container__header {
-            h2 {
-                color: $mmf-color--primary;
-            }
 
             .mmf-icon {
-                color: $mmf-color--primary;
+                color: $mmf-color--dark;
                 &:hover {
-                    color: $mmf-color-primary;
+                    color: $mmf-color--secondary;
                 }
             }
         }
@@ -54,16 +55,17 @@
                 @include font-regular();
                 text-transform: uppercase;
                 padding: 2 * $mmf-unit;
-                font-size: 0.7rem;
+                font-size: $mmf-text-size--meta;
                 box-sizing: border-box;
                 min-height: $mmf-block;
-                color: $mmf-color--secondary;
+
+                opacity: $mmf-opacity--secondary;
             }
 
             .mmf-icon {
-                color: $mmf-color--secondary;
+                color: $mmf-color--dark;
                 &:hover {
-                    color: $mmf-color-primary;
+                    color: $mmf-color--secondary;
                 }
             }
         }

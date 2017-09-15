@@ -1,18 +1,10 @@
-@import "mithril-material-forms/lib/typography";
-@import "mithril-material-forms/lib/colors";
 @import "../../sass/export-once";
 
 
-@if export-once("editron-core/components/container-header") {
+@if export-once("editron-core/components/container-header-layout") {
 
     .editron-container__header {
-
         display: flex;
-        color: inherit;
-
-        line-height: 1em;
-        text-transform: uppercase;
-        padding-top: 0.1em; // visually center title text vertically (uppercase only)
 
         &.noTitle.noActions {
             display: none;
@@ -43,11 +35,7 @@
             width: 100%;
 
             h2 {
-                @include font-regular();
-                text-transform: inherit;
                 margin: 0;
-                font-size: inherit;
-                line-height: inherit;
                 flex-grow: 2;
                 display: inline-block;
                 align-self: center;

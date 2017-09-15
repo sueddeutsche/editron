@@ -4,7 +4,8 @@
 @import "mithril-material-forms/theme/icon";
 @import "./core-editors";
 
-@import "./components/container/container";
+@import "./components/container/container-layout";
+@import "./components/container/container-theme";
 @import "./components/overlay/overlay";
 @import "./components/overlayselecttiles/overlay-select-tiles";
 @import "./styles/mmf-card";

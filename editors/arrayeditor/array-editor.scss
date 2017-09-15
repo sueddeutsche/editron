@@ -8,11 +8,12 @@
     text-align: center;
 
     .mmf-icon {
-        color: $mmf-color__contrast;
-        text-shadow: 0 4px 8px #333;
+        color: rgba($mmf-color--light, $mmf-opacity--primary);
+        text-shadow: 0 3px 6px rgba($mmf-color--dark, 0.16), 0 3px 6px rgba($mmf-color--dark, 0.23);
+    }
 
-        &:hover {
-            color: $mmf-color-primary;
-        }
+    &:hover .mmf-icon {
+        color: $mmf-color--light;
+        text-shadow: 0 14px 28px rgba($mmf-color--dark, 0.25), 0 10px 10px rgba($mmf-color--dark, 0.22);
     }
 }

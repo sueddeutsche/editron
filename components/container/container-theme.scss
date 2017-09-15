@@ -1,0 +1,30 @@
+@import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/colors";
+@import "mithril-material-forms/lib/typography";
+@import "../../sass/export-once";
+@import "../containerheader/container-header-theme";
+@import "../containerdescription/container-description";
+@import "../containererrors/container-errors";
+
+
+@if export-once("editron-core/components/container-theme") {
+
+    .editron-container {
+        color: inherit;
+    }
+
+    .editron-container__controls--child {
+
+        i.mmf-icon {
+            color: rgba($mmf-color--light, $mmf-opacity--secondary);
+            font-size: 18px;
+            line-height: 1.5em;
+            width: 0.5 * $mmf-block;
+            height: 0.5 * $mmf-block;
+
+            &:hover {
+                color: $mmf-color--secondary;
+            }
+        }
+    }
+}
