@@ -23,7 +23,7 @@
             height: 0.5 * $mmf-block;
 
             &:hover {
-                color: $mmf-color--secondary;
+                color: rgba($mmf-color--light, $mmf-opacity--primary);
             }
         }
     }

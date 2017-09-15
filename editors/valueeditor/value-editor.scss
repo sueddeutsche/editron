@@ -8,5 +8,7 @@
     box-sizing: border-box;
 
     background-color: $mmf-color--light;
-    border-radius: $mmf-radius; // workaround, card may not have overflow hidden to clip border radius
+    // workaround, card may not have overflow hidden to clip border radius
+    border-bottom-left-radius: $mmf-radius;
+    border-bottom-right-radius: $mmf-radius;
 }

@@ -42,7 +42,7 @@
             .mmf-icon {
                 color: $mmf-color--dark;
                 &:hover {
-                    color: $mmf-color--secondary;
+                    color: darken($mmf-color--dark, $mmf-color-distance--focus);
                 }
             }
         }
@@ -65,7 +65,7 @@
             .mmf-icon {
                 color: $mmf-color--dark;
                 &:hover {
-                    color: $mmf-color--secondary;
+                    color: darken($mmf-color--dark, $mmf-color-distance--focus);
                 }
             }
         }
@@ -79,7 +79,12 @@
             @include with-form(); // set same style as form to visually group add-button to item
 
             .mmf-icon {
-                color: $mmf-color--secondary;
+                color: rgba($mmf-color--dark, $mmf-opacity--secondary);
+                text-shadow: none;
+            }
+
+            &:hover .mmf-icon {
+                color: rgba($mmf-color--dark, $mmf-opacity--primary);
                 text-shadow: none;
             }
         }
