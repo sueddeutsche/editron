@@ -65,10 +65,8 @@ const OverlayService = {
                     options.onSave();
                     this.close();
                 },
-                onAbort: () => {
-                    options.onAbort();
-                    this.close();
-                }
+                onAbort: () => this.close(), // calls onremove -> onAbort
+                onremove: () => options.onAbort()
             })
         );
 
