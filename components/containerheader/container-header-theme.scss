@@ -10,6 +10,7 @@
         line-height: 1em;
         text-transform: uppercase;
         padding-top: 0.1em; // visually center title text vertically (uppercase only)
+        opacity: $mmf-opacity--primary;
 
         .editron-container__title {
             h2 {
