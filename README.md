@@ -3,6 +3,7 @@
 Core repository of [editron](https://github.com/sueddeutsche/editron) json-editor. Its Controller may be used to setup
 form, based on nested editors for each data.
 
+You actually need to see what it does. Screenshots will be added. In the meantime see the examples folder.
 
 ## Setup
 
