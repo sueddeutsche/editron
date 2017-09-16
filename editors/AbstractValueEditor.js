@@ -148,7 +148,7 @@ class AbstractValueEditor {
 
     // adds an error to view
     addError(error) {
-        this.viewModel.errors.push(error.message);
+        this.viewModel.errors.push(error);
         this.render();
     }
 

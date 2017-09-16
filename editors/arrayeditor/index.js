@@ -146,7 +146,7 @@ class ArrayEditor {
     }
 
     addError(error) {
-        this.viewModel.errors.push(error.message);
+        this.viewModel.errors.push(error);
         this.render();
     }
 
