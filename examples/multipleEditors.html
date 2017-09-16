@@ -8,7 +8,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
         <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="../build/core.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.3/mithril.min.js"></script>
         <style type="text/css">
 
             * {
@@ -16,12 +18,18 @@
                 padding:            0;
             }
 
+            h1 {
+                text-align: center;
+                font-family: Roboto;
+                font-weight: 200;
+            }
+
             .editor {
                 max-width: 640px;
                 margin: 24px auto;
-                padding: 24px;
+                padding: 48px; /* make space for floating control actions in list-items */
                 border-radius: 2;
-                background: #eee;
+                background: #607D8B;
 
                 font-family: "Roboto";
             }
@@ -34,46 +42,167 @@
 
     <body>
 
+        <h1>An editron editor:</h1>
         <div id="editor-01" class="editor"></div>
+        <h1>A totally different editron editor:</h1>
         <div id="editor-02" class="editor"></div>
+        <h1>Another independent editor:</h1>
+        <div id="editor-03" class="editor"></div>
+        <h1>And a last one:</h1>
+        <div id="editor-04" class="editor"></div>
 
         <script type="text/javascript">
             var Controller = editron.Controller;
 
             var editor1 = new Controller({
                 type: "object", properties: {
-                    title: {
-                        title: "Any string value",
+                    "your-name": {
+                        title: "Your name",
                         type: "string"
                     },
-                    value: {
-                        title: "A number between 0 - 100",
+                    "your-age": {
+                        title: "Your age",
+                        description: "Valid age 0 through 29",
                         type: "number",
-                        "default": 1,
+                        "default": 56,
                         minimum: 0,
-                        maximum: 100
-                    } }
+                        maximum: 29
+                    }
+                }
             }, {});
-
             editor1.createEditor("#", document.querySelector("#editor-01"));
 
 
             var editor2 = new Controller({
-                type: "object", properties: {
-                    title: {
-                        title: "Any string value",
-                        type: "string"
+                type: "object",
+                description: "A simple list of 'things'",
+                properties: {
+                    todos: {
+                        title: "Things on your todo list since forever",
+                        description: "We hate those - todo-list-examples",
+                        type: "array",
+                        items: {
+                            title: "A Thingy",
+                            type: "object",
+                            "editron:ui": {
+                                attrs: {
+                                    "class": "mmf-card"
+                                }
+                            },
+                            properties: {
+                                title: {
+                                    type: "string",
+                                    title: "Todo thingy"
+                                },
+                                todo: {
+                                    type: "boolean",
+                                    format: "checkbox",
+                                    title: "still undone",
+                                    "default": true
+                                }
+                            }
+                        }
+                    }
+                }
+            }, {});
+            editor2.createEditor("#", document.querySelector("#editor-02"));
+
+
+            var editor3 = new Controller({
+                type: "object",
+                title: "oneof-selection",
+                description: "This one is advanced and may be used to build a list of different modules, think of an enriched html-text",
+                properties: {
+                    entities: {
+                        type: "array",
+                        title: "Your sequence of different entities",
+                        minItems: 1,
+                        items: {
+                            oneOf: [
+                                {
+                                    type: "object",
+                                    title: "A nice text about anything",
+                                    description: "Usually we add the wysiwyg-editor here with an additional option to the html-source (which is a nice hack for third-party-embeds",
+                                    "editron:ui": {
+                                        attrs: {
+                                            "class": "mmf-card"
+                                        }
+                                    },
+                                    properties: {
+                                        content: {
+                                            type: "string",
+                                            format: "html",
+                                            title: "A html text"
+                                        }
+                                    }
+                                },
+                                {
+                                    type: "object",
+                                    title: "A beautiful image",
+                                    description: "Usually we add a specific editor here using a proxy to our mediaserver and support for preview-images",
+                                    "editron:ui": {
+                                        attrs: {
+                                            "class": "mmf-card"
+                                        }
+                                    },
+                                    properties: {
+                                        url: {
+                                            type: "string",
+                                            format: "url",
+                                            title: "An URL to an image"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+            , {});
+            editor3.createEditor("#", document.querySelector("#editor-03"));
+
+
+            var editor4 = new Controller({
+                type: "object",
+                title: "Nested thingies on a single card",
+                "editron:ui": {
+                    attrs: {
+                        "class": "mmf-card"
+                    }
+                },
+                properties: {
+                    header: {
+                        type: "object",
+                        properties: {
+                            title: {
+                                type: "string",
+                                title: "header title",
+                                default: "yes - the LocationService might be messing around on delete"
+                            },
+                            imageUrl: {
+                                type: "string",
+                                title: "An image or whatever"
+                            }
+                        }
                     },
-                    value: {
-                        title: "A number between 0 - 100",
-                        type: "number",
-                        "default": 1,
-                        minimum: 0,
-                        maximum: 100
-                    } }
+                    list: {
+                        type: "array",
+                        title: "Many of the same but different",
+                        items: {
+                            type: "object",
+                            properties: {
+                                text: {
+                                    type: "string",
+                                    format: "html",
+                                    title: "nested list-item"
+                                }
+                            }
+                        }
+                    }
+                }
             }, {});
 
-            editor2.createEditor("#", document.querySelector("#editor-02"));
+            editor4.createEditor("#", document.querySelector("#editor-04"));
 
         </script>
 
