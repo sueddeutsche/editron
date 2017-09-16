@@ -72,8 +72,13 @@ const LocationService = {
             // console.log("focus element", pointer, targetElement);
             // const newTargetPosition = targetElement.getBoundingClientRect();
             targetElement.focus && targetElement.focus();
-            // targetElement.scrollIntoView();
-            targetElement.scrollIntoViewIfNeeded();
+
+            if (targetElement.scrollIntoViewIfNeeded) {
+                targetElement.scrollIntoViewIfNeeded();
+            } else {
+                targetElement.scrollIntoView();
+            }
+
         }, DELAY);
     },
 
