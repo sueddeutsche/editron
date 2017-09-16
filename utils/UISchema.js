@@ -26,7 +26,7 @@ function requiredTitle(title, schema) {
 
 
 // returns a list of {title, pointer} from root-node to pointer, excluding root node
-function getBreadcrumps(controller, pointer) {
+function getBreadcrumps(pointer, controller) {
     const SchemaService = controller.schema();
     const breadcrumps = [];
 
