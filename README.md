@@ -3,19 +3,20 @@
 Core repository of [editron](https://github.com/sueddeutsche/editron) json-editor. Its Controller may be used to setup
 form, based on nested editors for each data.
 
+You actually need to see what it does. Screenshots will be added. In the meantime see the examples folder.
 
 ## Setup
 
 `npm i editron-core --save`
 
-Add font dependencies to your website
+Add font and view dependencies to your website
 ```html
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.3/mithril.min.js"></script>
 ```
 
-Currently requires a webpack build with babel. If available check the webpack.config.js at
-[editron](https://github.com/sueddeutsche/editron).
+Currently requires a webpack build with babel. Check the `webpack.config.js` for an example build.
 
 
 ## Controller

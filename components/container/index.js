@@ -10,9 +10,17 @@ const ContainerDescription = require("../containerdescription");
  * a group-title and errors. Any childnodes must go to the container '.jed-container__children'.
  * @type {Object}
  */
-module.exports = {
+const ContainerView = {
 
     childContainerSelector: ".editron-container__children",
+
+    getChildContainer($element) {
+        const $childContainer = $element.querySelector(ContainerView.childContainerSelector);
+        if ($childContainer == null) {
+            throw new Error("Container-Component hast not yet been rendered");
+        }
+        return $childContainer;
+    },
 
     view(vnode) {
         return [
@@ -24,3 +32,5 @@ module.exports = {
         ];
     }
 };
+
+module.exports = ContainerView;

@@ -24,6 +24,24 @@ function requiredTitle(title, schema) {
     return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
 
+
+// returns a list of {title, pointer} from root-node to pointer, excluding root node
+function getBreadcrumps(pointer, controller) {
+    const SchemaService = controller.schema();
+    const breadcrumps = [];
+
+    while (pointer !== "#") {
+        breadcrumps.unshift({
+            title: getTitle(SchemaService.get(pointer)),
+            pointer
+        });
+        pointer = gp.join(pointer, "..");
+    }
+
+    return breadcrumps;
+}
+
+
 function getTitle(schema, titlePointer = "title", sanitize = false) {
     let title;
     if (hasValue(gp.get(schema, `#/${UI_PROPERTY}/title`))) {
@@ -138,6 +156,7 @@ module.exports = {
     getTitle,
     getDescription,
     getIcon,
+    getBreadcrumps,
     addUIOptions,
     requiredTitle,
     enumOptions,

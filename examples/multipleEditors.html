@@ -8,7 +8,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
         <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="../build/core.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.3/mithril.min.js"></script>
         <style type="text/css">
 
             * {
@@ -16,14 +18,34 @@
                 padding:            0;
             }
 
+            header > h1, #page > h1,
+            header > h2, #page > h2 {
+                text-align: center;
+                font-family: Roboto;
+                font-weight: 200;
+                margin: 24px 0;
+            }
+
+            header {
+                margin-bottom: 48px;
+            }
+
             .editor {
-                max-width: 640px;
-                margin: 24px auto;
-                padding: 24px;
+                padding: 48px; /* make space for floating control actions in list-items */
                 border-radius: 2;
-                background: #eee;
+                background: #607D8B;
 
                 font-family: "Roboto";
+            }
+
+            #page {
+                width: 720px;
+                margin: 0 auto;
+            }
+
+            body {
+                display: flex;
+                flex-direction: column;
             }
 
         </style>
@@ -34,48 +56,85 @@
 
     <body>
 
-        <div id="editor-01" class="editor"></div>
-        <div id="editor-02" class="editor"></div>
+        <div id="page">
 
-        <script type="text/javascript">
-            var Controller = editron.Controller;
+            <header>
+                <h1>Render editors of the same data on different spots</h1>
+                <span>
+                    Sure, this is the basic data-binding example, but this is different in that it gives you an easy entry
+                    point to render a form based on a simple string (json-pointer) and additionally modify the behaviour
+                    on creation time. Besides: it does not make any guesses of data changes, it knows...
+                </span>
+            </header>
 
-            var editor1 = new Controller({
-                type: "object", properties: {
-                    title: {
-                        title: "Any string value",
-                        type: "string"
-                    },
-                    value: {
-                        title: "A number between 0 - 100",
-                        type: "number",
-                        "default": 1,
-                        minimum: 0,
-                        maximum: 100
-                    } }
-            }, {});
+            <h2>Application name only <em>#/application</em></h2>
+            <div id="editor-04" class="editor"></div>
+            <h2>Editor displaying everything</h2>
+            <div id="editor-01" class="editor"></div>
+            <h2>Editor displaying anything at <em>#/list</em></h2>
+            <div id="editor-02" class="editor"></div>
+            <h2>Editor displaying anything as a navigation list <em>(This would be an overview if the index-editor would be added)</em></h2>
+            <div id="editor-03" class="editor"></div>
 
-            editor1.createEditor("#", document.querySelector("#editor-01"));
+            <script type="text/javascript">
+                /* global editron */
+                /* eslint max-len: false */
+                var Controller = editron.Controller;
 
+                var editron = new Controller({
+                    type: "object", properties: {
+                        application: {
+                            title: "application name",
+                            type: "string"
+                        },
+                        list: {
+                            type: "array",
+                            title: "Items",
+                            minItems: 1,
+                            items: {
+                                oneOf: [
+                                    {
+                                        type: "object",
+                                        title: "Title",
+                                        "editron:ui": {
+                                            attrs: {
+                                                "class": "mmf-card"
+                                            }
+                                        },
+                                        properties: {
+                                            title: {
+                                                type: "string",
+                                                format: "html"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        type: "object",
+                                        title: "Any number",
+                                        "editron:ui": {
+                                            attrs: {
+                                                "class": "mmf-card"
+                                            }
+                                        },
+                                        properties: {
+                                            value: {
+                                                type: "number"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }, {});
 
-            var editor2 = new Controller({
-                type: "object", properties: {
-                    title: {
-                        title: "Any string value",
-                        type: "string"
-                    },
-                    value: {
-                        title: "A number between 0 - 100",
-                        type: "number",
-                        "default": 1,
-                        minimum: 0,
-                        maximum: 100
-                    } }
-            }, {});
+                editron.createEditor("#", document.querySelector("#editor-01"));
+                editron.createEditor("#/list", document.querySelector("#editor-02"));
+                editron.createEditor("#", document.querySelector("#editor-03"), { "editron:ui": { index: true } });
+                editron.createEditor("#/application", document.querySelector("#editor-04"));
 
-            editor2.createEditor("#", document.querySelector("#editor-02"));
-
-        </script>
+            </script>
+        </div>
 
     </body>
 

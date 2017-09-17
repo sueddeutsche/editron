@@ -18,6 +18,10 @@ const config = {
     target: "web",
     devtool: PRODUCTION ? false : "source-map",
 
+    externals: {
+        mithril: "m"
+    },
+
     resolve: {
         modules: [".", "node_modules"],
         alias: {
