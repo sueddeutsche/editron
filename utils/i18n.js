@@ -4,20 +4,13 @@ translate.strings = {};
 translateError.strings = {};
 
 
-function renderKey(key, fallback, data) {
-    const string = translate(key, fallback);
-    return render(string, data);
-}
-
-
-function translate(key, fallback) {
-    if (translate.strings[key]) {
-        return translate.strings[key];
+function translate(key, data) {
+    if (typeof translate.strings[key] === "string") {
+        return render(translate.strings[key], data);
+    } else if (typeof translate.strings[key] === "function") {
+        return translate.strings[key](data);
     }
-    if (fallback == null) {
-        return key;
-    }
-    return fallback;
+    return key;
 }
 
 
@@ -33,8 +26,7 @@ function translateError(controller, error) {
 
 const i18n = {
     translate,
-    translateError,
-    renderKey
+    translateError
 };
 
 module.exports = i18n;
