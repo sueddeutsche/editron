@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "gson-pointer": "^2.1.3",
-    "json-data-services": "^1.1.0",
+    "json-data-services": "^1.1.1",
     "json-schema-library": "sagold/json-schema-library#develop",
     "mithril": "lhorie/mithril.js#next",
     "mithril-material-forms": "^2.1.0",
