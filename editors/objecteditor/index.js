@@ -96,7 +96,6 @@ class ObjectEditor {
                 if (editor) {
                     editor._property = property;
                     this.childEditors.push(editor);
-                    // console.log("add editor", editor.pointer);
                 }
             });
         }
