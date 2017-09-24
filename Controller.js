@@ -2,7 +2,6 @@ const gp = require("gson-pointer");
 const DataService = require("json-data-services").DataService;
 const SchemaService = require("json-data-services").SchemaService;
 const ValidationService = require("json-data-services").ValidationService;
-const SyncService = require("json-data-services/lib/SyncService");
 const LocationService = require("./services/LocationService");
 const State = require("json-data-services/lib/State");
 const selectEditor = require("./utils/selectEditor");
@@ -42,10 +41,6 @@ class Controller {
         // reset undo/redo states
         // @debug
         window.data = this.dataService; // eslint-disable-line
-    }
-
-    synchronizeData(url, id) {
-        this.syncService = new SyncService(url, this.dataService, id);
     }
 
     resetUndoRedo() {
