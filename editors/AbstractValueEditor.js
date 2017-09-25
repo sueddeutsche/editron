@@ -93,6 +93,7 @@ class AbstractValueEditor {
             schema,
             errors: [],
             onfocus: () => controller.location().setCurrent(pointer),
+            onblur: () => controller.location().blur(pointer),
             onchange: (value) => {
                 if (convert[schema.type]) {
                     value = convert[schema.type](value);
@@ -130,7 +131,7 @@ class AbstractValueEditor {
         this.controller.validator().removeObserver(oldPointer, this.addError);
         this.controller.data().observe(pointer, this.update);
         this.controller.validator().observe(pointer, this.addError);
-        // console.log("Rerender", pointer, `(${oldPointer})`);
+
         this.update();
     }
 
