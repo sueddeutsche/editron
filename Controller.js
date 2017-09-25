@@ -52,6 +52,8 @@ class Controller {
         return _createElement(selector, attributes);
     }
 
+    getInstances() { return this.instances; }
+
     /**
      * The only entry point to create editors.
      * Use in application and from editors to create (delegate) child editors
