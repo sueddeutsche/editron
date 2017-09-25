@@ -12,6 +12,18 @@ const getID = require("./utils/getID");
 const UI_PROPERTY = require("./utils/UISchema").UI_PROPERTY;
 
 
+// removes the editor from the instances-inventory of active editors
+function removeEditorFrom(instances, editor) {
+    const pointer = editor.getPointer();
+    if (instances[pointer]) {
+        instances[pointer] = instances[pointer].filter((instance) => editor !== instance);
+        if (instances[pointer].length === 0) {
+            delete instances[pointer];
+        }
+    }
+}
+
+
 /**
  * Main component to build editors. Each editor should receive the controller, which carries all required services
  * for editor initialization
@@ -47,12 +59,16 @@ class Controller {
         this.dataService.resetUndoRedo();
     }
 
-    // convenience methods
+    /**
+     * Helper to create dom elements via mithril syntax
+     *
+     * @param  {String} selector    - a css selector describing the desired element
+     * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
+     * @return {HTMLDomElement} the resulting DOMHtml element (not attached)
+     */
     createElement(selector, attributes) { // eslint-disable-line class-methods-use-this
         return _createElement(selector, attributes);
     }
-
-    getInstances() { return this.instances; }
 
     /**
      * The only entry point to create editors.
@@ -100,17 +116,7 @@ class Controller {
             $element.parentNode.removeChild($element);
         }
 
-        this.removeEditorFromInstances(editor);
-    }
-
-    removeEditorFromInstances(editor) {
-        const pointer = editor.getPointer();
-        if (this.instances[pointer]) {
-            this.instances[pointer] = this.instances[pointer].filter((instance) => editor !== instance);
-            if (this.instances[pointer].length === 0) {
-                delete this.instances[pointer];
-            }
-        }
+        removeEditorFrom(this.instances, editor);
     }
 
     addEditor(pointer, editor) {
@@ -119,7 +125,7 @@ class Controller {
     }
 
     changePointer(newPointer, editor) {
-        this.removeEditorFromInstances(editor);
+        removeEditorFrom(this.instances, editor);
         this.addEditor(newPointer, editor);
     }
 
@@ -134,16 +140,24 @@ class Controller {
         LocationService.goto(gp.join(pointer, index));
     }
 
+
     // expose main services
+
     data() { return this.dataService; }
     schema() { return this.schemaService; }
     validator() { return this.validationService; }
 
-    location() {
-        // goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
-        // setCurrent(pointer) - Update current pointer, but do not jump to target
-        return LocationService;
-    }
+    /**
+     * returns LocationService
+     *
+     * ## Usage
+     *  goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
+     *  setCurrent(pointer) - Update current pointer, but do not jump to target
+     *
+     * @return {Object} LocationService-Singleton
+     */
+    location() { return LocationService; }
+
 
     // helpers
 
@@ -160,10 +174,14 @@ class Controller {
         this.setData("#", data);
     }
 
-    getEditors() {
-        return this.editors;
-    }
+    getEditors() { return this.editors; }
+    getInstances() { return this.instances; }
 
+
+    /**
+     * Change the new schema for the current data
+     * @param {Object} schema   - a valid json-schema
+     */
     setSchema(schema) {
         this.validationService.set(schema);
         this.schemaService.setSchema(schema);
