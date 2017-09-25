@@ -49,6 +49,7 @@ const LocationService = {
     setCurrent(pointer) {
         if (pointer !== this.getCurrent()) {
             UIState.setCurrentPointer(pointer);
+            emitter.emit("focus", pointer);
         }
     },
 
@@ -80,6 +81,11 @@ const LocationService = {
             }
 
         }, DELAY);
+    },
+
+    blur(pointer) {
+        // UIState.setCurrentPointer("");
+        emitter.emit("blur", pointer);
     },
 
     on: (...args) => emitter.on(...args),
