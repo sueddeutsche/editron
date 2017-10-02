@@ -18,7 +18,7 @@ module.exports = {
     },
     set(key, value) {
         if (window.localStorage) {
-            localStorage.setItem(key, value);
+            localStorage.setItem(key, JSON.stringify(value));
         }
     },
     toggle(key) {
