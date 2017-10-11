@@ -72,7 +72,6 @@
         }
     }
 
-
     // FLOATING ADD BUTTON
     .mmf-card {
         // separator button inner layers (inside of card)
@@ -98,5 +97,14 @@
         .editron-container__children .editron-container__children > .editron-container__child .editron-container__header {
             box-shadow: inset 0 10px 20px rgba(0,0,0,0.19), inset 0 6px 6px rgba(0,0,0,0.23);
         }
+    }
+
+    // ONEOF EDITOR selection above a card
+    .editron-container--oneof > .editron-value {
+        margin-bottom: $mmf-block;
+    }
+
+    .mmf-card .editron-container--oneof > .editron-value {
+        margin-bottom: 0;
     }
 }
