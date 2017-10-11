@@ -100,11 +100,11 @@
     }
 
     // ONEOF EDITOR selection above a card
-    .editron-container--oneof {
+    .editron-container--oneof > .editron-value {
         margin-bottom: $mmf-block;
     }
 
-    .mmf-card .editron-container--oneof {
+    .mmf-card .editron-container--oneof > .editron-value {
         margin-bottom: 0;
     }
 }
