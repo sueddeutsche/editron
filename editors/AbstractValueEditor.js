@@ -80,7 +80,7 @@ class AbstractValueEditor {
             `.editron-value.editron-value--${options.editorValueType}`,
             Object.assign({
                 name: `editor-${pointer}`
-            }, options.editorElementProperties)
+            }, options.attrs)
         );
 
         // use this model to generate the view. may be customized with `options.viewModel`
