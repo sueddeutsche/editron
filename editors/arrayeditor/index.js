@@ -14,6 +14,10 @@ class ArrayEditor {
     constructor(pointer, controller, options = {}) {
         // add id to element, since no other input-form is associated with this editor
         options.attrs = Object.assign({ id: options.id }, options.attrs);
+        const schema = controller.schema().get(pointer);
+        const data = controller.data().get(pointer);
+
+        this.onAdd = (index = 0) => controller.addItemTo(this.pointer, index);
 
         this.$element = controller.createElement(".editron-container.editron-container--array.withAddButton", options.attrs);
         this.controller = controller;
@@ -23,14 +27,19 @@ class ArrayEditor {
             pointer,
             attrs: {},
             errors: [],
-            onadd: (index = 0) => controller.addItemTo(this.pointer, index)
+            onadd: this.onAdd,
+            length: data.length,
+            maxItems: schema.maxItems || Infinity,
+            minItems: schema.minItems || 0
         }, options);
 
         this.viewModel.controls = Object.assign({
             add: false,
             remove: true,
             move: true,
-            insert: true
+            insert: true,
+            maxItems: schema.maxItems || Infinity,
+            minItems: schema.minItems || 0
         }, options.controls);
 
         this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
@@ -40,10 +49,12 @@ class ArrayEditor {
         this.render();
         this.$items = this.$element.querySelector(View.childContainerSelector);
         this.rebuildChildren();
+        this.updateControls();
     }
 
     update() {
         this.rebuildChildren();
+        this.updateControls();
     }
 
     updatePointer(newPointer) {
@@ -73,6 +84,7 @@ class ArrayEditor {
         } else {
             this.rebuildChildren();
         }
+        this.updateControls();
     }
 
     applyPatches(patch) {
@@ -139,6 +151,14 @@ class ArrayEditor {
             this.$items.appendChild(childEditor.toElement());
             this.children.push(childEditor);
         });
+    }
+
+    updateControls() {
+        this.viewModel.length = this.children.length;
+        this.viewModel.onadd = this.viewModel.maxItems > this.children.length ? this.onAdd : false;
+
+        this.$element.classList.toggle("has-add-disabled", this.viewModel.maxItems <= this.children.length);
+        this.$element.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
     }
 
     getPointer() {

@@ -1,4 +1,6 @@
 const gp = require("gson-pointer");
+const Core = require("json-schema-library").cores.JsonEditor;
+const addValidator = require("json-schema-library/lib/addValidator");
 const DataService = require("json-data-services").DataService;
 const SchemaService = require("json-data-services").SchemaService;
 const ValidationService = require("json-data-services").ValidationService;
@@ -40,8 +42,9 @@ class Controller {
         this.editors = this.options.editors;
         this.state = new State();
         this.instances = {};
-        this.schemaService = new SchemaService(schema, data);
-        this.validationService = new ValidationService(this.state, schema);
+        this.core = new Core();
+        this.schemaService = new SchemaService(schema, data, this.core);
+        this.validationService = new ValidationService(this.state, schema, this.core);
         // merge given data with template data
         data = this.schemaService.addDefaultData(data, schema);
         this.dataService = new DataService(this.state, data);
@@ -176,6 +179,16 @@ class Controller {
 
     getEditors() { return this.editors; }
     getInstances() { return this.instances; }
+
+
+    addValidator(type, value, validator) {
+        if (type === "format") {
+            addValidator.format(this.core, value, validator);
+            return;
+        }
+
+        throw new Error(`Unknown or unsupported validation ${type}`);
+    }
 
 
     /**
