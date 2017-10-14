@@ -11,16 +11,21 @@ class ArrayItemEditor {
         this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
         this.controller = controller;
 
+        this.onAdd = () => this.add();
+        this.onRemove = () => this.remove();
+
         this.viewModel = Object.assign({
-            onadd: () => this.add(),
-            onremove: () => this.remove(),
+            onadd: this.onAdd,
+            onremove: this.onRemove,
             onmove: (index) => this.move(index)
         }, options);
 
         this.render();
 
         const $target = this.$element.querySelector(ArrayItemView.editorTarget);
-        this.editor = controller.createEditor(pointer, $target, { ondelete: () => this.remove() });
+        this.editor = controller.createEditor(pointer, $target, {
+            ondelete: this.onRemove
+        });
 
         this.updatePointer(pointer);
     }

@@ -18,6 +18,20 @@
     }
 }
 
+.editron-container--array.has-add-disabled {
+    & > .editron-container__header .mmf-icon--add {
+         display: none;
+    }
+}
+
+// array item wrapper
+.editron-editor.has-remove-disabled {
+    & > .editron-container > .editron-container__header {
+        .mmf-icon--delete {
+            visibility: hidden; // hide, but do not collapse
+        }
+    }
+}
 
 .editron-container__controls {
     list-style: none;
