@@ -69,6 +69,8 @@
         font-size: $mmf-text-size--meta;
         line-height: 1.2em;
         text-align: center;
-        padding: $mmf-unit;
+        margin: $mmf-unit;
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 }
