@@ -1,6 +1,6 @@
 {
   "name": "editron-core",
-  "version": "3.3.2",
+  "version": "3.3.3",
   "description": "Editron - json-editor core functionality",
   "main": "index.js",
   "scripts": {
