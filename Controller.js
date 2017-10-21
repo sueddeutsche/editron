@@ -202,7 +202,7 @@ class Controller {
 
     // update data in schema service
     update() {
-        this.schemaService.setData(this.dataService.getDataByReference());
+        this.schemaService.setData(this.dataService.get());
     }
 
     validateAll() {

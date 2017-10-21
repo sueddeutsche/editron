@@ -9,8 +9,6 @@ const ArrayItemView = {
         const canRemove = vnode.attrs.minItems < vnode.attrs.length;
         const canAdd = vnode.attrs.maxItems > vnode.attrs.length;
 
-        console.log(vnode.attrs.maxItems, vnode.attrs.length);
-
         return [
             // CONTROLS
             m("ul.editron-container__controls.editron-container__controls--child",
