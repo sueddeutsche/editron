@@ -172,8 +172,8 @@ class Controller {
         }
     }
 
-    addDefaultData() {
-        const data = this.schemaService.addDefaultData(this.dataService.get());
+    setData(data) {
+        data = this.schemaService.addDefaultData(data);
         this.setData("#", data);
     }
 
