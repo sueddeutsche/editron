@@ -174,7 +174,7 @@ class Controller {
 
     setData(data) {
         data = this.schemaService.addDefaultData(data);
-        this.setData("#", data);
+        this.data().set("#", data);
     }
 
     getEditors() { return this.editors; }
