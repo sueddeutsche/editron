@@ -1,5 +1,15 @@
 const m = require("mithril");
+const TextareaForm = require("mithril-material-forms/components/textareaform");
+const OverlayService = require("../../services/OverlayService");
 const View = require("../../components/container");
+
+
+function showJSON(controller, data, title) {
+    const element = controller.createElement(".overlay__item.overlay__item--json");
+    OverlayService.open(element, { ok: true, save: false });
+    // render textarea after it is injected into dom, to correctly update textarea size
+    m.render(element, m(TextareaForm, { title, value: JSON.stringify(data, null, 4) }));
+}
 
 
 class ObjectEditor {
@@ -50,7 +60,6 @@ class ObjectEditor {
 
         const oldPointer = this.pointer;
         this.$element.id = pointer;
-        // console.info(`object update pointer ${oldPointer} -> ${pointer}`);
 
         const controller = this.controller;
         this.options.attrs.id = pointer;
@@ -103,7 +112,35 @@ class ObjectEditor {
         this.render();
     }
 
+    deleteProperty(property) {
+        console.log("DELETE PROPERTY", property);
+        const data = this.controller.data().get(this.pointer);
+        delete data[property];
+        this.controller.data().set(this.pointer, data);
+    }
+
+    showProperty(property) {
+        const propertyData = this.controller.data().get(`${this.pointer}/${property}`);
+        showJSON(this.controller, propertyData, property);
+    }
+
     addError(error) {
+        // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
+        // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
+        // arrays this should come per default, as the may insert in add items...
+        if (error.code === "no-additional-properties-error") {
+            const message = error.message;
+            const property = error.data.property;
+            error = {
+                severity: error.type || "error",
+                message: m(".editron-error.editron-error--object-property",
+                    m("span", m.trust(message)),
+                    m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
+                    m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
+                )
+            };
+        }
+
         this.viewModel.errors.push(error);
         this.render();
     }
