@@ -1,6 +1,6 @@
 {
   "name": "editron-core",
-  "version": "3.3.3",
+  "version": "3.4.0",
   "description": "Editron - json-editor core functionality",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "test": "ava",
     "release": "npm run dist"
   },
-  "pre-commit": [
+  "pre-push": [
     "test"
   ],
   "keywords": [],
@@ -31,7 +31,7 @@
     "html-loader": "^0.5.1",
     "json-loader": "^0.5.4",
     "node-sass": "^4.5.0",
-    "pre-commit": "^1.2.2",
+    "pre-push": "^0.1.1",
     "sass-loader": "^6.0.6",
     "sinon": "^3.2.1",
     "style-loader": "^0.18.2",
@@ -49,7 +49,7 @@
     "json-data-services": "^3.0.3",
     "json-schema-library": "^2.3.1",
     "mithril": "1.x",
-    "mithril-material-forms": "^2.3.1",
+    "mithril-material-forms": "^2.3.2",
     "mitt": "^1.1.2"
   },
   "ava": {

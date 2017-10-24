@@ -1,0 +1,13 @@
+// @import "mithril-material-forms/lib/units";
+// @import "mithril-material-forms/lib/typography";
+// @import "mithril-material-forms/lib/colors";
+// @import "mithril-material-forms/lib/elevation";
+@import "../../sass/export-once";
+
+
+@if export-once("editron-core/components/overlay-json") {
+
+    .overlay__item--json {
+        min-width: 50vw;
+    }
+}
