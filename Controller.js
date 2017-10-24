@@ -172,9 +172,9 @@ class Controller {
         }
     }
 
-    addDefaultData() {
-        const data = this.schemaService.addDefaultData(this.dataService.get());
-        this.setData("#", data);
+    setData(data) {
+        data = this.schemaService.addDefaultData(data);
+        this.data().set("#", data);
     }
 
     getEditors() { return this.editors; }
