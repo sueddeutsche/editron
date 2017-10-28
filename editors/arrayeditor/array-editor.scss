@@ -1,4 +1,5 @@
 @import "mithril-material-forms/lib/interface";
+@import "mithril-material-forms/lib/typography";
 @import "mithril-material-forms/lib/colors";
 
 
@@ -35,4 +36,21 @@
 
 .editron-container__controls {
     list-style: none;
+}
+
+.editron-item.with-index {
+
+    &:before {
+        content: attr(data-index);
+        display: inline-block;
+        position: absolute;
+        left: -$mmf-block;
+        width: $mmf-block;
+        height: $mmf-block;
+        line-height: $mmf-block;
+        text-align: center;
+
+        color: rgba($mmf-color--light, $mmf-opacity--hint);
+        font-size: $mmf-text-size--meta;
+    }
 }

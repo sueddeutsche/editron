@@ -12,6 +12,8 @@ class ArrayEditor {
     }
 
     constructor(pointer, controller, options = {}) {
+        // console.log("Options", options);
+
         // add id to element, since no other input-form is associated with this editor
         options.attrs = Object.assign({ id: options.id }, options.attrs);
         const schema = controller.schema().get(pointer);
@@ -38,6 +40,7 @@ class ArrayEditor {
             remove: true,
             move: true,
             insert: true,
+            showIndex: options.showIndex === true,
             maxItems: schema.maxItems || Infinity,
             minItems: schema.minItems || 0
         }, options.controls);
