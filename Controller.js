@@ -212,7 +212,7 @@ class Controller {
     destroy() {
         // delete all editors
         Object.keys(this.instances).forEach((pointer) => {
-            this.instances[pointer].forEach((instance) => instance.destroy());
+            this.instances[pointer] && this.instances[pointer].forEach((instance) => instance.destroy());
         });
 
         this.instances = {};
