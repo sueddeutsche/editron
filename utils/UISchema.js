@@ -137,6 +137,10 @@ function getIcon(schema) {
     return gp.get(schema, `${UI_PROPERTY}/icon`) || "";
 }
 
+function isHidden(schema) {
+    return gp.get(schema, `${UI_PROPERTY}/hidden`) || false;
+}
+
 
 /**
  * Ensures each schema contains a valid schema[UI_PROPERTY] object
@@ -163,5 +167,6 @@ module.exports = {
     sanitizeString,
     resolveReference,
     isEmpty,
+    isHidden,
     hasValue
 };
