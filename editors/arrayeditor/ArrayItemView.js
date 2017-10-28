@@ -3,11 +3,12 @@ const m = require("mithril");
 
 const ArrayItemView = {
 
-    editorTarget: ".editron-editor",
+    editorTarget: ".editron-item",
 
     view(vnode) {
         const canRemove = vnode.attrs.minItems < vnode.attrs.length;
         const canAdd = vnode.attrs.maxItems > vnode.attrs.length;
+        const showIndex = vnode.attrs.showIndex === true;
 
         return [
             // CONTROLS
@@ -32,10 +33,12 @@ const ArrayItemView = {
 
             // TARGET CONTAINER FOR EDITOR
             m(this.editorTarget, {
+                "data-index": `${vnode.attrs.index + 1} / ${vnode.attrs.length}`,
                 "class": [
                     canRemove ? "has-remove-enabled" : "has-remove-disabled",
-                    canAdd ? "has-add-enabled" : "has-add-disabled"
-                ].join(" ")
+                    canAdd ? "has-add-enabled" : "has-add-disabled",
+                    showIndex ? "with-index" : ""
+                ].join(" ").trim()
             }),
 
             // ADD BUTTON
