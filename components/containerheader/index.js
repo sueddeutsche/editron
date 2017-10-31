@@ -1,5 +1,6 @@
 const m = require("mithril");
 const getID = require("../../utils/getID");
+const populated = require("../../utils/populated");
 
 
 function getClass({ title, icon, hasAction }) {
@@ -32,26 +33,26 @@ module.exports = {
             },
 
             m(".editron-container__title",
-                vnode.attrs.icon ? m("i.mmf-icon", attrs.icon) : null,
+                populated(vnode.attrs.icon, m("i.mmf-icon", attrs.icon)),
                 (!attrs.hideTitle) && m("h2", attrs.title)
             ),
 
             m(".editron-container__actions",
                 attrs.onmoveup ? m("i.mmf-icon.mmf-icon--add", {
                     onclick: attrs.onmoveup
-                }, "arrow_upward") : null,
+                }, "arrow_upward") : "",
 
                 attrs.onmovedown ? m("i.mmf-icon.mmf-icon--add", {
                     onclick: attrs.onmovedown
-                }, "arrow_downward") : null,
+                }, "arrow_downward") : "",
 
                 attrs.onadd ? m("i.mmf-icon.mmf-icon--add", {
                     onclick: () => attrs.onadd()
-                }, "add") : null,
+                }, "add") : "",
 
                 attrs.ondelete ? m("i.mmf-icon.mmf-icon--delete", {
                     onclick: attrs.ondelete
-                }, "delete") : null
+                }, "delete") : ""
             )
         );
     }

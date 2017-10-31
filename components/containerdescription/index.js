@@ -1,11 +1,11 @@
 const m = require("mithril");
+const populated = require("../../utils/populated");
 
 
 module.exports = {
     view(vnode) {
-        if (vnode.attrs.description == null) {
-            return "";
-        }
-        return m(".editron-container__description.mmf-meta", m.trust(vnode.attrs.description));
+        return populated(vnode.attrs.description,
+            m(".editron-container__description.mmf-meta", m.trust(vnode.attrs.description))
+        );
     }
 };
