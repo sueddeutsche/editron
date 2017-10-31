@@ -32,9 +32,9 @@ module.exports = function addItem(dataService, schemaService, pointer, index = 0
     // multiple options, ask user
     const element = createElement(".overlay__item");
     const selection = selectOptions.map((item, oneOfIndex) => ({
-        icon: UISchema.getIcon(item),
-        title: UISchema.getTitle(item),
-        description: UISchema.getDescription(item),
+        icon: UISchema.getDefaultOption(item, "icon"),
+        title: UISchema.getDefaultOption(item, "title"),
+        description: UISchema.getDefaultOption(item, "description"),
         value: oneOfIndex
     }));
 
