@@ -2,71 +2,27 @@
 const iterateSchema = require("json-schema-library").iterateSchema;
 const gp = require("gson-pointer");
 const UI_PROPERTY = "editron:ui";
+const populated = require("./populated");
 
 
 function isPointer(string) {
-    return /(#?\/.+|\.\.\/)/.test(string);
-}
-
-function isEmpty(value) {
-    return value == null || value === "" || value === "#";
-}
-
-function hasValue(value) {
-    return !isEmpty(value);
-}
-
-function sanitizeString(title = "", maxLength = 40) {
-    return title.substr ? title.replace(/<.*?>/g, "").substr(0, maxLength) : title;
-}
-
-function requiredTitle(title, schema) {
-    return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
+    return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
 }
 
 
 // returns a list of {title, pointer} from root-node to pointer, excluding root node
 function getBreadcrumps(pointer, controller) {
-    const SchemaService = controller.schema();
     const breadcrumps = [];
-
     while (pointer !== "#") {
         breadcrumps.unshift({
-            title: getTitle(SchemaService.get(pointer)),
+            title: getOption(pointer, controller, "title"),
             pointer
         });
         pointer = gp.join(pointer, "..");
     }
-
     return breadcrumps;
 }
 
-
-function getTitle(schema, titlePointer = "title", sanitize = false) {
-    let title;
-    if (hasValue(gp.get(schema, `#/${UI_PROPERTY}/title`))) {
-        title = schema[UI_PROPERTY][titlePointer];
-    } else if (hasValue(schema.title)) {
-        title = schema.title;
-    }
-
-    if (hasValue(title)) {
-        title = sanitize ? sanitizeString(title) : title;
-        title = requiredTitle(title, schema);
-    }
-
-    return title;
-}
-
-function getDescription(schema) {
-    let description;
-    if (hasValue(schema[UI_PROPERTY].description)) {
-        description = schema[UI_PROPERTY].description;
-    } else if (hasValue(schema.description)) {
-        description = schema.description;
-    }
-    return description;
-}
 
 function enumOptions(schema) {
     let options;
@@ -87,20 +43,18 @@ function enumOptions(schema) {
     return options;
 }
 
+
 /**
  * Resolves the given pointer absolute or relative in data
+ *
  * @param  {String} pointer             - current base pointer for relative targets
  * @param  {Controller} controller
  * @param  {String} pointerToResolve    - relative or absolute pointer (must start with `/` or `../`)
  * @return {Mixed} target value of at #/pointer/pointerToResolve or false
  */
 function resolveReference(pointer, controller, pointerToResolve) {
-    if (isEmpty(pointerToResolve)) {
-        return undefined;
-    }
-
-    if (isPointer(pointerToResolve) === false) {
-        return pointerToResolve;
+    if (populated(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
+        return null;
     }
 
     let targetPointer = pointerToResolve;
@@ -109,64 +63,137 @@ function resolveReference(pointer, controller, pointerToResolve) {
     }
 
     const result = controller.data().get(targetPointer);
-    if (typeof result === "string") {
-        return result;
-    }
-
-    return false;
+    return populated(result, result, null);
 }
 
 
-function addUIOptions(schema, pointer) { // eslint-disable-line no-unused-vars
-    const options = schema.options || {}; // legacy jdorn-json-editor
-    schema[UI_PROPERTY] = schema[UI_PROPERTY] || {};
-    schema[UI_PROPERTY] = Object.assign(schema[UI_PROPERTY], {
-        title: getTitle(schema),
-        // "title-overview": getTitle(schema, "title-overview", true) || getTitle(schema),
-        description: getDescription(schema),
-        hidden: schema[UI_PROPERTY].hidden === true || options.hidden === true
-        // icon
-        // attrs.class
-        // ENUM OPTIONS
-    });
+/**
+ * Returns the resolved copy of an options object. This method is used by the controller to help setup the
+ * main options object of an editor instance. It is simplified, in that it currently does  not resolve any reference
+ * on the current data
+ *
+ * @param {String} pointer
+ * @param {Controller} controller
+ * @return {Object} a resolved copy of the editron:ui settings
+ */
+function copyOptions(pointer, controller) {
+    const schema = controller.schema().get(pointer);
 
-    return schema;
-}
+    const settings = Object.assign({
+        hidden: false,
+        description: schema.description
+    }, schema.options, schema[UI_PROPERTY]); // @legacy options
 
-function getIcon(schema) {
-    return gp.get(schema, `${UI_PROPERTY}/icon`) || "";
-}
+    settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
 
-function isHidden(schema) {
-    return gp.get(schema, `${UI_PROPERTY}/hidden`) || false;
+    Object
+        .keys(settings)
+        .forEach((option) => {
+            settings[option] = resolveOption(pointer, controller, settings[option]);
+        });
+
+    return settings;
 }
 
 
 /**
  * Ensures each schema contains a valid schema[UI_PROPERTY] object
- * @param  {Object} schema
+ * @param  {Object} rootSchema
  * @return {Object} extended clone of json-schema
  */
-function extend(schema) {
-    const rootSchema = JSON.parse(JSON.stringify(schema));
-    iterateSchema(rootSchema, addUIOptions);
+function extendSchema(rootSchema) {
+    rootSchema = JSON.parse(JSON.stringify(rootSchema));
+    iterateSchema(rootSchema, (childSchema) => {
+        childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
+        childSchema[UI_PROPERTY] = Object.assign({
+            hidden: false,
+            title: childSchema.title || "",
+            description: childSchema.description || ""
+        }, childSchema.options, childSchema[UI_PROPERTY]); // @legacy options
+    });
+
     return rootSchema;
+}
+
+
+/**
+ * Resolves a list of pointers, where the first found value is returned. Supports simple strings as fallback.
+ *  e.g. `["/data/local/title", "/data/local/subtitle", "Title"]`
+ *
+ * @param  {String} pointer     [description]
+ * @param  {Controller} controller  [description]
+ * @param  {String|Array} optionValue [description]
+ * @return {Mixed} the option value
+ */
+function resolveOption(pointer, controller, optionValue) {
+    if (Array.isArray(optionValue)) {
+        for (let i = 0; i < optionValue.length; i += 1) {
+            const option = optionValue[i];
+            if (isPointer(option)) {
+                const value = resolveReference(pointer, controller, option);
+                if (populated(value)) {
+                    return value;
+                }
+            } else if (populated(option)) {
+                return option;
+            }
+        }
+    }
+    return optionValue;
+}
+
+
+/**
+ * Returns the first defined option set in schema. Supports relative and absolute pointers in data
+ *
+ * @param  {String} pointer
+ * @param  {Controller} controller
+ * @param  {...[String]} options    - a list of option properties. The first non-empty option will be returned
+ * @return {Mixed} the first non-empty option
+ */
+function getOption(pointer, controller, ...options) {
+    const schema = controller.schema().get(pointer);
+    const editronOptions = schema[UI_PROPERTY] || {};
+
+    if (options.length === 0) {
+        throw new Error("Expected at least one options property to be given in getOption");
+    }
+
+    for (let i = 0; i < options.length; i += 1) {
+        const option = editronOptions[options[i]];
+        const resolver = isPointer(option) ? resolveReference : resolveOption;
+        const value = resolver(pointer, controller, option);
+
+        if (populated(value)) {
+            return value;
+        } else if (populated(schema[options[i]])) {
+            return schema[options[i]];
+        }
+    }
+
+    return null;
+}
+
+
+function getTitle(pointer, controller) {
+    const schema = controller.schema().get(pointer);
+    const title = getOption(pointer, controller, "title") || "";
+    return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
+}
+
+
+function getDefaultOption(schema, option) {
+    return schema[UI_PROPERTY] ? (schema[UI_PROPERTY][option] || "") : "";
 }
 
 
 module.exports = {
     UI_PROPERTY,
-    extend,
-    getTitle,
-    getDescription,
-    getIcon,
+    getOption,
+    copyOptions,
+    extendSchema,
     getBreadcrumps,
-    addUIOptions,
-    requiredTitle,
+    getTitle,
     enumOptions,
-    sanitizeString,
-    resolveReference,
-    isEmpty,
-    isHidden,
-    hasValue
+    getDefaultOption
 };

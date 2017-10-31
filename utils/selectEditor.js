@@ -1,26 +1,28 @@
-const UI_PROPERTY = require("./UISchema").UI_PROPERTY;
-
-
+/**
+ * Selects an editor based on the given schema
+ *
+ * @param  {Array} editorViews  - List of editors with a static function 'editorOf'
+ * @param  {String} pointer     - current pointer in data
+ * @param  {Controller} controller
+ * @param  {Object} options     - the complete and resolved (UISchema) options object (editron:ui + additions)
+ * @return {Boolean|Constructor} The constructor of the chosen editor od false if no editor could be resolved
+ *  or is denied
+ */
 function select(editorViews, pointer, controller, options) {
+    // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
     if (/_id$/.test(pointer)) {
-        return false;
+        return false; // abort if it is an internal value
     }
 
     const schema = controller.schema().get(pointer);
-
     if (schema.type === "error") {
-        // pointer could not be found in schema
+        // data-pointer could not be found in schema
         // @todo find a better solution for additional data: maybe an 'additional data'-editor
-        // console.warn(`Failed retrieving schema for '${pointer}': ${schema.message}`, controller.data().get(pointer));
         return false;
     }
 
-    if (schema[UI_PROPERTY] == null) {
-        // console.warn(`Missing ui-object in schema ${pointer}:`, schema);
-
-    // @ui-option hidden and
-    // @legacy support: jdorn/json-editor
-    } else if (schema[UI_PROPERTY].hidden === true || (schema.options && schema.options.hidden === true)) {
+    // @ui-option hidden
+    if (options.hidden === true) {
         return false;
     }
 

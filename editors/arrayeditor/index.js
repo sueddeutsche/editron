@@ -40,7 +40,7 @@ class ArrayEditor {
             remove: true,
             move: true,
             insert: true,
-            showIndex: options.showIndex === true,
+            showIndex: options["array:index"] === true,
             maxItems: schema.maxItems || Infinity,
             minItems: schema.minItems || 0
         }, options.controls);

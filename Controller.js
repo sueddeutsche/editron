@@ -11,7 +11,6 @@ const _createElement = require("./utils/createElement");
 const addItem = require("./utils/addItem");
 const UISchema = require("./utils/UISchema");
 const getID = require("./utils/getID");
-const UI_PROPERTY = require("./utils/UISchema").UI_PROPERTY;
 
 
 // removes the editor from the instances-inventory of active editors
@@ -33,7 +32,7 @@ function removeEditorFrom(instances, editor) {
 class Controller {
 
     constructor(schema = {}, data = {}, options = {}) {
-        schema = UISchema.extend(schema);
+        schema = UISchema.extendSchema(schema);
 
         this.options = Object.assign({
             editors: require("./editors")
@@ -86,18 +85,23 @@ class Controller {
         if (pointer == null || element == null) {
             throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
         }
+
         // ensure valid pointer
         pointer = gp.join(pointer);
 
         // merge schema["editron:ui"] object with options. options precede
-        const schema = this.schema().get(pointer);
-        options = Object.assign({ id: getID(pointer) }, schema[UI_PROPERTY], options);
+        const instanceOptions = Object.assign(
+            { id: getID(pointer), pointer },
+            UISchema.copyOptions(pointer, this),
+            options
+        );
 
         // find a matching editor
-        const Editor = selectEditor(this.getEditors(), pointer, this, options);
+        const Editor = selectEditor(this.getEditors(), pointer, this, instanceOptions);
         if (Editor === false) {
             return undefined;
         }
+
         if (Editor === undefined) {
             // console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
             return undefined;
@@ -105,7 +109,7 @@ class Controller {
 
         // iniitialize editor and save editor in list
         // @TODO loose reference to destroyed editors
-        const editor = new Editor(pointer, this, options);
+        const editor = new Editor(pointer, this, instanceOptions);
         element.appendChild(editor.toElement());
         this.addEditor(pointer, editor);
 
