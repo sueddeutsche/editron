@@ -11,6 +11,7 @@ const _createElement = require("./utils/createElement");
 const addItem = require("./utils/addItem");
 const UISchema = require("./utils/UISchema");
 const getID = require("./utils/getID");
+const plugin = require("./plugin");
 
 
 // removes the editor from the instances-inventory of active editors
@@ -35,13 +36,30 @@ class Controller {
         schema = UISchema.extendSchema(schema);
 
         this.options = Object.assign({
-            editors: require("./editors")
+            editors: [
+                require("./editors/oneofeditor")
+            ]
+            .concat(plugin.getEditors())
+            .concat([
+                require("./editors/arrayeditor"),
+                require("./editors/objecteditor"),
+                require("./editors/valueeditor")
+            ])
         }, options);
 
         this.editors = this.options.editors;
         this.state = new State();
         this.instances = {};
         this.core = new Core();
+
+        plugin.getValidators().forEach((validator) => {
+            try {
+                this.addValidator(...validator);
+            } catch (e) {
+                console.log(e.message);
+            }
+        });
+
         this.schemaService = new SchemaService(schema, data, this.core);
         this.validationService = new ValidationService(this.state, schema, this.core);
         // merge given data with template data
@@ -52,9 +70,6 @@ class Controller {
             .on(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
         // run initial validation
         this.validateAll();
-        // reset undo/redo states
-        // @debug
-        window.data = this.dataService; // eslint-disable-line
     }
 
     resetUndoRedo() {
