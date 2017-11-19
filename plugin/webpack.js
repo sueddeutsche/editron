@@ -13,7 +13,7 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
 
         output: {
             filename: jsFilename,
-            path: path.resolve(projectRoot, PRODUCTION ? "dist" : "build")
+            path: path.resolve(projectRoot, "bundle")
         },
 
         target: "web",
