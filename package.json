@@ -4,10 +4,12 @@
   "description": "Editron - json-editor core functionality",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
-    "dist": "NODE_ENV=production webpack",
-    "test": "ava",
-    "release": "npm run dist"
+    "build": "rm -rf build; webpack",
+    "dist": "rm -rf dist; NODE_ENV=production webpack",
+    "bundle": "rm -rf bundle; NODE_ENV=production webpack --config webpack.bundle.config.js",
+    "release": "npm run bundle; npm run dist",
+    "prepublishOnly": "npm run release",
+    "test": "ava"
   },
   "pre-push": [
     "test"
