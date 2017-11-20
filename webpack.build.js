@@ -1,19 +1,16 @@
 const path = require("path");
 const webpack = require("webpack");
 const PRODUCTION = process.env.NODE_ENV === "production";
-const TARGET_FOLDER = "bundle";
+const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 
-const editronCoreConfig = {
-    entry: [
-        path.join(__dirname, "index.js"),
-        path.join(__dirname, "core.scss"),
-        path.resolve("./node_modules/mithril-material-forms"),
-        path.resolve("./node_modules/json-data-services")
-    ],
+const config = {
+    entry: {
+        "editron-core": path.join(__dirname, "editron-core.js")
+    },
     output: {
-        filename: "editron-core.js",
-        library: ["editron"],
+        filename: "[name].js",
+        library: ["editronCore"],
         path: path.resolve(__dirname, TARGET_FOLDER)
     },
 
@@ -26,7 +23,6 @@ const editronCoreConfig = {
     },
 
     resolve: {
-        symlinks: false,
         modules: [".", "node_modules"],
         alias: {
             mitt: path.resolve("./node_modules/mitt/dist/mitt.js"),
@@ -56,28 +52,6 @@ const editronCoreConfig = {
                 }
             },
             {
-                test: /.*\.css$/,
-                loaders: ["style-loader", "css-loader"]
-            },
-            {
-                loader: "url-loader",
-                test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff\d?$|\.ttf$|\.eot|\.otf|\.wav$|\.mp3$/
-            },
-            {
-                test: [/wysiwyg-editor.scss/, /core.scss$/],
-                use: [
-                    "file-loader?name=[name].css",
-                    "extract-loader",
-                    "css-loader",
-                    {
-                        loader: "sass-loader",
-                        options: {
-                            includePaths: [path.join(__dirname, "node_modules")]
-                        }
-                    }
-                ]
-            },
-            {
                 loaders: [
                     "file-loader?name=index.html",
                     "extract-loader",
@@ -93,14 +67,11 @@ const editronCoreConfig = {
     },
 
     plugins: [
-        new webpack.NamedModulesPlugin(),
-        new webpack.DefinePlugin({
-            DEBUG: !PRODUCTION
-        }),
-        new webpack.DllPlugin({
-            name: "editron",
+        new webpack.DefinePlugin({ DEBUG: !PRODUCTION }),
+        new webpack.DllReferencePlugin({
             context: __dirname,
-            path: path.join(__dirname, TARGET_FOLDER, "manifest.json")
+            manifest: require(path.join(__dirname, TARGET_FOLDER, "manifest.json")),
+            sourceType: "var"
         })
     ].concat(PRODUCTION ? [
         new (require("uglifyjs-webpack-plugin"))({
@@ -111,4 +82,4 @@ const editronCoreConfig = {
 };
 
 
-module.exports = [editronCoreConfig];
+module.exports = config;
