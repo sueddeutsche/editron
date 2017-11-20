@@ -1,6 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const PRODUCTION = process.env.NODE_ENV === "production";
+const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 
 function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
@@ -13,7 +14,7 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
 
         output: {
             filename: jsFilename,
-            path: path.resolve(projectRoot, "bundle")
+            path: path.resolve(projectRoot, TARGET_FOLDER)
         },
 
         target: "web",
@@ -90,7 +91,7 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
             new webpack.NamedModulesPlugin(),
             new webpack.DllReferencePlugin({
                 context: path.join(projectRoot, "node_modules", "editron-core"),
-                manifest: require(path.join(__dirname, "../bundle/manifest.json")),
+                manifest: require(path.join(__dirname, "..", TARGET_FOLDER, "/manifest.json")),
                 sourceType: "var"
             }),
             new webpack.DefinePlugin({
