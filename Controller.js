@@ -37,14 +37,12 @@ class Controller {
 
         this.options = Object.assign({
             editors: [
-                require("./editors/oneofeditor")
-            ]
-            .concat(plugin.getEditors())
-            .concat([
+                require("./editors/oneofeditor"),
+                ...plugin.getEditors(),
                 require("./editors/arrayeditor"),
                 require("./editors/objecteditor"),
                 require("./editors/valueeditor")
-            ])
+            ]
         }, options);
 
         this.editors = this.options.editors;

@@ -9,8 +9,8 @@ module.exports = {
     },
 
     validator: function (keyword, value, validator) {
-        validators.push([keyword, value, validator]);
         console.log(`register validator ${keyword}:${value}`);
+        validators.push([keyword, value, validator]);
     },
 
     getEditors: () => editors,
