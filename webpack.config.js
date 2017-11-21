@@ -34,7 +34,11 @@ const editronCoreModulesConfig = {
         alias: {
             mitt: path.resolve("./node_modules/mitt/dist/mitt.js"),
             "medium-editor-styles": path.resolve("./node_modules/medium-editor/dist/css/medium-editor.min.css"),
-            "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css")
+            "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css"),
+            // ensure dependencies are unique (not bundled multiple times)
+            "json-schema-library": path.resolve("./node_modules/json-schema-library"),
+            "gson-pointer": path.resolve("./node_modules/gson-pointer"),
+            "mithril-material-forms": path.resolve("./node_modules/mithril-material-forms")
         }
     },
 
@@ -100,7 +104,6 @@ const editronCoreModulesConfig = {
         new webpack.DefinePlugin({ DEBUG: !PRODUCTION }),
         new webpack.DllPlugin({
             name: "editronModules",
-            context: __dirname,
             path: path.join(__dirname, TARGET_FOLDER, "manifest.json")
         })
     ].concat(PRODUCTION ? [

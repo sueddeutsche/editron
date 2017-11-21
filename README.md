@@ -29,9 +29,9 @@ This is the base for building a complete [editron](https://github.com/sueddeutsc
 - add custom editors (aka widgets)
     - basically independent of any frameworks ([mithriljs](https://mithril.js.org/) is used internally)
     - access to all methods
-    - some important implementation details are required, but therefore offer the most flexibility
+    - very flexible editors (requiring some knowledge of implementation details)
     - build-helpers and integration tests
-    - independent builds, enabling new editors through a simple include-script
+    - independent builds, which enables simple plug&edit through an include-script
 
 
 ## Installation
@@ -90,8 +90,7 @@ for details on the services checkout [json-schema-services](https://github.com/s
 
 
 ```js
-const editronCore = require("editron-core");
-const Controller = editronCore.Controller;
+const Controller = require("editron-core").Controller;
 
 // follow usage explanation above
 ```
