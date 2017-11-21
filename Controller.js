@@ -99,9 +99,6 @@ class Controller {
             throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
         }
 
-        // ensure valid pointer
-        pointer = gp.join(pointer);
-
         // merge schema["editron:ui"] object with options. options precede
         const instanceOptions = Object.assign(
             { id: getID(pointer), pointer },
@@ -116,7 +113,7 @@ class Controller {
         }
 
         if (Editor === undefined) {
-            // console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
+            console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
             return undefined;
         }
 

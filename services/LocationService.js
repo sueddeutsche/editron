@@ -30,8 +30,8 @@ const LocationService = {
 
     // update page and target pointer
     goto(targetPointer) {
-        const path = gp.toArray(targetPointer);
-        targetPointer = gp.join(targetPointer);
+        const path = gp.split(targetPointer);
+        // targetPointer = gp.join(targetPointer);
         if (path.length === 0) {
             return;
         }
