@@ -47,7 +47,7 @@ class ArrayItemEditor {
     }
 
     updatePointer(newPointer) {
-        this.parentPointer = gp.join(newPointer, "..");
+        this.parentPointer = gp.join(newPointer, "..", true);
         this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
         this.viewModel.pointer = newPointer;
         this.viewModel.length = this.controller.data().get(this.parentPointer).length;

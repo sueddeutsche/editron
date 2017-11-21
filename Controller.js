@@ -13,6 +13,16 @@ const UISchema = require("./utils/UISchema");
 const getID = require("./utils/getID");
 const plugin = require("./plugin");
 
+function isValidPointer(pointer) {
+    return pointer[0] === "#";
+}
+
+function assertValidPointer(pointer) {
+    if (isValidPointer(pointer) === false) {
+        throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
+    }
+}
+
 
 // removes the editor from the instances-inventory of active editors
 function removeEditorFrom(instances, editor) {
@@ -99,6 +109,8 @@ class Controller {
             throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
         }
 
+        assertValidPointer(pointer);
+
         // merge schema["editron:ui"] object with options. options precede
         const instanceOptions = Object.assign(
             { id: getID(pointer), pointer },
@@ -154,7 +166,7 @@ class Controller {
      */
     addItemTo(pointer, index = 0) {
         addItem(this.data(), this.schema(), pointer, index);
-        LocationService.goto(gp.join(pointer, index));
+        LocationService.goto(gp.join(pointer, index, true));
     }
 
 
