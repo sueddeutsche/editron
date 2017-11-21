@@ -27,7 +27,6 @@ atlassian-ide-plugin.xml
 doc-build/
 /build/
 /channels/
-manifest.json
 
 /test/visual/**/diff.png
 *-test-results.xml
