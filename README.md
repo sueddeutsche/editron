@@ -9,6 +9,8 @@
 
 This is the base for building a complete [editron](https://github.com/sueddeutsche/editron) json-editor. Its Controller may be used to setup one or many input-forms, based on nested editors for each input-data. The core and the main app are still under development and the api has not yet settled. Still, it is flawlessly used in production for a CMS at the Süddeutsche Digitale Medien GmbH.
 
+<img alt="Editron Application - Simple Demo" src="examples/screenshot-simpledemo.png">
+
 
 ## Features
 
@@ -19,6 +21,7 @@ This is the base for building a complete [editron](https://github.com/sueddeutsc
     - _editron-script-editor_
     - _editron-overview-navigation_
 - inline-validation
+- undo/redo
 - display only a specific data pointer or switch them, using [json-pointer-syntax](https://github.com/sagold/gson-pointer)
 - collaborative editing using _editron-sync-service_
 - optional styles, supporting custom styling
