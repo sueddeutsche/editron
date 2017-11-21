@@ -47,7 +47,7 @@
     "registry": "https://registry.npmjs.org"
   },
   "dependencies": {
-    "gson-pointer": "^3.4.0",
+    "gson-pointer": "3.x",
     "json-data-services": "^3.0.6",
     "json-schema-library": "^3.3.1",
     "mithril": "1.x",
