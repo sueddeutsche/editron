@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "gson-pointer": "3.x",
-    "json-data-services": "^3.0.6",
+    "json-data-services": "^3.0.7",
     "json-schema-library": "^3.3.1",
     "mithril": "1.x",
     "mithril-material-forms": "^2.3.4",
