@@ -7,10 +7,7 @@
 > This is the core of the editron editor. It may be used to build a custom application (instead of using the default
 > [editron](https://github.com/sueddeutsche/editron) application).
 
-Core repository of [editron](https://github.com/sueddeutsche/editron) json-editor. Its Controller may be used to setup
-one or many input-forms, based on nested editors for each input-data. The core and the main app are still under
-development and the api has not yet settled. Still, it is flawlessly used in production for a CMS at the Süddeutsche
-Digitale Medien GmbH.
+This is the base for building a complete [editron](https://github.com/sueddeutsche/editron) json-editor. Its Controller may be used to setup one or many input-forms, based on nested editors for each input-data. The core and the main app are still under development and the api has not yet settled. Still, it is flawlessly used in production for a CMS at the Süddeutsche Digitale Medien GmbH.
 
 
 ## Features
@@ -57,23 +54,20 @@ And add the editron-core modules and their export (paths depend on your build-se
 
 ## Usage
 
-`editron-core.js` exposes a global object `editronCore` to the window object, which may be accessed to retrieve the
-main Controller, which is the basis of an editron-editor:
+`editron-core.js` exposes a global object `editronCore` to the window object, which may be accessed to retrieve the main Controller, which is the basis of an editron-editor:
 
 ```js
-    // fetch the main controller
-    const Controller = editronCore.Controller;
     // and create a new editor instance (referencing a unique json-schema and data)
-    const editor = new Controller(myJsonSchema, myJsonData);
+    const controller = new editronCore.Controller(myJsonSchema, myJsonData);
     // create the editor within the selected DOM-Element
-    const main = editor.createEditor("#", document.querySelector("#editor"));
+    const main = controller.createEditor("#", document.querySelector("#editor"));
 
     // create another form for the data-point at { header: ... }
-    const header = editor.createEditor("#/header", document.querySelector("#editor-header"));
+    const header = controller.createEditor("#/header", document.querySelector("#editor-header"));
 
-    // send notification when data has changed
-    editor.data().observe("#", (event) => {
-        console.log("data has changed to", editor.data().get());
+    // receive a notification when the data has changed
+    controller.data().observe("#", (event) => {
+        console.log("data has changed to", controller.data().get());
     });
 
     // access services for further functionality
@@ -82,7 +76,7 @@ main Controller, which is the basis of an editron-editor:
     const validationService = editor.validator();
 ```
 
-for details on services checkout [json-schema-services](https://github.com/sueddeutsche/json-data-services)
+for details on the services checkout [json-schema-services](https://github.com/sueddeutsche/json-data-services)
 
 
 ## Build your own application using webpack
