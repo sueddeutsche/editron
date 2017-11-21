@@ -30,18 +30,18 @@ const LocationService = {
 
     // update page and target pointer
     goto(targetPointer) {
-        const path = gp.toArray(targetPointer);
-        targetPointer = gp.join(targetPointer);
-        if (path.length === 0) {
+        const path = gp.split(targetPointer);
+
+        if (path.length === 0 || (path.length === 1 && path[0] === "")) {
             return;
         }
 
         const nextPage = path[0];
         const currentPage = UIState.getCurrentPage();
         if (currentPage !== nextPage) {
-            UIState.setCurrentPage(nextPage);
+            UIState.setCurrentPage(gp.join(nextPage, true));
         }
-        UIState.setCurrentPointer(targetPointer);
+        UIState.setCurrentPointer(gp.join(targetPointer, true));
         this.focus();
     },
 
