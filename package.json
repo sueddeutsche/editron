@@ -1,6 +1,6 @@
 {
   "name": "editron-core",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Editron - json-editor core functionality",
   "main": "editron-core.js",
   "scripts": {
@@ -15,8 +15,8 @@
     "test"
   ],
   "keywords": [],
-  "author": "Sascha Goldhofer <noreply@saschagoldhofer.de> (https://github.com/sagold/)",
-  "license": "ISC",
+  "author": "Sacha Goldhofer <noreply@saschagoldhofer.de> (https://github.com/sagold/)",
+  "license": "MIT",
   "devDependencies": {
     "ava": "^0.22.0",
     "babel-core": "^6.26.0",
