@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rm -rf build; webpack; webpack --config webpack.build.js",
     "dist": "rm -rf dist; NODE_ENV=production webpack; NODE_ENV=production webpack --config webpack.build.js",
+    "watch": "watch 'npm run dist' editors components sass services utils",
     "release": "npm run dist",
     "prepublishOnly": "npm run release",
     "test": "ava",
@@ -39,6 +40,7 @@
     "style-loader": "^0.18.2",
     "uglifyjs-webpack-plugin": "^0.4.3",
     "url-loader": "^0.5.7",
+    "watch": "^1.0.2",
     "webpack": "^3.5.5",
     "webpack-bundle-size-analyzer": "^2.6.0",
     "webpack-dev-server": "^2.7.1"
