@@ -12,7 +12,8 @@ const editronCoreModulesConfig = {
         path.resolve("./node_modules/json-data-services"),
         path.resolve("./node_modules/json-schema-library"),
         path.resolve("./node_modules/gson-pointer"),
-        path.resolve("./node_modules/mitt")
+        path.resolve("./node_modules/mitt"),
+        path.resolve("./node_modules/jsondiffpatch/src/diffpatcher")
     ],
     output: {
         filename: "editron-modules.js",

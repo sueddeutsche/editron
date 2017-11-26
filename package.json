@@ -54,7 +54,8 @@
     "json-schema-library": "^3.3.1",
     "mithril": "1.x",
     "mithril-material-forms": "^2.3.4",
-    "mitt": "^1.1.2"
+    "mitt": "^1.1.2",
+    "jsondiffpatch": "^0.2.4"
   },
   "ava": {
     "files": [
