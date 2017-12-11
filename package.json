@@ -1,6 +1,6 @@
 {
   "name": "editron-core",
-  "version": "5.0.3",
+  "version": "5.1.0",
   "description": "Editron - json-editor core functionality",
   "main": "editron-core.js",
   "scripts": {
@@ -57,7 +57,7 @@
     "json-data-services": "^3.0.7",
     "json-schema-library": "^3.3.1",
     "mithril": "1.x",
-    "mithril-material-forms": "^2.3.4",
+    "mithril-material-forms": "^2.3.5",
     "mitt": "^1.1.2"
   },
   "ava": {
