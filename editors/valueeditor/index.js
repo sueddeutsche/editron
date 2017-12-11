@@ -16,8 +16,6 @@ class ValueEditor extends AbstractValueEditor {
     }
 
     render() {
-        // @fixme DOES NOT RERENDER
-        // m.render(this.$element, m("i"));
         m.render(this.$element, m(View, this.viewModel));
     }
 }

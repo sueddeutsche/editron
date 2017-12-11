@@ -1,11 +1,12 @@
 {
   "name": "editron-core",
-  "version": "5.0.3",
+  "version": "5.1.0",
   "description": "Editron - json-editor core functionality",
   "main": "editron-core.js",
   "scripts": {
     "build": "rm -rf build; webpack; webpack --config webpack.build.js",
     "dist": "rm -rf dist; NODE_ENV=production webpack; NODE_ENV=production webpack --config webpack.build.js",
+    "watch": "watch 'npm run dist' editors components sass services utils",
     "release": "npm run dist",
     "prepublishOnly": "npm run release",
     "test": "ava",
@@ -39,6 +40,7 @@
     "style-loader": "^0.18.2",
     "uglifyjs-webpack-plugin": "^0.4.3",
     "url-loader": "^0.5.7",
+    "watch": "^1.0.2",
     "webpack": "^3.5.5",
     "webpack-bundle-size-analyzer": "^2.6.0",
     "webpack-dev-server": "^2.7.1"
@@ -46,12 +48,16 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
+  "peerDependencies": {
+    "jsondiffpatch": "^0.2.4",
+    "diff_match_patch": "^0.1.1"
+  },
   "dependencies": {
     "gson-pointer": "3.x",
     "json-data-services": "^3.0.7",
     "json-schema-library": "^3.3.1",
     "mithril": "1.x",
-    "mithril-material-forms": "^2.3.4",
+    "mithril-material-forms": "^2.3.5",
     "mitt": "^1.1.2"
   },
   "ava": {
