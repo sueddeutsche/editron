@@ -16,6 +16,9 @@
 
         .editron-container__header {
             opacity: $mmf-opacity--primary;
+            // ensure mmf-cards are not clipped by header
+            border-top-left-radius: $mmf-radius;
+            border-top-right-radius: $mmf-radius;
 
             h2 {
                 color: $mmf-color--dark;
