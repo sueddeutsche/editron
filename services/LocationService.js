@@ -79,8 +79,9 @@ const LocationService = {
                 scrollTarget.scrollIntoView();
             }
 
+            // @todo only fire focus event?
+            targetElement.dispatchEvent(new Event("focus"));
             targetElement.focus && targetElement.focus();
-            // console.log(`Location:focus - scroll to and focus element:`, targetElement);
 
         }, DELAY);
     },
