@@ -25,11 +25,11 @@ button.mmf-button {
   button.mmf-button::-moz-focus-inner, button.mmf-button::-moz-focus-inner {
     border: 0;
     padding: 0; }
-  button.mmf-button.is-enabled:hover {
+  button.mmf-button.is-enabled:hover, button.mmf-button.is-enabled:focus {
     background-color: #ECEFF1; }
   button.mmf-button.is-disabled {
     color: rgba(0, 200, 83, 0.38); }
-    button.mmf-button.is-disabled:hover {
+    button.mmf-button.is-disabled:focus, button.mmf-button.is-disabled:hover {
       background-color: inherit;
       color: rgba(0, 200, 83, 0.38);
       cursor: default; }
@@ -39,12 +39,12 @@ button.mmf-button--raised {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   color: #ECEFF1;
   background-color: #00c853; }
-  button.mmf-button--raised.is-enabled:hover {
+  button.mmf-button--raised.is-enabled:hover, button.mmf-button--raised.is-enabled:focus {
     background-color: #00953e; }
   button.mmf-button--raised.is-disabled {
     color: rgba(236, 239, 241, 0.38);
     background-color: rgba(0, 200, 83, 0.38); }
-    button.mmf-button--raised.is-disabled:hover {
+    button.mmf-button--raised.is-disabled:hover, button.mmf-button--raised.is-disabled:focus {
       background-color: rgba(0, 200, 83, 0.38);
       cursor: default; }
 
@@ -249,7 +249,7 @@ input.mmf-checkbox {
     left: 50%;
     transform: translate(-50%, -50%);
     transition: color 0.25s linear; }
-  input.mmf-checkbox:hover:after {
+  input.mmf-checkbox:focus:after, input.mmf-checkbox:hover:after {
     color: #00c853; }
 
 .mmf-form--checkbox label {
@@ -712,7 +712,9 @@ ul.mmf-form__errors {
   margin-bottom: 48px;
   background-color: #ECEFF1; }
   .mmf-card .editron-container__header {
-    opacity: 0.87; }
+    opacity: 0.87;
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px; }
     .mmf-card .editron-container__header h2 {
       color: #000; }
   .mmf-card .editron-container__title .mmf-icon:hover {
