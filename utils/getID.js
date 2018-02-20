@@ -6,5 +6,5 @@
  * @return {String} unique id
  */
 module.exports = function getID(pointer) {
-    return `${pointer.replace(/(^[#/]*|\/+$)/, "")}`.replace(/\/+/, ".");
+    return `${pointer.replace(/(^[#/]*|\/+$)/, "")}`.replace(/\/+/g, ".");
 };
