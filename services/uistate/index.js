@@ -34,7 +34,7 @@ class UIState {
     }
 
     setOverlay(content = false) {
-        const currentContent = this.state.get(this.id).overlay;
+        const currentContent = this.get("overlay");
         if (currentContent !== content) {
             this.state.dispatch(ActionCreators.setOverlay(content));
             this.emitter.emit(EVENTS.OVERLAY_EVENT, this.get("overlay"));
@@ -45,7 +45,7 @@ class UIState {
     off(...args) { this.emitter.off(...args); }
 
     setCurrentPage(pointer) {
-        const currentPage = this.state.get(this.id).currentPage;
+        const currentPage = this.get("currentPage");
         if (currentPage !== pointer) {
             this.state.dispatch(ActionCreators.setCurrentPage(pointer));
             this.emitter.emit(EVENTS.CURRENT_PAGE_EVENT, this.get("currentPage"));
@@ -53,7 +53,7 @@ class UIState {
     }
 
     setCurrentPointer(pointer) {
-        const currentPointer = this.state.get(this.id).currentPointer;
+        const currentPointer = this.get("currentPointer");
         if (currentPointer !== pointer) {
             this.state.dispatch(ActionCreators.setCurrentPointer(pointer));
             this.emitter.emit(EVENTS.CURRENT_POINTER_EVENT, this.get("currentPointer"));
