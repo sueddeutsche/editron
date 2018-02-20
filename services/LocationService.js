@@ -61,24 +61,26 @@ const LocationService = {
     focus() {
         clearTimeout(this.timeout);
         const pointer = UIState.getCurrentPointer();
-        let targetElement = document.getElementById(pointer);
+        const id = getId(pointer);
+        const targetElement = document.getElementById(id);
+        // console.log(`pointer ${pointer} - id ${id}`, targetElement);
         if (targetElement == null) {
-            targetElement = document.getElementById(getId(pointer));
-        }
-        if (targetElement == null) {
+            console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
             return;
         }
         // const targetPosition = targetElement.getBoundingClientRect().top
         this.timeout = setTimeout(() => {
-            // console.log("focus element", pointer, targetElement);
-            // const newTargetPosition = targetElement.getBoundingClientRect();
-            targetElement.focus && targetElement.focus();
-
-            if (targetElement.scrollIntoViewIfNeeded) {
-                targetElement.scrollIntoViewIfNeeded();
+            // try scrolling to header-row in container (low height) to have a more robust scroll target position
+            let scrollTarget = targetElement.querySelector(".editron-container > .editron-container__header");
+            scrollTarget = (scrollTarget == null) ? targetElement : scrollTarget;
+            if (scrollTarget.scrollIntoViewIfNeeded) {
+                scrollTarget.scrollIntoViewIfNeeded();
             } else {
-                targetElement.scrollIntoView();
+                scrollTarget.scrollIntoView();
             }
+
+            targetElement.focus && targetElement.focus();
+            // console.log(`Location:focus - scroll to and focus element:`, targetElement);
 
         }, DELAY);
     },
