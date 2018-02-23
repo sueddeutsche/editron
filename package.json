@@ -1,6 +1,6 @@
 {
   "name": "editron-core",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "Editron - json-editor core functionality",
   "main": "editron-core.js",
   "scripts": {
