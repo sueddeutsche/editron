@@ -79,7 +79,7 @@ class AbstractValueEditor {
         this.$element = controller.createElement(
             `.editron-value.editron-value--${options.editorValueType}`,
             Object.assign({
-                name: `editor-${pointer}`
+                name: getId(pointer)
             }, options.attrs)
         );
 
