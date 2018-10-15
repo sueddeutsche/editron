@@ -30,7 +30,6 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
             modules: [".", "node_modules"],
             alias: {
                 "mithril-material-forms": "editron-core/node_modules/mithril-material-forms",
-                "json-data-services": "editron-core/node_modules/json-data-services",
                 "json-schema-library": "editron-core/node_modules/json-schema-library",
                 "gson-pointer": "editron-core/node_modules/gson-pointer",
                 mitt: "editron-core/node_modules/mitt"

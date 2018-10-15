@@ -26,6 +26,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-es2015": "^6.24.1",
     "browser-env": "^3.2.0",
+    "chalk": "^1.1.3",
     "css-loader": "^0.28.7",
     "eslint": "^3.19.0",
     "eslint-plugin-promise": "^3.5.0",
@@ -34,13 +35,14 @@
     "html-loader": "^0.5.1",
     "json-loader": "^0.5.4",
     "node-sass": "^4.5.0",
+    "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1",
     "sass-loader": "^6.0.6",
     "sinon": "^3.2.1",
     "style-loader": "^0.18.2",
     "uglifyjs-webpack-plugin": "^0.4.3",
     "url-loader": "^0.5.7",
-    "watch": "^1.0.2",
+    "watch": "1.x",
     "webpack": "^3.5.5",
     "webpack-bundle-size-analyzer": "^2.6.0",
     "webpack-dev-server": "^2.7.1"
@@ -53,12 +55,16 @@
     "diff_match_patch": "^0.1.1"
   },
   "dependencies": {
+    "diff_match_patch": "^0.1.1",
     "gson-pointer": "3.x",
-    "json-data-services": "^3.0.7",
-    "json-schema-library": "^3.3.2",
+    "json-schema-library": "3.x",
+    "jsondiffpatch": "^0.2.4",
     "mithril": "1.x",
-    "mithril-material-forms": "^2.4.0",
-    "mitt": "^1.1.2"
+    "mithril-material-forms": "2.x",
+    "mitt": "1.x",
+    "redux": "^3.6.0",
+    "redux-undo": "^0.6.1",
+    "with-observable": "^1.2.0"
   },
   "ava": {
     "files": [

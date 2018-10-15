@@ -9,7 +9,6 @@ const editronCoreModulesConfig = {
         path.join(__dirname, "editron-core.js"),
         path.join(__dirname, "editron-core.scss"),
         path.resolve("./node_modules/mithril-material-forms"),
-        path.resolve("./node_modules/json-data-services"),
         path.resolve("./node_modules/json-schema-library"),
         path.resolve("./node_modules/gson-pointer"),
         path.resolve("./node_modules/mitt"),

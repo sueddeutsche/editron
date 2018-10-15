@@ -4,7 +4,7 @@ const test = require("ava").test;
 const sinon = require("sinon");
 const gp = require("gson-pointer");
 
-const ValidationService = require("json-data-services/lib/ValidationService");
+const ValidationService = require("../../services/ValidationService");
 const Controller = require("../../Controller");
 
 

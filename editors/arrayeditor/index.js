@@ -1,6 +1,6 @@
 const m = require("mithril");
 const ArrayItemEditor = require("./ArrayItemEditor");
-const diffpatch = require("json-data-services/lib/utils/diffpatch");
+const diffpatch = require("../../services/utils/diffpatch");
 const View = require("../../components/container");
 
 
