@@ -8,7 +8,7 @@ button.mmf-button {
   cursor: pointer;
   pointer-events: all;
   outline: none !important;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   user-select: none;
   font-family: "Roboto";
   font-weight: 400;
@@ -52,7 +52,7 @@ button.mmf-button--raised {
   cursor: pointer;
   pointer-events: all;
   outline: none !important;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   user-select: none;
   /* copy of styles set by .material-icons */
   font-family: 'Material Icons';
@@ -123,12 +123,12 @@ select.mmf-select {
   background: transparent;
   transform: translateZ(0);
   outline: none;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   transition: border-color 0.25s linear;
   font-size: inherit;
   cursor: pointer;
   outline: none;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   padding-top: 4px;
   padding-right: 28px;
   background-color: inherit; }
@@ -173,7 +173,7 @@ input.mmf-input {
   background: transparent;
   transform: translateZ(0);
   outline: none;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   transition: border-color 0.25s linear; }
   input.mmf-input:focus {
     border-color: #00c853; }
@@ -192,7 +192,7 @@ input.mmf-checkbox {
   cursor: pointer;
   pointer-events: all;
   outline: none !important;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   user-select: none;
   color: rgba(0, 0, 0, 0.87);
   border: none;
@@ -204,7 +204,7 @@ input.mmf-checkbox {
   background: transparent;
   transform: translateZ(0);
   outline: none;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   transition: border-color 0.25s linear;
   position: relative;
   display: inline-block;
@@ -225,7 +225,7 @@ input.mmf-checkbox {
     cursor: pointer;
     pointer-events: all;
     outline: none !important;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     user-select: none;
     /* copy of styles set by .material-icons */
     font-family: 'Material Icons';
@@ -276,7 +276,10 @@ input.mmf-checkbox {
   transition: all 0.2s ease-in-out;
   color: #000;
   opacity: 0.54;
-  font-size: 0.8em; }
+  font-size: 0.8em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; }
 
 .mmf-form--input.hasFocus label.mmf-label {
   color: #81c784;
@@ -318,7 +321,7 @@ textarea.mmf-textarea {
   background: transparent;
   transform: translateZ(0);
   outline: none;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   transition: border-color 0.25s linear;
   width: 100%;
   margin: 1.1em 0 0 0;
@@ -345,7 +348,10 @@ textarea.mmf-textarea {
   transition: all 0.2s ease-in-out;
   color: #000;
   opacity: 0.54;
-  font-size: 0.8em; }
+  font-size: 0.8em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden; }
 
 .mmf-form--textarea.hasFocus label.mmf-label {
   color: #81c784;
@@ -378,7 +384,7 @@ textarea.mmf-textarea {
   line-height: 1.4em;
   background: transparent;
   outline: none;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
   .mmf-form--textarea textarea:focus {
     border-color: #81c784; }
 
@@ -459,7 +465,7 @@ ul.mmf-form__errors {
   cursor: pointer;
   pointer-events: all;
   outline: none !important;
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   user-select: none;
   text-align: center; }
   .editron-container__child .editron-container__button--add .mmf-icon {

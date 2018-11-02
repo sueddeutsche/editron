@@ -1,10 +1,11 @@
 {
   "name": "editron-core",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "description": "Editron - json-editor core functionality",
   "main": "editron-core.js",
   "scripts": {
     "build": "rm -rf build; webpack; webpack --config webpack.build.js",
+    "build:watch": "watch 'npm run build' editors components sass services utils",
     "dist": "rm -rf dist; NODE_ENV=production webpack; NODE_ENV=production webpack --config webpack.build.js",
     "watch": "watch 'npm run dist' editors components sass services utils",
     "release": "npm run dist",
@@ -57,7 +58,7 @@
     "json-data-services": "^3.0.7",
     "json-schema-library": "^3.3.2",
     "mithril": "1.x",
-    "mithril-material-forms": "^2.4.0",
+    "mithril-material-forms": "^2.5.1",
     "mitt": "^1.1.2"
   },
   "ava": {
