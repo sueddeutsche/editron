@@ -94,3 +94,52 @@ const Controller = require("editron-core").Controller;
 
 // follow usage explanation above
 ```
+
+
+## Translate error messages
+
+> As long as no api is exposed, use the following construct to add (error) message translations
+
+```js
+import { Controller } from "editron-core";
+import i18n from "editron-core/utils/i18n";
+import german from "./languageGerman";
+Object.assign(i18n.translateError.strings, german.errors);
+Object.assign(i18n.translate.strings, german.strings);
+
+// ... on initialization
+const controller = new Controller(schema, data);
+controller.validator()
+    .setErrorHandler(error => i18n.translateError(controller, error));
+```
+
+where the file `languageGerman.js` contains something like:
+
+```js
+    import render from "json-schema-library/lib/utils/render";
+
+    export default {
+        strings: {
+            "editor:mediaimage:metadata": "Bildgröße: {{width}}x{{height}} [{{size}}]",
+            "editor:wysiwyg:edithtml:tooltip": "HTML Quellcode bearbeiten",
+            "toolbar:errors:tooltip": "Schnellansicht aller Fehler",
+            "toolbar:undo:tooltip": "Undo. Letzte Änderung rückgängig machen",
+            "toolbar:redo:tooltip": "Redo. Letzte Änderung wiederherstellen",
+            "toolbar:description:tooltip": "Beschreibungstexte ein oder ausblenden"
+        },
+        errors: {
+            "format-url-error": "Die angegebene Wert `{{value}}` ist keine gültige url",
+            "maximum-error": "Die Zahl darf nicht größer als {{maximum}} sein.",
+            "max-length-error": "Die Eingabe ist zu lang: {{length}} von {{maxLength}} erlaubten Zeichen.",
+            "minimum-error": "Die Zahl muss größer oder gleich {{minimum}} sein",
+            "min-items-error": "Es müssen mindestens {{minLength}} Elemente vorhanden sein",
+            "min-length-error": (controller, error) => {
+                if (error.data.minLength === 1) {
+                    return "Es wird eine Eingabe benötigt";
+                }
+                return render("Der Text muss eine Mindestlänge von {{minLength}} haben (aktuell {{length}}).", error.data);
+            }
+        }
+    };
+```
+
