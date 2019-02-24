@@ -65,7 +65,7 @@ const LocationService = {
         const targetElement = document.getElementById(id);
         // console.log(`pointer ${pointer} - id ${id}`, targetElement);
         if (targetElement == null) {
-            console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
+            // console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
             return;
         }
         // const targetPosition = targetElement.getBoundingClientRect().top

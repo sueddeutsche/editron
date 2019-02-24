@@ -37,3 +37,4 @@ doc-build/
 app/assets/videos
 assetdata
 debug.html
+/yarn.lock
