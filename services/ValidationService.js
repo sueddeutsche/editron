@@ -13,7 +13,13 @@ const EVENTS = {
     ON_ERROR: "onError"
 };
 
-
+/**
+ * @class  ValidationService
+ *
+ * @param {Object|Array} data       - application json data
+ * @param {Object} schema           - json-schema describing data
+ * @param {Function} [errorHandler] - optional callback to modify errors
+ */
 class Validation {
 
     constructor(data, schema, errorHandler) {

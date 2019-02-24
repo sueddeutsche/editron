@@ -9,6 +9,7 @@ function getTypeClass(schema) {
  * the tedious and redundant controller/serivce/pointer bootstraping.
  *
  * Still required is
+ *
  *      1. a custom `static editorOf(p, c, o)`-method, to register on a schema
  *      2. an `update(patch)`-method to respond to changes of the data at _pointer_
  *      3. a custom `updatePointer(newPointer)`-method to respond to changes in the location of the editor. Most of
@@ -18,12 +19,17 @@ function getTypeClass(schema) {
  * and optionally an `updateErrors(errors)`-method to handle new (or removed) errors.
  *
  * Convenience methods are
+ *
  *      - `getData()` to fetch the associated data of the current _pointer_
  *      - `setData(newValue)` to update the associated data of the current _pointer_
  *      - `getSchema()` returning the json-schema of the current _pointer_
  *      - `getErrors()` returning a list of current errors
  *      - `toElement()` gives you the root dom-node for this editor (aka render target)
  *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
+ *
+ * @param {String} pointer          - pointer referencing the current data and schema
+ * @param {Controller} controller   - editron controller instance
+ * @param {Object} options          - resolved options object
  */
 class AbstractEditor {
 
@@ -36,10 +42,18 @@ class AbstractEditor {
         this.controller = controller;
         this.options = options;
         this.errors = [];
-        this.dom = this.controller.createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`);
-        this.update = controller.data().observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
-        this._addError = controller.validator().observe(pointer, this._addError.bind(this), options.notifyNestedErrors === true);
-        this._clearErrors = controller.validator().on("beforeValidation", this._clearErrors.bind(this));
+
+        this.dom = this.controller
+            .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
+
+        this.update = controller.data()
+            .observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
+
+        this._addError = controller.validator()
+            .observe(pointer, this._addError.bind(this), options.notifyNestedErrors === true);
+
+        this._clearErrors = controller.validator()
+            .on("beforeValidation", this._clearErrors.bind(this));
     }
 
     update() {

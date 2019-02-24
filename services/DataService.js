@@ -19,6 +19,9 @@ const EVENTS = {
 };
 
 
+/**
+ * @class  DataService
+ */
 class DataService {
 
     constructor(state, data) {

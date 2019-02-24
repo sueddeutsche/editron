@@ -169,16 +169,22 @@ class Controller {
         LocationService.goto(gp.join(pointer, index, true));
     }
 
-
-    // expose main services
-
+    /**
+     * @return {DataService} DataService instance
+     */
     data() { return this.dataService; }
+
+    /**
+     * @return {SchemaService} SchemaService instance
+     */
     schema() { return this.schemaService; }
+
+    /**
+     * @return {ValidationService} ValidationService instance
+     */
     validator() { return this.validationService; }
 
     /**
-     * returns LocationService
-     *
      * ## Usage
      *  goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
      *  setCurrent(pointer) - Update current pointer, but do not jump to target
