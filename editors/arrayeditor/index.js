@@ -28,7 +28,7 @@ class ArrayEditor {
         this.viewModel = Object.assign({
             pointer,
             attrs: {},
-            errors: [],
+            errors: controller.validator().getErrorsAndWarnings(pointer),
             onadd: this.onAdd,
             length: data.length,
             maxItems: schema.maxItems || Infinity,

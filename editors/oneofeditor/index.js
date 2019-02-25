@@ -30,7 +30,6 @@ class OneOfEditor {
         this.viewModel = {
             id: getId(pointer),
             pointer,
-            errors: [],
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
             onchange: (oneOfIndex) => {
                 this.changeChild(schema.oneOf[oneOfIndex]);
@@ -42,8 +41,7 @@ class OneOfEditor {
 
         // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
         this.update = controller.data().observe(pointer, this.update.bind(this), true);
-        // this.addError = controller.validator().observe(pointer, this.addError.bind(this));
-        // this.clearErrors = controller.validator().on("beforeValidation", this.clearErrors.bind(this));
+
         this.render();
         this.$childContainer = this.$element.querySelector(View.childContainerSelector);
         this.rebuild();

@@ -91,7 +91,7 @@ class AbstractValueEditor {
             description: options.description,
             value: controller.data().get(pointer),
             schema,
-            errors: [],
+            errors: controller.validator().getErrorsAndWarnings(pointer),
             onfocus: () => controller.location().setCurrent(pointer),
             onblur: () => controller.location().blur(pointer),
             onchange: (value) => {

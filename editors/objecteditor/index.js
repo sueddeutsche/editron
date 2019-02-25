@@ -46,6 +46,11 @@ class ObjectEditor {
         this.addError = controller.validator().observe(pointer, this.addError.bind(this));
         this.clearErrors = controller.validator().on("beforeValidation", this.clearErrors.bind(this));
 
+        controller
+            .validator()
+            .getErrorsAndWarnings(pointer)
+            .forEach((error) => this.addError(error));
+
         this.render();
         this.$children = this.$element.querySelector(View.childContainerSelector);
         this.rebuildChildren();
