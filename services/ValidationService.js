@@ -3,8 +3,8 @@ const Core = require("json-schema-library").cores.JsonEditor;
 const State = require("./State");
 const ActionCreators = require("./reducers/actions").ActionCreators;
 const errorReducer = require("./reducers/errorReducer");
-const splitPointer = require("./utils/splitPointer");
 const Validation = require("./utils/Validation");
+const BubblingCollectionObservable = require("./utils/BubblingCollectionObservable");
 
 
 const EVENTS = {
@@ -26,7 +26,7 @@ class ValidationService {
 
         this.core = core;
         this.set(schema);
-        this.observers = {};
+        this.observer = new BubblingCollectionObservable();
         this.emitter = mitt();
         this.id = "errors";
         this.state = state;
@@ -52,6 +52,7 @@ class ValidationService {
         }
 
         this.emit(EVENTS.BEFORE_VALIDATION);
+        this.observer.reset();
         this.state.dispatch(ActionCreators.setErrors([]));
         this.currentValidation = new Validation(data, schema, this.errorHandler);
 
@@ -59,7 +60,7 @@ class ValidationService {
             this.core,
             (newError, currentErrors) => {
                 this.state.dispatch(ActionCreators.setErrors(currentErrors));
-                this.bubbleObservers(newError.data.pointer, newError);
+                this.observer.notify(newError.data.pointer, newError);
                 this.emit(EVENTS.ON_ERROR, newError);
             },
             (validationErrors) => {
@@ -96,28 +97,16 @@ class ValidationService {
     }
 
     observe(pointer, callback, bubbledEvents = false) {
-        callback.bubbledEvents = bubbledEvents;
-        this.observers[pointer] = this.observers[pointer] || [];
-        this.observers[pointer].push(callback);
+        this.observer.observe(pointer, callback, bubbledEvents);
         return callback;
     }
 
     removeObserver(pointer, callback) {
-        if (this.observers[pointer] && this.observers[pointer].length > 0) {
-            this.observers[pointer] = this.observers[pointer].filter((cb) => cb !== callback);
-        }
+        this.observer.removeObserver(pointer, callback);
     }
 
     notify(pointer, event = {}) {
-        if (this.observers[pointer] == null || this.observers[pointer].length === 0) {
-            return;
-        }
-        const observers = this.observers[pointer];
-        for (let i = 0, l = observers.length; i < l; i += 1) {
-            if (observers[i].bubbledEvents === true || event.data.pointer === pointer) {
-                observers[i](event);
-            }
-        }
+        this.observer.notify(pointer, event);
     }
 
     getErrorsAndWarnings(pointer = undefined, withChildErrors = false) {
@@ -138,18 +127,10 @@ class ValidationService {
         return this.getErrorsAndWarnings(pointer, withChildWarnings).filter((error) => error.severity === "warning");
     }
 
-    bubbleObservers(pointer, error) {
-        const frags = splitPointer(pointer);
-        while (frags.length) {
-            this.notify(`#/${frags.join("/")}`, error);
-            frags.length -= 1;
-        }
-        this.notify("#", error);
-    }
-
     destroy() {
         this.set(null);
         this.emitter = null;
+        this.observer = null;
         this.state.unregister(this.id, errorReducer);
     }
 }

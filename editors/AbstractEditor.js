@@ -48,11 +48,8 @@ class AbstractEditor {
         this.update = controller.data()
             .observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
 
-        this._addError = controller.validator()
-            .observe(pointer, this._addError.bind(this), options.notifyNestedErrors === true);
-
-        this._clearErrors = controller.validator()
-            .on("beforeValidation", this._clearErrors.bind(this));
+        this.setErrors = controller.validator()
+            .observe(pointer, this.setErrors.bind(this), options.notifyNestedErrors === true);
 
         this.errors = this.controller.validator()
             .getErrorsAndWarnings(pointer);
@@ -116,22 +113,11 @@ class AbstractEditor {
         this.dom.parentNode && this.dom.parentNode.removeChild(this.dom);
     }
 
-    _notifyErrors() {
+    setErrors(errors) {
+        this.errors = errors;
         if (this.updateErrors) {
             this.updateErrors(this.errors);
         }
-    }
-
-    _clearErrors() {
-        if (this.errors.length > 0) {
-            this.errors.length = 0;
-            this._notifyErrors();
-        }
-    }
-
-    _addError(error) {
-        this.errors.push(error);
-        this._notifyErrors();
     }
 }
 

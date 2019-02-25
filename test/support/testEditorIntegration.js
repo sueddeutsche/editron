@@ -199,27 +199,27 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    options.ignoreRegisterErrors !== true &&
-    test(`${id} should register to clear errors event`, (t) => {
-        const controller = t.context.controller;
-        const on = controller.validationService.on;
-        new Constructor(pointer, controller);
+    // options.ignoreRegisterErrors !== true &&
+    // test(`${id} should register to clear errors event`, (t) => {
+    //     const controller = t.context.controller;
+    //     const on = controller.validationService.on;
+    //     new Constructor(pointer, controller);
 
-        t.true(on.calledWith(ValidationService.EVENTS.BEFORE_VALIDATION));
-        t.true(on.callCount > 0); // there may be multiple editors instantiated
-    });
+    //     t.true(on.calledWith(ValidationService.EVENTS.BEFORE_VALIDATION));
+    //     t.true(on.callCount > 0); // there may be multiple editors instantiated
+    // });
 
 
-    options.ignoreRegisterErrors !== true &&
-    test(`${id} should unregister error events on destroy`, (t) => {
-        const controller = t.context.controller;
-        const off = controller.validationService.off;
-        const editor = new Constructor(pointer, controller);
-        editor.destroy();
+    // options.ignoreRegisterErrors !== true &&
+    // test(`${id} should unregister error events on destroy`, (t) => {
+    //     const controller = t.context.controller;
+    //     const off = controller.validationService.off;
+    //     const editor = new Constructor(pointer, controller);
+    //     editor.destroy();
 
-        t.true(off.calledWith(ValidationService.EVENTS.BEFORE_VALIDATION));
-        t.true(off.callCount > 0); // there may be multiple editors instantiated
-    });
+    //     t.true(off.calledWith(ValidationService.EVENTS.BEFORE_VALIDATION));
+    //     t.true(off.callCount > 0); // there may be multiple editors instantiated
+    // });
 
 
     options.ignoreRegisterErrors !== true &&

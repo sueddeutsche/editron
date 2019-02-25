@@ -104,8 +104,7 @@ class AbstractValueEditor {
 
         // in order to deregister callbacks in destroy(), bind all callbacks to this class
         this.update = controller.data().observe(pointer, this.update.bind(this));
-        this.addError = controller.validator().observe(pointer, this.addError.bind(this));
-        this.clearErrors = controller.validator().on("beforeValidation", this.clearErrors.bind(this));
+        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
 
         // this.render();
     }
@@ -128,9 +127,9 @@ class AbstractValueEditor {
         this.viewModel.id = getId(pointer);
         this.viewModel.onfocus = () => this.controller.location().setCurrent(pointer);
         this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.validator().removeObserver(oldPointer, this.addError);
+        this.controller.validator().removeObserver(oldPointer, this.setErrors);
         this.controller.data().observe(pointer, this.update);
-        this.controller.validator().observe(pointer, this.addError);
+        this.controller.validator().observe(pointer, this.setErrors);
 
         this.update();
     }
@@ -148,14 +147,8 @@ class AbstractValueEditor {
     }
 
     // adds an error to view
-    addError(error) {
-        this.viewModel.errors.push(error);
-        this.render();
-    }
-
-    // removes all errors of view
-    clearErrors() {
-        this.viewModel.errors.length = 0;
+    setErrors(errors) {
+        this.viewModel.errors = errors;
         this.render();
     }
 
@@ -180,8 +173,7 @@ class AbstractValueEditor {
 
             this.viewModel = null;
             this.controller.data().removeObserver(this.pointer, this.update);
-            this.controller.validator().removeObserver(this.pointer, this.addError);
-            this.controller.validator().off("beforeValidation", this.clearErrors);
+            this.controller.validator().removeObserver(this.pointer, this.setErrors);
             this.$element = null;
         }
     }

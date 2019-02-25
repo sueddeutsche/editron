@@ -1,6 +1,5 @@
 /* eslint max-len: 0 */
 const test = require("ava").test;
-const sinon = require("sinon");
 
 const Controller = require("../Controller");
 const editors = require("../editors");
