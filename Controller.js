@@ -39,9 +39,14 @@ function removeEditorFrom(instances, editor) {
 /**
  * Main component to build editors. Each editor should receive the controller, which carries all required services
  * for editor initialization
+ *
+ * @param  {Object} schema          - json schema describing required data/form template
+ * @param  {Any} data               - initial data for given json-schema
+ * @param  {Object} [options]       - configuration options
+ * @param  {Array} options.editors  - list of editron-editors/widgets to use. Order defines editor to use
+ *      (based on editorOf-method)
  */
 class Controller {
-
     constructor(schema = {}, data = {}, options = {}) {
         schema = UISchema.extendSchema(schema);
 
@@ -170,16 +175,24 @@ class Controller {
     }
 
     /**
+     * Get or update data from a pointer
      * @return {DataService} DataService instance
      */
     data() { return this.dataService; }
 
     /**
+     * Get the json schema from a pointer or replace the schema
      * @return {SchemaService} SchemaService instance
      */
     schema() { return this.schemaService; }
 
     /**
+     * Validate data based on a json-schema and register to generated error events
+     *
+     * - start validation
+     * - get your current errors at _pointer_
+     * - hook into validation to receive your errors at _pointer_
+     *
      * @return {ValidationService} ValidationService instance
      */
     validator() { return this.validationService; }
@@ -193,9 +206,6 @@ class Controller {
      */
     location() { return LocationService; }
 
-
-    // helpers
-
     onAfterDataUpdate(evt) {
         this.update();
         this.validateAll();
@@ -204,15 +214,33 @@ class Controller {
         }
     }
 
+    /**
+     * Set the application data
+     * @param {Any} data    - json data matching registered json-schema
+     */
     setData(data) {
         data = this.schemaService.addDefaultData(data);
         this.data().set("#", data);
     }
 
+    /**
+     * @return {Array} registered editor-widgets used to edit the json-data
+     */
     getEditors() { return this.editors; }
+
+    /**
+     * @return {Object} currently active editor/widget instances
+     */
     getInstances() { return this.instances; }
 
-
+    /**
+     * Add a custom validator
+     * @param {String} type         - must be _format_
+     * @param {String} value        - value of _format_
+     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
+     *      als return a promise
+     */
     addValidator(type, value, validator) {
         if (type === "format") {
             addValidator.format(this.core, value, validator);
@@ -237,10 +265,16 @@ class Controller {
         this.schemaService.setData(this.dataService.get());
     }
 
+    /**
+     * Starts validation of current data
+     */
     validateAll() {
         setTimeout(() => this.validationService.validate(this.dataService.getDataByReference()));
     }
 
+    /**
+     * Destroy the editor, its widgets and services
+     */
     destroy() {
         // delete all editors
         Object.keys(this.instances).forEach((pointer) => {
