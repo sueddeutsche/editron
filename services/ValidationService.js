@@ -39,6 +39,13 @@ class ValidationService {
         this.errorHandler = callback;
     }
 
+    /**
+     * Starts the validation, executing callback handlers and emitters on the go
+     *
+     * @param  {Any} data               - data to validate
+     * @param  {JsonSchema} [schema]    - optional json-schema. Per default the root schema is used
+     * @return {Promise} promise, resolving with list of errors when all async validations are performed
+     */
     validate(data, schema = this.schema) {
         if (this.currentValidation) {
             this.currentValidation.cancel();
@@ -113,19 +120,22 @@ class ValidationService {
         }
     }
 
-    getErrors(pointer, withChildErrors = false) {
-        // filter warnings
-        const errors = this.state.get(this.id).filter((error) => error.severity !== "warning");
+    getErrorsAndWarnings(pointer = undefined, withChildErrors = false) {
+        const errors = this.state.get(this.id);
         if (pointer == null) {
             return errors;
         }
-        // filter pointer
+        // filter by pointer
         const selectError = new RegExp(`^${pointer}${withChildErrors ? "" : "$"}`);
         return errors.filter((error) => selectError.test(error.data.pointer));
     }
 
-    getWarnings() {
-        return this.state.get(this.id).filter((error) => error.severity === "warning");
+    getErrors(pointer = undefined, withChildErrors = false) {
+        return this.getErrorsAndWarnings(pointer, withChildErrors).filter((error) => error.severity !== "warning");
+    }
+
+    getWarnings(pointer = undefined, withChildWarnings = false) {
+        return this.getErrorsAndWarnings(pointer, withChildWarnings).filter((error) => error.severity === "warning");
     }
 
     bubbleObservers(pointer, error) {
