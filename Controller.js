@@ -143,6 +143,10 @@ class Controller {
         return editor;
     }
 
+    /**
+     * Call this method, when your editor is destroyed, deregistering its instance on editron
+     * @param  {Instance} editor    - editor instance to remove
+     */
     removeEditor(editor) {
         // controller inserted child and removes it here again
         const $element = editor.toElement();
@@ -156,11 +160,6 @@ class Controller {
     addEditor(pointer, editor) {
         this.instances[pointer] = this.instances[pointer] || [];
         this.instances[pointer].push(editor);
-    }
-
-    changePointer(newPointer, editor) {
-        removeEditorFrom(this.instances, editor);
-        this.addEditor(newPointer, editor);
     }
 
     /**
@@ -205,14 +204,6 @@ class Controller {
      * @return {Object} LocationService-Singleton
      */
     location() { return LocationService; }
-
-    onAfterDataUpdate(evt) {
-        this.update();
-        this.validateAll();
-        if (evt.type === "array" || evt.type === "object") {
-            LocationService.focus();
-        }
-    }
 
     /**
      * Set the application data
@@ -286,6 +277,19 @@ class Controller {
         this.validationService.destroy();
         this.dataService.destroy();
         this.dataService.off(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate);
+    }
+
+    onAfterDataUpdate(evt) {
+        this.update();
+        this.validateAll();
+        if (evt.type === "array" || evt.type === "object") {
+            LocationService.focus();
+        }
+    }
+
+    changePointer(newPointer, editor) {
+        removeEditorFrom(this.instances, editor);
+        this.addEditor(newPointer, editor);
     }
 }
 

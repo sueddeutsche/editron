@@ -13,6 +13,12 @@ const getPatchesPerPointer = require("./utils/getPatchesPerPointer");
 const State = require("./State");
 const DEBUG = false;
 
+/**
+ * @name DataService.EVENTS
+ * @type {Object}
+ * @property {String} BEFORE_UPDATE    - called before starting data update
+ * @property {String} AFTER_UPDATE     - called after data udpate was performed
+ */
 const EVENTS = {
     BEFORE_UPDATE: "beforeUpdate",
     AFTER_UPDATE: "afterUpdate"
@@ -21,6 +27,11 @@ const EVENTS = {
 
 /**
  * @class  DataService
+ * @description
+ * Read and modify form data and notify observers
+ *
+ * @param {State} state     - current state/store of application
+ * @param {Any} data        - current application data (form)
  */
 class DataService {
 
@@ -78,6 +89,11 @@ class DataService {
         this.state.unregister(this.id);
     }
 
+    /**
+     * Get a copy of current data from the requested _json-pointer_
+     * @param {JsonPointer} [pointer="#"]  - data to fetch. Defaults to _root_
+     * @returns {Any} data, associated with _pointer_
+     */
     get(pointer = "#") {
         const value = this.getDataByReference(pointer);
         return copy(value);
@@ -88,6 +104,12 @@ class DataService {
         return gp.get(this.state.get(this.id).data.present, pointer);
     }
 
+    /**
+     * Change data at the given _pointer_
+     * @param {JsonPointer}  pointer    - data location to modify
+     * @param {Any}  value              - new value at pointer
+     * @param {Boolean} [isSynched]
+     */
     set(pointer, value, isSynched = false) {
         if (this.isValid(pointer) === false) {
             throw new Error(`Pointer ${pointer} does not exist in data`);
@@ -108,6 +130,10 @@ class DataService {
         }
     }
 
+    /**
+     * Delete data at the given _pointer_
+     * @param  {JsonPointer} pointer    - data location to delete
+     */
     delete(pointer) {
         if (isRootPointer(pointer)) {
             throw new Error("Can not remove root data via delete. Use set(\"#/\", {}) instead.");

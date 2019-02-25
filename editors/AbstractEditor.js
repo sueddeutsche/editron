@@ -106,11 +106,10 @@ class AbstractEditor {
     }
 
     destroy() {
-        this.controller.removeEditor(this);
+        this.controller.removeEditor(this); // remove editor from editron and our html-element (dom) from the DOM
         this.controller.data().removeObserver(this.pointer, this.update);
         this.controller.validator().removeObserver(this.pointer, this._addError);
         this.controller.validator().off("beforeValidation", this._clearErrors);
-        this.dom.parentNode && this.dom.parentNode.removeChild(this.dom);
     }
 
     setErrors(errors) {
