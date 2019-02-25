@@ -10,7 +10,9 @@
     "release": "npm run dist",
     "prepublishOnly": "npm run release",
     "test": "ava",
-    "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer"
+    "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
+    "docs": "npx documentation build -o docs/api -f html Controller.js",
+    "docs:serve": "npx documentation serve -f html Controller.js"
   },
   "pre-push": [
     "test"
