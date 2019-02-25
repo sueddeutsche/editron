@@ -1,10 +1,10 @@
 const mitt = require("mitt");
-const validateAsync = require("json-schema-library/lib/validateAsync");
 const Core = require("json-schema-library").cores.JsonEditor;
 const State = require("./State");
 const ActionCreators = require("./reducers/actions").ActionCreators;
 const errorReducer = require("./reducers/errorReducer");
 const splitPointer = require("./utils/splitPointer");
+const Validation = require("./utils/Validation");
 
 
 const EVENTS = {
@@ -13,69 +13,10 @@ const EVENTS = {
     ON_ERROR: "onError"
 };
 
+
 /**
  * @class  ValidationService
- *
- * @param {Object|Array} data       - application json data
- * @param {Object} schema           - json-schema describing data
- * @param {Function} [errorHandler] - optional callback to modify errors
  */
-class Validation {
-
-    constructor(data, schema, errorHandler) {
-        this.errors = [];
-        this.data = data;
-        this.schema = schema;
-        this.canceled = false;
-        this.errorHandler = errorHandler;
-        this.EVENTS = EVENTS;
-    }
-
-    start(core, onErrorCb, onDoneCb) {
-        this.cbDone = onDoneCb;
-        this.cbError = onErrorCb;
-        return validateAsync(core, this.schema, this.data, "#", this.onError.bind(this))
-            .then((errors) => {
-                this.onDone(errors);
-                return errors;
-            })
-            .catch((error) => this.onFail(error));
-    }
-
-    onError(validationError) {
-        if (this.canceled) {
-            return;
-        }
-        validationError = this.errorHandler(validationError);
-        this.errors.push(validationError);
-        this.cbError(validationError, this.errors);
-    }
-
-    onDone(validationErrors) {
-        if (this.canceled) {
-            return;
-        }
-        if (this.errors.length !== validationErrors.length) {
-            console.error("Inconsistent validation errors. Not all errors were emitted by validateAsync()");
-        }
-        this.cbDone(this.errors);
-    }
-
-    onFail(error) {
-        if (this.canceled) {
-            return;
-        }
-
-        console.error("Validation failed", error);
-        this.cbDone(this.errors);
-    }
-
-    cancel() {
-        this.canceled = true;
-    }
-}
-
-
 class ValidationService {
 
     constructor(state, schema = {}, core = new Core()) {
@@ -172,8 +113,15 @@ class ValidationService {
         }
     }
 
-    getErrors() {
-        return this.state.get(this.id).filter((error) => error.severity !== "warning");
+    getErrors(pointer, withChildErrors = false) {
+        // filter warnings
+        const errors = this.state.get(this.id).filter((error) => error.severity !== "warning");
+        if (pointer == null) {
+            return errors;
+        }
+        // filter pointer
+        const selectError = new RegExp(`^${pointer}${withChildErrors ? "" : "$"}`);
+        return errors.filter((error) => selectError.test(error.data.pointer));
     }
 
     getWarnings() {
