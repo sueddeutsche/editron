@@ -63,12 +63,12 @@ class AbstractEditor {
         const oldPointer = this.pointer;
 
         this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.validator().removeObserver(oldPointer, this._addError);
+        this.controller.validator().removeObserver(oldPointer, this.setErrors);
 
         this.pointer = newPointer;
 
         this.controller.data().observe(newPointer, this.update, this.options.notifyNestedChanges === true);
-        this._addError = this.controller.validator().observe(newPointer, this._addError);
+        this.setErrors = this.controller.validator().observe(newPointer, this.setErrors);
 
         return [newPointer, oldPointer];
     }
