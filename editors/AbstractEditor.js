@@ -41,7 +41,6 @@ class AbstractEditor {
         this.pointer = pointer;
         this.controller = controller;
         this.options = options;
-        this.errors = [];
 
         this.dom = this.controller
             .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
@@ -54,6 +53,9 @@ class AbstractEditor {
 
         this._clearErrors = controller.validator()
             .on("beforeValidation", this._clearErrors.bind(this));
+
+        this.errors = this.controller.validator()
+            .getErrorsAndWarnings(pointer);
     }
 
     update() {
