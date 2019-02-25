@@ -121,7 +121,7 @@ class ValidationService {
     }
 
     getErrorsAndWarnings(pointer = undefined, withChildErrors = false) {
-        const errors = this.state.get(this.id);
+        const errors = this.state.get(this.id) || [];
         if (pointer == null) {
             return errors;
         }
