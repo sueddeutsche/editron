@@ -90,6 +90,7 @@ class AbstractValueEditor {
             title: options.title,
             description: options.description,
             value: controller.data().get(pointer),
+            instantUpdate: options.instantUpdate,
             schema,
             errors: controller.validator().getErrorsAndWarnings(pointer),
             onfocus: () => controller.location().setCurrent(pointer),
