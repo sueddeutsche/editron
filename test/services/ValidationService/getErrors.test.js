@@ -69,6 +69,12 @@ test("should only return errors on root pointer", (t) => {
     t.is(errors[0].data.pointer, "#");
 });
 
+test("should return empty list if no errors are set", (t) => {
+    const errors = service.getErrors("#/story");
+
+    t.is(errors.length, 0);
+});
+
 test("should only return errors on 'image' pointer", (t) => {
     const errors = service.getErrors("#/image");
 
