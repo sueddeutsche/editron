@@ -40,6 +40,39 @@ function removeEditorFrom(instances, editor) {
  * Main component to build editors. Each editor should receive the controller, which carries all required services
  * for editor initialization
  *
+ * ### Usage
+ *
+ * Instantiate the controller
+ *
+ * ```js
+ * import { Controller } from "editron-core";
+ * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
+ * const editron = new Controller(jsonSchema);
+ * ```
+ *
+ * or, using all parameters
+ *
+ * ```js
+ *  import { Controller } from "editron-core";
+ *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
+ *  // data = { title: "Hello" } - or simply use {}
+ *  // options = { editors: [ complete list of custom editors ] }
+ *  const editron = new Controller(jsonSchema, data, options);
+ * ```
+ *
+ * and start rendering editors
+ *
+ * ```js
+ *  const editor = editron.createEditor("#", document.querySelector("#editor"));
+ *  // render from title only: editron.createEditor("#/title", document.querySelector("#title"));
+ * ```
+ *
+ * to fetch the generated data use
+ *
+ * ```js
+ *  const data = editron.getData();
+ * ```
+ *
  * @param  {Object} schema          - json schema describing required data/form template
  * @param  {Any} data               - initial data for given json-schema
  * @param  {Object} [options]       - configuration options
@@ -106,7 +139,7 @@ class Controller {
      *
      * @param  {String} pointer         - data pointer to editor in current state
      * @param  {HTMLElement} element    - parent element of create editor. Will be appended automatically
-     * @param  {Object} options         - individual editor optionssa
+     * @param  {Object} [options]       - individual editor options
      * @return {Object|undefined} created editor-instance or undefined;
      */
     createEditor(pointer, element, options) {
@@ -212,6 +245,14 @@ class Controller {
     setData(data) {
         data = this.schemaService.addDefaultData(data);
         this.data().set("#", data);
+    }
+
+    /**
+     * @param {JsonPointer} [pointer="#"] - location of data to fetch. Defaults to root (all) data
+     * @return {Any} data at the given location
+     */
+    getData(pointer = "#") {
+        return this.data().get(pointer);
     }
 
     /**

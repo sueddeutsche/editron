@@ -7,23 +7,23 @@ const gp = require("gson-pointer");
  * of error-events.
  *
  *
- * ## Motivation
+ * ### Motivation
  *
- * Error-events in the validation process occur per error, but we want them to pass as quickly as
+ * Error-events in the validation process occur per error, because we want them to pass as quickly as
  * possible (Asynchronous errors may take a long time and available instant feedback are postponed). In the previous
  * version two events were required in every editor
  *
- * 1. listen "start validation"-events to reset the errors and
- * 2. listen to "add error"-events to build up the asynchronous incoming error-list
+ * 1. observing "start validation"-events to reset the errors and
+ * 2. observing "add error"-events to build up the asynchronous incoming error-list
  *
- * This is tedious and brings some overhead using the api. Thus, the "observe error"-event, introduced hereby, may be
- * read as "set errors", which will collect the errors and repeatedly call the observer with the current list of errors
+ * This is tedious and brings some overhead using the api. Thus, the observe "set error"-event, introduced hereby
+ * will collect the errors and repeatedly call the observer with the current, complete list of errors
  *
  * 1. for the observable and
  * 2. any observable that includes listening to changes of child-editors
  *
  *
- * ## Usage as observer
+ * ### Usage as observer
  *
  * An observer will receive an up-to-date version of all events occuring at the location
  *
@@ -54,7 +54,7 @@ const gp = require("gson-pointer");
  *  observable.observe("#/pointer/to/my/location", myRegisteredCallbackFunction);
  * ```
  *
- * ## Usage as observable
+ * ### Usage as observable
  *
  * ```js
  *  // init
@@ -81,13 +81,30 @@ class BubblingCollectionObservable {
         this.eventCollection = {};
         this.bubbleCollection = {};
     }
+
+    /**
+     * Observe events on the _pointer_ (`#/observe/location`). May also observe events of
+     * _child-pointers_ (`#/observe/location/child/item`) with the option `receiveChildEvents` set to `true`
+     *
+     * @param  {JsonPointer} pointer        - location to observe
+     * @param  {Function} cb                - observer
+     * @param  {Boolean}  [receiveChildEvents=false]
+     * @return {Function} callback cb
+     */
     observe(pointer, cb, receiveChildEvents = false) {
         this.observers[pointer] = this.observers[pointer] || [];
         if (this.observers[pointer].includes(cb) === false) {
             cb.receiveChildEvents = receiveChildEvents;
             this.observers[pointer].push(cb);
         }
+        return cb;
     }
+
+    /**
+     * Remove an observer
+     * @param  {JsonPointer} pointer
+     * @param  {Function} cb
+     */
     removeObserver(pointer, cb) {
         if (this.observers[pointer] == null) {
             return;
@@ -97,6 +114,11 @@ class BubblingCollectionObservable {
             this.observers[pointer].splice(index, 1);
         }
     }
+
+    /**
+     * Reset all collections from the previous events, starting with a list of empty events. Any previously called
+     * observers will be called again with an empty event-list `[]`.
+     */
     reset() {
         // notify observers of reset by sending an empty list of events
         const map = {};
@@ -109,6 +131,15 @@ class BubblingCollectionObservable {
         this.eventCollection = {};
         this.bubbleCollection = {};
     }
+
+    /**
+     * Notify observers at _pointer_. Note that the received event is a aggregated event-list []. For a first call
+     * the received event will look like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`, etc,
+     * until `reset()` ist called by the observable.
+     *
+     * @param  {JsonPointer} pointer
+     * @param  {Any} event
+     */
     notify(pointer, event) {
         this.eventCollection[pointer] = this.eventCollection[pointer] || [];
         this.eventCollection[pointer].push(event);

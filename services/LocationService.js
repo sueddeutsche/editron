@@ -15,7 +15,7 @@ const emitter = mitt();
  *  - the "current pointer" tracks the currently focused editor and
  *  - the "page pointer" corresponds to the first property of "current pointer", which may be used for main page loading
  *
- * ## Motivation
+ * ### Motivation
  *
  * Jumping to specific editors via the navigation requires a targeting system. A page reload may occur for a called
  * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which

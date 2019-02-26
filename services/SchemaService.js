@@ -4,8 +4,16 @@ const jsl = require("json-schema-library");
 const getChildSchemaSelection = require("json-schema-library").getChildSchemaSelection;
 
 
+/**
+ * @class  SchemaService
+ *
+ * Manages json-schema interactions and adds caching of reoccuring json-schema requests
+ *
+ * @param {Object} schema   - json-schema
+ * @param {Object} [data]   - data ceorresponding to json-schema
+ * @param {Core} [core]     - instance of json-schema-library Core
+ */
 class SchemaService {
-
     constructor(schema = {}, data = {}, core = new Core()) {
         this.core = core;
         this.setSchema(schema);

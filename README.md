@@ -1,5 +1,6 @@
 > Very customizable, extendable, fast and hackable json-editor (like
-> [jdorn/json-editor](https://github.com/jdorn/json-editor)), to build your data-input-interface based on a json-schema
+> [jdorn/json-editor](https://github.com/json-editor/json-editor)), to build your data-input-interface based on a
+> json-schema
 
 
 # Editron Core

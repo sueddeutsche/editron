@@ -34,7 +34,6 @@ const EVENTS = {
  * @param {Any} data        - current application data (form)
  */
 class DataService {
-
     constructor(state, data) {
         if (!(state instanceof State)) {
             throw new Error("Given state in DataService must be of instance 'State'");
