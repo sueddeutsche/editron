@@ -26,8 +26,6 @@ const EVENTS = {
 
 
 /**
- * @class  DataService
- * @description
  * Read and modify form data and notify observers
  *
  * @param {State} state     - current state/store of application
