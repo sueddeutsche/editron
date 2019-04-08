@@ -288,6 +288,7 @@ class Controller {
      * @param {Object} schema   - a valid json-schema
      */
     setSchema(schema) {
+        schema = UISchema.extendSchema(schema);
         this.validationService.set(schema);
         this.schemaService.setSchema(schema);
     }
