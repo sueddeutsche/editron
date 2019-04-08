@@ -1,4 +1,4 @@
-> JSON-Editor, which takes a JSON-Schema to generate an HTML form for user input and live validation. The editor can be used as a component in your web application.
+Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for user input and live validation. The editor can be used as a component in your web application.
 
 ![editron](./docs/images/logo.png)
 
@@ -83,6 +83,8 @@ There are three basic concepts that you should be familiar, when working with a 
 <script src="https://cdn.jsdelivr.net/npm/editron-core@5.2.2/dist/editron-core.js"></script>
 ```
 
+**Note** ensure that `editron-modules.js` is loaded before `editron-core.js` and any other editors.
+
 **2. Create or load a JSON-Schema**
 
 ```html
@@ -130,7 +132,7 @@ the `SchemaService`.
 The `DataService` manages the input-data. It keeps a history of all updates (undo/redo) and notifies any observers for
 changes on the data or a JSON-Pointer. To get the `DataService`-instance, use
 
-```js
+```javascript
 const dataService = controller.data();
 ```
 
@@ -392,25 +394,37 @@ first editor, returning `true` for the _static_ function `CustomEditor.editorOf`
 You can evaluate any json-schema property, options set in json-schema and  the associated data:
 
 ```javascript
-    Class CustomEditor {
-        // pointer - data JSON-Pointer referring to a schema, where an editor is requested
-        static editorOf(pointer, controller, options) {
-            // per default, you will want to get the schema of the current JSON-pointer
-            const schema = controller.schema().get(pointer);
-            // access data by
-            // const data = controller.data().get(pointer);
-            // and evaluate if this is the right editor for the schema
-            return schema.type === "object" && schema.format === "CustomEditor";
-        }
-
-        constructor(pointer, controller, options) {}
+class CustomEditor {
+    // pointer - data JSON-Pointer referring to a schema, where an editor is requested
+    static editorOf(pointer, controller, options) {
+        // per default, you will want to get the schema of the current JSON-pointer
+        const schema = controller.schema().get(pointer);
+        // access data by
+        // const data = controller.data().get(pointer);
+        // and evaluate if this is the right editor for the schema
+        return schema.type === "object" && schema.format === "CustomEditor";
     }
 
+    constructor(pointer, controller, options) {}
+}
 ```
 
 **The options object**
 
-@todo resolved options & helpers
+Based on the current JSON-Schema (short: `schema`), the options object always passes the following properties
+
+property    | schema-options                | description
+:-----------|:------------------------------|:--------------------------------------------------------------------------
+description | schema.description            | description of the input-field for the user
+hidden      | schema["editron:ui"].hidden   | if the input-field should be hidden
+id          | -                             | the current editor-id, which should be used in rendering the input-field
+pointer     | -                             | current JSON-pointer
+title       | schema.title                  | the title as given in `schema.title` or overruled by `schema["editron:ui"].title`
+
+The options object will be extended by all properties given in `schema.options` and `schema["editron:ui"]`, where the
+options in `editron:ui` will overwrite the properties defined in the default options-object. Additionally, any options
+defined by code, e.g. by calling `controller.createEditor(pointer, domNode, { dynamic-options })`, will overwrite all
+other options.
 
 
 #### 1. quickstart and hack away (boilerplate)
@@ -423,20 +437,30 @@ You can evaluate any json-schema property, options set in json-schema and  the a
 Using the optional base class `AbstractEditor`, most work for bootstraping is done by its base methods. This leaves the following required methods for a working editor
 
 ```javascript
+/**
+ * A custom editron-editor-widget
+ */
 class CustomEditor extends AbstractEditor {
+    /**
+     * Decide, if the given JSON-Schema should use this editor
+     * @param  {String} pointer         - JSON-Pointer
+     * @param  {Controller} controller  - Controller-instance
+     * @param  {Object} options         - options-object as described above
+     * @return {Boolean} returns `true` if this class should be used for the pased JSON-Pointer
+     */
     static editorOf(pointer, controller, options) {
         const schema = controller.schema().get(pointer);
         return schema.format === "CustomEditor" && schema.type === "array";
     }
 
     constructor(pointer, controller, options) {
+        // perform required bootstrapping and exposed the DomNode on `this.dom`
         super(pointer, controller, options);
-        // this.dom is created
 
-        const schema = this.getSchema();
+        // recommended: build your view model for rendering. In this example `mithril` hooks are used
         this.viewModel = {
             pointer,
-            title: schema.title,
+            title: options.title,
             id: options.id,
             value: "",
             errors: [],
@@ -447,17 +471,17 @@ class CustomEditor extends AbstractEditor {
             tags: this.getData()
         };
 
-        // initially render view
+        // recommended: initially render view
         this.render();
     }
 
-    // required: data has changed, update data
-    update() {
+    // required: data has changed, update data and view
+    update(patch) {
         this.viewModel.tags = this.getData();
         this.render();
     }
 
-    // optional: received new errors
+    // optional: update errors and view
     updateErrors(errors) {
         this.viewModel.errors = errors;
         this.render();
@@ -470,21 +494,47 @@ class CustomEditor extends AbstractEditor {
         this.viewModel.pointer = newPointer;
     }
 
-    // destroy this editor and any created data or listeners
+    // optional: remove any custom views, created data or listeners
     destroy() {
-        if (this.viewModel) {
+        if (this.viewModel) { // ensure this editor was not already destroyed
             m.render(this.dom, m.trust(""));
             super.destroy();
-            this.viewModel = null;
+            this.viewModel = null; // flag as destroyed
         }
     }
 
-    // custom method: update view
+    // custom method: render the view to dom
     render() {
         m.render(this.dom, m(CustomView, this.viewModel));
     }
 }
 ```
+
+**about `update(patch)`**
+
+The editor will always be notified on a change (same updates are ignored). And thus, the editor must update the view to
+reflect this change. The default flow is:
+
+1. use `this.setData(newValue)` to update the data-source. The input does already reflect this
+2. an `update(patch)` is received and the input-form is rerendered (nonetheless)
+
+in order to improve rendering performance, the patch-object (which is a
+[jsondiffpatch](https://github.com/benjamine/jsondiffpatch/blob/master/docs/deltas.md)-diff) can be used to decrease
+changes in the ui.
+
+**about `updatePointer(newPointer)`**
+
+Any editor uses its `pointer` to reference data, schema and set its id to the rendered view. Changing the `pointer` is
+an implementation detail, but is required for a performant user-experience. In case of reordering array-items
+(i.e. drag & drop), the main view must rerender all UI-forms, which will become sluggish on large documents. Thus
+`updatePointer` is required to reuse existing HTML nodes for a performant rendering. The `AbstractEditor` will change
+all default listeners to the new pointer, but any custom usage of the pointer (and _id_) must be treated manually.
+
+**further details**
+
+For further detail, check the [AbstractEditor](./editors/AbstractEditor.js) implementation or the
+[advanced](#advanced)-section below.
+
 
 #### 3. build setup
 
