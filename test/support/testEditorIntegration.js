@@ -4,7 +4,6 @@ const test = require("ava").test;
 const sinon = require("sinon");
 const gp = require("gson-pointer");
 
-const ValidationService = require("../../services/ValidationService");
 const Controller = require("../../Controller");
 
 
@@ -26,7 +25,7 @@ function copyPointerToLocation(controller, fromLocation, newLocation) {
  *  - check if the editor did register to update data event
  *  - check if the editor did register to clear-errors and add-error events
  *  - unregistering events on destroy
- *  - calling controller.removeEditor on destroy
+ *  - calling controller.removeInstance on destroy
  *
  * ## Usage Example
  *  const ArrayEditor = require("../../../lib/editor/arrayeditor");
@@ -44,7 +43,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
     test.beforeEach((t) => {
         const controller = new Controller(schema, data, [Constructor]);
-        sinon.spy(controller, "removeEditor");
+        sinon.spy(controller, "removeInstance");
         sinon.spy(controller, "changePointer");
         sinon.spy(controller.data(), "observe");
         sinon.spy(controller.data(), "removeObserver");
@@ -57,7 +56,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
     test.afterEach((t) => {
         const controller = t.context.controller;
-        controller.removeEditor.restore();
+        controller.removeInstance.restore();
         controller.changePointer.restore();
         controller.data().observe.restore();
         controller.data().removeObserver.restore();
@@ -99,25 +98,25 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should call 'controller.removeEditor()' on 'destroy()'`, (t) => {
+    test(`${id} should call 'controller.removeInstance()' on 'destroy()'`, (t) => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         editor.destroy();
 
-        t.true(controller.removeEditor.calledWith(editor));
+        t.true(controller.removeInstance.calledWith(editor));
     });
 
 
-    test(`${id} should have 'pointer' and 'element' defined when calling 'controller.removeEditor()'`, (t) => {
+    test(`${id} should have 'pointer' and 'element' defined when calling 'controller.removeInstance()'`, (t) => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         const $element = editor.toElement();
-        controller.removeEditor.restore();
-        sinon.stub(controller, "removeEditor").callsFake((instance) => {
+        controller.removeInstance.restore();
+        sinon.stub(controller, "removeInstance").callsFake((instance) => {
             if (instance === editor) {
 
-                t.true(instance.getPointer() === pointer, "should return correct pointer in 'controller.removeEditor()'");
-                t.true(instance.toElement() === $element, "should return correct element in 'controller.removeEditor()'");
+                t.true(instance.getPointer() === pointer, "should return correct pointer in 'controller.removeInstance()'");
+                t.true(instance.toElement() === $element, "should return correct element in 'controller.removeInstance()'");
             }
         });
 

@@ -160,7 +160,7 @@ class ObjectEditor {
 
     destroy() {
         if (this.viewModel) {
-            this.controller.removeEditor(this);
+            this.controller.removeInstance(this);
 
             m.render(this.$element, m("i"));
             this.controller.data().removeObserver(this.pointer, this.rebuildChildren);

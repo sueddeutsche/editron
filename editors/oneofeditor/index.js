@@ -125,7 +125,7 @@ class OneOfEditor {
 
     destroy() {
         if (this.viewModel) {
-            this.controller.removeEditor(this);
+            this.controller.removeInstance(this);
 
             this.viewModel = null;
             m.render(this.$element, "i");

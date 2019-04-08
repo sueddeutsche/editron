@@ -167,7 +167,7 @@ class AbstractValueEditor {
     // destroy this editor
     destroy() {
         if (this.viewModel) {
-            this.controller.removeEditor(this);
+            this.controller.removeInstance(this);
 
             // destroy this editor only once
             m.render(this.$element, m("i"));

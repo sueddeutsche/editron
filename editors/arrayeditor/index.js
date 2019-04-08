@@ -180,7 +180,7 @@ class ArrayEditor {
 
     destroy() {
         if (this.viewModel) {
-            this.controller.removeEditor(this);
+            this.controller.removeInstance(this);
 
             this.viewModel = null;
             m.render(this.$element, m("i"));
