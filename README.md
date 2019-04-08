@@ -3,7 +3,7 @@ Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for
 ![editron](./docs/images/logo.png)
 
 <p align="center">
-    <a href="#">demo</a> | <a href="#">getting started</a> | <a href="#">custom editor-widget</a> | <a href="#">API</a>
+    demo (coming soon) | <a href="#user-content-getting-started">getting started</a> | <a href="#user-content-custom-editor-widget">custom editor-widget</a> | API (coming soon)
 </p>
 
 ---
@@ -11,7 +11,7 @@ Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for
 TOC -->
 
 ---
-## editron
+## about
 
 **what does editron do?**
 - editron is a JSON-Editor, which generates an user interface based on a JSON-Schema
