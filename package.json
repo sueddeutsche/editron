@@ -10,6 +10,7 @@
     "release": "npm run dist",
     "prepublishOnly": "npm run release",
     "test": "ava",
+    "serve": "webpack-dev-server --config webpack.serve.js",
     "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
     "docs": "npx documentation build -o docs/api -f html editron-core.js --config documentation.yml",
     "docs:serve": "npx documentation serve -f html editron-core.js --watch --config documentation.yml"

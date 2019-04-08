@@ -57,7 +57,7 @@ const config = {
                     "extract-loader",
                     "html-loader"
                 ],
-                include: [path.join(__dirname, "app", "index.html")]
+                include: [path.join(__dirname, "test", "support", "local-setup.html")]
             },
             {
                 loaders: "json-loader",
