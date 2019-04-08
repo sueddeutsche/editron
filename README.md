@@ -6,25 +6,9 @@
     <a href="#">demo</a> | <a href="#">getting started</a> | <a href="#">custom editor-widget</a> | <a href="#">API</a>
 </p>
 
-
 ---
-* what does editron do?
-* why use a schema-based editor?
-* why use editron
-* limitations
-* demos
-* key concepts
-* getting started
-    * quickest way
-    * configuration
-    * custom build
-* custom editor (widget)
-    * why should i create an editor?
-    * what can i do with custom editor?
-    * how to create a custom editor-widget
-* public api
-* api
-
+<!-- TOC
+TOC -->
 
 ---
 ## editron
@@ -152,7 +136,7 @@ const dataService = controller.data();
 
 **Access data**
 
-```js
+```javascript
 // get data matching json-schema
 const data = controller.data().get();
 // get data from specific JSON-Pointer
@@ -167,7 +151,7 @@ controller.data().set("#/title", "new title");
 
 You can listen to any change events or specific properties within the data
 
-```js
+```javascript
 // listen to any change
 controller.data().on("beforeUpdate", (pointer, action) => {});
 controller.data().on("afterUpdate", (pointer, action) => {});
@@ -184,7 +168,7 @@ controller.data().observe("#/title", event => {}, true);
 
 The `DataService`-instance also exposes undo/redo states
 
-```js
+```javascript
 // get steps
 const undoCount = controller.data().undoCount();
 const redoCount = controller.data().redoCount();
@@ -198,7 +182,7 @@ controller.data().redo();
 The `ValidationService` manages the validation process, stores and notifies of any input-errors within the data. To get
 the `ValidationService`-instance, use
 
-```js
+```javascript
 const validator = controller.validator();
 ```
 
@@ -207,7 +191,7 @@ const validator = controller.validator();
 Anytime you can get a list of current errors and/or warnings. But you should pay attention that, while validating any
 aysnchronous validation may not be resolved at this time. See the next point _Events_ for handling this situation.
 
-```js
+```javascript
 // most of the time, you will be interested in errors
 const errors = controller.validator().getErrors();
 // but warnings are also supported `{ type: 'warning' }`
@@ -217,7 +201,8 @@ const problems = controller.validator().getErrorsAndWarnings();
 ```
 
 All methods return an array of error-objects, like
-```js
+
+```javascript
 // example errorObject
 code: "min-length-error"
 data: { minLength: 1, length: 0, pointer: "#/title" }
@@ -230,7 +215,7 @@ type: "error"
 
 You can watch any errors or errors on specific data JSON-Pointer. Following the interface for the `DataService`
 
-```js
+```javascript
 // watch any errors using the emitter
 controller.validator().on("onError", (errorObject) => {});
 // get notified on a new validation-run (clears all current errors)
@@ -251,7 +236,8 @@ gather all error-events and reset them at the _beforeValidation_-event.
 
 Data validation is triggered on each change by the `Controller`. In order to manually start validation, you can use the
 convenience method
-```js
+
+```javascript
 controller.validateAll();
 ```
 instead of `controller.validator().validate(controller.data().get());`.
@@ -262,19 +248,20 @@ instead of `controller.validator().validate(controller.data().get());`.
 The `SchemaService` is a simple wrapper for the json-schema, helping to retrieve a json-schema of a data JSON-Pointer.
 To get the `SchemaService`-instance, use
 
-```js
+```javascript
 const schema = controller.schema();
 ```
 
 In order to retrieve a json-schema, e.g. the property `title` from the _getting-started-example_
-```js
+
+```javascript
 const titleSchema = controller.schema().get("#/title");
 // { minLength: 1, title: "simple-string", type: "string", editron:ui: {...} }
 ```
 
 The `SchemaService` exposes some helper-methods
 
-```js
+```javascript
 // generate data, confirming to the given json-schema
 const templateData = controller.schema().getTemplate(jsonSchema);
 // add any missing data, according to the json-schema
@@ -288,17 +275,48 @@ const validInputData = controller.schema().addDefaultData(inputData, jsonSchema)
 
 **Customize base editors from json-schema**
 
-@todo
+@todo editron:ui, default options
 
 **Add additional editors**
 
-@todo
-Custom editors can be passed to the `Controller`-instance as options or directly modified.
+To add new or custom editors globally, use the plugin interface
 
+```javascript
+const { plugin, Controller } = editronCore;
+plugin.editor(MyCustomEditor);
+const controller = new Controller(jsonSchema, data);
+```
 
-**Editor sort order and instantiation**
+Adding editors to a single `Controller`-instance, use the options or add them directory. Using options, you build the
+complete editors-list
 
-@todo
+```javascript
+const { editors, plugin. Controller } = editronCore;
+const options = {
+    editors: [
+        MyCustomEditor,
+        editors.OneOfEditor,
+        ...plugin.getEditors,
+        editors.ArrayEditor,
+        editors.ObjectEditor,
+        editors.ValueEditor
+    ]
+};
+
+const controller = new Controller(jsonSchema, data, options);
+```
+
+Or add your editor directly to the instance by
+
+```javascript
+const controller = new Controller(jsonSchema, data);
+controller.editors.unshift(MyCustomEditor);
+```
+
+**Note** The order of the editors-list is relevant. Any json-schema will be resolved in order, starting at the first
+index, a matching editor-Constructor is searched. The first editor to return _true_ (for _Class.editorOf_) will be
+used to represent the given json-schema and instantiated. Thus more specific editors should be at the start of list,
+where more generale editors, like _object_ or _default values_ should come last.
 
 
 #### validators
@@ -356,10 +374,10 @@ Besides the getting-started example the are also the following examples in the `
 
 **Add your editor**
 
-Custom editors can be added to the `Controller`-instance via the options property ([@see configuration.editors]("#/editors")) or modified
-directly. All editors are stored within a simple _Array_
+Custom editors can be added to the `Controller`-instance via the options property, modified directly or added global via
+the plugin-helper [@see configuration.editors](#editors). In the end, all editors are stored within a simple _Array_
 
-```js
+```javascript
 // push the CustomEditor to the start of list to overrule any other search-results (matching editors)
 controller.editors.unshift(CustomEditor);
 ```
@@ -367,18 +385,20 @@ controller.editors.unshift(CustomEditor);
 **Hook to a schema**
 
 _Editron_ will run through this list, searching for a compatible editor-constructor for the specific schema-type. The
-first editor, returning `true` for for the _static_ function `CustomEditor.editorOf` will be instantiated (
+first editor, returning `true` for the _static_ function `CustomEditor.editorOf` will be instantiated (
 [@see utils/selectEditor]("./utils/selectEditor.js")). e.g. if no editor will match the json-schema
 `type: "object"`, a default _object-editor_ will be instantiated.
 
-You can evaluate any json-schema property, options set in json-schema and even the associated data:
+You can evaluate any json-schema property, options set in json-schema and  the associated data:
 
-```js
+```javascript
     Class CustomEditor {
         // pointer - data JSON-Pointer referring to a schema, where an editor is requested
         static editorOf(pointer, controller, options) {
             // per default, you will want to get the schema of the current JSON-pointer
             const schema = controller.schema().get(pointer);
+            // access data by
+            // const data = controller.data().get(pointer);
             // and evaluate if this is the right editor for the schema
             return schema.type === "object" && schema.format === "CustomEditor";
         }
@@ -390,17 +410,19 @@ You can evaluate any json-schema property, options set in json-schema and even t
 
 **The options object**
 
-@todo
+@todo resolved options & helpers
 
 
 #### 1. quickstart and hack away (boilerplate)
+
+- @todo working example with editor testpage
 
 
 #### 2. example using abstract editor
 
 Using the optional base class `AbstractEditor`, most work for bootstraping is done by its base methods. This leaves the following required methods for a working editor
 
-```js
+```javascript
 class CustomEditor extends AbstractEditor {
     static editorOf(pointer, controller, options) {
         const schema = controller.schema().get(pointer);
@@ -429,19 +451,20 @@ class CustomEditor extends AbstractEditor {
         this.render();
     }
 
-    // data has changed, update data
+    // required: data has changed, update data
     update() {
         this.viewModel.tags = this.getData();
         this.render();
     }
 
-    // received new errors
+    // optional: received new errors
     updateErrors(errors) {
         this.viewModel.errors = errors;
         this.render();
     }
 
     // position in data has changed (from moved array-items), update any pointer references used
+    // required, if pointer is not referenced
     updatePointer(newPointer) {
         super.updatePointer(newPointer);
         this.viewModel.pointer = newPointer;
@@ -464,8 +487,32 @@ class CustomEditor extends AbstractEditor {
 ```
 
 #### 3. build setup
+
+- editron dependencies
+- setup
+- templates (helpers)
+
 #### 4. plugin editor
-#### 5. advanced example
+
+
+
+#### 5. Delegating child nodes
+
+@todo delegate
+@todo update pointer
+
+#### 6. advanced
+
+Extending the `AbstractEditor` is totally optional. For any more custom editor-implementations you can write your own
+class, but you must follow the some basic rules, that are further described in [AbstractEditor](./editors/AbstractEditor.js).
+
+@todo Theese rules are
+
+1. error event
+2. update pointer and event listeners
+3. creating dom element and class convention
+4. exposing helpers toElement, getPointer
+5. Using test-template
 
 <!--
 ---
