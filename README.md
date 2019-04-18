@@ -7,8 +7,8 @@ Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for
 </p>
 
 ---
-<!-- TOC
-TOC -->
+<!-- TOC start -->
+<!-- TOC end -->
 
 ---
 ## about
@@ -52,6 +52,7 @@ TOC -->
 ### demos
 -  @todo setup github.io page
 -  @todo website demonstrating custom-editors, live schema modification and selection of schema examples
+-  example with default types like select
 -->
 
 
@@ -126,6 +127,7 @@ There are three basic concepts that you should be familiar, when working with a 
 The `Controller` manages editors and editor-instances. Most of the time, you want to work with the actual data and
 validation. Each `Controller`-instance will therefore expose three main services: `DataService`, `ValidationService` and
 the `SchemaService`.
+
 
 #### DataService
 
@@ -277,7 +279,49 @@ const validInputData = controller.schema().addDefaultData(inputData, jsonSchema)
 
 **Customize base editors from json-schema**
 
-@todo editron:ui, default options
+From a given JSON-Schema, its properties `title` and `description` are used for labels and inline-information of the
+input-element or group. For all further editron and editor-widget-settings an object `"editron:ui"` is supported, where
+all editor and ui configurations may be placed. By the base editor-widgets, the following options are supported
+
+property            | type          | description
+:-------------------|:--------------|:--------------------------------------------------------------------------
+title               | String        | set or override the title
+description         | String        | set or override the description
+attrs               | Object        | attributes object, passed to the editors html-element
+icon                | String        | if supported, define the type of [material icon](https://material.io/tools/icons/?style=baseline)
+hidden              | Boolean       | hide the value from the user-interface
+enum                | String[]      | ui titles for an enum-selection
+
+
+Example:
+
+```javascript
+{
+    type: "object",
+    "editron:ui": {
+        attrs: { class: "mmf-card" }, // additional html attributes for the object-editor
+        title: "SEO-Settings",
+        description: "",
+        icon: "panorama_horizontal",
+        hidden: false, // hide this value
+        "object:compact": true // (fake) custom setting for the *object*-editor`
+    }
+}
+```
+
+All (custom) editors may support additional configuration settings, which should be checked on their corresponding README.
+
+Array-Editor options:
+
+property            | type          | description
+:-------------------|:--------------|:--------------------------------------------------------------------------
+"array:index"       | Boolean=false | show list indices
+controls            | Object        | controls options, for list item manipulation
+controls.add        | Boolean=false | additional add item button
+controls.remove     | Boolean=true  | remove button on each item
+controls.move       | Boolean=true  | up and down move cursors
+controls.insert     | Boolean=true  | insert button between elements
+
 
 **Add additional editors**
 
@@ -293,7 +337,7 @@ Adding editors to a single `Controller`-instance, use the options or add them di
 complete editors-list
 
 ```javascript
-const { editors, plugin. Controller } = editronCore;
+const { editors, plugin, Controller } = editronCore;
 const options = {
     editors: [
         MyCustomEditor,
@@ -322,14 +366,94 @@ where more generale editors, like _object_ or _default values_ should come last.
 
 
 #### validators
-    - what is a validator?
-    - adding a validator
-    - link to json-schema-library
+
+Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests
+if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything,
+even remote ressources, which are validated asynchronous.
+
+There can be two types of validators
+
+1. a special format validator, which is executed on a schema, like `{ type: "string", format: "my-custom-format" }` or
+2. any custom attribute, like `{ type: number, "my-custom-validator": 42 }`
+
+A validator is a function with the following signature
+
+```javascript
+/**
+ * @param  {JSON-Schema-Core} core
+ * @param  {Object} schema  - the json schema triggering the validator
+ * @param  {Any} value      - the given input data to validate
+ * @param  {String} pointer - JSON-Pointer of the given _value_
+ * @return {undefined|Object|Promise} undefined or an error-object
+ *          `{type: "error", message: "err-msg", data: { pointer }}`
+ */
+function validate(core, schema, value, pointer)
+```
+
+you can reference the json-schema-library
+[format-validators](https://github.com/sagold/json-schema-library/blob/master/lib/validation/format.js) for more examples
+
+Adding a _format_-validator
+
+```javascript
+controller.addValidator("format", "my-custom-format", validator);
+```
+
+_@todo: Add custom attribute validators to interface_
+
+For further details, see the [json-schema-library](https://github.com/sagold/json-schema-library#add-custom-validators)
+
 
 #### language
-    - what are languages for?
-    - how do they work?
-    - how to configure languages?
+
+You can change all interface labels, messages and errors. For this, all strings are stored in a simple object, where
+each property resolves to the given template string.
+
+@todo:
+> As long as no api is exposed, use the following construct to add (error) message translations
+
+```javascript
+import { Controller } from "editron-core";
+import i18n from "editron-core/utils/i18n";
+import german from "./languageGerman";
+Object.assign(i18n.translateError.strings, german.errors);
+Object.assign(i18n.translate.strings, german.strings);
+
+// ... on initialization
+const controller = new Controller(schema, data);
+controller.validator()
+    .setErrorHandler(error => i18n.translateError(controller, error));
+```
+
+where the file `languageGerman.js` contains something like:
+
+```javascript
+import render from "json-schema-library/lib/utils/render";
+
+export default {
+    strings: {
+        "editor:mediaimage:metadata": "Bildgröße: {{width}}x{{height}} [{{size}}]",
+        "editor:wysiwyg:edithtml:tooltip": "HTML Quellcode bearbeiten",
+        "toolbar:errors:tooltip": "Schnellansicht aller Fehler",
+        "toolbar:undo:tooltip": "Undo. Letzte Änderung rückgängig machen",
+        "toolbar:redo:tooltip": "Redo. Letzte Änderung wiederherstellen",
+        "toolbar:description:tooltip": "Beschreibungstexte ein oder ausblenden"
+    },
+    errors: {
+        "format-url-error": "Die angegebene Wert `{{value}}` ist keine gültige url",
+        "maximum-error": "Die Zahl darf nicht größer als {{maximum}} sein.",
+        "max-length-error": "Die Eingabe ist zu lang: {{length}} von {{maxLength}} erlaubten Zeichen.",
+        "minimum-error": "Die Zahl muss größer oder gleich {{minimum}} sein",
+        "min-items-error": "Es müssen mindestens {{minLength}} Elemente vorhanden sein",
+        "min-length-error": (controller, error) => {
+            if (error.data.minLength === 1) {
+                return "Es wird eine Eingabe benötigt";
+            }
+            return render("Der Text muss eine Mindestlänge von {{minLength}} haben (aktuell {{length}}).", error.data);
+        }
+    }
+};
+```
 
 <!--
 - theming
@@ -338,10 +462,10 @@ where more generale editors, like _object_ or _default values_ should come last.
 
 ## Further examples
 
-Besides the getting-started example the are also the following examples in the `./examples` directory
+Besides [getting-started](./examples/getting-started.html), the following examples can be found in the [./examples](./examples) directory
 
-* see how to create multiple editors from one instance in [examples/multipleEditors](./examples/multipleEditors.html)
-* see how to create multiple independent editron instances in [examples/multipleController](./examples/multipleController.html)
+* see how to create multiple editors from one instance in [examples/multiple-editors](./examples/multiple-editors.html)
+* see how to create multiple independent editron instances in [examples/multiple-controller](./examples/multiple-controller.html)
 
 
 ### custom build
@@ -355,6 +479,7 @@ Besides the getting-started example the are also the following examples in the `
 ---
 ## custom editor (widget)
 
+
 ### why should i create an editor?
 > create a custom interface for a specific type of data/schema
 
@@ -363,16 +488,24 @@ Besides the getting-started example the are also the following examples in the `
 - **improve usability of form** break flow, to hide details from main data
 - **preview data** (feedback/usability): preview for given input data (e.g. image-url)
 
+
 ### what can i do with custom editor?
 > in general, you can do everything (interface is a dom-element, interaction is performed through data-events)
 
 - hook on a very specific json-schema property
 - completely render and grab user input (complete take over)
 - extend rendering on spot
-- delegate rendering of child child editors to editron
+- delegate rendering of child editors to editron
 
 
 ### how to create a custom editor-widget
+
+To add a custom editor, you need to
+
+1. _create a custom editor class_, according to the details below
+2. _add a static editorOf function_ for identifying the required json-schema type and
+3. _add the editor class to an editron instance_ or add it through the global plugin interface
+4. _ensure the JSON-Schema adds the correct format_, to trigger the custom editor-widget
 
 **Add your editor**
 
@@ -395,7 +528,13 @@ You can evaluate any json-schema property, options set in json-schema and  the a
 
 ```javascript
 class CustomEditor {
-    // pointer - data JSON-Pointer referring to a schema, where an editor is requested
+    /**
+     * Decide, if the given JSON-Schema should use this editor
+     * @param  {String} pointer         - JSON-Pointer
+     * @param  {Controller} controller  - Controller-instance
+     * @param  {Object} options         - options-object as described above
+     * @return {Boolean} returns `true` if this class should be used for the pased JSON-Pointer
+     */
     static editorOf(pointer, controller, options) {
         // per default, you will want to get the schema of the current JSON-pointer
         const schema = controller.schema().get(pointer);
@@ -441,13 +580,7 @@ Using the optional base class `AbstractEditor`, most work for bootstraping is do
  * A custom editron-editor-widget
  */
 class CustomEditor extends AbstractEditor {
-    /**
-     * Decide, if the given JSON-Schema should use this editor
-     * @param  {String} pointer         - JSON-Pointer
-     * @param  {Controller} controller  - Controller-instance
-     * @param  {Object} options         - options-object as described above
-     * @return {Boolean} returns `true` if this class should be used for the pased JSON-Pointer
-     */
+
     static editorOf(pointer, controller, options) {
         const schema = controller.schema().get(pointer);
         return schema.format === "CustomEditor" && schema.type === "array";
@@ -457,21 +590,19 @@ class CustomEditor extends AbstractEditor {
         // perform required bootstrapping and exposed the DomNode on `this.dom`
         super(pointer, controller, options);
 
-        // recommended: build your view model for rendering. In this example `mithril` hooks are used
+        // recommended: build your view model for rendering
         this.viewModel = {
             pointer,
             title: options.title,
             id: options.id,
-            value: "",
-            errors: [],
+            errors: this.getErrors(),
             description: options.description,
             onfocus: () => this.focus(),
             onblur: () => this.blur(),
-            onchange: this.addTag.bind(this),
+            onchange: (value) => this.setData(value)
             tags: this.getData()
         };
-
-        // recommended: initially render view
+        // recommended: initially render editor view
         this.render();
     }
 
@@ -481,17 +612,17 @@ class CustomEditor extends AbstractEditor {
         this.render();
     }
 
+    // required, when pointer is used: update any pointer references used and redraw
+    updatePointer(newPointer) {
+        super.updatePointer(newPointer);
+        this.viewModel.pointer = newPointer;
+        this.render();
+    }
+
     // optional: update errors and view
     updateErrors(errors) {
         this.viewModel.errors = errors;
         this.render();
-    }
-
-    // position in data has changed (from moved array-items), update any pointer references used
-    // required, if pointer is not referenced
-    updatePointer(newPointer) {
-        super.updatePointer(newPointer);
-        this.viewModel.pointer = newPointer;
     }
 
     // optional: remove any custom views, created data or listeners
@@ -505,6 +636,7 @@ class CustomEditor extends AbstractEditor {
 
     // custom method: render the view to dom
     render() {
+        // example using mithril to update dom
         m.render(this.dom, m(CustomView, this.viewModel));
     }
 }
@@ -519,13 +651,13 @@ reflect this change. The default flow is:
 2. an `update(patch)` is received and the input-form is rerendered (nonetheless)
 
 in order to improve rendering performance, the patch-object (which is a
-[jsondiffpatch](https://github.com/benjamine/jsondiffpatch/blob/master/docs/deltas.md)-diff) can be used to decrease
-changes in the ui.
+[jsondiffpatch](https://github.com/benjamine/jsondiffpatch/blob/master/docs/deltas.md)-diff) can be used to minimize
+required changes in the ui.
 
 **about `updatePointer(newPointer)`**
 
-Any editor uses its `pointer` to reference data, schema and set its id to the rendered view. Changing the `pointer` is
-an implementation detail, but is required for a performant user-experience. In case of reordering array-items
+Any editor uses its `pointer` to reference data, schema and to set its id to the rendered view. Changing the `pointer`
+is an implementation detail, but is required for a performant user-experience. In case of reordering array-items
 (i.e. drag & drop), the main view must rerender all UI-forms, which will become sluggish on large documents. Thus
 `updatePointer` is required to reuse existing HTML nodes for a performant rendering. The `AbstractEditor` will change
 all default listeners to the new pointer, but any custom usage of the pointer (and _id_) must be treated manually.
@@ -536,33 +668,72 @@ For further detail, check the [AbstractEditor](./editors/AbstractEditor.js) impl
 [advanced](#advanced)-section below.
 
 
-#### 3. build setup
+#### 3. build setup (webpack)
 
-- editron dependencies
-- setup
-- templates (helpers)
+Add editron to your devDependencies `npm i editron-core -D`. And start your webpack config with the following
+
+```javascript
+// webpack.config.js
+const plugin = require("editron-core/plugin/webpack");
+module.exports = plugin.createConfig("my-custom-editor.js", "my-custom-editor.scss");
+```
+
+You can install the required dependencies coming with editron-core by running
+`npm --prefix node_modules/editron-core install` in your editor directory. Now, running
+`npx NODE_ENV=production webpack` in your project, will start bundling the editor to be used with `editron-modules.js`.
+
+@todo build setup, testing, bundling, watching, etc
+
 
 #### 4. plugin editor
 
+If you are using the above build setup, exporting the editor by
+
+```javascript
+// file: my-custom-editor.js
+import plugin from "editron-core/plugin";
+plugin.editor(require("./MyCustomEditor"));
+```
+
+will add your editor by adding the script to your document:
+
+```html
+<script src="https://.../editron-modules.js"></script>
+<script src="https://.../editron-core.js"></script>
+<!-- the following script will add the editor when loaded -->
+<script src="https://.../my-custom-editor.js"></script>
+```
+
+Without the build-setup, you can still call the plugin through `const { plugin } = editronCore;`.
 
 
 #### 5. Delegating child nodes
 
-@todo delegate
-@todo update pointer
+    @todo delegate
+    @todo update pointer
+
 
 #### 6. advanced
 
-Extending the `AbstractEditor` is totally optional. For any more custom editor-implementations you can write your own
+Extending the `AbstractEditor` is totally optional. For more custom editor-implementations you can write your own
 class, but you must follow the some basic rules, that are further described in [AbstractEditor](./editors/AbstractEditor.js).
 
-@todo Theese rules are
-
+<!--
+@todo These rules are
 1. error event
 2. update pointer and event listeners
 3. creating dom element and class convention
 4. exposing helpers toElement, getPointer
 5. Using test-template
+-->
+
+#### 7. Guidelines
+
+    @todo
+    - use render method for string replacemend
+    - create dom-element using helper (attrs, classnames, etc)
+    - use given id on input-element
+    - ...
 
 <!--
 ---
@@ -571,20 +742,15 @@ class, but you must follow the some basic rules, that are further described in [
 > generated api
 
 ### Controller
-
 ### Services
-
 ### ...
 
-
 ## editors
-
 - wysiwyg
 - code
 - overview navigation
 
 ### todo
-
 - image
 - taglist editor
 -
