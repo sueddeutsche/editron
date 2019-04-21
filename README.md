@@ -33,7 +33,7 @@ Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for
     - custom validation methods (sync and async)
 - design
     - performant
-    - follows simple concepts in interpreting the JSON-Schema to build a HTML form
+    - follows simple concepts in interpreting the JSON-Schema to build an HTML form
 - features
     - supports collaborative editing,
     - live inline validation
@@ -69,7 +69,7 @@ There are three basic concepts that you should be familiar, when working with a 
 ---
 ## Getting started
 
-> You can copy [the following example](./examples/getting-started.html) from `./examples/getting-started.html`
+> You can copy the following example from [./examples/getting-started.html](./examples/getting-started.html)
 
 **1. Add the required dependencies to your application**
 
@@ -333,7 +333,7 @@ plugin.editor(MyCustomEditor);
 const controller = new Controller(jsonSchema, data);
 ```
 
-Adding editors to a single `Controller`-instance, use the options or add them directory. Using options, you build the
+Adding editors to a single `Controller`-instance, use the options or add them directly. Using options, you build the
 complete editors-list
 
 ```javascript
@@ -470,11 +470,14 @@ Besides [getting-started](./examples/getting-started.html), the following exampl
 
 ### custom build
 
+@todo
+
+<!--
 - npm i
 - webpack build
 - hello world
 - linking editors
-
+-->
 
 ---
 ## custom editor (widget)
@@ -524,7 +527,7 @@ first editor, returning `true` for the _static_ function `CustomEditor.editorOf`
 [@see utils/selectEditor]("./utils/selectEditor.js")). e.g. if no editor will match the json-schema
 `type: "object"`, a default _object-editor_ will be instantiated.
 
-You can evaluate any json-schema property, options set in json-schema and  the associated data:
+You can evaluate any json-schema property, options set in json-schema and the associated data:
 
 ```javascript
 class CustomEditor {
@@ -566,12 +569,12 @@ defined by code, e.g. by calling `controller.createEditor(pointer, domNode, { dy
 other options.
 
 
-#### 1. quickstart and hack away (boilerplate)
+#### Quickstart and hack away (boilerplate)
 
 - @todo working example with editor testpage
 
 
-#### 2. example using abstract editor
+#### Example using abstract editor
 
 Using the optional base class `AbstractEditor`, most work for bootstraping is done by its base methods. This leaves the following required methods for a working editor
 
@@ -628,7 +631,7 @@ class CustomEditor extends AbstractEditor {
     // optional: remove any custom views, created data or listeners
     destroy() {
         if (this.viewModel) { // ensure this editor was not already destroyed
-            m.render(this.dom, m.trust(""));
+            m.render(this.dom, m.trust("")); // reset the html, removing event-listeners
             super.destroy();
             this.viewModel = null; // flag as destroyed
         }
@@ -668,7 +671,7 @@ For further detail, check the [AbstractEditor](./editors/AbstractEditor.js) impl
 [advanced](#advanced)-section below.
 
 
-#### 3. build setup (webpack)
+#### Build setup (webpack)
 
 Add editron to your devDependencies `npm i editron-core -D`. And start your webpack config with the following
 
@@ -685,7 +688,7 @@ You can install the required dependencies coming with editron-core by running
 @todo build setup, testing, bundling, watching, etc
 
 
-#### 4. plugin editor
+#### Plugin editor
 
 If you are using the above build setup, exporting the editor by
 
@@ -707,13 +710,32 @@ will add your editor by adding the script to your document:
 Without the build-setup, you can still call the plugin through `const { plugin } = editronCore;`.
 
 
-#### 5. Delegating child nodes
+#### Delegating child editors
 
-    @todo delegate
-    @todo update pointer
+You can also delegate the creation of child-editor back to the controller. Suppose we have an object with a property
+`time` and want to pass the time property back to the controller:
+
+```javascript
+// this follows default editor creation
+const timeDom = this.dom.querySelector(".child"); // target node, to insert child editor
+const pointerToTime = `${this.getPointer()}/time`; // build the JSON-Pointer to the time prop
+const timeEditor = controller.createEditor(pointerToTime, timeDom); // create child editor for time
+```
+
+**Note** that managing childeditors also requires delegation of the `updatePointer` message. In case of the above
+_time_ example, you would need to notify the child-editor, as follows:
+
+```javascript
+// within updatePointer(newPointer)
+super.updatePointer(newPointer);
+// ...
+timeEditor.updatePointer(`${this.getPointer()}/time`);
+```
+
+<!-- @todo inspect updatePointer automation -->
 
 
-#### 6. advanced
+#### Advanced
 
 Extending the `AbstractEditor` is totally optional. For more custom editor-implementations you can write your own
 class, but you must follow the some basic rules, that are further described in [AbstractEditor](./editors/AbstractEditor.js).
@@ -727,10 +749,10 @@ class, but you must follow the some basic rules, that are further described in [
 5. Using test-template
 -->
 
-#### 7. Guidelines
+#### Guidelines
 
     @todo
-    - use render method for string replacemend
+    - use render method for string replacement
     - create dom-element using helper (attrs, classnames, etc)
     - use given id on input-element
     - ...
