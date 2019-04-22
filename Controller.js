@@ -266,22 +266,25 @@ class Controller {
     getInstances() { return this.instances; }
 
     /**
-     * Add a custom validator
-     * @param {String} type         - must be _format_
-     * @param {String} value        - value of _format_
+     * @param {String} format       - value of _format_
      * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
      *      als return a promise
      */
-    addValidator(type, value, validator) {
-        if (type === "format") {
-            addValidator.format(this.core, value, validator);
-            return;
-        }
-
-        throw new Error(`Unknown or unsupported validation ${type}`);
+    addFormatValidator(format, validator) {
+        addValidator.format(this.core, format, validator);
     }
 
+    /**
+     * @param {String} datatype     - JSON-Schema datatype to register attribute, e.g. "string" or "object"
+     * @param {String} keyword      - custom keyword
+     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
+     *      als return a promise
+     */
+    addKeywordValidator(datatype, keyword, validator) {
+        addValidator.keyword(this.core, datatype, keyword, validator);
+    }
 
     /**
      * Change the new schema for the current data

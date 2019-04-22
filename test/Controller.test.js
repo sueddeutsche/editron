@@ -2,7 +2,6 @@
 const test = require("ava").test;
 
 const Controller = require("../Controller");
-const editors = require("../editors");
 
 
 test.beforeEach((t) => {
@@ -19,14 +18,14 @@ test.beforeEach((t) => {
     };
 
     const data = { list: [{ title: "first" }, { title: "second" }, { title: "third" }] };
-    const controller = new Controller(schema, data, editors);
+    const controller = new Controller(schema, data);
     t.context.controller = controller;
 });
 
 
 test("should have independent data services", (t) => {
     const controller = t.context.controller;
-    const controller2 = new Controller(controller.schema().get(), controller.data().get(), editors);
+    const controller2 = new Controller(controller.schema().get(), controller.data().get());
 
     controller2.data().set("#/list/0", { title: "new" });
 

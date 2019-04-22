@@ -390,16 +390,24 @@ A validator is a function with the following signature
 function validate(core, schema, value, pointer)
 ```
 
-you can reference the json-schema-library
+<!-- @todo global vs instance registration -->
+You can reference the json-schema-library
 [format-validators](https://github.com/sagold/json-schema-library/blob/master/lib/validation/format.js) for more examples
 
 Adding a _format_-validator
 
 ```javascript
-controller.addValidator("format", "my-custom-format", validator);
+controller.addFormatValidator("my-custom-format", validator);
 ```
 
-_@todo: Add custom attribute validators to interface_
+Adding a _keyword_-validator
+
+```javascript
+// @param {datatype} JSON-Schema datatype, to register this attribute. Here: "string"
+// @param {keyword} custom attribute to register validator. Here: "my-custom-keyword"
+// @param {Function} validation function
+controller.addKeywordValidator("string", "my-custom-keyword", validator);
+```
 
 For further details, see the [json-schema-library](https://github.com/sagold/json-schema-library#add-custom-validators)
 
@@ -720,6 +728,8 @@ You can also delegate the creation of child-editor back to the controller. Suppo
 const timeDom = this.dom.querySelector(".child"); // target node, to insert child editor
 const pointerToTime = `${this.getPointer()}/time`; // build the JSON-Pointer to the time prop
 const timeEditor = controller.createEditor(pointerToTime, timeDom); // create child editor for time
+// you can also pass options to the editor with
+// controller.createEditor(pointerToTime, timeDom, editorOptions);
 ```
 
 **Note** that managing childeditors also requires delegation of the `updatePointer` message. In case of the above
