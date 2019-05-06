@@ -25,7 +25,6 @@ atlassian-ide-plugin.xml
 .yo-rc.json
 
 doc-build/
-/build/
 /channels/
 
 /test/visual/**/diff.png
