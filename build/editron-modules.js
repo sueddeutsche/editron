@@ -37,12 +37,32 @@ var editronModules =
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
 /******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
 /******/ 	};
 /******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
@@ -60,6 +80,7 @@ var editronModules =
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
@@ -67,6 +88,11 @@ var editronModules =
 /******/ ({
 
 /***/ "./Controller.js":
+/*!***********************!*\
+  !*** ./Controller.js ***!
+  \***********************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -80,21 +106,21 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var Core = __webpack_require__("./node_modules/json-schema-library/index.js").cores.JsonEditor;
-var addValidator = __webpack_require__("./node_modules/json-schema-library/lib/addValidator.js");
-var DataService = __webpack_require__("./services/DataService.js");
-var SchemaService = __webpack_require__("./services/SchemaService.js");
-var ValidationService = __webpack_require__("./services/ValidationService.js");
-var LocationService = __webpack_require__("./services/LocationService.js");
-var State = __webpack_require__("./services/State.js");
-var selectEditor = __webpack_require__("./utils/selectEditor.js");
-var _createElement = __webpack_require__("./utils/createElement.js");
-var addItem = __webpack_require__("./utils/addItem.js");
-var UISchema = __webpack_require__("./utils/UISchema.js");
-var getID = __webpack_require__("./utils/getID.js");
-var plugin = __webpack_require__("./plugin/index.js");
-var i18n = __webpack_require__("./utils/i18n.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
+var addValidator = __webpack_require__(/*! json-schema-library/lib/addValidator */ "./node_modules/json-schema-library/lib/addValidator.js");
+var DataService = __webpack_require__(/*! ./services/DataService */ "./services/DataService.js");
+var SchemaService = __webpack_require__(/*! ./services/SchemaService */ "./services/SchemaService.js");
+var ValidationService = __webpack_require__(/*! ./services/ValidationService */ "./services/ValidationService.js");
+var LocationService = __webpack_require__(/*! ./services/LocationService */ "./services/LocationService.js");
+var State = __webpack_require__(/*! ./services/State */ "./services/State.js");
+var selectEditor = __webpack_require__(/*! ./utils/selectEditor */ "./utils/selectEditor.js");
+var _createElement = __webpack_require__(/*! ./utils/createElement */ "./utils/createElement.js");
+var addItem = __webpack_require__(/*! ./utils/addItem */ "./utils/addItem.js");
+var UISchema = __webpack_require__(/*! ./utils/UISchema */ "./utils/UISchema.js");
+var getID = __webpack_require__(/*! ./utils/getID */ "./utils/getID.js");
+var plugin = __webpack_require__(/*! ./plugin */ "./plugin/index.js");
+var i18n = __webpack_require__(/*! ./utils/i18n */ "./utils/i18n.js");
 
 function isValidPointer(pointer) {
     return pointer[0] === "#";
@@ -177,7 +203,7 @@ var Controller = function () {
         schema = UISchema.extendSchema(schema);
 
         this.options = _extends({
-            editors: [__webpack_require__("./editors/oneofeditor/index.js")].concat(_toConsumableArray(plugin.getEditors()), [__webpack_require__("./editors/arrayeditor/index.js"), __webpack_require__("./editors/objecteditor/index.js"), __webpack_require__("./editors/valueeditor/index.js")])
+            editors: [__webpack_require__(/*! ./editors/oneofeditor */ "./editors/oneofeditor/index.js")].concat(_toConsumableArray(plugin.getEditors()), [__webpack_require__(/*! ./editors/arrayeditor */ "./editors/arrayeditor/index.js"), __webpack_require__(/*! ./editors/objecteditor */ "./editors/objecteditor/index.js"), __webpack_require__(/*! ./editors/valueeditor */ "./editors/valueeditor/index.js")])
         }, options);
 
         this.editors = this.options.editors;
@@ -516,15 +542,20 @@ module.exports = Controller;
 /***/ }),
 
 /***/ "./components/container/index.js":
+/*!***************************************!*\
+  !*** ./components/container/index.js ***!
+  \***************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
-var ContainerHeader = __webpack_require__("./components/containerheader/index.js");
-var ContainerErrors = __webpack_require__("./components/containererrors/index.js");
-var ContainerDescription = __webpack_require__("./components/containerdescription/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var ContainerHeader = __webpack_require__(/*! ../containerheader */ "./components/containerheader/index.js");
+var ContainerErrors = __webpack_require__(/*! ../containererrors */ "./components/containererrors/index.js");
+var ContainerDescription = __webpack_require__(/*! ../containerdescription */ "./components/containerdescription/index.js");
 
 /**
  * @view ContainerView
@@ -555,13 +586,18 @@ module.exports = ContainerView;
 /***/ }),
 
 /***/ "./components/containerdescription/index.js":
+/*!**************************************************!*\
+  !*** ./components/containerdescription/index.js ***!
+  \**************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
-var populated = __webpack_require__("./utils/populated.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var populated = __webpack_require__(/*! ../../utils/populated */ "./utils/populated.js");
 
 /**
  * @name   ContainerDescription
@@ -594,12 +630,17 @@ module.exports = {
 /***/ }),
 
 /***/ "./components/containererrors/index.js":
+/*!*********************************************!*\
+  !*** ./components/containererrors/index.js ***!
+  \*********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 module.exports = {
     view: function view(vnode) {
@@ -616,6 +657,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./components/containerheader/index.js":
+/*!*********************************************!*\
+  !*** ./components/containerheader/index.js ***!
+  \*********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -623,9 +669,9 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
-var getID = __webpack_require__("./utils/getID.js");
-var populated = __webpack_require__("./utils/populated.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var getID = __webpack_require__(/*! ../../utils/getID */ "./utils/getID.js");
+var populated = __webpack_require__(/*! ../../utils/populated */ "./utils/populated.js");
 
 function getClass(_ref) {
     var title = _ref.title,
@@ -672,31 +718,41 @@ module.exports = {
 /***/ }),
 
 /***/ "./components/index.js":
+/*!*****************************!*\
+  !*** ./components/index.js ***!
+  \*****************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    container: __webpack_require__("./components/container/index.js"),
-    containerdescription: __webpack_require__("./components/containerdescription/index.js"),
-    containererrors: __webpack_require__("./components/containererrors/index.js"),
-    containerheader: __webpack_require__("./components/containerheader/index.js"),
-    overlay: __webpack_require__("./components/overlay/index.js"),
+    container: __webpack_require__(/*! ./container */ "./components/container/index.js"),
+    containerdescription: __webpack_require__(/*! ./containerdescription */ "./components/containerdescription/index.js"),
+    containererrors: __webpack_require__(/*! ./containererrors */ "./components/containererrors/index.js"),
+    containerheader: __webpack_require__(/*! ./containerheader */ "./components/containerheader/index.js"),
+    overlay: __webpack_require__(/*! ./overlay */ "./components/overlay/index.js"),
     // overlayjson: require("./overlayjson"),
-    overlayselecttiles: __webpack_require__("./components/overlayselecttiles/index.js")
+    overlayselecttiles: __webpack_require__(/*! ./overlayselecttiles */ "./components/overlayselecttiles/index.js")
 };
 
 /***/ }),
 
 /***/ "./components/overlay/index.js":
+/*!*************************************!*\
+  !*** ./components/overlay/index.js ***!
+  \*************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
-var Button = __webpack_require__("./node_modules/mithril-material-forms/index.js").button;
+var m = __webpack_require__(/*! mithril */ "mithril");
+var Button = __webpack_require__(/*! mithril-material-forms */ "./node_modules/mithril-material-forms/index.js").button;
 
 module.exports = {
 
@@ -726,6 +782,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./components/overlayselecttiles/index.js":
+/*!************************************************!*\
+  !*** ./components/overlayselecttiles/index.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -733,7 +794,7 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 var Tile = {
     view: function view(vnode) {
@@ -784,6 +845,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./editors/AbstractEditor.js":
+/*!***********************************!*\
+  !*** ./editors/AbstractEditor.js ***!
+  \***********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -937,6 +1003,11 @@ module.exports = AbstractEditor;
 /***/ }),
 
 /***/ "./editors/AbstractValueEditor.js":
+/*!****************************************!*\
+  !*** ./editors/AbstractValueEditor.js ***!
+  \****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -948,8 +1019,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var m = __webpack_require__("mithril");
-var getId = __webpack_require__("./utils/getID.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var getId = __webpack_require__(/*! ../utils/getID */ "./utils/getID.js");
 
 var convert = {
     "boolean": function boolean(value) {
@@ -1172,6 +1243,11 @@ module.exports = AbstractValueEditor;
 /***/ }),
 
 /***/ "./editors/arrayeditor/ArrayItemEditor.js":
+/*!************************************************!*\
+  !*** ./editors/arrayeditor/ArrayItemEditor.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1183,10 +1259,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var m = __webpack_require__("mithril");
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var ArrayItemView = __webpack_require__("./editors/arrayeditor/ArrayItemView.js");
-var arrayUtils = __webpack_require__("./utils/array.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var ArrayItemView = __webpack_require__(/*! ./ArrayItemView */ "./editors/arrayeditor/ArrayItemView.js");
+var arrayUtils = __webpack_require__(/*! ../../utils/array */ "./utils/array.js");
 
 var ArrayItemEditor = function () {
     function ArrayItemEditor(pointer, controller) {
@@ -1290,12 +1366,17 @@ module.exports = ArrayItemEditor;
 /***/ }),
 
 /***/ "./editors/arrayeditor/ArrayItemView.js":
+/*!**********************************************!*\
+  !*** ./editors/arrayeditor/ArrayItemView.js ***!
+  \**********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 var ArrayItemView = {
 
@@ -1339,6 +1420,11 @@ module.exports = ArrayItemView;
 /***/ }),
 
 /***/ "./editors/arrayeditor/index.js":
+/*!**************************************!*\
+  !*** ./editors/arrayeditor/index.js ***!
+  \**************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1350,10 +1436,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var m = __webpack_require__("mithril");
-var ArrayItemEditor = __webpack_require__("./editors/arrayeditor/ArrayItemEditor.js");
-var diffpatch = __webpack_require__("./services/utils/diffpatch.js");
-var View = __webpack_require__("./components/container/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var ArrayItemEditor = __webpack_require__(/*! ./ArrayItemEditor */ "./editors/arrayeditor/ArrayItemEditor.js");
+var diffpatch = __webpack_require__(/*! ../../services/utils/diffpatch */ "./services/utils/diffpatch.js");
+var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
 
 var ArrayEditor = function () {
     _createClass(ArrayEditor, null, [{
@@ -1583,23 +1669,33 @@ module.exports = ArrayEditor;
 /***/ }),
 
 /***/ "./editors/index.js":
+/*!**************************!*\
+  !*** ./editors/index.js ***!
+  \**************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    AbstractEditor: __webpack_require__("./editors/AbstractEditor.js"),
-    AbstractValueEditor: __webpack_require__("./editors/AbstractValueEditor.js"),
-    ArrayEditor: __webpack_require__("./editors/arrayeditor/index.js"),
-    ObjectEditor: __webpack_require__("./editors/objecteditor/index.js"),
-    OneOfEditor: __webpack_require__("./editors/oneofeditor/index.js"),
-    ValueEditor: __webpack_require__("./editors/valueeditor/index.js")
+    AbstractEditor: __webpack_require__(/*! ./AbstractEditor */ "./editors/AbstractEditor.js"),
+    AbstractValueEditor: __webpack_require__(/*! ./AbstractValueEditor */ "./editors/AbstractValueEditor.js"),
+    ArrayEditor: __webpack_require__(/*! ./arrayeditor */ "./editors/arrayeditor/index.js"),
+    ObjectEditor: __webpack_require__(/*! ./objecteditor */ "./editors/objecteditor/index.js"),
+    OneOfEditor: __webpack_require__(/*! ./oneofeditor */ "./editors/oneofeditor/index.js"),
+    ValueEditor: __webpack_require__(/*! ./valueeditor */ "./editors/valueeditor/index.js")
 };
 
 /***/ }),
 
 /***/ "./editors/objecteditor/index.js":
+/*!***************************************!*\
+  !*** ./editors/objecteditor/index.js ***!
+  \***************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1611,10 +1707,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var m = __webpack_require__("mithril");
-var TextareaForm = __webpack_require__("./node_modules/mithril-material-forms/components/textareaform/index.js");
-var OverlayService = __webpack_require__("./services/OverlayService.js");
-var View = __webpack_require__("./components/container/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var TextareaForm = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
+var OverlayService = __webpack_require__(/*! ../../services/OverlayService */ "./services/OverlayService.js");
+var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
 
 function showJSON(controller, data, title) {
     var element = controller.createElement(".overlay__item.overlay__item--json");
@@ -1824,6 +1920,11 @@ module.exports = ObjectEditor;
 /***/ }),
 
 /***/ "./editors/oneofeditor/index.js":
+/*!**************************************!*\
+  !*** ./editors/oneofeditor/index.js ***!
+  \**************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1833,12 +1934,12 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var m = __webpack_require__("mithril");
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var Select = __webpack_require__("./node_modules/mithril-material-forms/components/select/index.js");
-var getId = __webpack_require__("./utils/getID.js");
-var View = __webpack_require__("./components/container/index.js");
-var UI_PROPERTY = __webpack_require__("./utils/UISchema.js").UI_PROPERTY;
+var m = __webpack_require__(/*! mithril */ "mithril");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var Select = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.js");
+var getId = __webpack_require__(/*! ../../utils/getID */ "./utils/getID.js");
+var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
+var UI_PROPERTY = __webpack_require__(/*! ../../utils/UISchema */ "./utils/UISchema.js").UI_PROPERTY;
 
 var OneOfEditor = function () {
     _createClass(OneOfEditor, null, [{
@@ -1993,6 +2094,11 @@ module.exports = OneOfEditor;
 /***/ }),
 
 /***/ "./editors/valueeditor/View.js":
+/*!*************************************!*\
+  !*** ./editors/valueeditor/View.js ***!
+  \*************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2000,13 +2106,13 @@ module.exports = OneOfEditor;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
-var CheckboxForm = __webpack_require__("./node_modules/mithril-material-forms/components/checkboxform/index.js");
-var SelectForm = __webpack_require__("./node_modules/mithril-material-forms/components/selectform/index.js");
-var TextareaForm = __webpack_require__("./node_modules/mithril-material-forms/components/textareaform/index.js");
-var InputForm = __webpack_require__("./node_modules/mithril-material-forms/components/inputform/index.js");
-var UISchema = __webpack_require__("./utils/UISchema.js");
+var CheckboxForm = __webpack_require__(/*! mithril-material-forms/components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js");
+var SelectForm = __webpack_require__(/*! mithril-material-forms/components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js");
+var TextareaForm = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
+var InputForm = __webpack_require__(/*! mithril-material-forms/components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js");
+var UISchema = __webpack_require__(/*! ../../utils/UISchema */ "./utils/UISchema.js");
 
 function chooseInput(attrs) {
     var schema = attrs.schema;
@@ -2044,6 +2150,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./editors/valueeditor/index.js":
+/*!**************************************!*\
+  !*** ./editors/valueeditor/index.js ***!
+  \**************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2057,9 +2168,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var m = __webpack_require__("mithril");
-var View = __webpack_require__("./editors/valueeditor/View.js");
-var AbstractValueEditor = __webpack_require__("./editors/AbstractValueEditor.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var View = __webpack_require__(/*! ./View */ "./editors/valueeditor/View.js");
+var AbstractValueEditor = __webpack_require__(/*! ../AbstractValueEditor */ "./editors/AbstractValueEditor.js");
 
 var ValueEditor = function (_AbstractValueEditor) {
     _inherits(ValueEditor, _AbstractValueEditor);
@@ -2098,6 +2209,11 @@ module.exports = ValueEditor;
 /***/ }),
 
 /***/ "./editron.js":
+/*!********************!*\
+  !*** ./editron.js ***!
+  \********************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2123,17 +2239,22 @@ module.exports = ValueEditor;
  * @property {Object} plugin            - basic plugin implementation for editor registration
  */
 module.exports = {
-  Controller: __webpack_require__("./Controller.js"),
-  components: __webpack_require__("./components/index.js"),
-  editors: __webpack_require__("./editors/index.js"),
-  services: __webpack_require__("./services/index.js"),
-  utils: __webpack_require__("./utils/index.js"),
-  plugin: __webpack_require__("./plugin/index.js")
+  Controller: __webpack_require__(/*! ./Controller */ "./Controller.js"),
+  components: __webpack_require__(/*! ./components */ "./components/index.js"),
+  editors: __webpack_require__(/*! ./editors */ "./editors/index.js"),
+  services: __webpack_require__(/*! ./services */ "./services/index.js"),
+  utils: __webpack_require__(/*! ./utils */ "./utils/index.js"),
+  plugin: __webpack_require__(/*! ./plugin */ "./plugin/index.js")
 };
 
 /***/ }),
 
 /***/ "./editron.scss":
+/*!**********************!*\
+  !*** ./editron.scss ***!
+  \**********************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "editron.css";
@@ -2141,6 +2262,11 @@ module.exports = __webpack_require__.p + "editron.css";
 /***/ }),
 
 /***/ "./node_modules/autosize/dist/autosize.js":
+/*!************************************************!*\
+  !*** ./node_modules/autosize/dist/autosize.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2157,15 +2283,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-	} else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
-		factory(exports, module);
-	} else {
-		var mod = {
-			exports: {}
-		};
-		factory(mod.exports, mod);
-		global.autosize = mod.exports;
-	}
+	} else { var mod; }
 })(undefined, function (exports, module) {
 	'use strict';
 
@@ -2445,6 +2563,11 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 /***/ }),
 
 /***/ "./node_modules/diff_match_patch/lib/diff_match_patch.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/diff_match_patch/lib/diff_match_patch.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4478,30 +4601,40 @@ exports['DIFF_EQUAL'] = DIFF_EQUAL;
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/index.js":
+/*!********************************************!*\
+  !*** ./node_modules/gson-pointer/index.js ***!
+  \********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-exports.get = __webpack_require__("./node_modules/gson-pointer/lib/get.js");
-exports.set = __webpack_require__("./node_modules/gson-pointer/lib/set.js");
-exports.delete = __webpack_require__("./node_modules/gson-pointer/lib/delete.js");
-exports.join = __webpack_require__("./node_modules/gson-pointer/lib/join.js");
-exports.split = __webpack_require__("./node_modules/gson-pointer/lib/split.js");
+exports.get = __webpack_require__(/*! ./lib/get */ "./node_modules/gson-pointer/lib/get.js");
+exports.set = __webpack_require__(/*! ./lib/set */ "./node_modules/gson-pointer/lib/set.js");
+exports.delete = __webpack_require__(/*! ./lib/delete */ "./node_modules/gson-pointer/lib/delete.js");
+exports.join = __webpack_require__(/*! ./lib/join */ "./node_modules/gson-pointer/lib/join.js");
+exports.split = __webpack_require__(/*! ./lib/split */ "./node_modules/gson-pointer/lib/split.js");
 
-exports.isRoot = __webpack_require__("./node_modules/gson-pointer/lib/isRoot.js");
+exports.isRoot = __webpack_require__(/*! ./lib/isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
 
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/lib/delete.js":
+/*!*************************************************!*\
+  !*** ./node_modules/gson-pointer/lib/delete.js ***!
+  \*************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var split = __webpack_require__("./node_modules/gson-pointer/lib/split.js");
-var get = __webpack_require__("./node_modules/gson-pointer/lib/get.js");
-var removeUndefinedItems = __webpack_require__("./node_modules/gson-pointer/lib/removeUndefinedItems.js");
+var split = __webpack_require__(/*! ./split */ "./node_modules/gson-pointer/lib/split.js");
+var get = __webpack_require__(/*! ./get */ "./node_modules/gson-pointer/lib/get.js");
+var removeUndefinedItems = __webpack_require__(/*! ./removeUndefinedItems */ "./node_modules/gson-pointer/lib/removeUndefinedItems.js");
 
 function pointerDelete(data, pointer, keepArrayIndices) {
 	var properties = split(pointer);
@@ -4521,13 +4654,18 @@ module.exports = pointerDelete;
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/lib/get.js":
+/*!**********************************************!*\
+  !*** ./node_modules/gson-pointer/lib/get.js ***!
+  \**********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var split = __webpack_require__("./node_modules/gson-pointer/lib/split.js");
-var isRoot = __webpack_require__("./node_modules/gson-pointer/lib/isRoot.js");
+var split = __webpack_require__(/*! ./split */ "./node_modules/gson-pointer/lib/split.js");
+var isRoot = __webpack_require__(/*! ./isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
 
 function get(data, pointer, defaultValue) {
 	if (pointer == null || data == null) {
@@ -4558,6 +4696,11 @@ module.exports = get;
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/lib/isRoot.js":
+/*!*************************************************!*\
+  !*** ./node_modules/gson-pointer/lib/isRoot.js ***!
+  \*************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4570,12 +4713,17 @@ module.exports = function isRoot(pointer) {
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/lib/join.js":
+/*!***********************************************!*\
+  !*** ./node_modules/gson-pointer/lib/join.js ***!
+  \***********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var split = __webpack_require__("./node_modules/gson-pointer/lib/split.js");
+var split = __webpack_require__(/*! ./split */ "./node_modules/gson-pointer/lib/split.js");
 var toString = Object.prototype.toString;
 var simpleJoin = Array.prototype.join;
 var matchMutlipleSlashes = /\/+/g;
@@ -4634,6 +4782,11 @@ module.exports = join;
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/lib/removeUndefinedItems.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/gson-pointer/lib/removeUndefinedItems.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4658,12 +4811,17 @@ module.exports = removeUndefinedItems;
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/lib/set.js":
+/*!**********************************************!*\
+  !*** ./node_modules/gson-pointer/lib/set.js ***!
+  \**********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var split = __webpack_require__("./node_modules/gson-pointer/lib/split.js");
+var split = __webpack_require__(/*! ./split */ "./node_modules/gson-pointer/lib/split.js");
 var isArray = /^\[.*\]$/;
 var arrayIndex = /^\[(.+)\]$/;
 
@@ -4721,12 +4879,17 @@ module.exports = set;
 /***/ }),
 
 /***/ "./node_modules/gson-pointer/lib/split.js":
+/*!************************************************!*\
+  !*** ./node_modules/gson-pointer/lib/split.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var isRoot = __webpack_require__("./node_modules/gson-pointer/lib/isRoot.js");
+var isRoot = __webpack_require__(/*! ./isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
 
 var matchSlashes = /~1/g;
 var matchTildes = /~0/g;
@@ -4761,6 +4924,11 @@ module.exports = split;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/index.js":
+/*!***************************************************!*\
+  !*** ./node_modules/json-schema-library/index.js ***!
+  \***************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4768,33 +4936,38 @@ module.exports = split;
 
 module.exports = {
     config: {
-        strings: __webpack_require__("./node_modules/json-schema-library/lib/config/strings.js")
+        strings: __webpack_require__(/*! ./lib/config/strings */ "./node_modules/json-schema-library/lib/config/strings.js")
     },
     cores: {
-        Interface: __webpack_require__("./node_modules/json-schema-library/lib/cores/CoreInterface.js"),
-        Draft04: __webpack_require__("./node_modules/json-schema-library/lib/cores/Draft04.js"), // core implementing draft04 specs
-        JsonEditor: __webpack_require__("./node_modules/json-schema-library/lib/cores/JsonEditor.js") // adjusted core of draft04 to better support the json-editor
+        Interface: __webpack_require__(/*! ./lib/cores/CoreInterface */ "./node_modules/json-schema-library/lib/cores/CoreInterface.js"),
+        Draft04: __webpack_require__(/*! ./lib/cores/Draft04 */ "./node_modules/json-schema-library/lib/cores/Draft04.js"), // core implementing draft04 specs
+        JsonEditor: __webpack_require__(/*! ./lib/cores/JsonEditor */ "./node_modules/json-schema-library/lib/cores/JsonEditor.js") // adjusted core of draft04 to better support the json-editor
     },
-    addSchema: __webpack_require__("./node_modules/json-schema-library/lib/addSchema.js"),
-    createCustomError: __webpack_require__("./node_modules/json-schema-library/lib/utils/createCustomError.js"),
-    addValidator: __webpack_require__("./node_modules/json-schema-library/lib/addValidator.js"), // add validation for keyword, format, datatype and customize errors
-    createSchemaOf: __webpack_require__("./node_modules/json-schema-library/lib/createSchemaOf.js"), // creates a simple schema based on the given data
-    each: __webpack_require__("./node_modules/json-schema-library/lib/each.js"), // iterate over data, receiving each data-entry with its schema
-    getSchema: __webpack_require__("./node_modules/json-schema-library/lib/getSchema.js"), // get schema of data
-    getChildSchemaSelection: __webpack_require__("./node_modules/json-schema-library/lib/getChildSchemaSelection.js"), // get available child schemas
-    getTemplate: __webpack_require__("./node_modules/json-schema-library/lib/getTemplate.js"), // create data based which validates the given schema
-    getTypeOf: __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js"), // returns the javascript datatype
-    isValid: __webpack_require__("./node_modules/json-schema-library/lib/isValid.js"), // returns a boolean if the schema is valid
-    iterateSchema: __webpack_require__("./node_modules/json-schema-library/lib/iterateSchema.js"), // iterates over a json-schema
-    SchemaService: __webpack_require__("./node_modules/json-schema-library/lib/SchemaService.js"),
-    step: __webpack_require__("./node_modules/json-schema-library/lib/step.js"), // steps into a json-schema, returning the matching child-schema
-    validate: __webpack_require__("./node_modules/json-schema-library/lib/validate.js"), // validates data by a schema
-    validateAsync: __webpack_require__("./node_modules/json-schema-library/lib/validateAsync.js") // async validation of data by a schema
+    addSchema: __webpack_require__(/*! ./lib/addSchema */ "./node_modules/json-schema-library/lib/addSchema.js"),
+    createCustomError: __webpack_require__(/*! ./lib/utils/createCustomError */ "./node_modules/json-schema-library/lib/utils/createCustomError.js"),
+    addValidator: __webpack_require__(/*! ./lib/addValidator */ "./node_modules/json-schema-library/lib/addValidator.js"), // add validation for keyword, format, datatype and customize errors
+    createSchemaOf: __webpack_require__(/*! ./lib/createSchemaOf */ "./node_modules/json-schema-library/lib/createSchemaOf.js"), // creates a simple schema based on the given data
+    each: __webpack_require__(/*! ./lib/each */ "./node_modules/json-schema-library/lib/each.js"), // iterate over data, receiving each data-entry with its schema
+    getSchema: __webpack_require__(/*! ./lib/getSchema */ "./node_modules/json-schema-library/lib/getSchema.js"), // get schema of data
+    getChildSchemaSelection: __webpack_require__(/*! ./lib/getChildSchemaSelection */ "./node_modules/json-schema-library/lib/getChildSchemaSelection.js"), // get available child schemas
+    getTemplate: __webpack_require__(/*! ./lib/getTemplate */ "./node_modules/json-schema-library/lib/getTemplate.js"), // create data based which validates the given schema
+    getTypeOf: __webpack_require__(/*! ./lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js"), // returns the javascript datatype
+    isValid: __webpack_require__(/*! ./lib/isValid */ "./node_modules/json-schema-library/lib/isValid.js"), // returns a boolean if the schema is valid
+    iterateSchema: __webpack_require__(/*! ./lib/iterateSchema */ "./node_modules/json-schema-library/lib/iterateSchema.js"), // iterates over a json-schema
+    SchemaService: __webpack_require__(/*! ./lib/SchemaService */ "./node_modules/json-schema-library/lib/SchemaService.js"),
+    step: __webpack_require__(/*! ./lib/step */ "./node_modules/json-schema-library/lib/step.js"), // steps into a json-schema, returning the matching child-schema
+    validate: __webpack_require__(/*! ./lib/validate */ "./node_modules/json-schema-library/lib/validate.js"), // validates data by a schema
+    validateAsync: __webpack_require__(/*! ./lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js") // async validation of data by a schema
 };
 
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/SchemaService.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/SchemaService.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4804,9 +4977,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var getSchema = __webpack_require__("./node_modules/json-schema-library/lib/getSchema.js");
-var Core = __webpack_require__("./node_modules/json-schema-library/lib/cores/JsonEditor.js");
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
+var getSchema = __webpack_require__(/*! ./getSchema */ "./node_modules/json-schema-library/lib/getSchema.js");
+var Core = __webpack_require__(/*! ./cores/JsonEditor */ "./node_modules/json-schema-library/lib/cores/JsonEditor.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
 function copy(value) {
     return JSON.parse(JSON.stringify(value));
@@ -4883,13 +5056,18 @@ module.exports = SchemaService;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/addSchema.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/addSchema.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var remotes = __webpack_require__("./node_modules/json-schema-library/remotes/index.js");
-var precompile = __webpack_require__("./node_modules/json-schema-library/lib/precompileSchema.js");
+var remotes = __webpack_require__(/*! ../remotes */ "./node_modules/json-schema-library/remotes/index.js");
+var precompile = __webpack_require__(/*! ./precompileSchema */ "./node_modules/json-schema-library/lib/precompileSchema.js");
 
 module.exports = function addSchema(url, schema) {
     schema.id = schema.id || url;
@@ -4899,6 +5077,11 @@ module.exports = function addSchema(url, schema) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/addValidator.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/addValidator.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4968,6 +5151,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/config/settings.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/config/settings.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4982,6 +5170,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/config/strings.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/config/strings.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5031,6 +5224,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/cores/CoreInterface.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/cores/CoreInterface.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5040,8 +5238,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var resolveRef = __webpack_require__("./node_modules/json-schema-library/lib/resolveRef.withOverwrite.js");
-var precompile = __webpack_require__("./node_modules/json-schema-library/lib/precompileSchema.js");
+var resolveRef = __webpack_require__(/*! ../resolveRef.withOverwrite */ "./node_modules/json-schema-library/lib/resolveRef.withOverwrite.js");
+var precompile = __webpack_require__(/*! ../precompileSchema */ "./node_modules/json-schema-library/lib/precompileSchema.js");
 
 /* eslint no-unused-vars: 0 no-empty-function: 0 */
 module.exports = function () {
@@ -5129,6 +5327,11 @@ module.exports = function () {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/cores/Draft04.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/cores/Draft04.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5144,15 +5347,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var CoreInterface = __webpack_require__("./node_modules/json-schema-library/lib/cores/CoreInterface.js");
-var _step = __webpack_require__("./node_modules/json-schema-library/lib/step.js");
-var _validate = __webpack_require__("./node_modules/json-schema-library/lib/validate.js");
-var _resolveOneOf = __webpack_require__("./node_modules/json-schema-library/lib/resolveOneOf.strict.js");
-var _resolveRef = __webpack_require__("./node_modules/json-schema-library/lib/resolveRef.strict.js");
-var _getTemplate = __webpack_require__("./node_modules/json-schema-library/lib/getTemplate.js");
-var _getSchema = __webpack_require__("./node_modules/json-schema-library/lib/getSchema.js");
-var _each = __webpack_require__("./node_modules/json-schema-library/lib/each.js");
-var precompile = __webpack_require__("./node_modules/json-schema-library/lib/precompileSchema.js");
+var CoreInterface = __webpack_require__(/*! ./CoreInterface */ "./node_modules/json-schema-library/lib/cores/CoreInterface.js");
+var _step = __webpack_require__(/*! ../step */ "./node_modules/json-schema-library/lib/step.js");
+var _validate = __webpack_require__(/*! ../validate */ "./node_modules/json-schema-library/lib/validate.js");
+var _resolveOneOf = __webpack_require__(/*! ../resolveOneOf.strict */ "./node_modules/json-schema-library/lib/resolveOneOf.strict.js");
+var _resolveRef = __webpack_require__(/*! ../resolveRef.strict */ "./node_modules/json-schema-library/lib/resolveRef.strict.js");
+var _getTemplate = __webpack_require__(/*! ../getTemplate */ "./node_modules/json-schema-library/lib/getTemplate.js");
+var _getSchema = __webpack_require__(/*! ../getSchema */ "./node_modules/json-schema-library/lib/getSchema.js");
+var _each = __webpack_require__(/*! ../each */ "./node_modules/json-schema-library/lib/each.js");
+var precompile = __webpack_require__(/*! ../precompileSchema */ "./node_modules/json-schema-library/lib/precompileSchema.js");
 
 var Draft04Core = function (_CoreInterface) {
     _inherits(Draft04Core, _CoreInterface);
@@ -5162,11 +5365,11 @@ var Draft04Core = function (_CoreInterface) {
 
         var _this = _possibleConstructorReturn(this, (Draft04Core.__proto__ || Object.getPrototypeOf(Draft04Core)).call(this, schema));
 
-        _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__("./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
-        _this.validateKeyword = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/keyword.js"));
-        _this.validateType = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/type.js"));
-        _this.validateFormat = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/format.js"));
-        _this.errors = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/errors.js"));
+        _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__(/*! ../validation/typeKeywordMapping */ "./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
+        _this.validateKeyword = _extends({}, __webpack_require__(/*! ../validation/keyword */ "./node_modules/json-schema-library/lib/validation/keyword.js"));
+        _this.validateType = _extends({}, __webpack_require__(/*! ../validation/type */ "./node_modules/json-schema-library/lib/validation/type.js"));
+        _this.validateFormat = _extends({}, __webpack_require__(/*! ../validation/format */ "./node_modules/json-schema-library/lib/validation/format.js"));
+        _this.errors = _extends({}, __webpack_require__(/*! ../validation/errors */ "./node_modules/json-schema-library/lib/validation/errors.js"));
         return _this;
     }
 
@@ -5229,6 +5432,11 @@ module.exports = Draft04Core;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/cores/JsonEditor.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/cores/JsonEditor.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5244,15 +5452,15 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var CoreInterface = __webpack_require__("./node_modules/json-schema-library/lib/cores/CoreInterface.js");
-var _step = __webpack_require__("./node_modules/json-schema-library/lib/step.js");
-var _validate = __webpack_require__("./node_modules/json-schema-library/lib/validate.js");
-var _resolveOneOf = __webpack_require__("./node_modules/json-schema-library/lib/resolveOneOf.fuzzy.js");
-var _resolveRef = __webpack_require__("./node_modules/json-schema-library/lib/resolveRef.withOverwrite.js");
-var _getTemplate = __webpack_require__("./node_modules/json-schema-library/lib/getTemplate.js");
-var _getSchema = __webpack_require__("./node_modules/json-schema-library/lib/getSchema.js");
-var _each = __webpack_require__("./node_modules/json-schema-library/lib/each.js");
-var precompile = __webpack_require__("./node_modules/json-schema-library/lib/precompileSchema.js");
+var CoreInterface = __webpack_require__(/*! ./CoreInterface */ "./node_modules/json-schema-library/lib/cores/CoreInterface.js");
+var _step = __webpack_require__(/*! ../step */ "./node_modules/json-schema-library/lib/step.js");
+var _validate = __webpack_require__(/*! ../validate */ "./node_modules/json-schema-library/lib/validate.js");
+var _resolveOneOf = __webpack_require__(/*! ../resolveOneOf.fuzzy */ "./node_modules/json-schema-library/lib/resolveOneOf.fuzzy.js");
+var _resolveRef = __webpack_require__(/*! ../resolveRef.withOverwrite */ "./node_modules/json-schema-library/lib/resolveRef.withOverwrite.js");
+var _getTemplate = __webpack_require__(/*! ../getTemplate */ "./node_modules/json-schema-library/lib/getTemplate.js");
+var _getSchema = __webpack_require__(/*! ../getSchema */ "./node_modules/json-schema-library/lib/getSchema.js");
+var _each = __webpack_require__(/*! ../each */ "./node_modules/json-schema-library/lib/each.js");
+var precompile = __webpack_require__(/*! ../precompileSchema */ "./node_modules/json-schema-library/lib/precompileSchema.js");
 
 var JsonEditorCore = function (_CoreInterface) {
     _inherits(JsonEditorCore, _CoreInterface);
@@ -5262,15 +5470,15 @@ var JsonEditorCore = function (_CoreInterface) {
 
         var _this = _possibleConstructorReturn(this, (JsonEditorCore.__proto__ || Object.getPrototypeOf(JsonEditorCore)).call(this, schema));
 
-        _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__("./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
-        _this.validateKeyword = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/keyword.js"));
+        _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__(/*! ../validation/typeKeywordMapping */ "./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
+        _this.validateKeyword = _extends({}, __webpack_require__(/*! ../validation/keyword */ "./node_modules/json-schema-library/lib/validation/keyword.js"));
         // set properties required per default and prevent no duplicate errors.
         // This is required for fuzzy resolveOneOf
         // this.validateKeyword.properties = this.validateKeyword.propertiesRequired;
         // this.validateKeyword.required = this.validateKeyword.requiredNotEmpty;
-        _this.validateType = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/type.js"));
-        _this.validateFormat = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/format.js"));
-        _this.errors = _extends({}, __webpack_require__("./node_modules/json-schema-library/lib/validation/errors.js"));
+        _this.validateType = _extends({}, __webpack_require__(/*! ../validation/type */ "./node_modules/json-schema-library/lib/validation/type.js"));
+        _this.validateFormat = _extends({}, __webpack_require__(/*! ../validation/format */ "./node_modules/json-schema-library/lib/validation/format.js"));
+        _this.errors = _extends({}, __webpack_require__(/*! ../validation/errors */ "./node_modules/json-schema-library/lib/validation/errors.js"));
         return _this;
     }
 
@@ -5333,12 +5541,17 @@ module.exports = JsonEditorCore;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/createSchemaOf.js":
+/*!****************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/createSchemaOf.js ***!
+  \****************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
 
 /**
  * Create a simple json schema for the given input data
@@ -5371,12 +5584,17 @@ module.exports = createSchemaOf;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/each.js":
+/*!******************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/each.js ***!
+  \******************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
 
 /**
  * Iterates over data, retrieving its schema
@@ -5412,6 +5630,11 @@ module.exports = each;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/getChildSchemaSelection.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/getChildSchemaSelection.js ***!
+  \*************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5443,12 +5666,17 @@ module.exports = function getChildSchemaSelection(core, schema, property) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/getSchema.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/getSchema.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 var emptyObject = {};
 
 /**
@@ -5492,6 +5720,11 @@ module.exports = getSchema;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/getTemplate.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/getTemplate.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5500,8 +5733,8 @@ module.exports = getSchema;
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /* eslint quote-props: 0 */
-var resolveOneOfFuzzy = __webpack_require__("./node_modules/json-schema-library/lib/resolveOneOf.fuzzy.js");
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
+var resolveOneOfFuzzy = __webpack_require__(/*! ./resolveOneOf.fuzzy */ "./node_modules/json-schema-library/lib/resolveOneOf.fuzzy.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
 
 function convertValue(type, value) {
     if (type === "string") {
@@ -5644,6 +5877,11 @@ module.exports = getTemplate;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/getTypeOf.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/getTypeOf.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5659,6 +5897,11 @@ module.exports = function getTypeOf(value) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/isValid.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/isValid.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5682,13 +5925,18 @@ module.exports = function isValid(core, schema, value) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/iterateSchema.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/iterateSchema.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
 function iterate(schema, callback, pointer, property) {
     var target = schema[property];
@@ -5763,14 +6011,19 @@ module.exports = iterateSchema;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/precompileSchema.js":
+/*!******************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/precompileSchema.js ***!
+  \******************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var iterateSchema = __webpack_require__("./node_modules/json-schema-library/lib/iterateSchema.js");
-var remotes = __webpack_require__("./node_modules/json-schema-library/remotes/index.js");
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
+var iterateSchema = __webpack_require__(/*! ./iterateSchema */ "./node_modules/json-schema-library/lib/iterateSchema.js");
+var remotes = __webpack_require__(/*! ../remotes */ "./node_modules/json-schema-library/remotes/index.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
 
 var isAbsoluteUrl = /^(https?|file):\/\//;
 
@@ -5864,6 +6117,11 @@ module.exports = precompileSchema;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/resolveOneOf.fuzzy.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/resolveOneOf.fuzzy.js ***!
+  \********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5871,9 +6129,9 @@ module.exports = precompileSchema;
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var filter = __webpack_require__("./node_modules/json-schema-library/lib/utils/filter.js");
-var flattenArray = __webpack_require__("./node_modules/json-schema-library/lib/utils/flattenArray.js");
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
+var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
+var flattenArray = __webpack_require__(/*! ./utils/flattenArray */ "./node_modules/json-schema-library/lib/utils/flattenArray.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
 
 /**
  * Returns a ranking for the data and given schema
@@ -5994,6 +6252,11 @@ module.exports = function resolveOneOf(core, schema, data, pointer) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/resolveOneOf.strict.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/resolveOneOf.strict.js ***!
+  \*********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6001,8 +6264,8 @@ module.exports = function resolveOneOf(core, schema, data, pointer) {
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var filter = __webpack_require__("./node_modules/json-schema-library/lib/utils/filter.js");
-var flattenArray = __webpack_require__("./node_modules/json-schema-library/lib/utils/flattenArray.js");
+var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
+var flattenArray = __webpack_require__(/*! ./utils/flattenArray */ "./node_modules/json-schema-library/lib/utils/flattenArray.js");
 
 /**
  * Selects and returns a oneOf schema for the given data
@@ -6042,6 +6305,11 @@ module.exports = function resolveOneOf(core, schema, data, pointer) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/resolveRef.strict.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/resolveRef.strict.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6049,9 +6317,9 @@ module.exports = function resolveOneOf(core, schema, data, pointer) {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var getTargetSchema = __webpack_require__("./node_modules/json-schema-library/lib/utils/getTargetSchema.js");
-var ref = __webpack_require__("./node_modules/json-schema-library/lib/utils/ref.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var getTargetSchema = __webpack_require__(/*! ./utils/getTargetSchema */ "./node_modules/json-schema-library/lib/utils/getTargetSchema.js");
+var ref = __webpack_require__(/*! ./utils/ref */ "./node_modules/json-schema-library/lib/utils/ref.js");
 
 module.exports = function resolveRef(schema, rootSchema) {
     if (schema == null) {
@@ -6078,6 +6346,11 @@ module.exports = function resolveRef(schema, rootSchema) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/resolveRef.withOverwrite.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/resolveRef.withOverwrite.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6085,9 +6358,9 @@ module.exports = function resolveRef(schema, rootSchema) {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var getTargetSchema = __webpack_require__("./node_modules/json-schema-library/lib/utils/getTargetSchema.js");
-var ref = __webpack_require__("./node_modules/json-schema-library/lib/utils/ref.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var getTargetSchema = __webpack_require__(/*! ./utils/getTargetSchema */ "./node_modules/json-schema-library/lib/utils/getTargetSchema.js");
+var ref = __webpack_require__(/*! ./utils/ref */ "./node_modules/json-schema-library/lib/utils/ref.js");
 
 module.exports = function resolveRef(schema, rootSchema) {
     if (schema == null) {
@@ -6117,14 +6390,19 @@ module.exports = function resolveRef(schema, rootSchema) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/step.js":
+/*!******************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/step.js ***!
+  \******************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
-var createSchemaOf = __webpack_require__("./node_modules/json-schema-library/lib/createSchemaOf.js");
-var errors = __webpack_require__("./node_modules/json-schema-library/lib/validation/errors.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+var createSchemaOf = __webpack_require__(/*! ./createSchemaOf */ "./node_modules/json-schema-library/lib/createSchemaOf.js");
+var errors = __webpack_require__(/*! ./validation/errors */ "./node_modules/json-schema-library/lib/validation/errors.js");
 
 /**
  * Returns the json-schema of the given object property or array item.
@@ -6250,13 +6528,18 @@ module.exports = step;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/__.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/__.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var strings = __webpack_require__("./node_modules/json-schema-library/lib/config/strings.js");
-var render = __webpack_require__("./node_modules/json-schema-library/lib/utils/render.js");
+var strings = __webpack_require__(/*! ../config/strings */ "./node_modules/json-schema-library/lib/config/strings.js");
+var render = __webpack_require__(/*! ./render */ "./node_modules/json-schema-library/lib/utils/render.js");
 
 /**
  * Renders the given string as defined in __@see config/strings.js__
@@ -6275,12 +6558,17 @@ module.exports = function __(keyword, data) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/createCustomError.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/createCustomError.js ***!
+  \*************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var __ = __webpack_require__("./node_modules/json-schema-library/lib/utils/__.js");
+var __ = __webpack_require__(/*! ./__ */ "./node_modules/json-schema-library/lib/utils/__.js");
 
 function dashCase(str) {
     return str.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
@@ -6320,6 +6608,11 @@ module.exports = function createCustomError(name) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/filter.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/filter.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6347,6 +6640,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/flattenArray.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/flattenArray.js ***!
+  \********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6370,13 +6668,18 @@ module.exports = flattenArray;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/getTargetSchema.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/getTargetSchema.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var remotes = __webpack_require__("./node_modules/json-schema-library/remotes/index.js");
-var ref = __webpack_require__("./node_modules/json-schema-library/lib/utils/ref.js");
+var remotes = __webpack_require__(/*! ../../remotes */ "./node_modules/json-schema-library/remotes/index.js");
+var ref = __webpack_require__(/*! ./ref */ "./node_modules/json-schema-library/lib/utils/ref.js");
 
 // resolves remote references and returns either the input schema or the referenced remote schema
 module.exports = function getTargetSchema($ref, schema) {
@@ -6393,6 +6696,11 @@ module.exports = function getTargetSchema($ref, schema) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/punycode.ucs2decode.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/punycode.ucs2decode.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6446,6 +6754,11 @@ module.exports = ucs2decode;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/ref.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/ref.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6505,6 +6818,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/utils/render.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/utils/render.js ***!
+  \**************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6529,14 +6847,19 @@ module.exports = function render(template) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/validate.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/validate.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
-var filter = __webpack_require__("./node_modules/json-schema-library/lib/utils/filter.js");
-var flattenArray = __webpack_require__("./node_modules/json-schema-library/lib/utils/flattenArray.js");
+var getTypeOf = __webpack_require__(/*! ./getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
+var flattenArray = __webpack_require__(/*! ./utils/flattenArray */ "./node_modules/json-schema-library/lib/utils/flattenArray.js");
 
 function getJsonSchemaType(value, expectedType) {
     var jsType = getTypeOf(value);
@@ -6584,13 +6907,18 @@ module.exports = function validate(core, schema, value) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/validateAsync.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/validateAsync.js ***!
+  \***************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var filter = __webpack_require__("./node_modules/json-schema-library/lib/utils/filter.js");
-var flattenArray = __webpack_require__("./node_modules/json-schema-library/lib/utils/flattenArray.js");
+var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
+var flattenArray = __webpack_require__(/*! ./utils/flattenArray */ "./node_modules/json-schema-library/lib/utils/flattenArray.js");
 
 function createErrorNotification(onError) {
     return function notifyError(error) {
@@ -6646,13 +6974,18 @@ module.exports = function validateAsync(core, schema, value) {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/validation/errors.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/validation/errors.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 /* eslint no-invalid-this: 0 */
-var createCustomError = __webpack_require__("./node_modules/json-schema-library/lib/utils/createCustomError.js");
+var createCustomError = __webpack_require__(/*! ../utils/createCustomError */ "./node_modules/json-schema-library/lib/utils/createCustomError.js");
 
 var errors = {
     additionalItemsError: createCustomError("AdditionalItemsError"),
@@ -6700,14 +7033,19 @@ module.exports = errors;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/validation/format.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/validation/format.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 /* eslint-disable max-len */
-var errors = __webpack_require__("./node_modules/json-schema-library/lib/validation/errors.js");
-var validUrl = __webpack_require__("./node_modules/valid-url/index.js");
+var errors = __webpack_require__(/*! ./errors */ "./node_modules/json-schema-library/lib/validation/errors.js");
+var validUrl = __webpack_require__(/*! valid-url */ "./node_modules/valid-url/index.js");
 
 // https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
 var isValidDateTime = new RegExp("^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\.[0-9]+)?(([Zz])|([\+|\-]([01][0-9]|2[0-3]):[0-5][0-9]))$");
@@ -6779,6 +7117,11 @@ module.exports = FormatValidation;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/validation/keyword.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/validation/keyword.js ***!
+  \********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6788,9 +7131,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
-var ucs2decode = __webpack_require__("./node_modules/json-schema-library/lib/utils/punycode.ucs2decode.js");
-var settings = __webpack_require__("./node_modules/json-schema-library/lib/config/settings.js");
+var getTypeOf = __webpack_require__(/*! ../getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+var ucs2decode = __webpack_require__(/*! ../utils/punycode.ucs2decode */ "./node_modules/json-schema-library/lib/utils/punycode.ucs2decode.js");
+var settings = __webpack_require__(/*! ../config/settings */ "./node_modules/json-schema-library/lib/config/settings.js");
 var FPP = settings.floatingPointPrecision;
 
 // list of validation keywords: http://json-schema.org/latest/json-schema-validation.html#rfc.section.5
@@ -7218,6 +7561,11 @@ module.exports = KeywordValidation;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/validation/type.js":
+/*!*****************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/validation/type.js ***!
+  \*****************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7294,6 +7642,11 @@ module.exports = TypeValidation;
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7320,20 +7673,30 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/remotes/draft04.json":
-/***/ (function(module, exports) {
+/*!***************************************************************!*\
+  !*** ./node_modules/json-schema-library/remotes/draft04.json ***!
+  \***************************************************************/
+/*! exports provided: id, $schema, description, definitions, type, properties, dependencies, default */
+/*! all exports used */
+/***/ (function(module) {
 
-module.exports = {"id":"http://json-schema.org/draft-04/schema#","$schema":"http://json-schema.org/draft-04/schema#","description":"Core schema meta-schema","definitions":{"schemaArray":{"type":"array","minItems":1,"items":{"$ref":"#"}},"positiveInteger":{"type":"integer","minimum":0},"positiveIntegerDefault0":{"allOf":[{"$ref":"#/definitions/positiveInteger"},{"default":0}]},"simpleTypes":{"enum":["array","boolean","integer","null","number","object","string"]},"stringArray":{"type":"array","items":{"type":"string"},"minItems":1,"uniqueItems":true}},"type":"object","properties":{"id":{"type":"string","format":"uri"},"$schema":{"type":"string","format":"uri"},"title":{"type":"string"},"description":{"type":"string"},"default":{},"multipleOf":{"type":"number","minimum":0,"exclusiveMinimum":true},"maximum":{"type":"number"},"exclusiveMaximum":{"type":"boolean","default":false},"minimum":{"type":"number"},"exclusiveMinimum":{"type":"boolean","default":false},"maxLength":{"$ref":"#/definitions/positiveInteger"},"minLength":{"$ref":"#/definitions/positiveIntegerDefault0"},"pattern":{"type":"string","format":"regex"},"additionalItems":{"anyOf":[{"type":"boolean"},{"$ref":"#"}],"default":{}},"items":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/schemaArray"}],"default":{}},"maxItems":{"$ref":"#/definitions/positiveInteger"},"minItems":{"$ref":"#/definitions/positiveIntegerDefault0"},"uniqueItems":{"type":"boolean","default":false},"maxProperties":{"$ref":"#/definitions/positiveInteger"},"minProperties":{"$ref":"#/definitions/positiveIntegerDefault0"},"required":{"$ref":"#/definitions/stringArray"},"additionalProperties":{"anyOf":[{"type":"boolean"},{"$ref":"#"}],"default":{}},"definitions":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"properties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"patternProperties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"dependencies":{"type":"object","additionalProperties":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/stringArray"}]}},"enum":{"type":"array","minItems":1,"uniqueItems":true},"type":{"anyOf":[{"$ref":"#/definitions/simpleTypes"},{"type":"array","items":{"$ref":"#/definitions/simpleTypes"},"minItems":1,"uniqueItems":true}]},"allOf":{"$ref":"#/definitions/schemaArray"},"anyOf":{"$ref":"#/definitions/schemaArray"},"oneOf":{"$ref":"#/definitions/schemaArray"},"not":{"$ref":"#"}},"dependencies":{"exclusiveMaximum":["maximum"],"exclusiveMinimum":["minimum"]},"default":{}}
+module.exports = {"id":"http://json-schema.org/draft-04/schema#","$schema":"http://json-schema.org/draft-04/schema#","description":"Core schema meta-schema","definitions":{"schemaArray":{"type":"array","minItems":1,"items":{"$ref":"#"}},"positiveInteger":{"type":"integer","minimum":0},"positiveIntegerDefault0":{"allOf":[{"$ref":"#/definitions/positiveInteger"},{"default":0}]},"simpleTypes":{"enum":["array","boolean","integer","null","number","object","string"]},"stringArray":{"type":"array","items":{"type":"string"},"minItems":1,"uniqueItems":true}},"type":"object","properties":{"id":{"type":"string","format":"uri"},"$schema":{"type":"string","format":"uri"},"title":{"type":"string"},"description":{"type":"string"},"default":{},"multipleOf":{"type":"number","minimum":0,"exclusiveMinimum":true},"maximum":{"type":"number"},"exclusiveMaximum":{"type":"boolean","default":false},"minimum":{"type":"number"},"exclusiveMinimum":{"type":"boolean","default":false},"maxLength":{"$ref":"#/definitions/positiveInteger"},"minLength":{"$ref":"#/definitions/positiveIntegerDefault0"},"pattern":{"type":"string","format":"regex"},"additionalItems":{"anyOf":[{"type":"boolean"},{"$ref":"#"}],"default":{}},"items":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/schemaArray"}],"default":{}},"maxItems":{"$ref":"#/definitions/positiveInteger"},"minItems":{"$ref":"#/definitions/positiveIntegerDefault0"},"uniqueItems":{"type":"boolean","default":false},"maxProperties":{"$ref":"#/definitions/positiveInteger"},"minProperties":{"$ref":"#/definitions/positiveIntegerDefault0"},"required":{"$ref":"#/definitions/stringArray"},"additionalProperties":{"anyOf":[{"type":"boolean"},{"$ref":"#"}],"default":{}},"definitions":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"properties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"patternProperties":{"type":"object","additionalProperties":{"$ref":"#"},"default":{}},"dependencies":{"type":"object","additionalProperties":{"anyOf":[{"$ref":"#"},{"$ref":"#/definitions/stringArray"}]}},"enum":{"type":"array","minItems":1,"uniqueItems":true},"type":{"anyOf":[{"$ref":"#/definitions/simpleTypes"},{"type":"array","items":{"$ref":"#/definitions/simpleTypes"},"minItems":1,"uniqueItems":true}]},"allOf":{"$ref":"#/definitions/schemaArray"},"anyOf":{"$ref":"#/definitions/schemaArray"},"oneOf":{"$ref":"#/definitions/schemaArray"},"not":{"$ref":"#"}},"dependencies":{"exclusiveMaximum":["maximum"],"exclusiveMinimum":["minimum"]},"default":{}};
 
 /***/ }),
 
 /***/ "./node_modules/json-schema-library/remotes/index.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/json-schema-library/remotes/index.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    "http://json-schema.org/draft-04/schema": __webpack_require__("./node_modules/json-schema-library/remotes/draft04.json"),
+    "http://json-schema.org/draft-04/schema": __webpack_require__(/*! ./draft04.json */ "./node_modules/json-schema-library/remotes/draft04.json"),
 
     reset: function reset() {
         var _this = this;
@@ -7348,32 +7711,47 @@ module.exports = {
 
 /***/ }),
 
-/***/ "./node_modules/jsondiffpatch/public/external recursive ^\\.\\/.*$":
+/***/ "./node_modules/jsondiffpatch/public/external sync recursive ^\\.\\/.*$":
+/*!******************************************************************!*\
+  !*** ./node_modules/jsondiffpatch/public/external sync ^\.\/.*$ ***!
+  \******************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 var map = {
 	"./diff_match_patch_uncompressed": "./node_modules/jsondiffpatch/public/external/diff_match_patch_uncompressed.js",
 	"./diff_match_patch_uncompressed.js": "./node_modules/jsondiffpatch/public/external/diff_match_patch_uncompressed.js"
 };
+
+
 function webpackContext(req) {
-	return __webpack_require__(webpackContextResolve(req));
-};
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
 function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) // check for number or string
-		throw new Error("Cannot find module '" + req + "'.");
-	return id;
-};
+	if(!__webpack_require__.o(map, req)) {
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return map[req];
+}
 webpackContext.keys = function webpackContextKeys() {
 	return Object.keys(map);
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = "./node_modules/jsondiffpatch/public/external recursive ^\\.\\/.*$";
+webpackContext.id = "./node_modules/jsondiffpatch/public/external sync recursive ^\\.\\/.*$";
 
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/public/external/diff_match_patch_uncompressed.js":
+/*!*************************************************************************************!*\
+  !*** ./node_modules/jsondiffpatch/public/external/diff_match_patch_uncompressed.js ***!
+  \*************************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9425,6 +9803,11 @@ undefined['DIFF_EQUAL'] = DIFF_EQUAL;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/clone.js":
+/*!*************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/clone.js ***!
+  \*************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9475,12 +9858,17 @@ module.exports = clone;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/contexts/context.js":
+/*!************************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/contexts/context.js ***!
+  \************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Pipe = __webpack_require__("./node_modules/jsondiffpatch/src/pipe.js").Pipe;
+var Pipe = __webpack_require__(/*! ../pipe */ "./node_modules/jsondiffpatch/src/pipe.js").Pipe;
 
 var Context = function Context() {};
 
@@ -9531,6 +9919,11 @@ exports.Context = Context;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/contexts/diff.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/contexts/diff.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9538,8 +9931,8 @@ exports.Context = Context;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var Context = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/context.js").Context;
-var defaultClone = __webpack_require__("./node_modules/jsondiffpatch/src/clone.js");
+var Context = __webpack_require__(/*! ./context */ "./node_modules/jsondiffpatch/src/contexts/context.js").Context;
+var defaultClone = __webpack_require__(/*! ../clone */ "./node_modules/jsondiffpatch/src/clone.js");
 
 var DiffContext = function DiffContext(left, right) {
   this.left = left;
@@ -9567,12 +9960,17 @@ exports.DiffContext = DiffContext;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/contexts/patch.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/contexts/patch.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Context = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/context.js").Context;
+var Context = __webpack_require__(/*! ./context */ "./node_modules/jsondiffpatch/src/contexts/context.js").Context;
 
 var PatchContext = function PatchContext(left, delta) {
   this.left = left;
@@ -9587,12 +9985,17 @@ exports.PatchContext = PatchContext;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/contexts/reverse.js":
+/*!************************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/contexts/reverse.js ***!
+  \************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Context = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/context.js").Context;
+var Context = __webpack_require__(/*! ./context */ "./node_modules/jsondiffpatch/src/contexts/context.js").Context;
 
 var ReverseContext = function ReverseContext(delta) {
   this.delta = delta;
@@ -9606,24 +10009,29 @@ exports.ReverseContext = ReverseContext;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/diffpatcher.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/diffpatcher.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Processor = __webpack_require__("./node_modules/jsondiffpatch/src/processor.js").Processor;
-var Pipe = __webpack_require__("./node_modules/jsondiffpatch/src/pipe.js").Pipe;
-var DiffContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/diff.js").DiffContext;
-var PatchContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/patch.js").PatchContext;
-var ReverseContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/reverse.js").ReverseContext;
+var Processor = __webpack_require__(/*! ./processor */ "./node_modules/jsondiffpatch/src/processor.js").Processor;
+var Pipe = __webpack_require__(/*! ./pipe */ "./node_modules/jsondiffpatch/src/pipe.js").Pipe;
+var DiffContext = __webpack_require__(/*! ./contexts/diff */ "./node_modules/jsondiffpatch/src/contexts/diff.js").DiffContext;
+var PatchContext = __webpack_require__(/*! ./contexts/patch */ "./node_modules/jsondiffpatch/src/contexts/patch.js").PatchContext;
+var ReverseContext = __webpack_require__(/*! ./contexts/reverse */ "./node_modules/jsondiffpatch/src/contexts/reverse.js").ReverseContext;
 
-var clone = __webpack_require__("./node_modules/jsondiffpatch/src/clone.js");
+var clone = __webpack_require__(/*! ./clone */ "./node_modules/jsondiffpatch/src/clone.js");
 
-var trivial = __webpack_require__("./node_modules/jsondiffpatch/src/filters/trivial.js");
-var nested = __webpack_require__("./node_modules/jsondiffpatch/src/filters/nested.js");
-var arrays = __webpack_require__("./node_modules/jsondiffpatch/src/filters/arrays.js");
-var dates = __webpack_require__("./node_modules/jsondiffpatch/src/filters/dates.js");
-var texts = __webpack_require__("./node_modules/jsondiffpatch/src/filters/texts.js");
+var trivial = __webpack_require__(/*! ./filters/trivial */ "./node_modules/jsondiffpatch/src/filters/trivial.js");
+var nested = __webpack_require__(/*! ./filters/nested */ "./node_modules/jsondiffpatch/src/filters/nested.js");
+var arrays = __webpack_require__(/*! ./filters/arrays */ "./node_modules/jsondiffpatch/src/filters/arrays.js");
+var dates = __webpack_require__(/*! ./filters/dates */ "./node_modules/jsondiffpatch/src/filters/dates.js");
+var texts = __webpack_require__(/*! ./filters/texts */ "./node_modules/jsondiffpatch/src/filters/texts.js");
 
 var DiffPatcher = function DiffPatcher(options) {
   this.processor = new Processor(options);
@@ -9661,6 +10069,11 @@ exports.DiffPatcher = DiffPatcher;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/filters/arrays.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/filters/arrays.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9668,11 +10081,11 @@ exports.DiffPatcher = DiffPatcher;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var DiffContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/diff.js").DiffContext;
-var PatchContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/patch.js").PatchContext;
-var ReverseContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/reverse.js").ReverseContext;
+var DiffContext = __webpack_require__(/*! ../contexts/diff */ "./node_modules/jsondiffpatch/src/contexts/diff.js").DiffContext;
+var PatchContext = __webpack_require__(/*! ../contexts/patch */ "./node_modules/jsondiffpatch/src/contexts/patch.js").PatchContext;
+var ReverseContext = __webpack_require__(/*! ../contexts/reverse */ "./node_modules/jsondiffpatch/src/contexts/reverse.js").ReverseContext;
 
-var lcs = __webpack_require__("./node_modules/jsondiffpatch/src/filters/lcs.js");
+var lcs = __webpack_require__(/*! ./lcs */ "./node_modules/jsondiffpatch/src/filters/lcs.js");
 
 var ARRAY_MOVE = 3;
 
@@ -10099,6 +10512,11 @@ exports.collectChildrenReverseFilter = collectChildrenReverseFilter;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/filters/dates.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/filters/dates.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10127,6 +10545,11 @@ exports.diffFilter = diffFilter;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/filters/lcs.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/filters/lcs.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10210,14 +10633,19 @@ exports.get = get;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/filters/nested.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/filters/nested.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var DiffContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/diff.js").DiffContext;
-var PatchContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/patch.js").PatchContext;
-var ReverseContext = __webpack_require__("./node_modules/jsondiffpatch/src/contexts/reverse.js").ReverseContext;
+var DiffContext = __webpack_require__(/*! ../contexts/diff */ "./node_modules/jsondiffpatch/src/contexts/diff.js").DiffContext;
+var PatchContext = __webpack_require__(/*! ../contexts/patch */ "./node_modules/jsondiffpatch/src/contexts/patch.js").PatchContext;
+var ReverseContext = __webpack_require__(/*! ../contexts/reverse */ "./node_modules/jsondiffpatch/src/contexts/reverse.js").ReverseContext;
 
 var collectChildrenDiffFilter = function collectChildrenDiffFilter(context) {
   if (!context || !context.children) {
@@ -10363,6 +10791,11 @@ exports.collectChildrenReverseFilter = collectChildrenReverseFilter;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/filters/texts.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/filters/texts.js ***!
+  \*********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10384,7 +10817,7 @@ var getDiffMatchPatch = function getDiffMatchPatch(required) {
     } else if (true) {
       try {
         var dmpModuleName = 'diff_match_patch_uncompressed';
-        var dmp = __webpack_require__("./node_modules/jsondiffpatch/public/external recursive ^\\.\\/.*$")("./" + dmpModuleName);
+        var dmp = __webpack_require__("./node_modules/jsondiffpatch/public/external sync recursive ^\\.\\/.*$")("./" + dmpModuleName);
         instance = new dmp.diff_match_patch();
       } catch (err) {
         instance = null;
@@ -10512,6 +10945,11 @@ exports.reverseFilter = reverseFilter;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/filters/trivial.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/filters/trivial.js ***!
+  \***********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10640,6 +11078,11 @@ exports.reverseFilter = reverseFilter;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/pipe.js":
+/*!************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/pipe.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10780,6 +11223,11 @@ exports.Pipe = Pipe;
 /***/ }),
 
 /***/ "./node_modules/jsondiffpatch/src/processor.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/jsondiffpatch/src/processor.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10850,6 +11298,11 @@ exports.Processor = Processor;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_Symbol.js":
+/*!*******************************************!*\
+  !*** ./node_modules/lodash-es/_Symbol.js ***!
+  \*******************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10859,7 +11312,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _root = __webpack_require__("./node_modules/lodash-es/_root.js");
+var _root = __webpack_require__(/*! ./_root.js */ "./node_modules/lodash-es/_root.js");
 
 var _root2 = _interopRequireDefault(_root);
 
@@ -10873,6 +11326,11 @@ exports.default = _Symbol;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_baseGetTag.js":
+/*!***********************************************!*\
+  !*** ./node_modules/lodash-es/_baseGetTag.js ***!
+  \***********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10882,15 +11340,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Symbol2 = __webpack_require__("./node_modules/lodash-es/_Symbol.js");
+var _Symbol2 = __webpack_require__(/*! ./_Symbol.js */ "./node_modules/lodash-es/_Symbol.js");
 
 var _Symbol3 = _interopRequireDefault(_Symbol2);
 
-var _getRawTag = __webpack_require__("./node_modules/lodash-es/_getRawTag.js");
+var _getRawTag = __webpack_require__(/*! ./_getRawTag.js */ "./node_modules/lodash-es/_getRawTag.js");
 
 var _getRawTag2 = _interopRequireDefault(_getRawTag);
 
-var _objectToString = __webpack_require__("./node_modules/lodash-es/_objectToString.js");
+var _objectToString = __webpack_require__(/*! ./_objectToString.js */ "./node_modules/lodash-es/_objectToString.js");
 
 var _objectToString2 = _interopRequireDefault(_objectToString);
 
@@ -10922,6 +11380,11 @@ exports.default = baseGetTag;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_freeGlobal.js":
+/*!***********************************************!*\
+  !*** ./node_modules/lodash-es/_freeGlobal.js ***!
+  \***********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10937,11 +11400,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 var freeGlobal = (typeof global === 'undefined' ? 'undefined' : _typeof(global)) == 'object' && global && global.Object === Object && global;
 
 exports.default = freeGlobal;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/global.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_getPrototype.js":
+/*!*************************************************!*\
+  !*** ./node_modules/lodash-es/_getPrototype.js ***!
+  \*************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10951,7 +11419,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _overArg = __webpack_require__("./node_modules/lodash-es/_overArg.js");
+var _overArg = __webpack_require__(/*! ./_overArg.js */ "./node_modules/lodash-es/_overArg.js");
 
 var _overArg2 = _interopRequireDefault(_overArg);
 
@@ -10965,6 +11433,11 @@ exports.default = getPrototype;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_getRawTag.js":
+/*!**********************************************!*\
+  !*** ./node_modules/lodash-es/_getRawTag.js ***!
+  \**********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10974,7 +11447,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _Symbol2 = __webpack_require__("./node_modules/lodash-es/_Symbol.js");
+var _Symbol2 = __webpack_require__(/*! ./_Symbol.js */ "./node_modules/lodash-es/_Symbol.js");
 
 var _Symbol3 = _interopRequireDefault(_Symbol2);
 
@@ -11028,6 +11501,11 @@ exports.default = getRawTag;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_objectToString.js":
+/*!***************************************************!*\
+  !*** ./node_modules/lodash-es/_objectToString.js ***!
+  \***************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11062,6 +11540,11 @@ exports.default = objectToString;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_overArg.js":
+/*!********************************************!*\
+  !*** ./node_modules/lodash-es/_overArg.js ***!
+  \********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11089,6 +11572,11 @@ exports.default = overArg;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/_root.js":
+/*!*****************************************!*\
+  !*** ./node_modules/lodash-es/_root.js ***!
+  \*****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11100,7 +11588,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _freeGlobal = __webpack_require__("./node_modules/lodash-es/_freeGlobal.js");
+var _freeGlobal = __webpack_require__(/*! ./_freeGlobal.js */ "./node_modules/lodash-es/_freeGlobal.js");
 
 var _freeGlobal2 = _interopRequireDefault(_freeGlobal);
 
@@ -11117,6 +11605,11 @@ exports.default = root;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/isObjectLike.js":
+/*!************************************************!*\
+  !*** ./node_modules/lodash-es/isObjectLike.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11161,6 +11654,11 @@ exports.default = isObjectLike;
 /***/ }),
 
 /***/ "./node_modules/lodash-es/isPlainObject.js":
+/*!*************************************************!*\
+  !*** ./node_modules/lodash-es/isPlainObject.js ***!
+  \*************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11170,15 +11668,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _baseGetTag = __webpack_require__("./node_modules/lodash-es/_baseGetTag.js");
+var _baseGetTag = __webpack_require__(/*! ./_baseGetTag.js */ "./node_modules/lodash-es/_baseGetTag.js");
 
 var _baseGetTag2 = _interopRequireDefault(_baseGetTag);
 
-var _getPrototype = __webpack_require__("./node_modules/lodash-es/_getPrototype.js");
+var _getPrototype = __webpack_require__(/*! ./_getPrototype.js */ "./node_modules/lodash-es/_getPrototype.js");
 
 var _getPrototype2 = _interopRequireDefault(_getPrototype);
 
-var _isObjectLike = __webpack_require__("./node_modules/lodash-es/isObjectLike.js");
+var _isObjectLike = __webpack_require__(/*! ./isObjectLike.js */ "./node_modules/lodash-es/isObjectLike.js");
 
 var _isObjectLike2 = _interopRequireDefault(_isObjectLike);
 
@@ -11245,6 +11743,11 @@ exports.default = isPlainObject;
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/button/index.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/button/index.js ***!
+  \************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11252,7 +11755,7 @@ exports.default = isPlainObject;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 module.exports = {
     getClassNames: function getClassNames(attrs) {
@@ -11281,12 +11784,17 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/checkbox/index.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/checkbox/index.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 module.exports = {
     view: function view(vnode) {
@@ -11302,6 +11810,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/checkboxform/index.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/checkboxform/index.js ***!
+  \******************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11309,10 +11822,10 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
-var Checkbox = __webpack_require__("./node_modules/mithril-material-forms/components/checkbox/index.js");
-var Label = __webpack_require__("./node_modules/mithril-material-forms/components/label/index.js");
-var Errors = __webpack_require__("./node_modules/mithril-material-forms/components/errors/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var Checkbox = __webpack_require__(/*! ../checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.js");
+var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
+var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
 
 module.exports = {
     view: function view(vnode) {
@@ -11339,6 +11852,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/errors/getErrorClass.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/errors/getErrorClass.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11361,6 +11879,11 @@ module.exports = function getErrorClass(errors) {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/errors/index.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/errors/index.js ***!
+  \************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11368,7 +11891,7 @@ module.exports = function getErrorClass(errors) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 function isVNode(object) {
     return typeof object.tag === "string" && object.attrs != null && _typeof(object.attrs) === "object";
@@ -11376,7 +11899,7 @@ function isVNode(object) {
 
 module.exports = {
 
-    getErrorClass: __webpack_require__("./node_modules/mithril-material-forms/components/errors/getErrorClass.js"),
+    getErrorClass: __webpack_require__(/*! ./getErrorClass */ "./node_modules/mithril-material-forms/components/errors/getErrorClass.js"),
 
     view: function view(vnode) {
         if (vnode.attrs.errors == null || vnode.attrs.errors.length === 0) {
@@ -11402,6 +11925,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/imagepreview/index.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/imagepreview/index.js ***!
+  \******************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11409,7 +11937,7 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 var RATIO_DEFAULT = [16, 9];
 
 function isEmpty(value) {
@@ -11498,12 +12026,17 @@ module.exports = ImagePreview;
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/input/index.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/input/index.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 module.exports = {
     value: null,
@@ -11554,6 +12087,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/inputform/index.js":
+/*!***************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/inputform/index.js ***!
+  \***************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11561,11 +12099,11 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
-var Input = __webpack_require__("./node_modules/mithril-material-forms/components/input/index.js");
-var Label = __webpack_require__("./node_modules/mithril-material-forms/components/label/index.js");
-var sanitizeValue = __webpack_require__("./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js");
-var Errors = __webpack_require__("./node_modules/mithril-material-forms/components/errors/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var Input = __webpack_require__(/*! ../input */ "./node_modules/mithril-material-forms/components/input/index.js");
+var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
+var sanitizeValue = __webpack_require__(/*! ./sanitizeValue */ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js");
+var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
 
 var TYPES = {
     string: "text",
@@ -11642,6 +12180,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11665,12 +12208,17 @@ module.exports = function sanitizeValue(type, value) {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/label/index.js":
+/*!***********************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/label/index.js ***!
+  \***********************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 module.exports = {
     view: function view(vnode) {
@@ -11684,12 +12232,17 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/select/index.js":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/select/index.js ***!
+  \************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 module.exports = {
     view: function view(vnode) {
@@ -11723,6 +12276,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/selectform/index.js":
+/*!****************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/selectform/index.js ***!
+  \****************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11730,10 +12288,10 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
-var Select = __webpack_require__("./node_modules/mithril-material-forms/components/select/index.js");
-var Label = __webpack_require__("./node_modules/mithril-material-forms/components/label/index.js");
-var Errors = __webpack_require__("./node_modules/mithril-material-forms/components/errors/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var Select = __webpack_require__(/*! ../select */ "./node_modules/mithril-material-forms/components/select/index.js");
+var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
+var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
 
 module.exports = {
     view: function view(vnode) {
@@ -11756,6 +12314,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/textarea/index.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/textarea/index.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11763,8 +12326,8 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
-var autosize = __webpack_require__("./node_modules/autosize/dist/autosize.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var autosize = __webpack_require__(/*! autosize */ "./node_modules/autosize/dist/autosize.js");
 
 module.exports = {
     onupdate: function onupdate(vnode) {
@@ -11813,6 +12376,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/components/textareaform/index.js":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/textareaform/index.js ***!
+  \******************************************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11820,10 +12388,10 @@ module.exports = {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var m = __webpack_require__("mithril");
-var Textarea = __webpack_require__("./node_modules/mithril-material-forms/components/textarea/index.js");
-var Label = __webpack_require__("./node_modules/mithril-material-forms/components/label/index.js");
-var Errors = __webpack_require__("./node_modules/mithril-material-forms/components/errors/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var Textarea = __webpack_require__(/*! ../textarea */ "./node_modules/mithril-material-forms/components/textarea/index.js");
+var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
+var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
 
 function isEmpty(value) {
     return value == null || value === "";
@@ -11889,29 +12457,39 @@ module.exports = {
 /***/ }),
 
 /***/ "./node_modules/mithril-material-forms/index.js":
+/*!******************************************************!*\
+  !*** ./node_modules/mithril-material-forms/index.js ***!
+  \******************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    button: __webpack_require__("./node_modules/mithril-material-forms/components/button/index.js"),
-    checkbox: __webpack_require__("./node_modules/mithril-material-forms/components/checkbox/index.js"),
-    checkboxForm: __webpack_require__("./node_modules/mithril-material-forms/components/checkboxform/index.js"),
-    errors: __webpack_require__("./node_modules/mithril-material-forms/components/errors/index.js"),
-    input: __webpack_require__("./node_modules/mithril-material-forms/components/input/index.js"),
-    inputForm: __webpack_require__("./node_modules/mithril-material-forms/components/inputform/index.js"),
-    label: __webpack_require__("./node_modules/mithril-material-forms/components/label/index.js"),
-    select: __webpack_require__("./node_modules/mithril-material-forms/components/select/index.js"),
-    selectForm: __webpack_require__("./node_modules/mithril-material-forms/components/selectform/index.js"),
-    textarea: __webpack_require__("./node_modules/mithril-material-forms/components/textarea/index.js"),
-    textareaForm: __webpack_require__("./node_modules/mithril-material-forms/components/textareaform/index.js"),
-    imagePreview: __webpack_require__("./node_modules/mithril-material-forms/components/imagepreview/index.js")
+    button: __webpack_require__(/*! ./components/button */ "./node_modules/mithril-material-forms/components/button/index.js"),
+    checkbox: __webpack_require__(/*! ./components/checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.js"),
+    checkboxForm: __webpack_require__(/*! ./components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js"),
+    errors: __webpack_require__(/*! ./components/errors */ "./node_modules/mithril-material-forms/components/errors/index.js"),
+    input: __webpack_require__(/*! ./components/input */ "./node_modules/mithril-material-forms/components/input/index.js"),
+    inputForm: __webpack_require__(/*! ./components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js"),
+    label: __webpack_require__(/*! ./components/label */ "./node_modules/mithril-material-forms/components/label/index.js"),
+    select: __webpack_require__(/*! ./components/select */ "./node_modules/mithril-material-forms/components/select/index.js"),
+    selectForm: __webpack_require__(/*! ./components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js"),
+    textarea: __webpack_require__(/*! ./components/textarea */ "./node_modules/mithril-material-forms/components/textarea/index.js"),
+    textareaForm: __webpack_require__(/*! ./components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js"),
+    imagePreview: __webpack_require__(/*! ./components/imagepreview */ "./node_modules/mithril-material-forms/components/imagepreview/index.js")
 };
 
 /***/ }),
 
 /***/ "./node_modules/mitt/dist/mitt.es.js":
+/*!*******************************************!*\
+  !*** ./node_modules/mitt/dist/mitt.es.js ***!
+  \*******************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11988,6 +12566,11 @@ exports.default = mitt;
 /***/ }),
 
 /***/ "./node_modules/mitt/dist/mitt.js":
+/*!****************************************!*\
+  !*** ./node_modules/mitt/dist/mitt.js ***!
+  \****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12011,6 +12594,11 @@ function n(n) {
 /***/ }),
 
 /***/ "./node_modules/process/browser.js":
+/*!*****************************************!*\
+  !*** ./node_modules/process/browser.js ***!
+  \*****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12205,6 +12793,11 @@ process.umask = function () {
 /***/ }),
 
 /***/ "./node_modules/redux-undo/lib/index.js":
+/*!**********************************************!*\
+  !*** ./node_modules/redux-undo/lib/index.js ***!
+  \**********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12569,6 +13162,11 @@ function excludeAction() {
 /***/ }),
 
 /***/ "./node_modules/redux/es/applyMiddleware.js":
+/*!**************************************************!*\
+  !*** ./node_modules/redux/es/applyMiddleware.js ***!
+  \**************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12579,7 +13177,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = applyMiddleware;
 
-var _compose = __webpack_require__("./node_modules/redux/es/compose.js");
+var _compose = __webpack_require__(/*! ./compose */ "./node_modules/redux/es/compose.js");
 
 var _compose2 = _interopRequireDefault(_compose);
 
@@ -12643,6 +13241,11 @@ function applyMiddleware() {
 /***/ }),
 
 /***/ "./node_modules/redux/es/bindActionCreators.js":
+/*!*****************************************************!*\
+  !*** ./node_modules/redux/es/bindActionCreators.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12706,23 +13309,28 @@ function bindActionCreators(actionCreators, dispatch) {
 /***/ }),
 
 /***/ "./node_modules/redux/es/combineReducers.js":
+/*!**************************************************!*\
+  !*** ./node_modules/redux/es/combineReducers.js ***!
+  \**************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
+
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = combineReducers;
 
-var _createStore = __webpack_require__("./node_modules/redux/es/createStore.js");
+var _createStore = __webpack_require__(/*! ./createStore */ "./node_modules/redux/es/createStore.js");
 
-var _isPlainObject = __webpack_require__("./node_modules/lodash-es/isPlainObject.js");
+var _isPlainObject = __webpack_require__(/*! lodash-es/isPlainObject */ "./node_modules/lodash-es/isPlainObject.js");
 
 var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-var _warning = __webpack_require__("./node_modules/redux/es/utils/warning.js");
+var _warning = __webpack_require__(/*! ./utils/warning */ "./node_modules/redux/es/utils/warning.js");
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -12798,7 +13406,7 @@ function combineReducers(reducers) {
   for (var i = 0; i < reducerKeys.length; i++) {
     var key = reducerKeys[i];
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (true) {
       if (typeof reducers[key] === 'undefined') {
         (0, _warning2.default)('No reducer provided for key "' + key + '"');
       }
@@ -12811,7 +13419,7 @@ function combineReducers(reducers) {
   var finalReducerKeys = Object.keys(finalReducers);
 
   var unexpectedKeyCache = void 0;
-  if (process.env.NODE_ENV !== 'production') {
+  if (true) {
     unexpectedKeyCache = {};
   }
 
@@ -12830,7 +13438,7 @@ function combineReducers(reducers) {
       throw shapeAssertionError;
     }
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (true) {
       var warningMessage = getUnexpectedStateShapeWarningMessage(state, finalReducers, action, unexpectedKeyCache);
       if (warningMessage) {
         (0, _warning2.default)(warningMessage);
@@ -12854,11 +13462,15 @@ function combineReducers(reducers) {
     return hasChanged ? nextState : state;
   };
 }
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/process/browser.js")))
 
 /***/ }),
 
 /***/ "./node_modules/redux/es/compose.js":
+/*!******************************************!*\
+  !*** ./node_modules/redux/es/compose.js ***!
+  \******************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12904,6 +13516,11 @@ function compose() {
 /***/ }),
 
 /***/ "./node_modules/redux/es/createStore.js":
+/*!**********************************************!*\
+  !*** ./node_modules/redux/es/createStore.js ***!
+  \**********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12918,11 +13535,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 exports.default = createStore;
 
-var _isPlainObject = __webpack_require__("./node_modules/lodash-es/isPlainObject.js");
+var _isPlainObject = __webpack_require__(/*! lodash-es/isPlainObject */ "./node_modules/lodash-es/isPlainObject.js");
 
 var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
 
-var _symbolObservable = __webpack_require__("./node_modules/symbol-observable/es/index.js");
+var _symbolObservable = __webpack_require__(/*! symbol-observable */ "./node_modules/symbol-observable/es/index.js");
 
 var _symbolObservable2 = _interopRequireDefault(_symbolObservable);
 
@@ -13177,37 +13794,42 @@ var ActionTypes = exports.ActionTypes = {
 /***/ }),
 
 /***/ "./node_modules/redux/es/index.js":
+/*!****************************************!*\
+  !*** ./node_modules/redux/es/index.js ***!
+  \****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
+
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.compose = exports.applyMiddleware = exports.bindActionCreators = exports.combineReducers = exports.createStore = undefined;
 
-var _createStore = __webpack_require__("./node_modules/redux/es/createStore.js");
+var _createStore = __webpack_require__(/*! ./createStore */ "./node_modules/redux/es/createStore.js");
 
 var _createStore2 = _interopRequireDefault(_createStore);
 
-var _combineReducers = __webpack_require__("./node_modules/redux/es/combineReducers.js");
+var _combineReducers = __webpack_require__(/*! ./combineReducers */ "./node_modules/redux/es/combineReducers.js");
 
 var _combineReducers2 = _interopRequireDefault(_combineReducers);
 
-var _bindActionCreators = __webpack_require__("./node_modules/redux/es/bindActionCreators.js");
+var _bindActionCreators = __webpack_require__(/*! ./bindActionCreators */ "./node_modules/redux/es/bindActionCreators.js");
 
 var _bindActionCreators2 = _interopRequireDefault(_bindActionCreators);
 
-var _applyMiddleware = __webpack_require__("./node_modules/redux/es/applyMiddleware.js");
+var _applyMiddleware = __webpack_require__(/*! ./applyMiddleware */ "./node_modules/redux/es/applyMiddleware.js");
 
 var _applyMiddleware2 = _interopRequireDefault(_applyMiddleware);
 
-var _compose = __webpack_require__("./node_modules/redux/es/compose.js");
+var _compose = __webpack_require__(/*! ./compose */ "./node_modules/redux/es/compose.js");
 
 var _compose2 = _interopRequireDefault(_compose);
 
-var _warning = __webpack_require__("./node_modules/redux/es/utils/warning.js");
+var _warning = __webpack_require__(/*! ./utils/warning */ "./node_modules/redux/es/utils/warning.js");
 
 var _warning2 = _interopRequireDefault(_warning);
 
@@ -13219,7 +13841,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 */
 function isCrushed() {}
 
-if (process.env.NODE_ENV !== 'production' && typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
+if ( true && typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
   (0, _warning2.default)('You are currently using minified code outside of NODE_ENV === \'production\'. ' + 'This means that you are running a slower development build of Redux. ' + 'You can use loose-envify (https://github.com/zertosh/loose-envify) for browserify ' + 'or DefinePlugin for webpack (http://stackoverflow.com/questions/30030031) ' + 'to ensure you have the correct code for your production build.');
 }
 
@@ -13228,11 +13850,15 @@ exports.combineReducers = _combineReducers2.default;
 exports.bindActionCreators = _bindActionCreators2.default;
 exports.applyMiddleware = _applyMiddleware2.default;
 exports.compose = _compose2.default;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/process/browser.js")))
 
 /***/ }),
 
 /***/ "./node_modules/redux/es/utils/warning.js":
+/*!************************************************!*\
+  !*** ./node_modules/redux/es/utils/warning.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13267,6 +13893,11 @@ function warning(message) {
 /***/ }),
 
 /***/ "./node_modules/symbol-observable/es/index.js":
+/*!****************************************************!*\
+  !*** ./node_modules/symbol-observable/es/index.js ***!
+  \****************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13276,7 +13907,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _ponyfill = __webpack_require__("./node_modules/symbol-observable/es/ponyfill.js");
+var _ponyfill = __webpack_require__(/*! ./ponyfill.js */ "./node_modules/symbol-observable/es/ponyfill.js");
 
 var _ponyfill2 = _interopRequireDefault(_ponyfill);
 
@@ -13293,17 +13924,20 @@ if (typeof self !== 'undefined') {
   root = global;
 } else if (true) {
   root = module;
-} else {
-  root = Function('return this')();
-}
+} else {}
 
 var result = (0, _ponyfill2.default)(root);
 exports.default = result;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/global.js"), __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js"), __webpack_require__(/*! ./../../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
 /***/ "./node_modules/symbol-observable/es/ponyfill.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/symbol-observable/es/ponyfill.js ***!
+  \*******************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13334,6 +13968,11 @@ function symbolObservablePonyfill(root) {
 /***/ }),
 
 /***/ "./node_modules/valid-url/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/valid-url/index.js ***!
+  \*****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13490,11 +14129,16 @@ function symbolObservablePonyfill(root) {
         return is_http_iri(value) || is_https_iri(value);
     }
 })(module);
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/webpack/buildin/module.js")(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
 /***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13511,7 +14155,7 @@ g = function () {
 
 try {
 	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1, eval)("this");
+	g = g || new Function("return this")();
 } catch (e) {
 	// This works if the window reference is available
 	if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") g = window;
@@ -13526,6 +14170,11 @@ module.exports = g;
 /***/ }),
 
 /***/ "./node_modules/webpack/buildin/module.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/module.js ***!
+  \***********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13557,6 +14206,11 @@ module.exports = function (module) {
 /***/ }),
 
 /***/ "./plugin/index.js":
+/*!*************************!*\
+  !*** ./plugin/index.js ***!
+  \*************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13588,6 +14242,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./services/DataService.js":
+/*!*********************************!*\
+  !*** ./services/DataService.js ***!
+  \*********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13599,19 +14258,19 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var mitt = __webpack_require__("./node_modules/mitt/dist/mitt.js");
-var diffpatch = __webpack_require__("./services/utils/diffpatch.js");
-var copy = __webpack_require__("./services/utils/copy.js");
-var isRootPointer = __webpack_require__("./services/utils/isRootPointer.js");
-var dataReducer = __webpack_require__("./services/reducers/dataReducer.js");
-var ActionCreators = __webpack_require__("./services/reducers/actions.js").ActionCreators;
-var ActionTypes = __webpack_require__("./services/reducers/actions.js").ActionTypes;
-var getParentPointer = __webpack_require__("./services/utils/getParentPointer.js");
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
-var getPatchesPerPointer = __webpack_require__("./services/utils/getPatchesPerPointer.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+var diffpatch = __webpack_require__(/*! ./utils/diffpatch */ "./services/utils/diffpatch.js");
+var copy = __webpack_require__(/*! ./utils/copy */ "./services/utils/copy.js");
+var isRootPointer = __webpack_require__(/*! ./utils/isRootPointer */ "./services/utils/isRootPointer.js");
+var dataReducer = __webpack_require__(/*! ./reducers/dataReducer */ "./services/reducers/dataReducer.js");
+var ActionCreators = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionCreators;
+var ActionTypes = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionTypes;
+var getParentPointer = __webpack_require__(/*! ./utils/getParentPointer */ "./services/utils/getParentPointer.js");
+var getTypeOf = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+var getPatchesPerPointer = __webpack_require__(/*! ./utils/getPatchesPerPointer */ "./services/utils/getPatchesPerPointer.js");
 
-var State = __webpack_require__("./services/State.js");
+var State = __webpack_require__(/*! ./State */ "./services/State.js");
 var DEBUG = false;
 
 /**
@@ -13879,16 +14538,21 @@ module.exports.EVENTS = EVENTS;
 /***/ }),
 
 /***/ "./services/LocationService.js":
+/*!*************************************!*\
+  !*** ./services/LocationService.js ***!
+  \*************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 /* global document */
-var mitt = __webpack_require__("./node_modules/mitt/dist/mitt.js");
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var UIState = __webpack_require__("./services/uistate/index.js");
-var getId = __webpack_require__("./utils/getID.js");
+var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var UIState = __webpack_require__(/*! ./uistate */ "./services/uistate/index.js");
+var getId = __webpack_require__(/*! ../utils/getID */ "./utils/getID.js");
 var DELAY = 25;
 
 var emitter = mitt();
@@ -13997,6 +14661,11 @@ module.exports = LocationService;
 /***/ }),
 
 /***/ "./services/OverlayService.js":
+/*!************************************!*\
+  !*** ./services/OverlayService.js ***!
+  \************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14006,10 +14675,10 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 /* global document */
 /* eslint no-use-before-define: 0 */
-var m = __webpack_require__("mithril");
-var Overlay = __webpack_require__("./components/overlay/index.js");
-var createElement = __webpack_require__("./utils/createElement.js");
-var UIState = __webpack_require__("./services/uistate/index.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var Overlay = __webpack_require__(/*! ../components/overlay */ "./components/overlay/index.js");
+var createElement = __webpack_require__(/*! ../utils/createElement */ "./utils/createElement.js");
+var UIState = __webpack_require__(/*! ./uistate */ "./services/uistate/index.js");
 
 UIState.on(UIState.EVENTS.OVERLAY_EVENT, function () {
     var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
@@ -14102,6 +14771,11 @@ module.exports = OverlayService;
 /***/ }),
 
 /***/ "./services/SchemaService.js":
+/*!***********************************!*\
+  !*** ./services/SchemaService.js ***!
+  \***********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14111,10 +14785,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Core = __webpack_require__("./node_modules/json-schema-library/index.js").cores.JsonEditor;
-var copy = __webpack_require__("./services/utils/copy.js");
-var jsl = __webpack_require__("./node_modules/json-schema-library/index.js");
-var _getChildSchemaSelection = __webpack_require__("./node_modules/json-schema-library/index.js").getChildSchemaSelection;
+var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
+var copy = __webpack_require__(/*! ./utils/copy */ "./services/utils/copy.js");
+var jsl = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+var _getChildSchemaSelection = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").getChildSchemaSelection;
 
 /**
  * Manages json-schema interactions and adds caching of reoccuring json-schema requests
@@ -14257,6 +14931,11 @@ module.exports = SchemaService;
 /***/ }),
 
 /***/ "./services/SessionService.js":
+/*!************************************!*\
+  !*** ./services/SessionService.js ***!
+  \************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14294,6 +14973,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./services/State.js":
+/*!***************************!*\
+  !*** ./services/State.js ***!
+  \***************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14303,8 +14987,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var redux = __webpack_require__("./node_modules/redux/es/index.js");
-var mitt = __webpack_require__("./node_modules/mitt/dist/mitt.js");
+var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
 var FLAG_CHANGED = "hasChanged";
 
 var State = function () {
@@ -14417,6 +15101,11 @@ module.exports = State;
 /***/ }),
 
 /***/ "./services/ValidationService.js":
+/*!***************************************!*\
+  !*** ./services/ValidationService.js ***!
+  \***************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14426,13 +15115,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var mitt = __webpack_require__("./node_modules/mitt/dist/mitt.js");
-var Core = __webpack_require__("./node_modules/json-schema-library/index.js").cores.JsonEditor;
-var State = __webpack_require__("./services/State.js");
-var ActionCreators = __webpack_require__("./services/reducers/actions.js").ActionCreators;
-var errorReducer = __webpack_require__("./services/reducers/errorReducer.js");
-var Validation = __webpack_require__("./services/utils/Validation.js");
-var BubblingCollectionObservable = __webpack_require__("./services/utils/BubblingCollectionObservable.js");
+var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
+var State = __webpack_require__(/*! ./State */ "./services/State.js");
+var ActionCreators = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionCreators;
+var errorReducer = __webpack_require__(/*! ./reducers/errorReducer */ "./services/reducers/errorReducer.js");
+var Validation = __webpack_require__(/*! ./utils/Validation */ "./services/utils/Validation.js");
+var BubblingCollectionObservable = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./services/utils/BubblingCollectionObservable.js");
 
 var EVENTS = {
     BEFORE_VALIDATION: "beforeValidation",
@@ -14617,29 +15306,39 @@ module.exports.EVENTS = EVENTS;
 /***/ }),
 
 /***/ "./services/index.js":
+/*!***************************!*\
+  !*** ./services/index.js ***!
+  \***************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    LocationService: __webpack_require__("./services/LocationService.js"),
-    OverlayService: __webpack_require__("./services/OverlayService.js"),
-    SessionService: __webpack_require__("./services/SessionService.js"),
-    UIState: __webpack_require__("./services/uistate/index.js")
+    LocationService: __webpack_require__(/*! ./LocationService */ "./services/LocationService.js"),
+    OverlayService: __webpack_require__(/*! ./OverlayService */ "./services/OverlayService.js"),
+    SessionService: __webpack_require__(/*! ./SessionService */ "./services/SessionService.js"),
+    UIState: __webpack_require__(/*! ./uistate */ "./services/uistate/index.js")
 };
 
 /***/ }),
 
 /***/ "./services/reducers/actions.js":
+/*!**************************************!*\
+  !*** ./services/reducers/actions.js ***!
+  \**************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 /* eslint object-property-newline: 0 */
-var UndoActionCreators = __webpack_require__("./node_modules/redux-undo/lib/index.js").ActionCreators;
-var UndoActionTypes = __webpack_require__("./node_modules/redux-undo/lib/index.js").ActionTypes;
+var UndoActionCreators = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionCreators;
+var UndoActionTypes = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionTypes;
 
 var ActionTypes = {
     // data
@@ -14677,20 +15376,25 @@ module.exports = {
 /***/ }),
 
 /***/ "./services/reducers/dataReducer.js":
+/*!******************************************!*\
+  !*** ./services/reducers/dataReducer.js ***!
+  \******************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var undoable = __webpack_require__("./node_modules/redux-undo/lib/index.js").default;
+var undoable = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").default;
 
 /* eslint no-case-declarations: 0 */
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
-var copy = __webpack_require__("./services/utils/copy.js");
-var isRootPointer = __webpack_require__("./services/utils/isRootPointer.js");
-var ActionTypes = __webpack_require__("./services/reducers/actions.js").ActionTypes;
-var redux = __webpack_require__("./node_modules/redux/es/index.js");
-var ensureItemIDs = __webpack_require__("./services/utils/ensureItemIDs.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+var copy = __webpack_require__(/*! ../utils/copy */ "./services/utils/copy.js");
+var isRootPointer = __webpack_require__(/*! ../utils/isRootPointer */ "./services/utils/isRootPointer.js");
+var ActionTypes = __webpack_require__(/*! ./actions */ "./services/reducers/actions.js").ActionTypes;
+var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+var ensureItemIDs = __webpack_require__(/*! ../utils/ensureItemIDs */ "./services/utils/ensureItemIDs.js");
 
 var actions = [ActionTypes.DATA_SET, ActionTypes.UNDO, ActionTypes.REDO];
 var defaultState = {
@@ -14734,12 +15438,17 @@ module.exports = redux.combineReducers({
 /***/ }),
 
 /***/ "./services/reducers/errorReducer.js":
+/*!*******************************************!*\
+  !*** ./services/reducers/errorReducer.js ***!
+  \*******************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var ActionTypes = __webpack_require__("./services/reducers/actions.js").ActionTypes;
+var ActionTypes = __webpack_require__(/*! ./actions */ "./services/reducers/actions.js").ActionTypes;
 
 module.exports = function () {
     var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
@@ -14751,6 +15460,11 @@ module.exports = function () {
 /***/ }),
 
 /***/ "./services/uistate/actions.js":
+/*!*************************************!*\
+  !*** ./services/uistate/actions.js ***!
+  \*************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14797,6 +15511,11 @@ module.exports = {
 /***/ }),
 
 /***/ "./services/uistate/index.js":
+/*!***********************************!*\
+  !*** ./services/uistate/index.js ***!
+  \***********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14806,10 +15525,10 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var mitt = __webpack_require__("./node_modules/mitt/dist/mitt.js");
-var State = __webpack_require__("./services/State.js");
-var ActionCreators = __webpack_require__("./services/uistate/actions.js").ActionCreators;
-var uiReducer = __webpack_require__("./services/uistate/uiReducer.js");
+var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+var State = __webpack_require__(/*! ../State */ "./services/State.js");
+var ActionCreators = __webpack_require__(/*! ./actions */ "./services/uistate/actions.js").ActionCreators;
+var uiReducer = __webpack_require__(/*! ./uiReducer */ "./services/uistate/uiReducer.js");
 
 var EVENTS = {
     OVERLAY_EVENT: "overlay",
@@ -14900,6 +15619,11 @@ module.exports = Singleton;
 /***/ }),
 
 /***/ "./services/uistate/uiReducer.js":
+/*!***************************************!*\
+  !*** ./services/uistate/uiReducer.js ***!
+  \***************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14907,8 +15631,8 @@ module.exports = Singleton;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var redux = __webpack_require__("./node_modules/redux/es/index.js");
-var ActionTypes = __webpack_require__("./services/uistate/actions.js").ActionTypes;
+var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+var ActionTypes = __webpack_require__(/*! ./actions */ "./services/uistate/actions.js").ActionTypes;
 
 var defaultState = {
     hasChanged: false,
@@ -14954,6 +15678,11 @@ module.exports = redux.combineReducers({
 /***/ }),
 
 /***/ "./services/utils/BubblingCollectionObservable.js":
+/*!********************************************************!*\
+  !*** ./services/utils/BubblingCollectionObservable.js ***!
+  \********************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14964,7 +15693,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /* eslint arrow-parens: 0 */
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
 /**
  * > Internal helper, mainly used in [ValidationService](#validationservice) to support the weird notification behaviour
@@ -15176,6 +15905,11 @@ module.exports = BubblingCollectionObservable;
 /***/ }),
 
 /***/ "./services/utils/Validation.js":
+/*!**************************************!*\
+  !*** ./services/utils/Validation.js ***!
+  \**************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15185,7 +15919,7 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var validateAsync = __webpack_require__("./node_modules/json-schema-library/lib/validateAsync.js");
+var validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
 
 /**
  * @class  Validation
@@ -15266,6 +16000,11 @@ module.exports = Validation;
 /***/ }),
 
 /***/ "./services/utils/copy.js":
+/*!********************************!*\
+  !*** ./services/utils/copy.js ***!
+  \********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15283,14 +16022,19 @@ module.exports = function copy(data) {
 /***/ }),
 
 /***/ "./services/utils/diffpatch.js":
+/*!*************************************!*\
+  !*** ./services/utils/diffpatch.js ***!
+  \*************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 /* global window */
-var DiffPatcher = __webpack_require__("./node_modules/jsondiffpatch/src/diffpatcher.js").DiffPatcher;
-var diff_match_patch = __webpack_require__("./node_modules/diff_match_patch/lib/diff_match_patch.js");
+var DiffPatcher = __webpack_require__(/*! jsondiffpatch/src/diffpatcher */ "./node_modules/jsondiffpatch/src/diffpatcher.js").DiffPatcher;
+var diff_match_patch = __webpack_require__(/*! diff_match_patch */ "./node_modules/diff_match_patch/lib/diff_match_patch.js");
 var options = {
     // used to match objects when diffing arrays, by default only === operator is used
     // this function is used only to when objects are not equal by ref
@@ -15320,12 +16064,17 @@ module.exports = diffpatch;
 /***/ }),
 
 /***/ "./services/utils/ensureItemIDs.js":
+/*!*****************************************!*\
+  !*** ./services/utils/ensureItemIDs.js ***!
+  \*****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var getTypeOf = __webpack_require__("./node_modules/json-schema-library/lib/getTypeOf.js");
+var getTypeOf = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
 var ID_PROPERTY = "_id";
 
 function generateId(index) {
@@ -15370,12 +16119,17 @@ module.exports = ensureItemIDs;
 /***/ }),
 
 /***/ "./services/utils/getParentPointer.js":
+/*!********************************************!*\
+  !*** ./services/utils/getParentPointer.js ***!
+  \********************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
 module.exports = function (pointer) {
     var list = gp.split(pointer);
@@ -15386,13 +16140,18 @@ module.exports = function (pointer) {
 /***/ }),
 
 /***/ "./services/utils/getPatchesPerPointer.js":
+/*!************************************************!*\
+  !*** ./services/utils/getPatchesPerPointer.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var diffpatch = __webpack_require__("./services/utils/diffpatch.js");
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
+var diffpatch = __webpack_require__(/*! ./diffpatch */ "./services/utils/diffpatch.js");
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
 function sortByPointer(a, b) {
     if (a.pointer < b.pointer) {
@@ -15479,16 +16238,26 @@ module.exports = function getPatchesPerPointer(previousValue, newValue) {
 /***/ }),
 
 /***/ "./services/utils/isRootPointer.js":
+/*!*****************************************!*\
+  !*** ./services/utils/isRootPointer.js ***!
+  \*****************************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports = __webpack_require__("./node_modules/gson-pointer/lib/isRoot.js");
+module.exports = __webpack_require__(/*! gson-pointer/lib/isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
 
 /***/ }),
 
 /***/ "./utils/UISchema.js":
+/*!***************************!*\
+  !*** ./utils/UISchema.js ***!
+  \***************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15497,10 +16266,10 @@ module.exports = __webpack_require__("./node_modules/gson-pointer/lib/isRoot.js"
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 // @TODO iterate over all schema definitions
-var iterateSchema = __webpack_require__("./node_modules/json-schema-library/index.js").iterateSchema;
-var gp = __webpack_require__("./node_modules/gson-pointer/index.js");
+var iterateSchema = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").iterateSchema;
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 var UI_PROPERTY = "editron:ui";
-var populated = __webpack_require__("./utils/populated.js");
+var populated = __webpack_require__(/*! ./populated */ "./utils/populated.js");
 
 function isPointer(string) {
     return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
@@ -15694,17 +16463,22 @@ module.exports = {
 /***/ }),
 
 /***/ "./utils/addItem.js":
+/*!**************************!*\
+  !*** ./utils/addItem.js ***!
+  \**************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
-var createElement = __webpack_require__("./utils/createElement.js");
-var LocationService = __webpack_require__("./services/LocationService.js");
-var OverlayService = __webpack_require__("./services/OverlayService.js");
-var SelectTileComponent = __webpack_require__("./components/overlayselecttiles/index.js");
-var UISchema = __webpack_require__("./utils/UISchema.js");
+var m = __webpack_require__(/*! mithril */ "mithril");
+var createElement = __webpack_require__(/*! ./createElement */ "./utils/createElement.js");
+var LocationService = __webpack_require__(/*! ../services/LocationService */ "./services/LocationService.js");
+var OverlayService = __webpack_require__(/*! ../services/OverlayService */ "./services/OverlayService.js");
+var SelectTileComponent = __webpack_require__(/*! ../components/overlayselecttiles */ "./components/overlayselecttiles/index.js");
+var UISchema = __webpack_require__(/*! ./UISchema */ "./utils/UISchema.js");
 
 /**
  * Request to insert an array child item at the given pointer. If multiple options are present, a dialogue is opened to
@@ -15771,6 +16545,11 @@ module.exports = function addItem(dataService, schemaService, pointer) {
 /***/ }),
 
 /***/ "./utils/array.js":
+/*!************************!*\
+  !*** ./utils/array.js ***!
+  \************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15806,12 +16585,17 @@ module.exports = {
 /***/ }),
 
 /***/ "./utils/createElement.js":
+/*!********************************!*\
+  !*** ./utils/createElement.js ***!
+  \********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var m = __webpack_require__("mithril");
+var m = __webpack_require__(/*! mithril */ "mithril");
 
 module.exports = function createElement(selector, attributes) {
     var vnode = m(selector, attributes);
@@ -15831,6 +16615,11 @@ module.exports = function createElement(selector, attributes) {
 /***/ }),
 
 /***/ "./utils/getID.js":
+/*!************************!*\
+  !*** ./utils/getID.js ***!
+  \************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15850,6 +16639,11 @@ module.exports = function getID(pointer) {
 /***/ }),
 
 /***/ "./utils/i18n.js":
+/*!***********************!*\
+  !*** ./utils/i18n.js ***!
+  \***********************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15857,7 +16651,7 @@ module.exports = function getID(pointer) {
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var render = __webpack_require__("./node_modules/json-schema-library/lib/utils/render.js");
+var render = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
 
 translate.strings = {};
 translateError.strings = {};
@@ -15897,26 +16691,36 @@ module.exports = i18n;
 /***/ }),
 
 /***/ "./utils/index.js":
+/*!************************!*\
+  !*** ./utils/index.js ***!
+  \************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 module.exports = {
-    addItem: __webpack_require__("./utils/addItem.js"),
-    array: __webpack_require__("./utils/array.js"),
-    createElement: __webpack_require__("./utils/createElement.js"),
-    getID: __webpack_require__("./utils/getID.js"),
-    i18n: __webpack_require__("./utils/i18n.js"),
-    isNodeContext: __webpack_require__("./utils/isNodeContext.js"),
-    populated: __webpack_require__("./utils/populated.js"),
-    selectEditor: __webpack_require__("./utils/selectEditor.js"),
-    UISchem: __webpack_require__("./utils/UISchema.js")
+    addItem: __webpack_require__(/*! ./addItem */ "./utils/addItem.js"),
+    array: __webpack_require__(/*! ./array */ "./utils/array.js"),
+    createElement: __webpack_require__(/*! ./createElement */ "./utils/createElement.js"),
+    getID: __webpack_require__(/*! ./getID */ "./utils/getID.js"),
+    i18n: __webpack_require__(/*! ./i18n */ "./utils/i18n.js"),
+    isNodeContext: __webpack_require__(/*! ./isNodeContext */ "./utils/isNodeContext.js"),
+    populated: __webpack_require__(/*! ./populated */ "./utils/populated.js"),
+    selectEditor: __webpack_require__(/*! ./selectEditor */ "./utils/selectEditor.js"),
+    UISchem: __webpack_require__(/*! ./UISchema */ "./utils/UISchema.js")
 };
 
 /***/ }),
 
 /***/ "./utils/isNodeContext.js":
+/*!********************************!*\
+  !*** ./utils/isNodeContext.js ***!
+  \********************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15934,11 +16738,16 @@ module.exports = function isNodeContext() {
     }
     return false;
 };
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__("./node_modules/process/browser.js")))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
 
 /***/ }),
 
 /***/ "./utils/populated.js":
+/*!****************************!*\
+  !*** ./utils/populated.js ***!
+  \****************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15970,6 +16779,11 @@ module.exports = function populated(value, returnIf) {
 /***/ }),
 
 /***/ "./utils/selectEditor.js":
+/*!*******************************!*\
+  !*** ./utils/selectEditor.js ***!
+  \*******************************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16017,6 +16831,11 @@ module.exports = select;
 /***/ }),
 
 /***/ 0:
+/*!****************!*\
+  !*** dll main ***!
+  \****************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__;
@@ -16024,6 +16843,11 @@ module.exports = __webpack_require__;
 /***/ }),
 
 /***/ "mithril":
+/*!********************!*\
+  !*** external "m" ***!
+  \********************/
+/*! no static exports found */
+/*! all exports used */
 /***/ (function(module, exports) {
 
 module.exports = m;

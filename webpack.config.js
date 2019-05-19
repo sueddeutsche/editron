@@ -5,6 +5,7 @@ const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 
 const editronModulesConfig = {
+    mode: PRODUCTION ? "production" : "development",
     entry: [
         path.join(__dirname, "editron.js"),
         path.join(__dirname, "editron.scss"),
@@ -92,12 +93,19 @@ const editronModulesConfig = {
                     "html-loader"
                 ],
                 include: [path.join(__dirname, "app", "index.html")]
-            },
-            {
-                loaders: "json-loader",
-                test: /\.json$/
             }
         ]
+    },
+
+    optimization: {
+        minimizer: [].concat(PRODUCTION ? [
+            new (require("uglifyjs-webpack-plugin"))({
+                sourceMap: false,
+                uglifyOptions: {
+                    compress: { drop_console: true }
+                }
+            })
+        ] : [])
     },
 
     plugins: [
@@ -107,12 +115,7 @@ const editronModulesConfig = {
             name: "editronModules",
             path: path.join(__dirname, TARGET_FOLDER, "manifest.json")
         })
-    ].concat(PRODUCTION ? [
-        new (require("uglifyjs-webpack-plugin"))({
-            sourceMap: false,
-            compress: { drop_console: true }
-        })
-    ] : [])
+    ]
 };
 
 

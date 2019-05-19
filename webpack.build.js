@@ -5,6 +5,7 @@ const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 
 const config = {
+    mode: PRODUCTION ? "production" : "development",
     entry: {
         editron: path.join(__dirname, "editron.js")
     },
@@ -58,12 +59,19 @@ const config = {
                     "html-loader"
                 ],
                 include: [path.join(__dirname, "test", "support", "local-setup.html")]
-            },
-            {
-                loaders: "json-loader",
-                test: /\.json$/
             }
         ]
+    },
+
+    optimization: {
+        minimizer: [].concat(PRODUCTION ? [
+            new (require("uglifyjs-webpack-plugin"))({
+                sourceMap: false,
+                uglifyOptions: {
+                    compress: { drop_console: true }
+                }
+            })
+        ] : [])
     },
 
     plugins: [
@@ -73,12 +81,7 @@ const config = {
             manifest: require(path.join(__dirname, TARGET_FOLDER, "manifest.json")),
             sourceType: "var"
         })
-    ].concat(PRODUCTION ? [
-        new (require("uglifyjs-webpack-plugin"))({
-            sourceMap: false,
-            compress: { drop_console: true }
-        })
-    ] : [])
+    ]
 };
 
 
