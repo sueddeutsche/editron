@@ -3,6 +3,12 @@
   "version": "5.2.2",
   "description": "Editron - json-editor",
   "main": "editron.js",
+  "homepage": "https://github.com/sueddeutsche/editron",
+  "bugs": "https://github.com/sueddeutsche/editron/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sueddeutsche/editron.git"
+  },
   "scripts": {
     "build": "rm -rf build; webpack && webpack --config webpack.build.js",
     "dist": "rm -rf dist; NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
@@ -18,8 +24,15 @@
   "pre-push": [
     "test"
   ],
-  "keywords": [],
-  "author": "Sacha Goldhofer <noreply@saschagoldhofer.de> (https://github.com/sagold/)",
+  "keywords": [
+    "JSON-Editor",
+    "json",
+    "schema",
+    "jsonschema",
+    "editor",
+    "form"
+  ],
+  "author": "Sascha Goldhofer <noreply@saschagoldhofer.de> (https://github.com/sagold/)",
   "license": "MIT",
   "devDependencies": {
     "ava": "^0.22.0",
