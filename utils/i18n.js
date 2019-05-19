@@ -24,9 +24,18 @@ function translateError(controller, error) {
 }
 
 
+function addLanguage(lang, keys) {
+    const _keys = (keys == null && Object.prototype.toString.call(lang) === "[object Object]") ? lang : keys;
+    Object.assign(translateError.strings, _keys.errors);
+    Object.assign(translate.strings, _keys.strings);
+}
+
+
 const i18n = {
     translate,
-    translateError
+    translateError,
+    addLanguage
 };
+
 
 module.exports = i18n;

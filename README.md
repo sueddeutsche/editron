@@ -417,28 +417,11 @@ For further details, see the [json-schema-library](https://github.com/sagold/jso
 You can change all interface labels, messages and errors. For this, all strings are stored in a simple object, where
 each property resolves to the given template string.
 
-@todo:
-> As long as no api is exposed, use the following construct to add (error) message translations
-
 ```javascript
-import { Controller } from "editron-core";
 import i18n from "editron-core/utils/i18n";
 import german from "./languageGerman";
-Object.assign(i18n.translateError.strings, german.errors);
-Object.assign(i18n.translate.strings, german.strings);
 
-// ... on initialization
-const controller = new Controller(schema, data);
-controller.validator()
-    .setErrorHandler(error => i18n.translateError(controller, error));
-```
-
-where the file `languageGerman.js` contains something like:
-
-```javascript
-import render from "json-schema-library/lib/utils/render";
-
-export default {
+i18n.addLanguage({
     strings: {
         "editor:mediaimage:metadata": "Bildgröße: {{width}}x{{height}} [{{size}}]",
         "editor:wysiwyg:edithtml:tooltip": "HTML Quellcode bearbeiten",
@@ -460,7 +443,7 @@ export default {
             return render("Der Text muss eine Mindestlänge von {{minLength}} haben (aktuell {{length}}).", error.data);
         }
     }
-};
+});
 ```
 
 <!--

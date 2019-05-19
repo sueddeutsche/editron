@@ -12,6 +12,8 @@ const addItem = require("./utils/addItem");
 const UISchema = require("./utils/UISchema");
 const getID = require("./utils/getID");
 const plugin = require("./plugin");
+const i18n = require("./utils/i18n");
+
 
 function isValidPointer(pointer) {
     return pointer[0] === "#";
@@ -108,6 +110,8 @@ class Controller {
 
         this.schemaService = new SchemaService(schema, data, this.core);
         this.validationService = new ValidationService(this.state, schema, this.core);
+        // enable i18n error-translations
+        this.validationService.setErrorHandler((error) => i18n.translateError(this, error));
         // merge given data with template data
         data = this.schemaService.addDefaultData(data, schema);
         this.dataService = new DataService(this.state, data);
