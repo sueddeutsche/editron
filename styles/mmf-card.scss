@@ -7,7 +7,7 @@
 @import "../sass/export-once";
 
 
-@if export-once("editron-core/styles/mmf-card") {
+@if export-once("editron/styles/mmf-card") {
 
     .mmf-card {
         color: $mmf-color--dark;

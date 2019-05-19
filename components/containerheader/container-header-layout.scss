@@ -1,7 +1,7 @@
 @import "../../sass/export-once";
 
 
-@if export-once("editron-core/components/container-header-layout") {
+@if export-once("editron/components/container-header-layout") {
 
     .editron-container__header {
         display: flex;

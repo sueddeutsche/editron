@@ -3,7 +3,7 @@
 @import "../../sass/export-once";
 
 
-@if export-once("editron-core/components/container-description") {
+@if export-once("editron/components/container-description") {
 
     .editron-container__description {
         padding: 2 * $mmf-unit;

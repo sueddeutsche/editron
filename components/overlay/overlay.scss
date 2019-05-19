@@ -4,7 +4,7 @@
 @import "../../sass/export-once";
 
 
-@if export-once("editron-core/components/overlay") {
+@if export-once("editron/components/overlay") {
 
     .ui-overlay {
         z-index: 1002;

@@ -43,9 +43,9 @@ class ObjectEditor {
         }
 
         this.rebuildChildren = controller.data().observe(pointer, this.rebuildChildren.bind(this));
-        this.addError = controller.validator().observe(pointer, this.addError.bind(this));
-        this.clearErrors = controller.validator().on("beforeValidation", this.clearErrors.bind(this));
+        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
 
+        this.setErrors(controller.validator().getErrorsAndWarnings(pointer));
         this.render();
         this.$children = this.$element.querySelector(View.childContainerSelector);
         this.rebuildChildren();
@@ -70,9 +70,9 @@ class ObjectEditor {
             this.viewModel.ondelete = () => controller.data().delete(pointer);
         }
         controller.data().removeObserver(oldPointer, this.rebuildChildren);
-        controller.validator().removeObserver(oldPointer, this.addError);
+        controller.validator().removeObserver(oldPointer, this.setErrors);
         controller.data().observe(pointer, this.rebuildChildren);
-        controller.validator().observe(pointer, this.addError);
+        controller.validator().observe(pointer, this.setErrors);
 
         this.childEditors.forEach((editor) => {
             editor.updatePointer(`${this.pointer}/${editor._property}`);
@@ -124,29 +124,25 @@ class ObjectEditor {
         showJSON(this.controller, propertyData, property);
     }
 
-    addError(error) {
+    setErrors(errors) {
         // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
         // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
         // arrays this should come per default, as the may insert in add items...
-        if (error.code === "no-additional-properties-error") {
-            const message = error.message;
-            const property = error.data.property;
-            error = {
-                severity: error.type || "error",
-                message: m(".editron-error.editron-error--object-property",
-                    m("span", m.trust(message)),
-                    m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
-                    m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
-                )
-            };
-        }
-
-        this.viewModel.errors.push(error);
-        this.render();
-    }
-
-    clearErrors() {
-        this.viewModel.errors.length = 0;
+        this.viewModel.errors = errors.map((error) => {
+            if (error.code === "no-additional-properties-error") {
+                const message = error.message;
+                const property = error.data.property;
+                return {
+                    severity: error.type || "error",
+                    message: m(".editron-error.editron-error--object-property",
+                        m("span", m.trust(message)),
+                        m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
+                        m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
+                    )
+                };
+            }
+            return error;
+        });
         this.render();
     }
 
@@ -164,12 +160,11 @@ class ObjectEditor {
 
     destroy() {
         if (this.viewModel) {
-            this.controller.removeEditor(this);
+            this.controller.removeInstance(this);
 
             m.render(this.$element, m("i"));
             this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
-            this.controller.validator().removeObserver(this.pointer, this.addError);
-            this.controller.validator().off("beforeValidation", this.clearErrors);
+            this.controller.validator().removeObserver(this.pointer, this.setErrors);
 
             this.childEditors.forEach((editor) => editor.destroy());
             this.childEditors.length = 0;

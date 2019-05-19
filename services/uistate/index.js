@@ -1,5 +1,5 @@
 const mitt = require("mitt");
-const State = require("json-data-services/lib/State");
+const State = require("../State");
 const ActionCreators = require("./actions").ActionCreators;
 const uiReducer = require("./uiReducer");
 
