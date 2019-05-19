@@ -67,8 +67,9 @@
     "registry": "https://registry.npmjs.org"
   },
   "peerDependencies": {
-    "jsondiffpatch": "^0.2.4",
-    "diff_match_patch": "^0.1.1"
+    "webpack": "4.x",
+    "jsondiffpatch": "0.2.x",
+    "diff_match_patch": "0.1.x"
   },
   "dependencies": {
     "diff_match_patch": "^0.1.1",

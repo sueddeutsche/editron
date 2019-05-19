@@ -6,6 +6,7 @@ const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
     return {
+        mode: PRODUCTION ? "production" : "development",
 
         entry: [
             path.join(projectRoot, jsFilename),
@@ -86,6 +87,17 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
             port: 8080
         },
 
+        optimization: {
+            minimizer: [].concat(PRODUCTION ? [
+                new (require("uglifyjs-webpack-plugin"))({
+                    sourceMap: false,
+                    uglifyOptions: {
+                        compress: { drop_console: true }
+                    }
+                })
+            ] : [])
+        },
+
         plugins: [
             new webpack.NamedModulesPlugin(),
             new webpack.DllReferencePlugin({
@@ -97,12 +109,7 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
                 DEBUG: !PRODUCTION
             })
 
-        ].concat(PRODUCTION ? [
-            new (require("uglifyjs-webpack-plugin"))({
-                sourceMap: false,
-                compress: { drop_console: true }
-            })
-        ] : [])
+        ]
     };
 }
 
