@@ -1,19 +1,19 @@
 {
-  "name": "editron-core",
+  "name": "editron",
   "version": "5.2.2",
-  "description": "Editron - json-editor core functionality",
-  "main": "editron-core.js",
+  "description": "Editron - json-editor",
+  "main": "editron.js",
   "scripts": {
-    "build": "rm -rf build; webpack; webpack --config webpack.build.js",
-    "dist": "rm -rf dist; NODE_ENV=production webpack; NODE_ENV=production webpack --config webpack.build.js",
+    "build": "rm -rf build; webpack && webpack --config webpack.build.js",
+    "dist": "rm -rf dist; NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
     "watch": "watch 'npm run dist' editors components sass services utils",
-    "release": "npm run dist",
+    "release": "npm run build; npm run dist",
     "prepublishOnly": "npm run release",
     "test": "ava",
     "serve": "webpack-dev-server --config webpack.serve.js",
     "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
-    "docs": "npx documentation build -o docs/api -f html editron-core.js --config documentation.yml",
-    "docs:serve": "npx documentation serve -f html editron-core.js --watch --config documentation.yml"
+    "docs": "npx documentation build -o docs/api -f html editron.js --config documentation.yml",
+    "docs:serve": "npx documentation serve -f html editron.js --watch --config documentation.yml"
   },
   "pre-push": [
     "test"

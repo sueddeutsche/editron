@@ -4,10 +4,10 @@ const PRODUCTION = process.env.NODE_ENV === "production";
 const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 
-const editronCoreModulesConfig = {
+const editronModulesConfig = {
     entry: [
-        path.join(__dirname, "editron-core.js"),
-        path.join(__dirname, "editron-core.scss"),
+        path.join(__dirname, "editron.js"),
+        path.join(__dirname, "editron.scss"),
         path.resolve("./node_modules/mithril-material-forms"),
         path.resolve("./node_modules/json-schema-library"),
         path.resolve("./node_modules/gson-pointer"),
@@ -51,7 +51,7 @@ const editronCoreModulesConfig = {
                 include: [
                     path.resolve(__dirname, "app"),
                     path.resolve(__dirname, "lib"),
-                    /json-.*\//, /mithril-.*\//, /editron-.*\//
+                    /json-.*\//, /mithril-.*\//, /editron.*\//
                 ],
                 options: {
                     presets: [require.resolve("babel-preset-es2015")],
@@ -72,7 +72,7 @@ const editronCoreModulesConfig = {
                 test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff\d?$|\.ttf$|\.eot|\.otf|\.wav$|\.mp3$/
             },
             {
-                test: [/wysiwyg-editor.scss/, /editron-core.scss$/],
+                test: [/wysiwyg-editor.scss/, /editron.scss$/],
                 use: [
                     "file-loader?name=[name].css",
                     "extract-loader",
@@ -116,4 +116,4 @@ const editronCoreModulesConfig = {
 };
 
 
-module.exports = editronCoreModulesConfig;
+module.exports = editronModulesConfig;

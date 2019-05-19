@@ -2,9 +2,9 @@
  * Editron-Core. Depending on your build setup, use
  *
  * ```js
- * import { Controller } from "editron-core";
+ * import { Controller } from "editron";
  * // or
- * const Controller = require("editron-core").Controller;
+ * const { Controller } = require("editron");
  * ```
  * to get the editron core entry point for a enjoyable formular world
  *

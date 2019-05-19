@@ -1,6 +1,6 @@
 # Services
 
-> frontend-services exposed by editron-core
+> frontend-services exposed by editron
 
 Combines multiple services to help working with json-data manipulation, synchronisation and validation.
 

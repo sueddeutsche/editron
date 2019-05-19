@@ -47,7 +47,7 @@ function removeEditorFrom(instances, editor) {
  * Instantiate the controller
  *
  * ```js
- * import { Controller } from "editron-core";
+ * import { Controller } from "editron";
  * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  * const editron = new Controller(jsonSchema);
  * ```
@@ -55,7 +55,7 @@ function removeEditorFrom(instances, editor) {
  * or, using all parameters
  *
  * ```js
- *  import { Controller } from "editron-core";
+ *  import { Controller } from "editron";
  *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  *  // data = { title: "Hello" } - or simply use {}
  *  // options = { editors: [ complete list of custom editors ] }

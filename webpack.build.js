@@ -6,11 +6,11 @@ const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 const config = {
     entry: {
-        "editron-core": path.join(__dirname, "editron-core.js")
+        editron: path.join(__dirname, "editron.js")
     },
     output: {
         filename: "[name].js",
-        library: ["editronCore"],
+        library: ["editron"],
         path: path.resolve(__dirname, TARGET_FOLDER)
     },
 
@@ -39,7 +39,7 @@ const config = {
                 include: [
                     path.resolve(__dirname, "app"),
                     path.resolve(__dirname, "lib"),
-                    /json-.*\//, /mithril-.*\//, /editron-.*\//
+                    /json-.*\//, /mithril-.*\//, /editron.*\//
                 ],
                 options: {
                     presets: [require.resolve("babel-preset-es2015")],

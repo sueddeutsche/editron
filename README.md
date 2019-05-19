@@ -76,15 +76,15 @@ There are three basic concepts that you should be familiar, when working with a 
 ```html
 <!-- editron required fonts and styles -->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/editron-core@5.2.2/dist/editron-core.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron.css" rel="stylesheet" />
 <!-- editron required dependency -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.3/mithril.min.js"></script>
-<!-- editron library and main controller, exposed to window.editronCore -->
-<script src="https://cdn.jsdelivr.net/npm/editron-core@5.2.2/dist/editron-modules.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/editron-core@5.2.2/dist/editron-core.js"></script>
+<!-- editron library and main controller, exposed to window.editron -->
+<script src="https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron-modules.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron.js"></script>
 ```
 
-**Note** ensure that `editron-modules.js` is loaded before `editron-core.js` and any other editors.
+**Note** ensure that `editron-modules.js` is loaded before `editron.js` and any other editors.
 
 **2. Create or load a JSON-Schema**
 
@@ -110,7 +110,7 @@ There are three basic concepts that you should be familiar, when working with a 
 <div class="editor"></div>
 
 <script type="text/javascript">
-    const { Controller } = window.editronCore;
+    const { Controller } = window.editron;
     const controller = new Controller(window.jsonSchema);
     controller.createEditor("#", document.querySelector(".editor"));
 
@@ -328,7 +328,7 @@ controls.insert     | Boolean=true  | insert button between elements
 To add new or custom editors globally, use the plugin interface
 
 ```javascript
-const { plugin, Controller } = editronCore;
+const { plugin, Controller } = editron;
 plugin.editor(MyCustomEditor);
 const controller = new Controller(jsonSchema, data);
 ```
@@ -337,7 +337,7 @@ Adding editors to a single `Controller`-instance, use the options or add them di
 complete editors-list
 
 ```javascript
-const { editors, plugin, Controller } = editronCore;
+const { editors, plugin, Controller } = editron;
 const options = {
     editors: [
         MyCustomEditor,
@@ -418,7 +418,7 @@ You can change all interface labels, messages and errors. For this, all strings 
 each property resolves to the given template string.
 
 ```javascript
-import i18n from "editron-core/utils/i18n";
+import i18n from "editron/utils/i18n";
 import german from "./languageGerman";
 
 i18n.addLanguage({
@@ -664,16 +664,16 @@ For further detail, check the [AbstractEditor](./editors/AbstractEditor.js) impl
 
 #### Build setup (webpack)
 
-Add editron to your devDependencies `npm i editron-core -D`. And start your webpack config with the following
+Add editron to your devDependencies `npm i editron -D`. And start your webpack config with the following
 
 ```javascript
 // webpack.config.js
-const plugin = require("editron-core/plugin/webpack");
+const plugin = require("editron/plugin/webpack");
 module.exports = plugin.createConfig("my-custom-editor.js", "my-custom-editor.scss");
 ```
 
-You can install the required dependencies coming with editron-core by running
-`npm --prefix node_modules/editron-core install` in your editor directory. Now, running
+You can install the required dependencies coming with editron by running
+`npm --prefix node_modules/editron install` in your editor directory. Now, running
 `npx NODE_ENV=production webpack` in your project, will start bundling the editor to be used with `editron-modules.js`.
 
 @todo build setup, testing, bundling, watching, etc
@@ -685,7 +685,7 @@ If you are using the above build setup, exporting the editor by
 
 ```javascript
 // file: my-custom-editor.js
-import plugin from "editron-core/plugin";
+import plugin from "editron/plugin";
 plugin.editor(require("./MyCustomEditor"));
 ```
 
@@ -693,12 +693,12 @@ will add your editor by adding the script to your document:
 
 ```html
 <script src="https://.../editron-modules.js"></script>
-<script src="https://.../editron-core.js"></script>
+<script src="https://.../editron.js"></script>
 <!-- the following script will add the editor when loaded -->
 <script src="https://.../my-custom-editor.js"></script>
 ```
 
-Without the build-setup, you can still call the plugin through `const { plugin } = editronCore;`.
+Without the build-setup, you can still call the plugin through `const { plugin } = editron;`.
 
 
 #### Delegating child editors

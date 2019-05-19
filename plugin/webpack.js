@@ -29,10 +29,10 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
             symlinks: false,
             modules: [".", "node_modules"],
             alias: {
-                "mithril-material-forms": "editron-core/node_modules/mithril-material-forms",
-                "json-schema-library": "editron-core/node_modules/json-schema-library",
-                "gson-pointer": "editron-core/node_modules/gson-pointer",
-                mitt: "editron-core/node_modules/mitt"
+                "mithril-material-forms": "editron/node_modules/mithril-material-forms",
+                "json-schema-library": "editron/node_modules/json-schema-library",
+                "gson-pointer": "editron/node_modules/gson-pointer",
+                mitt: "editron/node_modules/mitt"
             }
         },
 
@@ -89,7 +89,7 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
         plugins: [
             new webpack.NamedModulesPlugin(),
             new webpack.DllReferencePlugin({
-                context: path.join(projectRoot, "node_modules", "editron-core"),
+                context: path.join(projectRoot, "node_modules", "editron"),
                 manifest: require(path.join(__dirname, "..", TARGET_FOLDER, "/manifest.json")),
                 sourceType: "var"
             }),

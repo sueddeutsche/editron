@@ -7,7 +7,7 @@
 @import "../containererrors/container-errors";
 
 
-@if export-once("editron-core/components/container-theme") {
+@if export-once("editron/components/container-theme") {
 
     .editron-container {
         color: inherit;
