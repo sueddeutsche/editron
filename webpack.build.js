@@ -5,12 +5,13 @@ const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 
 
 const config = {
+    mode: PRODUCTION ? "production" : "development",
     entry: {
-        "editron-core": path.join(__dirname, "editron-core.js")
+        editron: path.join(__dirname, "editron.js")
     },
     output: {
         filename: "[name].js",
-        library: ["editronCore"],
+        library: ["editron"],
         path: path.resolve(__dirname, TARGET_FOLDER)
     },
 
@@ -39,7 +40,7 @@ const config = {
                 include: [
                     path.resolve(__dirname, "app"),
                     path.resolve(__dirname, "lib"),
-                    /json-.*\//, /mithril-.*\//, /editron-.*\//
+                    /json-.*\//, /mithril-.*\//, /editron.*\//
                 ],
                 options: {
                     presets: [require.resolve("babel-preset-es2015")],
@@ -57,13 +58,20 @@ const config = {
                     "extract-loader",
                     "html-loader"
                 ],
-                include: [path.join(__dirname, "app", "index.html")]
-            },
-            {
-                loaders: "json-loader",
-                test: /\.json$/
+                include: [path.join(__dirname, "test", "support", "local-setup.html")]
             }
         ]
+    },
+
+    optimization: {
+        minimizer: [].concat(PRODUCTION ? [
+            new (require("uglifyjs-webpack-plugin"))({
+                sourceMap: false,
+                uglifyOptions: {
+                    compress: { drop_console: true }
+                }
+            })
+        ] : [])
     },
 
     plugins: [
@@ -73,12 +81,7 @@ const config = {
             manifest: require(path.join(__dirname, TARGET_FOLDER, "manifest.json")),
             sourceType: "var"
         })
-    ].concat(PRODUCTION ? [
-        new (require("uglifyjs-webpack-plugin"))({
-            sourceMap: false,
-            compress: { drop_console: true }
-        })
-    ] : [])
+    ]
 };
 
 

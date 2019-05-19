@@ -2,7 +2,7 @@
 @import "../sass/export-once";
 
 
-@if export-once("editron-core/styles/ui-row") {
+@if export-once("editron/styles/ui-row") {
 
     .ui-row {
         & > .editron-container__children {

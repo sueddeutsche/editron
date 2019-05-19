@@ -25,7 +25,6 @@ atlassian-ide-plugin.xml
 .yo-rc.json
 
 doc-build/
-/build/
 /channels/
 
 /test/visual/**/diff.png
@@ -37,3 +36,4 @@ doc-build/
 app/assets/videos
 assetdata
 debug.html
+/yarn.lock

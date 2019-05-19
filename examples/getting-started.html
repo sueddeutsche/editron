@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>editron - getting started</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <!-- editron required fonts and styles -->
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron.css" rel="stylesheet" type="text/css" />
+        <!-- editron required dependency -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.3/mithril.min.js"></script>
+        <!-- editron library and main controller, exposed to window.editron -->
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron-modules.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron.js"></script>
+
+        <!-- optionally add font -->
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+        <style type="text/css">
+            .editron-container {
+                font-family: "Roboto";
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="editor" style="max-width: 480px;"></div>
+        <script type="text/javascript">
+            window.jsonSchema = {
+                type: "object",
+                required: ["title"],
+                properties: {
+                    title: {
+                        title: "simple-string",
+                        type: "string",
+                        minLength: 1
+                    }
+                }
+            };
+
+            const { Controller } = window.editron;
+            const controller = new Controller(window.jsonSchema);
+            controller.createEditor("#", document.querySelector(".editor"));
+
+            console.log("data", controller.data().get());
+            // listen to changes in title
+            controller.data().observe("#/title", ({ pointer, parentPointer, patch } = event) => console.log(pointer, parentPointer, patch));
+        </script>
+
+    </body>
+</html>

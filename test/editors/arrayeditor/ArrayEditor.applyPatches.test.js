@@ -1,4 +1,4 @@
-/* eslint max-len: false */
+/* eslint max-len: 0 */
 const test = require("ava").test;
 const sinon = require("sinon");
 

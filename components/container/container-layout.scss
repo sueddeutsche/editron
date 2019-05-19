@@ -5,7 +5,7 @@
 @import "../containererrors/container-errors";
 
 
-@if export-once("editron-core/components/container-layout") {
+@if export-once("editron/components/container-layout") {
 
     // add button replaces spacing between cards
     .editron-container.withAddButton .mmf-card {

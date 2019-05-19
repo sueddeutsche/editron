@@ -1,7 +1,7 @@
 @import "../../sass/export-once";
 
 
-@if export-once("editron-core/components/container-error") {
+@if export-once("editron/components/container-error") {
 
     .editron-container__errors {
         padding: $mmf-unit 2 * $mmf-unit;

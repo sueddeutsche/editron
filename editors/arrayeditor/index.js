@@ -1,6 +1,6 @@
 const m = require("mithril");
 const ArrayItemEditor = require("./ArrayItemEditor");
-const diffpatch = require("json-data-services/lib/utils/diffpatch");
+const diffpatch = require("../../services/utils/diffpatch");
 const View = require("../../components/container");
 
 
@@ -12,8 +12,6 @@ class ArrayEditor {
     }
 
     constructor(pointer, controller, options = {}) {
-        // console.log("Options", options);
-
         // add id to element, since no other input-form is associated with this editor
         options.attrs = Object.assign({ id: options.id }, options.attrs);
         const schema = controller.schema().get(pointer);
@@ -28,7 +26,7 @@ class ArrayEditor {
         this.viewModel = Object.assign({
             pointer,
             attrs: {},
-            errors: [],
+            errors: controller.validator().getErrorsAndWarnings(pointer),
             onadd: this.onAdd,
             length: data.length,
             maxItems: schema.maxItems || Infinity,
@@ -46,8 +44,7 @@ class ArrayEditor {
         }, options.controls);
 
         this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
-        this.addError = controller.validator().observe(pointer, this.addError.bind(this));
-        this.clearErrors = controller.validator().on("beforeValidation", this.clearErrors.bind(this));
+        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
 
         this.render();
         this.$items = this.$element.querySelector(View.childContainerSelector);
@@ -73,9 +70,9 @@ class ArrayEditor {
         this.viewModel.attrs.id = newPointer;
 
         this.controller.data().removeObserver(previousPointer, this.updateView);
-        this.controller.validator().removeObserver(previousPointer, this.addError);
+        this.controller.validator().removeObserver(previousPointer, this.setErrors);
         this.controller.data().observe(newPointer, this.updateView);
-        this.controller.validator().observe(newPointer, this.addError);
+        this.controller.validator().observe(newPointer, this.setErrors);
 
         this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
         this.render();
@@ -168,13 +165,8 @@ class ArrayEditor {
         return this.pointer;
     }
 
-    addError(error) {
-        this.viewModel.errors.push(error);
-        this.render();
-    }
-
-    clearErrors() {
-        this.viewModel.errors.length = 0;
+    setErrors(errors) {
+        this.viewModel.errors = errors;
         this.render();
     }
 
@@ -188,13 +180,12 @@ class ArrayEditor {
 
     destroy() {
         if (this.viewModel) {
-            this.controller.removeEditor(this);
+            this.controller.removeInstance(this);
 
             this.viewModel = null;
             m.render(this.$element, m("i"));
             this.controller.data().removeObserver(this.pointer, this.updateView);
-            this.controller.validator().removeObserver(this.pointer, this.addError);
-            this.controller.validator().off("beforeValidation", this.clearErrors);
+            this.controller.validator().removeObserver(this.pointer, this.setErrors);
             this.children.forEach((editor) => editor.destroy());
         }
     }

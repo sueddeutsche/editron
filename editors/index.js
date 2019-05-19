@@ -1,4 +1,5 @@
 module.exports = {
+    AbstractEditor: require("./AbstractEditor"),
     AbstractValueEditor: require("./AbstractValueEditor"),
     ArrayEditor: require("./arrayeditor"),
     ObjectEditor: require("./objecteditor"),
