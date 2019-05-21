@@ -233,8 +233,10 @@ contoller.validator().observe("#/title", (errorObject) => {});
 contoller.validator().observe("#", (errorObject) => {}, true);
 ```
 
-**Note** that _onError_, and any `observe`-events, emit each error individually. To get the current list of errors,
-gather all error-events and reset them at the _beforeValidation_-event.
+**Note** that _onError_ emits each error individually. To get the current list of errors,
+gather all error-events and reset them at the _beforeValidation_-event. Any `observe`-events collect errors and will
+notify each update. e.g. For two errors you receive three events `[]`, `[{ error }]`, `[{ error }, { error }]`.
+
 
 **Validating data**
 
