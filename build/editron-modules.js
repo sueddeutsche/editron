@@ -102,6 +102,8 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _toArray(arr) { return Array.isArray(arr) ? arr : Array.from(arr); }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -211,11 +213,20 @@ var Controller = function () {
         this.instances = {};
         this.core = new Core();
 
-        plugin.getValidators().forEach(function (validator) {
+        plugin.getValidators().forEach(function (_ref) {
+            var _ref2 = _toArray(_ref),
+                validationType = _ref2[0],
+                validator = _ref2.slice(1);
+
             try {
-                _this.addValidator.apply(_this, _toConsumableArray(validator));
+                if (validationType === "format") {
+                    return _this.addFormatValidator.apply(_this, _toConsumableArray(validator));
+                } else if (validationType === "keyword") {
+                    return _this.addKeywordValidator.apply(_this, _toConsumableArray(validator));
+                }
+                throw new Error("Unknown validation type '" + validationType + "'");
             } catch (e) {
-                console.log(e.message);
+                console.log("Error:", e.message);
             }
         });
 
@@ -14226,9 +14237,13 @@ module.exports = {
         editors.push(constructor);
     },
 
+    // format validator
     validator: function validator(keyword, value, _validator) {
-        console.log("register validator " + keyword + ":" + value);
-        validators.push([keyword, value, _validator]);
+        validators.push(["format", value, _validator]);
+    },
+
+    keywordValidator: function keywordValidator(datatype, property, validator) {
+        validators.push(["keyword", datatype, property, validator]);
     },
 
     getEditors: function getEditors() {
