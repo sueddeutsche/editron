@@ -396,6 +396,7 @@ function validate(core, schema, value, pointer)
 You can reference the json-schema-library
 [format-validators](https://github.com/sagold/json-schema-library/blob/master/lib/validation/format.js) for more examples
 
+
 Adding a _format_-validator
 
 ```javascript
@@ -409,6 +410,16 @@ Adding a _keyword_-validator
 // @param {keyword} custom attribute to register validator. Here: "my-custom-keyword"
 // @param {Function} validation function
 controller.addKeywordValidator("string", "my-custom-keyword", validator);
+```
+
+Or use the plugin interface
+
+```javascript
+const { plugin } = editron;
+// format-validator
+plugin.validator("format-value", function formatValidator() {});
+// keyword validator
+plugin.keywordValidator(datatype, propertyName, function propertyValidator() {});
 ```
 
 For further details, see the [json-schema-library](https://github.com/sagold/json-schema-library#add-custom-validators)
