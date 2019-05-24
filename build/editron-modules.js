@@ -12076,6 +12076,10 @@ module.exports = {
             oninput: m.withAttr("value", function (currentValue) {
                 return _this.value = currentValue;
             }),
+            // @fixme this might trigger updates, but ensures the property is always set (on initial rendering)
+            oncreate: function oncreate(vnode) {
+                return vnode.dom.id = attrs.id;
+            },
             onfocus: function onfocus(event) {
                 _this.hasFocus = true;
                 attrs.onfocus && attrs.onfocus(event);
