@@ -8,9 +8,13 @@ module.exports = {
         editors.push(constructor);
     },
 
+    // format validator
     validator: function (keyword, value, validator) {
-        console.log(`register validator ${keyword}:${value}`);
-        validators.push([keyword, value, validator]);
+        validators.push(["format", value, validator]);
+    },
+
+    keywordValidator: function (datatype, property, validator) {
+        validators.push(["keyword", datatype, property, validator]);
     },
 
     getEditors: () => editors,

@@ -100,11 +100,16 @@ class Controller {
         this.instances = {};
         this.core = new Core();
 
-        plugin.getValidators().forEach((validator) => {
+        plugin.getValidators().forEach(([validationType, ...validator]) => {
             try {
-                this.addValidator(...validator);
-            } catch (e) {
-                console.log(e.message);
+                if (validationType === "format") {
+                    return this.addFormatValidator(...validator);
+                } else if (validationType === "keyword") {
+                    return this.addKeywordValidator(...validator);
+                }
+                throw new Error(`Unknown validation type '${validationType}'`);
+            } catch(e) {
+                console.log("Error:", e.message);
             }
         });
 
