@@ -144,7 +144,7 @@ class AbstractValueEditor {
     // updates value in data-store
     setValue(value) {
         this.controller.data().set(this.pointer, value);
-        this.render();
+        // do not trigger rendering here. data-observer will notify change event
     }
 
     // adds an error to view
