@@ -14655,7 +14655,10 @@ var LocationService = {
         }, DELAY);
     },
     blur: function blur(pointer) {
-        // UIState.setCurrentPointer("");
+        if (UIState.getCurrentPointer() !== pointer) {
+            return;
+        }
+        UIState.setCurrentPointer("");
         emitter.emit("blur", pointer);
     },
 
