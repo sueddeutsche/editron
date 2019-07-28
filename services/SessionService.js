@@ -14,7 +14,12 @@ module.exports = {
         if (localStorage.getItem(key) == null) {
             this.set(key, defaultValue);
         }
-        return JSON.parse(localStorage.getItem(key));
+        try {
+            return JSON.parse(localStorage.getItem(key));
+        } catch(error) {
+            return defaultValue;
+        }
+
     },
     set(key, value) {
         if (window.localStorage) {
