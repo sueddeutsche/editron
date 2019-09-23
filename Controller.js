@@ -333,12 +333,9 @@ class Controller {
         this.dataService.off(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 
-    onAfterDataUpdate(evt) {
+    onAfterDataUpdate() {
         this.update();
         this.validateAll();
-        if (evt.type === "array" || evt.type === "object") {
-            LocationService.focus();
-        }
     }
 
     changePointer(newPointer, editor) {
