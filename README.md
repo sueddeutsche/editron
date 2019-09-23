@@ -8,6 +8,7 @@ Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for
 
 ---
 <!-- TOC start -->
+
 <!-- TOC end -->
 
 ---
