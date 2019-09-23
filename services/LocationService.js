@@ -73,12 +73,8 @@ const LocationService = {
         this.timeout = setTimeout(() => {
             // try scrolling to header-row in container (low height) to have a more robust scroll target position
             let scrollTarget = targetElement.querySelector(".editron-container > .editron-container__header");
-            scrollTarget = (scrollTarget == null) ? targetElement : scrollTarget;
-            if (scrollTarget.scrollIntoViewIfNeeded) {
-                scrollTarget.scrollIntoViewIfNeeded();
-            } else {
-                scrollTarget.scrollIntoView();
-            }
+            scrollTarget = (scrollTarget == null || scrollTarget.offsetParent === null) ? targetElement : scrollTarget;
+            scrollTarget.scrollIntoView();
 
             // @todo only fire focus event?
             targetElement.dispatchEvent(new Event("focus"));

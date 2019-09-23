@@ -87,8 +87,8 @@ class Controller {
 
         this.options = Object.assign({
             editors: [
-                require("./editors/oneofeditor"),
                 ...plugin.getEditors(),
+                require("./editors/oneofeditor"),
                 require("./editors/arrayeditor"),
                 require("./editors/objecteditor"),
                 require("./editors/valueeditor")
@@ -333,12 +333,9 @@ class Controller {
         this.dataService.off(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 
-    onAfterDataUpdate(evt) {
+    onAfterDataUpdate() {
         this.update();
         this.validateAll();
-        if (evt.type === "array" || evt.type === "object") {
-            LocationService.focus();
-        }
     }
 
     changePointer(newPointer, editor) {
