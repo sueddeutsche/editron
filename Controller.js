@@ -87,8 +87,8 @@ class Controller {
 
         this.options = Object.assign({
             editors: [
-                require("./editors/oneofeditor"),
                 ...plugin.getEditors(),
+                require("./editors/oneofeditor"),
                 require("./editors/arrayeditor"),
                 require("./editors/objecteditor"),
                 require("./editors/valueeditor")
