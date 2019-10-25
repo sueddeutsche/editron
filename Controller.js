@@ -314,7 +314,9 @@ class Controller {
      * Starts validation of current data
      */
     validateAll() {
-        setTimeout(() => this.validationService.validate(this.dataService.getDataByReference()));
+        setTimeout(() =>
+            this.destroyed !== true && this.validationService.validate(this.dataService.getDataByReference())
+        );
     }
 
     /**
@@ -326,6 +328,7 @@ class Controller {
             this.instances[pointer] && this.instances[pointer].forEach((instance) => instance.destroy());
         });
 
+        this.destroyed = true;
         this.instances = {};
         this.schemaService.destroy();
         this.validationService.destroy();
