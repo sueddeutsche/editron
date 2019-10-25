@@ -1,6 +1,6 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 const test = require("ava").test;
-const State = require("../services/state");
+const State = require("../services/State");
 
 let state;
 
