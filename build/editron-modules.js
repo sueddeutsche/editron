@@ -502,7 +502,7 @@ var Controller = function () {
             var _this2 = this;
 
             setTimeout(function () {
-                return _this2.validationService.validate(_this2.dataService.getDataByReference());
+                return _this2.destroyed !== true && _this2.validationService.validate(_this2.dataService.getDataByReference());
             });
         }
 
@@ -522,6 +522,7 @@ var Controller = function () {
                 });
             });
 
+            this.destroyed = true;
             this.instances = {};
             this.schemaService.destroy();
             this.validationService.destroy();
