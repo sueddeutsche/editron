@@ -10,9 +10,9 @@ test.beforeEach(t => {
 test("should dispatch action", t => {
     const { state } = t.context;
     let calledAction;
-    function reducer(state = {}, action) {
+    function reducer(_state = {}, action) {
         calledAction = action;
-        return state;
+        return _state;
     }
     state.register("data", reducer);
 
@@ -25,13 +25,13 @@ test("should register multiple reducers", t => {
     const { state } = t.context;
     const calledActions = [];
     const action = { type: "DUMMY_ACTION", value: 14 };
-    state.register("A", (state = {}, action) => {
-        action.type === "DUMMY_ACTION" && calledActions.push(action);
-        return state;
+    state.register("A", (_state = {}, _action) => {
+        _action.type === "DUMMY_ACTION" && calledActions.push(_action);
+        return _state;
     });
-    state.register("B", (state = {}, action) => {
-        action.type === "DUMMY_ACTION" && calledActions.push(action);
-        return state;
+    state.register("B", (_state = {}, _action) => {
+        _action.type === "DUMMY_ACTION" && calledActions.push(_action);
+        return _state;
     });
 
     state.dispatch(action);
@@ -43,12 +43,12 @@ test("should register reducers on separate entry points", t => {
     const { state } = t.context;
     const calledActions = [];
     const action = { type: "DUMMY_ACTION", value: 14 };
-    state.register("A", (state = {}, action) => {
-        action.type === "DUMMY_ACTION" && calledActions.push(action);
+    state.register("A", (_, _action) => {
+        action.type === "DUMMY_ACTION" && calledActions.push(_action);
         return { id: "A" };
     });
-    state.register("B", (state = {}, action) => {
-        action.type === "DUMMY_ACTION" && calledActions.push(action);
+    state.register("B", (_, _action) => {
+        action.type === "DUMMY_ACTION" && calledActions.push(_action);
         return { id: "B" };
     });
     state.dispatch(action);
@@ -61,7 +61,7 @@ test("should register reducers on separate entry points", t => {
 
 test("should return state of given reducer", t => {
     const { state } = t.context;
-    state.register("A", (state = {}, action) => ({ id: "A" }));
+    state.register("A", () => ({ id: "A" }));
 
     const stateA = state.get("A");
 

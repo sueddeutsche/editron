@@ -5,7 +5,7 @@ const DataService = require("../../../services/DataService");
 const State = require("../../../services/State");
 
 
-test.beforeEach((t) => {
+test.beforeEach(t => {
     t.context.state = new State();
     t.context.service = new DataService(t.context.state);
     t.context.data = { item: { id: "original" }, root: true };
@@ -13,7 +13,7 @@ test.beforeEach((t) => {
 });
 
 
-test("should remove value at given pointer", (t) => {
+test("should remove value at given pointer", t => {
     const service = t.context.service;
     service.delete("#/item/id");
 
@@ -21,7 +21,7 @@ test("should remove value at given pointer", (t) => {
     t.deepEqual(result, { item: {}, root: true });
 });
 
-test("should remove item at given pointer", (t) => {
+test("should remove item at given pointer", t => {
     const service = t.context.service;
     service.set("#/item", { list: [0, 1, 2, 3] });
 
@@ -31,6 +31,6 @@ test("should remove item at given pointer", (t) => {
     t.deepEqual(result, [0, 1, 3]);
 });
 
-test("should throw when deleting root node", (t) => {
+test("should throw when deleting root node", t => {
     t.throws(() => t.context.service.delete("#"), Error);
 });

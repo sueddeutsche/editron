@@ -4,7 +4,7 @@ const test = require("ava");
 const Controller = require("../Controller");
 
 
-test.beforeEach((t) => {
+test.beforeEach(t => {
     const schema = {
         type: "object",
         properties: {
@@ -23,7 +23,7 @@ test.beforeEach((t) => {
 });
 
 
-test("should have independent data services", (t) => {
+test("should have independent data services", t => {
     const controller = t.context.controller;
     const controller2 = new Controller(controller.schema().get(), controller.data().get());
 

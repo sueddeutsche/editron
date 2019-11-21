@@ -5,7 +5,7 @@ const DataService = require("../../../services/DataService");
 const State = require("../../../services/State");
 
 
-test.beforeEach((t) => {
+test.beforeEach(t => {
     t.context.data = { item: { id: "original" } };
     t.context.state = new State();
     t.context.service = new DataService(t.context.state);
@@ -13,7 +13,7 @@ test.beforeEach((t) => {
 });
 
 
-test("should restore last state of t.context.data", (t) => {
+test("should restore last state of t.context.data", t => {
     t.context.service.set("#/item/id", "modified");
     t.is(t.context.service.get("#/item/id"), "modified");
 
@@ -23,7 +23,7 @@ test("should restore last state of t.context.data", (t) => {
     t.is(result, "original");
 });
 
-test("should restore deleted value", (t) => {
+test("should restore deleted value", t => {
     t.context.service.delete("#/item/id");
     t.is(t.context.service.get("#/item/id"), undefined);
 
@@ -33,7 +33,7 @@ test("should restore deleted value", (t) => {
     t.is(result, "original");
 });
 
-test("should redo previous undo step", (t) => {
+test("should redo previous undo step", t => {
     const service = t.context.service;
     service.set("#/item/id", "modified");
     service.undo();
@@ -45,7 +45,7 @@ test("should redo previous undo step", (t) => {
     t.is(result, "modified");
 });
 
-test("should prevent redo if a change has been made", (t) => {
+test("should prevent redo if a change has been made", t => {
     const service = t.context.service;
     service.set("#/item/id", "modified");
     service.undo();
@@ -58,7 +58,7 @@ test("should prevent redo if a change has been made", (t) => {
     t.is(result, "latest");
 });
 
-test("should not update states from unknown actions", (t) => {
+test("should not update states from unknown actions", t => {
     const undoStepsBefore = t.context.state.get(t.context.service.id).data.past.length;
 
     t.context.state.dispatch({ type: "TEST_ACTION", value: 14 });
@@ -67,7 +67,7 @@ test("should not update states from unknown actions", (t) => {
     t.is(undoStepsBefore, undoStepsAfter);
 });
 
-test("should not update parent pointer for a single changed value", (t) => {
+test("should not update parent pointer for a single changed value", t => {
     const service = t.context.service;
     let updatedRoot = false;
     let updatedParent = false;
@@ -83,7 +83,7 @@ test("should not update parent pointer for a single changed value", (t) => {
     t.is(updatedValue, true, "should have updated pointer at value");
 });
 
-test("should update parent pointer if t.context.data has been added", (t) => {
+test("should update parent pointer if t.context.data has been added", t => {
     const service = t.context.service;
     let updatedRoot = false;
     let updatedParent = false;
@@ -100,7 +100,7 @@ test("should update parent pointer if t.context.data has been added", (t) => {
     t.is(updatedValue, false);
 });
 
-test("should update parent pointer if t.context.data has been removed", (t) => {
+test("should update parent pointer if t.context.data has been removed", t => {
     const service = t.context.service;
     let updatedRoot = false;
     let updatedParent = false;

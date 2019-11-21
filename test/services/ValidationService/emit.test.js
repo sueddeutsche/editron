@@ -26,12 +26,12 @@ test.beforeEach(() => {
 });
 
 
-test("events should export events", (t) => {
+test("events should export events", t => {
     t.true(isObject(ValidationService.EVENTS));
     t.true(typeof ValidationService.EVENTS.BEFORE_VALIDATION === "string");
 });
 
-test("events should emit 'beforeValidation' event before starting validation", (t) => {
+test("events should emit 'beforeValidation' event before starting validation", t => {
     let called = false;
     service.on("beforeValidation", () => (called = true));
 
@@ -40,7 +40,7 @@ test("events should emit 'beforeValidation' event before starting validation", (
     t.is(called, true);
 });
 
-test("events should emit 'afterValidation' event after notifying observers", (t) => {
+test("events should emit 'afterValidation' event after notifying observers", t => {
     let called = false;
     service.observe("#/chapter", () => (called = true));
 

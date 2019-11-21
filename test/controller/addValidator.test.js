@@ -3,7 +3,7 @@ const test = require("ava");
 const Controller = require("../../Controller");
 
 
-test.beforeEach((t) => {
+test.beforeEach(t => {
     const schema = {
         type: "object",
         properties: {
@@ -24,7 +24,7 @@ test.beforeEach((t) => {
 });
 
 
-test("should register validator for format", (t) => {
+test("should register validator for format", t => {
     const { controller } = t.context;
 
     controller.addFormatValidator("custom-format", (core, schema, value, pointer) => {
@@ -36,14 +36,14 @@ test("should register validator for format", (t) => {
 
     return controller.validator()
         .validate({ customFormat: "custom-format-error" })
-        .then((result) => {
+        .then(result => {
             t.is(result.length, 1);
             t.is(result[0].type, "error");
             t.is(result[0].code, "custom-format-error");
         });
 });
 
-test("should register validator for attribute", (t) => {
+test("should register validator for attribute", t => {
     const { controller } = t.context;
 
     controller.addKeywordValidator("string", "custom", (core, schema, value, pointer) => {
@@ -55,7 +55,7 @@ test("should register validator for attribute", (t) => {
 
     return controller.validator()
         .validate({ customAttribute: "custom-attribute-error" })
-        .then((result) => {
+        .then(result => {
             t.is(result.length, 1);
             t.is(result[0].type, "error");
             t.is(result[0].code, "custom-attribute-error");

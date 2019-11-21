@@ -187,7 +187,7 @@ class DataService {
 
     removeObserver(pointer, callback) {
         if (this.observers[pointer] && this.observers[pointer].length > 0) {
-            this.observers[pointer] = this.observers[pointer].filter((cb) => cb !== callback);
+            this.observers[pointer] = this.observers[pointer].filter(cb => cb !== callback);
         }
     }
 

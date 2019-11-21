@@ -42,10 +42,42 @@
                         type: "string",
                         title: "Title",
                         minLength: 1
+                    },
+                    number: {
+                        type: "number",
+                        title: "Number",
+                        minLength: 1
+                    },
+                    text: {
+                        type: "string",
+                        title: "Textarea",
+                        format: "textarea",
+                        minLength: 1
+                    },
+                    list: {
+                        type: "array",
+                        items: {
+                            type: "string",
+                            title: "List-Entry",
+                            default: "..."
+                        }
+                    },
+                    checkbox: {
+                        type: "boolean",
+                        format: "checkbox",
+                        title: "Checkbox"
+                    },
+                    select: {
+                        type: "string",
+                        enum: ["first", "second", "last"],
+                        title: "Selection"
                     }
                 }
             });
             controller.createEditor("#", document.querySelector(".editor"));
+            controller.data().observe("#", (pointer, value) => {
+                console.log("changed", controller.getData());
+            }, true);
         </script>
 
     </body>

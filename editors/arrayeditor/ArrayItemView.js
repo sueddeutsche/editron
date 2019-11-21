@@ -45,7 +45,7 @@ const ArrayItemView = {
             (vnode.attrs.insert && canAdd) ? m(".editron-container__separator.mmf-row",
                 m(".editron-container__button--add",
                     {
-                        onclick: (e) => {
+                        onclick: e => {
                             e.preventDefault();
                             vnode.attrs.onadd && vnode.attrs.onadd(vnode.attrs.index);
                         }

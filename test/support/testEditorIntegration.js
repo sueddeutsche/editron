@@ -1,4 +1,3 @@
-/* global HTMLElement */
 /* eslint no-new: 0, max-len: 0 */
 const test = require("ava");
 const sinon = require("sinon");

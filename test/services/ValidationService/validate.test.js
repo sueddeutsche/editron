@@ -31,10 +31,10 @@ test("should store json schema", t => {
 
 test("should validate data by json schema", t => service
     .validate({ title: "test", chapter: 1, modules: [] })
-        .then(errors => t.is(errors.length, 0))
+    .then(errors => t.is(errors.length, 0))
 );
 
 test("should pass errors for invalid data", t => service
     .validate({ title: "test", chapter: 0, modules: [] })
-        .then(errors => t.is(errors.length, 1))
+    .then(errors => t.is(errors.length, 1))
 );
