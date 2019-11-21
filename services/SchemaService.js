@@ -26,7 +26,7 @@ class SchemaService {
      * @return {Any} json data with valid default data values
      */
     addDefaultData(data = this.data, schema = this.schema) {
-        return this.core.getTemplate(data);
+        return this.core.getTemplate(data, schema);
     }
 
     /**
@@ -36,7 +36,7 @@ class SchemaService {
      * @return {Any} data corresponding to json-schema
      */
     getTemplate(schema) {
-        return this.core.getTemplate({}, schema);
+        return this.core.getTemplate(undefined, schema);
     }
 
     /**
@@ -46,7 +46,7 @@ class SchemaService {
      */
     getChildSchemaSelection(pointer, property) {
         const parentSchema = this.get(pointer);
-        return getChildSchemaSelection(this.core, parentSchema, property);
+        return getChildSchemaSelection(this.core, property, parentSchema);
     }
 
     /**
