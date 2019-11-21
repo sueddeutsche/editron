@@ -17,9 +17,15 @@ class ArrayEditor {
         const schema = controller.schema().get(pointer);
         const data = controller.data().get(pointer);
 
-        this.onAdd = (index = 0) => controller.addItemTo(this.pointer, index);
+        this.onAdd = (index = 0) => {
+            if (!this.viewModel.disabled) {
+                controller.addItemTo(this.pointer, index);
+            }
+        };
 
-        this.$element = controller.createElement(".editron-container.editron-container--array.withAddButton", options.attrs);
+        const arrayHTMLElement = ".editron-container.editron-container--array.withAddButton";
+        this.$element = controller.createElement(arrayHTMLElement, options.attrs);
+
         this.controller = controller;
         this.pointer = pointer;
         this.children = [];
@@ -50,6 +56,14 @@ class ArrayEditor {
         this.$items = this.$element.querySelector(View.childContainerSelector);
         this.rebuildChildren();
         this.updateControls();
+    }
+
+    setActive(active = true) {
+        const disabled = active === false;
+        this.viewModel.disabled = disabled;
+        this.viewModel.controls.disabled = disabled;
+        this.rebuildChildren();
+        this.render();
     }
 
     update() {
@@ -96,14 +110,15 @@ class ArrayEditor {
         // search for inserted children
         this.children.forEach((child, index) => {
             if (child instanceof ArrayItemEditor === false) {
-                const newChild = new ArrayItemEditor(`${this.pointer}/${index}`, this.controller, this.viewModel.controls);
+                const pointer = `${this.pointer}/${index}`;
+                const newChild = new ArrayItemEditor(pointer, this.controller, this.viewModel.controls);
                 // @insert?
                 this.children[index] = newChild;
             }
         });
 
         // search for removed children
-        originalChildren.forEach((child) => {
+        originalChildren.forEach(child => {
             if (this.children.indexOf(child) === -1) {
                 child.destroy();
             }
@@ -118,7 +133,8 @@ class ArrayEditor {
 
             // update current location
             if (currentLocation.indexOf(previousPointer) === 0) {
-                this.controller.location().setCurrent(currentLocation.replace(previousPointer, currentPointer));
+                const editorLocation = currentLocation.replace(previousPointer, currentPointer);
+                this.controller.location().setCurrent(editorLocation);
             }
 
             // update child views to match patched list
@@ -140,7 +156,7 @@ class ArrayEditor {
         const data = this.controller.data().get(this.pointer);
 
         // delete all child editors
-        this.children.forEach((editor) => editor.destroy());
+        this.children.forEach(editor => editor.destroy());
         this.children.length = 0;
         this.$items.innerHTML = "";
 
@@ -186,7 +202,7 @@ class ArrayEditor {
             m.render(this.$element, m("i"));
             this.controller.data().removeObserver(this.pointer, this.updateView);
             this.controller.validator().removeObserver(this.pointer, this.setErrors);
-            this.children.forEach((editor) => editor.destroy());
+            this.children.forEach(editor => editor.destroy());
         }
     }
 }

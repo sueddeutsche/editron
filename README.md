@@ -784,3 +784,15 @@ class, but you must follow the some basic rules, that are further described in [
 - taglist editor
 -
 -->
+
+
+## Breaking Changes
+
+`11/2019` with `v7` editron has been updated to mithril@2, json-schema-library@4, mithril-material-forms@3. and all editors have new required method `setActive(boolean)` to enable or disabled editor input-interaction. Please refer to each library version for Breaking Changes. In short:
+
+- _mithril-material-forms_ has a consistent api for forms. Any callbacks have changes to lowercase mithril-style e.g. `onclick` or `onchange` (button, checkbox, input are affected)
+- _json-schema-library_ has undergone a major change in its api (schema is mostly optional)
+- _mithril_ has dropped support for `m.withAttrs`
+
+
+

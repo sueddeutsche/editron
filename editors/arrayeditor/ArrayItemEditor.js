@@ -15,9 +15,10 @@ class ArrayItemEditor {
         this.onRemove = () => this.remove();
 
         this.viewModel = Object.assign({
+            disabled: false,
             onadd: this.onAdd,
             onremove: this.onRemove,
-            onmove: (index) => this.move(index)
+            onmove: index => this.move(index)
         }, options);
 
         this.render();

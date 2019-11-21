@@ -74,10 +74,15 @@ class ObjectEditor {
         controller.data().observe(pointer, this.rebuildChildren);
         controller.validator().observe(pointer, this.setErrors);
 
-        this.childEditors.forEach((editor) => {
+        this.childEditors.forEach(editor => {
             editor.updatePointer(`${this.pointer}/${editor._property}`);
         });
 
+        this.render();
+    }
+
+    setActive(active = true) {
+        this.viewModel.disabled = active === false;
         this.render();
     }
 
@@ -87,20 +92,21 @@ class ObjectEditor {
 
     rebuildChildren() {
         if (this.viewModel == null) {
-            console.error("destroyed ObjectEditor receives an update event - this may be invoked through oneOf-Editor", this);
+            console.error(`destroyed ObjectEditor receives an update event
+                - this may be invoked through oneOf-Editor`, this);
             return;
         }
 
         // fetch latest data
         const data = this.controller.data().get(this.pointer);
         // destroy child editor
-        this.childEditors.forEach((editor) => editor.destroy());
+        this.childEditors.forEach(editor => editor.destroy());
         this.childEditors.length = 0;
         // clear html
         this.$children.innerHTML = "";
         // rebuild children
         if (data) {
-            Object.keys(data).forEach((property) => {
+            Object.keys(data).forEach(property => {
                 const editor = this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
                 if (editor) {
                     editor._property = property;
@@ -166,7 +172,7 @@ class ObjectEditor {
             this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
             this.controller.validator().removeObserver(this.pointer, this.setErrors);
 
-            this.childEditors.forEach((editor) => editor.destroy());
+            this.childEditors.forEach(editor => editor.destroy());
             this.childEditors.length = 0;
             this.$children.innerHTML = "";
             this.viewModel = null;

@@ -13,7 +13,7 @@ const editronModulesConfig = {
         path.resolve("./node_modules/json-schema-library"),
         path.resolve("./node_modules/gson-pointer"),
         path.resolve("./node_modules/mitt"),
-        path.resolve("./node_modules/jsondiffpatch/src/diffpatcher"),
+        path.resolve("./node_modules/jsondiffpatch"),
         path.resolve("./node_modules/diff_match_patch")
     ],
     output: {
@@ -55,10 +55,10 @@ const editronModulesConfig = {
                     /json-.*\//, /mithril-.*\//, /editron.*\//
                 ],
                 options: {
-                    presets: [require.resolve("babel-preset-es2015")],
+                    presets: [require.resolve("@babel/preset-env")],
                     plugins: [
-                        require.resolve("babel-plugin-transform-object-assign"),
-                        require.resolve("babel-plugin-transform-object-rest-spread") // redux-undo
+                        require.resolve("@babel/plugin-transform-object-assign"),
+                        require.resolve("@babel/plugin-proposal-object-rest-spread") // redux-undo
                     ],
                     babelrc: false,
                     cacheDirectory: true
@@ -81,7 +81,9 @@ const editronModulesConfig = {
                     {
                         loader: "sass-loader",
                         options: {
-                            includePaths: [path.join(__dirname, "node_modules")]
+                            sassOptions: {
+                                includePaths: [path.join(__dirname, "node_modules")]
+                            }
                         }
                     }
                 ]

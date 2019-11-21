@@ -25,5 +25,14 @@
                 cursor: default;
             }
         }
+
+        &.is-disabled {
+            i.mmf-icon,
+            i.mmf-icon:hover {
+                color: inherit;
+                opacity: $mmf-opacity--disabled;
+                cursor: default;
+            }
+        }
     }
 }

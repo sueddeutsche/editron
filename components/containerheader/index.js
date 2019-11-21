@@ -3,10 +3,11 @@ const getID = require("../../utils/getID");
 const populated = require("../../utils/populated");
 
 
-function getClass({ title, icon, hasAction }) {
+function getClass({ title, icon, hasAction, disabled }) {
     let classname = `${title ? "withTitle" : "noTitle"}`;
     classname += ` ${hasAction ? "withActions" : "noActions"}`;
     classname += ` ${icon ? "withIcon" : "noIcon"}`;
+    classname += disabled ? " is-disabled" : "";
     return classname;
 }
 
@@ -16,7 +17,8 @@ module.exports = {
         const attrs = Object.assign({
             pointer: "",
             icon: "",
-            title: ""
+            title: "",
+            disabled: false
             // onadd
             // ondelete
             // onmoveup
@@ -24,7 +26,6 @@ module.exports = {
         }, vnode.attrs);
 
         attrs.hasAction = attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown;
-
 
         return m(".editron-container__header",
             {

@@ -30,11 +30,17 @@ function assertValidPointer(pointer) {
 function removeEditorFrom(instances, editor) {
     const pointer = editor.getPointer();
     if (instances[pointer]) {
-        instances[pointer] = instances[pointer].filter((instance) => editor !== instance);
+        instances[pointer] = instances[pointer].filter(instance => editor !== instance);
         if (instances[pointer].length === 0) {
             delete instances[pointer];
         }
     }
+}
+
+function eachInstance(instances, cb) {
+    Object.keys(instances).forEach(pointer => {
+        instances[pointer].forEach(editor => cb(pointer, editor));
+    });
 }
 
 
@@ -95,6 +101,7 @@ class Controller {
             ]
         }, options);
 
+        this.disabled = false;
         this.editors = this.options.editors;
         this.state = new State();
         this.instances = {};
@@ -132,6 +139,18 @@ class Controller {
         this.dataService.resetUndoRedo();
     }
 
+    setActive(active = true) {
+        this.disabled = active === false;
+        eachInstance(this.getInstances(), (pointer, editor) => {
+            console.log("pointer", pointer, editor);
+            editor.setActive(!this.disabled);
+        });
+    }
+
+    isActive() {
+        return !this.disabled;
+    }
+
     /**
      * Helper to create dom elements via mithril syntax
      *
@@ -161,7 +180,11 @@ class Controller {
 
         // merge schema["editron:ui"] object with options. options precede
         const instanceOptions = Object.assign(
-            { id: getID(pointer), pointer },
+            {
+                id: getID(pointer),
+                pointer,
+                disabled: this.disabled
+            },
             UISchema.copyOptions(pointer, this),
             options
         );
@@ -181,6 +204,7 @@ class Controller {
         // @TODO loose reference to destroyed editors
         const editor = new Editor(pointer, this, instanceOptions);
         element.appendChild(editor.toElement());
+        editor.setActive(!this.disabled);
         this.addInstance(pointer, editor);
 
         return editor;

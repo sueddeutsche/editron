@@ -31,7 +31,7 @@ class OneOfEditor {
             id: getId(pointer),
             pointer,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
-            onchange: (oneOfIndex) => {
+            onchange: oneOfIndex => {
                 this.changeChild(schema.oneOf[oneOfIndex]);
             },
             value: this.getIndexOf(childSchema),
@@ -45,6 +45,11 @@ class OneOfEditor {
         this.render();
         this.$childContainer = this.$element.querySelector(View.childContainerSelector);
         this.rebuild();
+    }
+
+    setActive(active = true) {
+        this.viewModel.disabled = active === false;
+        this.render();
     }
 
     changeChild(schema) {

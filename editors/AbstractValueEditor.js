@@ -135,9 +135,15 @@ class AbstractValueEditor {
         this.update();
     }
 
+    setActive(active = true) {
+        this.viewModel.disabled = active === false;
+        this.render();
+    }
+
     // update display value in view
     update() {
         this.viewModel.value = this.controller.data().get(this.pointer);
+        this.viewModel.disabled = !this.controller.isActive();
         this.render();
     }
 
