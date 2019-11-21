@@ -1,12 +1,12 @@
 /* eslint max-len: 0 */
-const test = require("ava").test;
+const test = require("ava");
 const sinon = require("sinon");
 
 const Controller = require("../../../Controller");
 const ArrayEditor = require("../../../editors/arrayeditor");
 
 
-test.beforeEach((t) => {
+test.beforeEach(t => {
     const schema = {
         type: "object",
         properties: {
@@ -27,7 +27,7 @@ test.beforeEach((t) => {
 });
 
 
-test("should not rebuild editors for changed item order", (t) => {
+test("should not rebuild editors for changed item order", t => {
     const controller = t.context.controller;
     const editor = t.context.editor;
     const data = controller.data().get("#/list");
@@ -50,7 +50,7 @@ test("should not rebuild editors for changed item order", (t) => {
 });
 
 
-test("should not rebuild editors for inserted child", (t) => {
+test("should not rebuild editors for inserted child", t => {
     const controller = t.context.controller;
     const editor = t.context.editor;
     const childrenBefore = [...editor.children];
@@ -71,7 +71,7 @@ test("should not rebuild editors for inserted child", (t) => {
 });
 
 
-test("should call destroy() on removed array item", (t) => {
+test("should call destroy() on removed array item", t => {
     const controller = t.context.controller;
     const editor = t.context.editor;
     const childEditor = sinon.spy(t.context.editor.children[1], "destroy");

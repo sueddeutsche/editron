@@ -1,14 +1,14 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
-const test = require("ava").test;
+const test = require("ava");
 const State = require("../services/State");
 
-let state;
 
-test.beforeEach(() => {
-    state = new State();
+test.beforeEach(t => {
+    t.context.state = new State();
 });
 
-test("should dispatch action", (t) => {
+test("should dispatch action", t => {
+    const { state } = t.context;
     let calledAction;
     function reducer(state = {}, action) {
         calledAction = action;
@@ -21,7 +21,8 @@ test("should dispatch action", (t) => {
     t.deepEqual(calledAction, { type: "DUMMY_ACTION", value: 14 });
 });
 
-test("should register multiple reducers", (t) => {
+test("should register multiple reducers", t => {
+    const { state } = t.context;
     const calledActions = [];
     const action = { type: "DUMMY_ACTION", value: 14 };
     state.register("A", (state = {}, action) => {
@@ -38,7 +39,8 @@ test("should register multiple reducers", (t) => {
     t.deepEqual(calledActions, [action, action]);
 });
 
-test("should register reducers on separate entry points", (t) => {
+test("should register reducers on separate entry points", t => {
+    const { state } = t.context;
     const calledActions = [];
     const action = { type: "DUMMY_ACTION", value: 14 };
     state.register("A", (state = {}, action) => {
@@ -57,7 +59,8 @@ test("should register reducers on separate entry points", (t) => {
     t.deepEqual(currentState.B, { id: "B" });
 });
 
-test("should return state of given reducer", (t) => {
+test("should return state of given reducer", t => {
+    const { state } = t.context;
     state.register("A", (state = {}, action) => ({ id: "A" }));
 
     const stateA = state.get("A");

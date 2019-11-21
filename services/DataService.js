@@ -56,7 +56,7 @@ class DataService {
                 return;
             }
 
-            DEBUG && console.log("Patch locations", patches.map((delta) => delta.pointer));
+            DEBUG && console.log("Patch locations", patches.map(delta => delta.pointer));
 
             for (let i = 0, l = patches.length; i < l; i += 1) {
                 const eventLocation = patches[i].pointer;

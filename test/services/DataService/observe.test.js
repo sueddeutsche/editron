@@ -1,11 +1,11 @@
-const test = require("ava").test;
+const test = require("ava");
 const DataService = require("../../../services/DataService");
 const State = require("../../../services/State");
 
 const BUBBLE_EVENTS = true;
 
 
-test.beforeEach((t) => {
+test.beforeEach(t => {
     t.context.state = new State();
     t.context.service = new DataService(t.context.state);
     t.context.data = { item: { id: "original" }, other: { id: "other-item" } };
@@ -13,7 +13,7 @@ test.beforeEach((t) => {
 });
 
 
-test("should notify of change at pointer", (t) => {
+test("should notify of change at pointer", t => {
     let called = false;
     t.context.service.observe("#/item/id", () => (called = true));
     t.context.service.set("#/item/id", "modified");
@@ -21,7 +21,7 @@ test("should notify of change at pointer", (t) => {
     t.is(called, true);
 });
 
-test("should not notify parents", (t) => {
+test("should not notify parents", t => {
     let called = false;
     t.context.service.observe("#/item", () => (called = true));
     t.context.service.set("#/item/id", "modified");
@@ -29,23 +29,15 @@ test("should not notify parents", (t) => {
     t.is(called, false);
 });
 
-test("should also pass type of modified data", (t) => {
+test("should also pass type of modified data", t => {
     let event;
-    t.context.service.observe("#/item/id", (e) => (event = e));
+    t.context.service.observe("#/item/id", e => (event = e));
     t.context.service.set("#/item/id", "modified");
 
     t.is(event.type, "string");
 });
 
-test("should notify of change at pointer", (t) => {
-    let called = false;
-    t.context.service.observe("#/item/id", () => (called = true), BUBBLE_EVENTS);
-    t.context.service.set("#/item/id", "modified");
-
-    t.is(called, true);
-});
-
-test("should notify all parents of change", (t) => {
+test("should notify all parents of change", t => {
     let called = false;
     t.context.service.observe("#/item", () => (called = true), BUBBLE_EVENTS);
     t.context.service.set("#/item/id", "modified");
@@ -53,7 +45,7 @@ test("should notify all parents of change", (t) => {
     t.is(called, true);
 });
 
-test("should notify root of change", (t) => {
+test("should notify root of change", t => {
     let called = false;
     t.context.service.observe("#", () => (called = true), BUBBLE_EVENTS);
     t.context.service.set("#/item/id", "modified");
@@ -61,7 +53,7 @@ test("should notify root of change", (t) => {
     t.is(called, true);
 });
 
-test("should not notify observers on different trees", (t) => {
+test("should not notify observers on different trees", t => {
     let called = false;
     t.context.service.observe("#/item", () => (called = true), BUBBLE_EVENTS);
     t.context.service.set("#/other/id", "modified");
@@ -69,7 +61,7 @@ test("should not notify observers on different trees", (t) => {
     t.is(called, false);
 });
 
-test("should remove observer", (t) => {
+test("should remove observer", t => {
     let called = false;
     function cb() {
         called = true;

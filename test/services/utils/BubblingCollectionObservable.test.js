@@ -1,5 +1,5 @@
 /* eslint arrow-parens: 0, func-style: 0, callback-return: 0 */
-const test = require("ava").test;
+const test = require("ava");
 const Bubbles = require("../../../services/utils/BubblingCollectionObservable");
 const cp = v => JSON.parse(JSON.stringify(v));
 
@@ -23,15 +23,6 @@ test("should remove observer", t => {
     b.notify("#", []);
 
     t.is(called, false);
-});
-
-test("should notify observers", t => {
-    let called = false;
-    const b = new Bubbles();
-    b.observe("#", () => (called = true));
-    b.notify("#", []);
-
-    t.is(called, true);
 });
 
 test("should notify observers along pointer", t => {

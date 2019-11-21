@@ -1,4 +1,4 @@
-const test = require("ava").test;
+const test = require("ava");
 const gp = require("gson-pointer");
 const diffpatch = require("../../services/utils/diffpatch");
 const getPatchesPerPointer = require("../../services/utils/getPatchesPerPointer");

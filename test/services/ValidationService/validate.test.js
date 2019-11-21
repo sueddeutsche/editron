@@ -1,5 +1,5 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
-const test = require("ava").test;
+const test = require("ava");
 const State = require("../../../services/State");
 const ValidationService = require("../../../services/ValidationService");
 
@@ -24,17 +24,17 @@ test.beforeEach(() => {
     service = new ValidationService(state, schema);
 });
 
-test("should store json schema", (t) => {
+test("should store json schema", t => {
     const result = service.get();
-    t.is(result, schema);
+    t.deepEqual(result, schema);
 });
 
-test("should validate data by json schema", (t) => service
+test("should validate data by json schema", t => service
     .validate({ title: "test", chapter: 1, modules: [] })
-        .then((errors) => t.is(errors.length, 0))
+        .then(errors => t.is(errors.length, 0))
 );
 
-test("should pass errors for invalid data", (t) => service
+test("should pass errors for invalid data", t => service
     .validate({ title: "test", chapter: 0, modules: [] })
-        .then((errors) => t.is(errors.length, 1))
+        .then(errors => t.is(errors.length, 1))
 );

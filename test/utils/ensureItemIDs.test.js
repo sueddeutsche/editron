@@ -1,5 +1,5 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
-const test = require("ava").test;
+const test = require("ava");
 const ensureItemIDs = require("../../services/utils/ensureItemIDs");
 
 

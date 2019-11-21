@@ -21,12 +21,14 @@ class Validation {
     start(core, onErrorCb, onDoneCb) {
         this.cbDone = onDoneCb;
         this.cbError = onErrorCb;
-        return validateAsync(core, this.schema, this.data, "#", this.onError.bind(this))
-            .then((errors) => {
+
+        // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
+        return validateAsync(core, this.data, { schema: this.schema, onError: this.onError.bind(this) })
+            .then(errors => {
                 this.onDone(errors);
                 return errors;
             })
-            .catch((error) => this.onFail(error));
+            .catch(error => this.onFail(error));
     }
 
     onError(validationError) {

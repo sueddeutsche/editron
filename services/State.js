@@ -18,7 +18,7 @@ class State {
     onChange(currentState) {
         Object
             .keys(currentState)
-            .forEach((id) => {
+            .forEach(id => {
                 const subState = currentState[id];
                 if (subState[FLAG_CHANGED] != null && subState[FLAG_CHANGED] !== false) {
                     this.emitter.emit(id, subState);
@@ -57,7 +57,6 @@ class State {
      * Subscribe to change (all) events
      * @param  {[type]}   id       [description]
      * @param  {Function} callback [description]
-     * @return {[type]}            [description]
      */
     subscribe(id, callback) {
         if (typeof id !== "string" || typeof callback !== "function") {

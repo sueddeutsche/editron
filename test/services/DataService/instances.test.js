@@ -1,4 +1,4 @@
-const test = require("ava").test;
+const test = require("ava");
 const DataService = require("../../../services/DataService");
 const State = require("../../../services/State");
 

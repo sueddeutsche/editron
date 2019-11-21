@@ -4,15 +4,14 @@ const jsl = require("json-schema-library");
 const getChildSchemaSelection = require("json-schema-library").getChildSchemaSelection;
 
 
- /**
-  * Manages json-schema interactions and adds caching of reoccuring json-schema requests
-  *
-  * @param {Object} schema       - json-schema
-  * @param {Object} [data={}]    - data corresponding to json-schema
-  * @param {Core} [core={}]      - instance of json-schema-library Core
-  */
+/**
+ * Manages json-schema interactions and adds caching of reoccuring json-schema requests
+ *
+ * @param {Object} schema       - json-schema
+ * @param {Object} [data={}]    - data corresponding to json-schema
+ * @param {Core} [core={}]      - instance of json-schema-library Core
+ */
 class SchemaService {
-
 
     constructor(schema = {}, data = {}, core = new Core()) {
         this.core = core;
@@ -27,7 +26,7 @@ class SchemaService {
      * @return {Any} json data with valid default data values
      */
     addDefaultData(data = this.data, schema = this.schema) {
-        return this.core.getTemplate(schema, data);
+        return this.core.getTemplate(data);
     }
 
     /**
@@ -37,7 +36,7 @@ class SchemaService {
      * @return {Any} data corresponding to json-schema
      */
     getTemplate(schema) {
-        return this.core.getTemplate(schema);
+        return this.core.getTemplate({}, schema);
     }
 
     /**
@@ -67,7 +66,7 @@ class SchemaService {
      */
     setSchema(schema) {
         this.core.setSchema(schema);
-        this.schema = this.core.rootSchema;
+        this.schema = this.core.getSchema();
         this.resetCache();
     }
 
@@ -86,12 +85,12 @@ class SchemaService {
      */
     get(pointer, data) {
         if (data) {
-            const result = jsl.getSchema(this.core, this.schema, data, pointer);
+            const result = jsl.getSchema(this.core, pointer, data, this.schema);
             return copy(result);
         }
 
         if (this.cache[pointer] === undefined) {
-            const result = jsl.getSchema(this.core, this.schema, this.data, pointer);
+            const result = jsl.getSchema(this.core, pointer, this.data, this.schema);
             if (result.variableSchema === true) {
                 // @special case: do not cache dynamic schema object (oneOf)
                 return result;

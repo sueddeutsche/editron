@@ -108,15 +108,16 @@ class Controller {
                     return this.addKeywordValidator(...validator);
                 }
                 throw new Error(`Unknown validation type '${validationType}'`);
-            } catch(e) {
+            } catch (e) {
                 console.log("Error:", e.message);
             }
+            return false;
         });
 
         this.schemaService = new SchemaService(schema, data, this.core);
         this.validationService = new ValidationService(this.state, schema, this.core);
         // enable i18n error-translations
-        this.validationService.setErrorHandler((error) => i18n.translateError(this, error));
+        this.validationService.setErrorHandler(error => i18n.translateError(this, error));
         // merge given data with template data
         data = this.schemaService.addDefaultData(data, schema);
         this.dataService = new DataService(this.state, data);
@@ -324,8 +325,8 @@ class Controller {
      */
     destroy() {
         // delete all editors
-        Object.keys(this.instances).forEach((pointer) => {
-            this.instances[pointer] && this.instances[pointer].forEach((instance) => instance.destroy());
+        Object.keys(this.instances).forEach(pointer => {
+            this.instances[pointer] && this.instances[pointer].forEach(instance => instance.destroy());
         });
 
         this.destroyed = true;

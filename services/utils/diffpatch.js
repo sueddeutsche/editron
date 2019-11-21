@@ -1,5 +1,5 @@
 /* global window */
-const DiffPatcher = require("jsondiffpatch/src/diffpatcher").DiffPatcher;
+const DiffPatcher = require("jsondiffpatch").DiffPatcher;
 const diff_match_patch = require("diff_match_patch");
 const options = {
     // used to match objects when diffing arrays, by default only === operator is used

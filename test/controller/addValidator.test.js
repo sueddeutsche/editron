@@ -1,5 +1,5 @@
 /* eslint max-len: 0 */
-const test = require("ava").test;
+const test = require("ava");
 const Controller = require("../../Controller");
 
 

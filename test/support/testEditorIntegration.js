@@ -1,6 +1,6 @@
 /* global HTMLElement */
 /* eslint no-new: 0, max-len: 0 */
-const test = require("ava").test;
+const test = require("ava");
 const sinon = require("sinon");
 const gp = require("gson-pointer");
 
@@ -41,7 +41,7 @@ function copyPointerToLocation(controller, fromLocation, newLocation) {
 module.exports = function testEditorIntegration(Constructor, pointer, schema, data, options = {}) {
     const id = Constructor.name;
 
-    test.beforeEach((t) => {
+    test.beforeEach(t => {
         const controller = new Controller(schema, data, [Constructor]);
         sinon.spy(controller, "removeInstance");
         sinon.spy(controller, "changePointer");
@@ -54,7 +54,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
         t.context.controller = controller;
     });
 
-    test.afterEach((t) => {
+    test.afterEach(t => {
         const controller = t.context.controller;
         controller.removeInstance.restore();
         controller.changePointer.restore();
@@ -67,7 +67,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should expose api methods`, (t) => {
+    test(`${id} should expose api methods`, t => {
         const editorInstance = new Constructor(pointer, t.context.controller);
 
         t.true(typeof editorInstance.toElement === "function", "should have a method 'toElement'");
@@ -79,7 +79,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should observe its own update event`, (t) => {
+    test(`${id} should observe its own update event`, t => {
         const controller = t.context.controller;
         const observe = controller.dataService.observe;
         new Constructor(pointer, controller);
@@ -88,7 +88,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should remove its own update event on destroy`, (t) => {
+    test(`${id} should remove its own update event on destroy`, t => {
         const controller = t.context.controller;
         const removeObserver = controller.dataService.removeObserver;
         const editor = new Constructor(pointer, controller);
@@ -98,7 +98,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should call 'controller.removeInstance()' on 'destroy()'`, (t) => {
+    test(`${id} should call 'controller.removeInstance()' on 'destroy()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         editor.destroy();
@@ -107,12 +107,12 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should have 'pointer' and 'element' defined when calling 'controller.removeInstance()'`, (t) => {
+    test(`${id} should have 'pointer' and 'element' defined when calling 'controller.removeInstance()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         const $element = editor.toElement();
         controller.removeInstance.restore();
-        sinon.stub(controller, "removeInstance").callsFake((instance) => {
+        sinon.stub(controller, "removeInstance").callsFake(instance => {
             if (instance === editor) {
 
                 t.true(instance.getPointer() === pointer, "should return correct pointer in 'controller.removeInstance()'");
@@ -125,7 +125,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
 
     // copy schema at pointer to new location, copy data at pointer to new location
-    test(`${id} should update pointer`, (t) => {
+    test(`${id} should update pointer`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         copyPointerToLocation(controller, pointer, "#/newLocation");
@@ -136,11 +136,11 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should remove listener of old pointer on 'updatePointer()'`, (t) => {
+    test(`${id} should remove listener of old pointer on 'updatePointer()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         copyPointerToLocation(controller, pointer, "#/newLocation");
-        controller.data().removeObserver.reset();
+        controller.data().removeObserver.resetHistory();
 
         editor.updatePointer("#/newLocation");
 
@@ -148,11 +148,11 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should add listener for new pointer on 'updatePointer()'`, (t) => {
+    test(`${id} should add listener for new pointer on 'updatePointer()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         copyPointerToLocation(controller, pointer, "#/newLocation");
-        controller.data().observe.reset();
+        controller.data().observe.resetHistory();
 
         editor.updatePointer("#/newLocation");
 
@@ -160,7 +160,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should notify controller of changed pointer on 'updatePointer()'`, (t) => {
+    test(`${id} should notify controller of changed pointer on 'updatePointer()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         copyPointerToLocation(controller, pointer, "#/newLocation");
@@ -171,7 +171,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
     });
 
 
-    test(`${id} should return old pointer when calling 'controller.changePointer()'`, (t) => {
+    test(`${id} should return old pointer when calling 'controller.changePointer()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         copyPointerToLocation(controller, pointer, "#/newLocation");
@@ -189,7 +189,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
 
     options.ignoreRegisterErrors !== true &&
-    test(`${id} should observe its own error event`, (t) => {
+    test(`${id} should observe its own error event`, t => {
         const controller = t.context.controller;
         const observe = controller.validationService.observe;
         new Constructor(pointer, controller);
@@ -199,7 +199,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
 
     // options.ignoreRegisterErrors !== true &&
-    // test(`${id} should register to clear errors event`, (t) => {
+    // test(`${id} should register to clear errors event`, t => {
     //     const controller = t.context.controller;
     //     const on = controller.validationService.on;
     //     new Constructor(pointer, controller);
@@ -210,7 +210,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
 
     // options.ignoreRegisterErrors !== true &&
-    // test(`${id} should unregister error events on destroy`, (t) => {
+    // test(`${id} should unregister error events on destroy`, t => {
     //     const controller = t.context.controller;
     //     const off = controller.validationService.off;
     //     const editor = new Constructor(pointer, controller);
@@ -222,11 +222,11 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
 
     options.ignoreRegisterErrors !== true &&
-    test(`${id} should remove add-error-listener of old pointer on 'updatePointer()'`, (t) => {
+    test(`${id} should remove add-error-listener of old pointer on 'updatePointer()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         copyPointerToLocation(controller, pointer, "#/newLocation");
-        controller.validator().removeObserver.reset();
+        controller.validator().removeObserver.resetHistory();
 
         editor.updatePointer("#/newLocation");
 
@@ -235,11 +235,11 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
 
 
     options.ignoreRegisterErrors !== true &&
-    test(`${id} should add add-error-listener of new pointer on 'updatePointer()'`, (t) => {
+    test(`${id} should add add-error-listener of new pointer on 'updatePointer()'`, t => {
         const controller = t.context.controller;
         const editor = new Constructor(pointer, controller);
         copyPointerToLocation(controller, pointer, "#/newLocation");
-        controller.validator().removeObserver.reset();
+        controller.validator().removeObserver.resetHistory();
 
         editor.updatePointer("#/newLocation");
 

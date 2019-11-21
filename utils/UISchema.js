@@ -1,5 +1,4 @@
-// @TODO iterate over all schema definitions
-const iterateSchema = require("json-schema-library").iterateSchema;
+const { eachSchema } = require("json-schema-library");
 const gp = require("gson-pointer");
 const UI_PROPERTY = "editron:ui";
 const populated = require("./populated");
@@ -88,7 +87,7 @@ function copyOptions(pointer, controller) {
 
     Object
         .keys(settings)
-        .forEach((option) => {
+        .forEach(option => {
             settings[option] = resolveOption(pointer, controller, settings[option]);
         });
 
@@ -103,7 +102,7 @@ function copyOptions(pointer, controller) {
  */
 function extendSchema(rootSchema) {
     rootSchema = JSON.parse(JSON.stringify(rootSchema));
-    iterateSchema(rootSchema, (childSchema) => {
+    eachSchema(rootSchema, childSchema => {
         childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
         childSchema[UI_PROPERTY] = Object.assign({
             hidden: false,

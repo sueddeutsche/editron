@@ -31,7 +31,7 @@ class ValidationService {
         this.id = "errors";
         this.state = state;
         this.state.register(this.id, errorReducer);
-        this.setErrorHandler((error) => error);
+        this.setErrorHandler(error => error);
         this.EVENTS = EVENTS;
     }
 
@@ -63,7 +63,7 @@ class ValidationService {
                 this.observer.notify(newError.data.pointer, newError);
                 this.emit(EVENTS.ON_ERROR, newError);
             },
-            (validationErrors) => {
+            validationErrors => {
                 this.state.dispatch(ActionCreators.setErrors(validationErrors));
                 this.emit(EVENTS.AFTER_VALIDATION, validationErrors);
                 this.currentValidation = null;
@@ -72,8 +72,8 @@ class ValidationService {
     }
 
     set(schema) {
-        this.schema = schema;
         this.core.setSchema(schema);
+        this.schema = this.core.getSchema();
     }
 
     get() {
@@ -116,15 +116,15 @@ class ValidationService {
         }
         // filter by pointer
         const selectError = new RegExp(`^${pointer}${withChildErrors ? "" : "$"}`);
-        return errors.filter((error) => selectError.test(error.data.pointer));
+        return errors.filter(error => selectError.test(error.data.pointer));
     }
 
     getErrors(pointer = undefined, withChildErrors = false) {
-        return this.getErrorsAndWarnings(pointer, withChildErrors).filter((error) => error.severity !== "warning");
+        return this.getErrorsAndWarnings(pointer, withChildErrors).filter(error => error.severity !== "warning");
     }
 
     getWarnings(pointer = undefined, withChildWarnings = false) {
-        return this.getErrorsAndWarnings(pointer, withChildWarnings).filter((error) => error.severity === "warning");
+        return this.getErrorsAndWarnings(pointer, withChildWarnings).filter(error => error.severity === "warning");
     }
 
     destroy() {

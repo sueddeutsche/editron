@@ -43,10 +43,10 @@ const config = {
                     /json-.*\//, /mithril-.*\//, /editron.*\//
                 ],
                 options: {
-                    presets: [require.resolve("babel-preset-es2015")],
+                    presets: [require.resolve("@babel/preset-env")],
                     plugins: [
-                        require.resolve("babel-plugin-transform-object-assign"),
-                        require.resolve("babel-plugin-transform-object-rest-spread") // redux-undo
+                        require.resolve("@babel/plugin-transform-object-assign"),
+                        require.resolve("@babel/plugin-proposal-object-rest-spread") // redux-undo
                     ],
                     babelrc: false,
                     cacheDirectory: true
