@@ -21,7 +21,7 @@ button.mmf-button {
   border-radius: 2px;
   color: #00c853;
   background-color: inherit;
-  transition: background-color 0.25s linear; }
+  transition: background-color 0.2s linear; }
   button.mmf-button::-moz-focus-inner, button.mmf-button::-moz-focus-inner {
     border: 0;
     padding: 0; }
@@ -41,12 +41,10 @@ button.mmf-button--raised {
   background-color: #00c853; }
   button.mmf-button--raised.is-enabled:hover, button.mmf-button--raised.is-enabled:focus {
     background-color: #00953e; }
-  button.mmf-button--raised.is-disabled {
+  button.mmf-button--raised.is-disabled, button.mmf-button--raised.is-disabled:hover, button.mmf-button--raised.is-disabled:focus {
     color: rgba(236, 239, 241, 0.38);
-    background-color: rgba(0, 200, 83, 0.38); }
-    button.mmf-button--raised.is-disabled:hover, button.mmf-button--raised.is-disabled:focus {
-      background-color: rgba(0, 200, 83, 0.38);
-      cursor: default; }
+    background-color: rgba(0, 0, 0, 0.38);
+    cursor: default; }
 
 .mmf-icon {
   cursor: pointer;
@@ -101,10 +99,13 @@ div.mmf-select__wrapper {
     right: 0;
     bottom: 0;
     color: #000;
-    transition: color 0.25s linear;
+    transition: color 0.2s linear;
     pointer-events: none; }
-  div.mmf-select__wrapper:hover:after, div.mmf-select__wrapper.has-focus:after {
+  div.mmf-select__wrapper:not(.is-disabled):hover:after, div.mmf-select__wrapper:not(.is-disabled).has-focus:after {
     color: #81c784; }
+  div.mmf-select__wrapper.is-disabled {
+    opacity: 0.38;
+    cursor: default; }
 
 select.mmf-select {
   -webkit-appearance: none;
@@ -124,9 +125,8 @@ select.mmf-select {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.25s linear;
+  transition: border-color 0.2s linear;
   font-size: inherit;
-  cursor: pointer;
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   padding-top: 4px;
@@ -143,10 +143,17 @@ select.mmf-select {
     font-size: inherit; }
     select.mmf-select *::-ms-expand {
       display: none; }
-  select.mmf-select:focus {
+  select.mmf-select:not([disabled]):focus {
     border-color: #00c853; }
-  select.mmf-select:hover {
+  select.mmf-select:not([disabled]):hover {
     border-color: #00c853; }
+  select.mmf-select[disabled] {
+    color: #000;
+    opacity: 0.38; }
+  select.mmf-select:not([disabled]) {
+    cursor: pointer; }
+  select.mmf-select[disabled] {
+    opacity: 1; }
 
 select.mmf-select option {
   font-size: inherit;
@@ -174,11 +181,14 @@ input.mmf-input {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.25s linear; }
-  input.mmf-input:focus {
+  transition: border-color 0.2s linear; }
+  input.mmf-input:not([disabled]):focus {
     border-color: #00c853; }
-  input.mmf-input:hover {
+  input.mmf-input:not([disabled]):hover {
     border-color: #00c853; }
+  input.mmf-input[disabled] {
+    color: #000;
+    opacity: 0.38; }
 
 input.mmf-checkbox {
   margin: 0;
@@ -205,7 +215,7 @@ input.mmf-checkbox {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.25s linear;
+  transition: border-color 0.2s linear;
   position: relative;
   display: inline-block;
   font-size: 1.25em;
@@ -215,10 +225,13 @@ input.mmf-checkbox {
   transform: translateY(25%); }
   input.mmf-checkbox::-ms-expand {
     display: none; }
-  input.mmf-checkbox:focus {
+  input.mmf-checkbox:not([disabled]):focus {
     border-color: #00c853; }
-  input.mmf-checkbox:hover {
+  input.mmf-checkbox:not([disabled]):hover {
     border-color: #00c853; }
+  input.mmf-checkbox[disabled] {
+    color: #000;
+    opacity: 0.38; }
   input.mmf-checkbox:checked:after {
     content: "check_box"; }
   input.mmf-checkbox:after {
@@ -248,9 +261,11 @@ input.mmf-checkbox {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: color 0.25s linear; }
-  input.mmf-checkbox:focus:after, input.mmf-checkbox:hover:after {
+    transition: color 0.2s linear; }
+  input.mmf-checkbox:not([disabled]):focus:after, input.mmf-checkbox:not([disabled]):hover:after {
     color: #00c853; }
+  input.mmf-checkbox[disabled]:after {
+    cursor: default; }
 
 .mmf-form--checkbox label {
   color: inherit;
@@ -322,14 +337,17 @@ textarea.mmf-textarea {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.25s linear;
+  transition: border-color 0.2s linear;
   width: 100%;
   margin: 1.1em 0 0 0;
   resize: vertical; }
-  textarea.mmf-textarea:focus {
+  textarea.mmf-textarea:not([disabled]):focus {
     border-color: #00c853; }
-  textarea.mmf-textarea:hover {
+  textarea.mmf-textarea:not([disabled]):hover {
     border-color: #00c853; }
+  textarea.mmf-textarea[disabled] {
+    color: #000;
+    opacity: 0.38; }
   textarea.mmf-textarea:focus {
     outline-style: none;
     outline-width: 0; }
@@ -408,6 +426,14 @@ textarea.mmf-textarea {
   .mmf-form label {
     color: #000;
     opacity: 0.54; }
+  .mmf-form.mmf-form--disabled .mmf-meta,
+  .mmf-form.mmf-form--disabled .mmf-form__errors,
+  .mmf-form.mmf-form--disabled label {
+    opacity: 0.38 !important; }
+    .mmf-form.mmf-form--disabled .mmf-meta:hover,
+    .mmf-form.mmf-form--disabled .mmf-form__errors:hover,
+    .mmf-form.mmf-form--disabled label:hover {
+      cursor: default; }
   .mmf-form .mmf-meta {
     margin-top: 4px; }
 
@@ -460,6 +486,14 @@ ul.mmf-form__errors {
   .editron-value label {
     color: #000;
     opacity: 0.54; }
+  .editron-value.mmf-form--disabled .mmf-meta,
+  .editron-value.mmf-form--disabled .mmf-form__errors,
+  .editron-value.mmf-form--disabled label {
+    opacity: 0.38 !important; }
+    .editron-value.mmf-form--disabled .mmf-meta:hover,
+    .editron-value.mmf-form--disabled .mmf-form__errors:hover,
+    .editron-value.mmf-form--disabled label:hover {
+      cursor: default; }
 
 .editron-container__child .editron-container__button--add {
   cursor: pointer;
@@ -471,9 +505,13 @@ ul.mmf-form__errors {
   .editron-container__child .editron-container__button--add .mmf-icon {
     color: rgba(255, 255, 255, 0.87);
     text-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
-  .editron-container__child .editron-container__button--add:hover .mmf-icon {
+  .editron-container__child .editron-container__button--add:not(.is-disabled):hover .mmf-icon {
     color: #fff;
     text-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); }
+  .editron-container__child .editron-container__button--add.is-disabled:hover {
+    cursor: default; }
+    .editron-container__child .editron-container__button--add.is-disabled:hover .mmf-icon {
+      cursor: default; }
 
 .editron-container--array.has-add-disabled > .editron-container__header .mmf-icon--add {
   display: none; }
@@ -483,6 +521,11 @@ ul.mmf-form__errors {
 
 .editron-container__controls {
   list-style: none; }
+  .editron-container__controls.is-disabled .mmf-icon {
+    color: rgba(255, 255, 255, 0.38); }
+    .editron-container__controls.is-disabled .mmf-icon:hover {
+      cursor: default;
+      color: rgba(255, 255, 255, 0.38); }
 
 .editron-item.with-index:before {
   content: attr(data-index);
@@ -575,6 +618,11 @@ ul.mmf-form__errors {
     line-height: inherit; }
   .editron-container__header .editron-container__title i.mmf-icon:hover {
     color: inherit;
+    cursor: default; }
+  .editron-container__header.is-disabled i.mmf-icon,
+  .editron-container__header.is-disabled i.mmf-icon:hover {
+    color: inherit;
+    opacity: 0.38;
     cursor: default; }
 
 .editron-container {
@@ -753,6 +801,14 @@ ul.mmf-form__errors {
   .mmf-card .editron-container__button--add label {
     color: #000;
     opacity: 0.54; }
+  .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-meta,
+  .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-form__errors,
+  .mmf-card .editron-container__button--add.mmf-form--disabled label {
+    opacity: 0.38 !important; }
+    .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-meta:hover,
+    .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-form__errors:hover,
+    .mmf-card .editron-container__button--add.mmf-form--disabled label:hover {
+      cursor: default; }
   .mmf-card .editron-container__button--add .mmf-icon {
     color: rgba(0, 0, 0, 0.54);
     text-shadow: none; }
