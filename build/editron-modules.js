@@ -2354,6 +2354,443 @@ module.exports = __webpack_require__.p + "editron.css";
 
 /***/ }),
 
+/***/ "./node_modules/autosize/dist/autosize.js":
+/*!************************************************!*\
+  !*** ./node_modules/autosize/dist/autosize.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	autosize 4.0.2
+	license: MIT
+	http://www.jacklmoore.com/autosize
+*/
+(function (global, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else { var mod; }
+})(this, function (module, exports) {
+  'use strict';
+
+  var map = typeof Map === "function" ? new Map() : function () {
+    var keys = [];
+    var values = [];
+    return {
+      has: function has(key) {
+        return keys.indexOf(key) > -1;
+      },
+      get: function get(key) {
+        return values[keys.indexOf(key)];
+      },
+      set: function set(key, value) {
+        if (keys.indexOf(key) === -1) {
+          keys.push(key);
+          values.push(value);
+        }
+      },
+      "delete": function _delete(key) {
+        var index = keys.indexOf(key);
+
+        if (index > -1) {
+          keys.splice(index, 1);
+          values.splice(index, 1);
+        }
+      }
+    };
+  }();
+
+  var createEvent = function createEvent(name) {
+    return new Event(name, {
+      bubbles: true
+    });
+  };
+
+  try {
+    new Event('test');
+  } catch (e) {
+    // IE does not support `new Event()`
+    createEvent = function createEvent(name) {
+      var evt = document.createEvent('Event');
+      evt.initEvent(name, true, false);
+      return evt;
+    };
+  }
+
+  function assign(ta) {
+    if (!ta || !ta.nodeName || ta.nodeName !== 'TEXTAREA' || map.has(ta)) return;
+    var heightOffset = null;
+    var clientWidth = null;
+    var cachedHeight = null;
+
+    function init() {
+      var style = window.getComputedStyle(ta, null);
+
+      if (style.resize === 'vertical') {
+        ta.style.resize = 'none';
+      } else if (style.resize === 'both') {
+        ta.style.resize = 'horizontal';
+      }
+
+      if (style.boxSizing === 'content-box') {
+        heightOffset = -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+      } else {
+        heightOffset = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+      } // Fix when a textarea is not on document body and heightOffset is Not a Number
+
+
+      if (isNaN(heightOffset)) {
+        heightOffset = 0;
+      }
+
+      update();
+    }
+
+    function changeOverflow(value) {
+      {
+        // Chrome/Safari-specific fix:
+        // When the textarea y-overflow is hidden, Chrome/Safari do not reflow the text to account for the space
+        // made available by removing the scrollbar. The following forces the necessary text reflow.
+        var width = ta.style.width;
+        ta.style.width = '0px'; // Force reflow:
+
+        /* jshint ignore:start */
+
+        ta.offsetWidth;
+        /* jshint ignore:end */
+
+        ta.style.width = width;
+      }
+      ta.style.overflowY = value;
+    }
+
+    function getParentOverflows(el) {
+      var arr = [];
+
+      while (el && el.parentNode && el.parentNode instanceof Element) {
+        if (el.parentNode.scrollTop) {
+          arr.push({
+            node: el.parentNode,
+            scrollTop: el.parentNode.scrollTop
+          });
+        }
+
+        el = el.parentNode;
+      }
+
+      return arr;
+    }
+
+    function resize() {
+      if (ta.scrollHeight === 0) {
+        // If the scrollHeight is 0, then the element probably has display:none or is detached from the DOM.
+        return;
+      }
+
+      var overflows = getParentOverflows(ta);
+      var docTop = document.documentElement && document.documentElement.scrollTop; // Needed for Mobile IE (ticket #240)
+
+      ta.style.height = '';
+      ta.style.height = ta.scrollHeight + heightOffset + 'px'; // used to check if an update is actually necessary on window.resize
+
+      clientWidth = ta.clientWidth; // prevents scroll-position jumping
+
+      overflows.forEach(function (el) {
+        el.node.scrollTop = el.scrollTop;
+      });
+
+      if (docTop) {
+        document.documentElement.scrollTop = docTop;
+      }
+    }
+
+    function update() {
+      resize();
+      var styleHeight = Math.round(parseFloat(ta.style.height));
+      var computed = window.getComputedStyle(ta, null); // Using offsetHeight as a replacement for computed.height in IE, because IE does not account use of border-box
+
+      var actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(computed.height)) : ta.offsetHeight; // The actual height not matching the style height (set via the resize method) indicates that 
+      // the max-height has been exceeded, in which case the overflow should be allowed.
+
+      if (actualHeight < styleHeight) {
+        if (computed.overflowY === 'hidden') {
+          changeOverflow('scroll');
+          resize();
+          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
+        }
+      } else {
+        // Normally keep overflow set to hidden, to avoid flash of scrollbar as the textarea expands.
+        if (computed.overflowY !== 'hidden') {
+          changeOverflow('hidden');
+          resize();
+          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
+        }
+      }
+
+      if (cachedHeight !== actualHeight) {
+        cachedHeight = actualHeight;
+        var evt = createEvent('autosize:resized');
+
+        try {
+          ta.dispatchEvent(evt);
+        } catch (err) {// Firefox will throw an error on dispatchEvent for a detached element
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=889376
+        }
+      }
+    }
+
+    var pageResize = function pageResize() {
+      if (ta.clientWidth !== clientWidth) {
+        update();
+      }
+    };
+
+    var destroy = function (style) {
+      window.removeEventListener('resize', pageResize, false);
+      ta.removeEventListener('input', update, false);
+      ta.removeEventListener('keyup', update, false);
+      ta.removeEventListener('autosize:destroy', destroy, false);
+      ta.removeEventListener('autosize:update', update, false);
+      Object.keys(style).forEach(function (key) {
+        ta.style[key] = style[key];
+      });
+      map["delete"](ta);
+    }.bind(ta, {
+      height: ta.style.height,
+      resize: ta.style.resize,
+      overflowY: ta.style.overflowY,
+      overflowX: ta.style.overflowX,
+      wordWrap: ta.style.wordWrap
+    });
+
+    ta.addEventListener('autosize:destroy', destroy, false); // IE9 does not fire onpropertychange or oninput for deletions,
+    // so binding to onkeyup to catch most of those events.
+    // There is no way that I know of to detect something like 'cut' in IE9.
+
+    if ('onpropertychange' in ta && 'oninput' in ta) {
+      ta.addEventListener('keyup', update, false);
+    }
+
+    window.addEventListener('resize', pageResize, false);
+    ta.addEventListener('input', update, false);
+    ta.addEventListener('autosize:update', update, false);
+    ta.style.overflowX = 'hidden';
+    ta.style.wordWrap = 'break-word';
+    map.set(ta, {
+      destroy: destroy,
+      update: update
+    });
+    init();
+  }
+
+  function destroy(ta) {
+    var methods = map.get(ta);
+
+    if (methods) {
+      methods.destroy();
+    }
+  }
+
+  function update(ta) {
+    var methods = map.get(ta);
+
+    if (methods) {
+      methods.update();
+    }
+  }
+
+  var autosize = null; // Do nothing in Node.js environment and IE8 (or lower)
+
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+    autosize = function autosize(el) {
+      return el;
+    };
+
+    autosize.destroy = function (el) {
+      return el;
+    };
+
+    autosize.update = function (el) {
+      return el;
+    };
+  } else {
+    autosize = function autosize(el, options) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], function (x) {
+          return assign(x, options);
+        });
+      }
+
+      return el;
+    };
+
+    autosize.destroy = function (el) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], destroy);
+      }
+
+      return el;
+    };
+
+    autosize.update = function (el) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], update);
+      }
+
+      return el;
+    };
+  }
+
+  exports["default"] = autosize;
+  module.exports = exports['default'];
+});
+
+/***/ }),
+
+/***/ "./node_modules/deepmerge/dist/cjs.js":
+/*!********************************************!*\
+  !*** ./node_modules/deepmerge/dist/cjs.js ***!
+  \********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+var isMergeableObject = function isMergeableObject(value) {
+  return isNonNullObject(value) && !isSpecial(value);
+};
+
+function isNonNullObject(value) {
+  return !!value && _typeof(value) === 'object';
+}
+
+function isSpecial(value) {
+  var stringValue = Object.prototype.toString.call(value);
+  return stringValue === '[object RegExp]' || stringValue === '[object Date]' || isReactElement(value);
+} // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
+
+
+var canUseSymbol = typeof Symbol === 'function' && Symbol["for"];
+var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol["for"]('react.element') : 0xeac7;
+
+function isReactElement(value) {
+  return value.$$typeof === REACT_ELEMENT_TYPE;
+}
+
+function emptyTarget(val) {
+  return Array.isArray(val) ? [] : {};
+}
+
+function cloneUnlessOtherwiseSpecified(value, options) {
+  return options.clone !== false && options.isMergeableObject(value) ? deepmerge(emptyTarget(value), value, options) : value;
+}
+
+function defaultArrayMerge(target, source, options) {
+  return target.concat(source).map(function (element) {
+    return cloneUnlessOtherwiseSpecified(element, options);
+  });
+}
+
+function getMergeFunction(key, options) {
+  if (!options.customMerge) {
+    return deepmerge;
+  }
+
+  var customMerge = options.customMerge(key);
+  return typeof customMerge === 'function' ? customMerge : deepmerge;
+}
+
+function getEnumerableOwnPropertySymbols(target) {
+  return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function (symbol) {
+    return target.propertyIsEnumerable(symbol);
+  }) : [];
+}
+
+function getKeys(target) {
+  return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target));
+}
+
+function propertyIsOnObject(object, property) {
+  try {
+    return property in object;
+  } catch (_) {
+    return false;
+  }
+} // Protects from prototype poisoning and unexpected merging up the prototype chain.
+
+
+function propertyIsUnsafe(target, key) {
+  return propertyIsOnObject(target, key) // Properties are safe to merge if they don't exist in the target yet,
+  && !(Object.hasOwnProperty.call(target, key) // unsafe if they exist up the prototype chain,
+  && Object.propertyIsEnumerable.call(target, key)); // and also unsafe if they're nonenumerable.
+}
+
+function mergeObject(target, source, options) {
+  var destination = {};
+
+  if (options.isMergeableObject(target)) {
+    getKeys(target).forEach(function (key) {
+      destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+    });
+  }
+
+  getKeys(source).forEach(function (key) {
+    if (propertyIsUnsafe(target, key)) {
+      return;
+    }
+
+    if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
+      destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
+    } else {
+      destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
+    }
+  });
+  return destination;
+}
+
+function deepmerge(target, source, options) {
+  options = options || {};
+  options.arrayMerge = options.arrayMerge || defaultArrayMerge;
+  options.isMergeableObject = options.isMergeableObject || isMergeableObject; // cloneUnlessOtherwiseSpecified is added to `options` so that custom arrayMerge()
+  // implementations can use it. The caller may not replace it.
+
+  options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
+  var sourceIsArray = Array.isArray(source);
+  var targetIsArray = Array.isArray(target);
+  var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
+
+  if (!sourceAndTargetTypesMatch) {
+    return cloneUnlessOtherwiseSpecified(source, options);
+  } else if (sourceIsArray) {
+    return options.arrayMerge(target, source, options);
+  } else {
+    return mergeObject(target, source, options);
+  }
+}
+
+deepmerge.all = function deepmergeAll(array, options) {
+  if (!Array.isArray(array)) {
+    throw new Error('first argument should be an array');
+  }
+
+  return array.reduce(function (prev, next) {
+    return deepmerge(prev, next, options);
+  }, {});
+};
+
+var deepmerge_1 = deepmerge;
+module.exports = deepmerge_1;
+
+/***/ }),
+
 /***/ "./node_modules/diff_match_patch/lib/diff_match_patch.js":
 /*!***************************************************************!*\
   !*** ./node_modules/diff_match_patch/lib/diff_match_patch.js ***!
@@ -4672,6 +5109,204 @@ exports['DIFF_EQUAL'] = DIFF_EQUAL;
 
 /***/ }),
 
+/***/ "./node_modules/gson-conform/lib/asArray.js":
+/*!**************************************************!*\
+  !*** ./node_modules/gson-conform/lib/asArray.js ***!
+  \**************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Converts an object to an array
+ *
+ * @param  {Mixed} value to convert to array
+ * @return {Array} to array converted input
+ */
+
+function asArray(value) {
+  if (Array.isArray(value)) {
+    return value; // prevent duplication
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    return Object.keys(value).map(function (key) {
+      return value[key];
+    });
+  } else {
+    return [];
+  }
+}
+
+module.exports = asArray;
+
+/***/ }),
+
+/***/ "./node_modules/gson-conform/lib/forEach.js":
+/*!**************************************************!*\
+  !*** ./node_modules/gson-conform/lib/forEach.js ***!
+  \**************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Iterates over object or array, passing each key, value and parentObject to the callback
+ *
+ * @param  {Object|Array} value	to iterate
+ * @param  {Function} callback	receiving key on given input value
+ */
+
+function forEach(object, callback) {
+  var keys;
+
+  if (Array.isArray(object)) {
+    object.forEach(callback);
+  } else if (Object.prototype.toString.call(object) === "[object Object]") {
+    Object.keys(object).forEach(function (key) {
+      callback(object[key], key, object);
+    });
+  }
+}
+
+module.exports = forEach;
+
+/***/ }),
+
+/***/ "./node_modules/gson-conform/lib/index.js":
+/*!************************************************!*\
+  !*** ./node_modules/gson-conform/lib/index.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.values = __webpack_require__(/*! ./values */ "./node_modules/gson-conform/lib/values.js");
+exports.asArray = __webpack_require__(/*! ./asArray */ "./node_modules/gson-conform/lib/asArray.js");
+exports.forEach = __webpack_require__(/*! ./forEach */ "./node_modules/gson-conform/lib/forEach.js");
+exports.keyOf = __webpack_require__(/*! ./keyOf */ "./node_modules/gson-conform/lib/keyOf.js");
+exports.keys = __webpack_require__(/*! ./keys */ "./node_modules/gson-conform/lib/keys.js");
+
+/***/ }),
+
+/***/ "./node_modules/gson-conform/lib/keyOf.js":
+/*!************************************************!*\
+  !*** ./node_modules/gson-conform/lib/keyOf.js ***!
+  \************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var forEach = __webpack_require__(/*! ./forEach */ "./node_modules/gson-conform/lib/forEach.js");
+/**
+ * Returns the key of the value
+ *
+ * @param  {Object|Array} data	to scan
+ * @param  {Mixed} value 		to search
+ * @return {String|Number} key of (last) found result or null
+ */
+
+
+function keyOf(data, value) {
+  var resultKey = null;
+  forEach(data, function (itemValue, itemKey) {
+    if (value === itemValue) {
+      resultKey = itemKey;
+    }
+  });
+  return resultKey;
+}
+
+module.exports = keyOf;
+
+/***/ }),
+
+/***/ "./node_modules/gson-conform/lib/keys.js":
+/*!***********************************************!*\
+  !*** ./node_modules/gson-conform/lib/keys.js ***!
+  \***********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Returns all keys of the given input data
+ *
+ * @param  {Mixed} value
+ * @return {Array} containing keys of given value
+ */
+
+function keys(value) {
+  var keys;
+
+  if (Array.isArray(value)) {
+    keys = value.map(function (value, index) {
+      return index;
+    });
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    return Object.keys(value);
+  } else {
+    keys = [];
+  }
+
+  return keys;
+}
+
+module.exports = keys;
+
+/***/ }),
+
+/***/ "./node_modules/gson-conform/lib/values.js":
+/*!*************************************************!*\
+  !*** ./node_modules/gson-conform/lib/values.js ***!
+  \*************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Returns all values of the given input data
+ * @param  {Mixed} value input data
+ * @return {Array} array of input data's values
+ */
+
+function values(value) {
+  var values;
+
+  if (Array.isArray(value)) {
+    // []
+    values = value;
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    // {}
+    values = Object.keys(value).map(function (key) {
+      return value[key];
+    });
+  } else if (value != null) {
+    // *
+    values = [value];
+  } else {
+    values = [];
+  }
+
+  return values;
+}
+
+module.exports = values;
+
+/***/ }),
+
 /***/ "./node_modules/gson-pointer/index.js":
 /*!********************************************!*\
   !*** ./node_modules/gson-pointer/index.js ***!
@@ -5017,6 +5652,450 @@ function split(pointer) {
 }
 
 module.exports = split;
+
+/***/ }),
+
+/***/ "./node_modules/gson-query/lib/common.js":
+/*!***********************************************!*\
+  !*** ./node_modules/gson-query/lib/common.js ***!
+  \***********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports) {
+
+var rIsRegExp = /^\{.*\}$/;
+/**
+ * Removes root prefix of pointer
+ *
+ * @param  {String} pointer
+ * @return {String} simple pointer path
+ */
+
+function stripPointerPrefix(pointer) {
+  pointer = pointer.toString();
+  return pointer.replace(/[#/]*/, "");
+}
+
+function convertToRegExp(pointerPartial) {
+  return new RegExp(pointerPartial.replace(/^\{|\}$/g, ""));
+}
+
+function splitRegExp(pointer) {
+  pointer = pointer.replace(/^\{|\/\{/g, "§{");
+  pointer = pointer.replace(/\}\/|\}$/g, "}§");
+  return pointer.split("§");
+}
+/**
+ * Can not be used in conjuction with filters...
+ * REMOVE stripPointer...
+ *
+ * @param  {String} pointer
+ * @return {Array}
+ */
+
+
+function parsePointer(pointer) {
+  var partials;
+  var current;
+  var result;
+  pointer = stripPointerPrefix(pointer);
+
+  if (pointer.indexOf("{") === -1) {
+    return pointer.split("/");
+  }
+
+  result = [];
+  partials = splitRegExp(pointer);
+
+  while ((current = partials.shift()) != null) {
+    if (current === "") {
+      continue;
+    }
+
+    if (rIsRegExp.test(current)) {
+      result.push(current);
+    } else {
+      result.push.apply(result, current.split("/"));
+    }
+  }
+
+  return result;
+}
+
+exports.rIsRegExp = rIsRegExp;
+exports.convertToRegExp = convertToRegExp;
+exports.splitRegExp = splitRegExp;
+exports.parsePointer = parsePointer;
+
+/***/ }),
+
+/***/ "./node_modules/gson-query/lib/delete.js":
+/*!***********************************************!*\
+  !*** ./node_modules/gson-query/lib/delete.js ***!
+  \***********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pointerDelete = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js")["delete"];
+
+var removeUndefinedItems = __webpack_require__(/*! gson-pointer/lib/removeUndefinedItems */ "./node_modules/gson-pointer/lib/removeUndefinedItems.js");
+
+var queryGet = __webpack_require__(/*! ./get */ "./node_modules/gson-query/lib/get.js");
+
+var POINTER = 3;
+var PARENT = 2;
+
+function queryDelete(obj, jsonPointer) {
+  var matches = queryGet(obj, jsonPointer, queryGet.ALL);
+  matches.forEach(function (match) {
+    pointerDelete(obj, match[POINTER], true);
+  });
+  matches.forEach(function (match) {
+    if (Array.isArray(match[PARENT])) {
+      removeUndefinedItems(match[PARENT]);
+    }
+  });
+  return obj;
+}
+
+module.exports = queryDelete;
+
+/***/ }),
+
+/***/ "./node_modules/gson-query/lib/filter.js":
+/*!***********************************************!*\
+  !*** ./node_modules/gson-query/lib/filter.js ***!
+  \***********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var o = __webpack_require__(/*! gson-conform */ "./node_modules/gson-conform/lib/index.js");
+
+var common = __webpack_require__(/*! ./common */ "./node_modules/gson-query/lib/common.js");
+
+var f = {
+  queryKey: function queryKey(obj, query) {
+    return function (key) {
+      return valid(obj[key], query);
+    };
+  },
+  queryRegExp: function queryRegExp(obj, query, regex) {
+    return function (key) {
+      return regex.test(key) ? valid(obj[key], query) : false;
+    };
+  }
+};
+var MAP = {
+  "false": false,
+  "true": true,
+  "null": null
+};
+/**
+ * Filter properties by query: select|if:property
+ *
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Array} values matching the given query
+ */
+
+function filterValues(obj, query) {
+  return filterKeys(obj, query).map(function (key) {
+    return obj[key];
+  });
+}
+
+var selectCurly = /(\{[^}]*\})/g;
+var selectPlaceholder = /§§§\d+§§§/g;
+
+function splitQuery(value) {
+  // nothing to escape
+  if (value.indexOf("?") === -1 || value.indexOf("{") === -1) {
+    return value.split("?", 2);
+  } // @todo this must be simpler to solve
+
+
+  var map = {};
+  var temp = value.replace(selectCurly, function replace(match, group, index) {
+    var id = "§§§" + index + "§§§";
+    map[id] = match;
+    return id;
+  });
+  var result = temp.split("?", 2);
+
+  for (var i = 0; i < result.length; i += 1) {
+    result[i] = result[i].replace(selectPlaceholder, function revertReplacement(match) {
+      return map[match];
+    });
+  }
+
+  return result;
+}
+/**
+ * Filter properties by query: select|if:property
+ *
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Array} object keys matching the given query
+ */
+
+
+function filterKeys(obj, query) {
+  if (obj && query) {
+    var matches = splitQuery(query);
+    var propertyQuery = matches[0];
+    var filterQuery = matches[1];
+    var keys;
+    var regex;
+
+    if (propertyQuery === "*" || propertyQuery === "**") {
+      keys = o.keys(obj);
+      return keys.filter(f.queryKey(obj, filterQuery));
+    } else if (common.rIsRegExp.test(propertyQuery)) {
+      keys = o.keys(obj);
+      regex = common.convertToRegExp(propertyQuery);
+      return keys.filter(f.queryRegExp(obj, filterQuery, regex));
+    } else if (obj[propertyQuery] && valid(obj[propertyQuery], filterQuery)) {
+      return [propertyQuery];
+    }
+  }
+
+  return [];
+}
+/**
+ * Returns true if the query matches. Query: key:value&key:value
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Boolean} if query matched object
+ */
+
+
+function valid(obj, query) {
+  if (!query) {
+    return true;
+  }
+
+  if (!obj) {
+    return false;
+  }
+
+  var key;
+  var value;
+  var isValid = true;
+  var truthy;
+  var tests = query.replace(/(&&)/g, "§$1§").replace(/(\|\|)/g, "§$1§").split("§");
+  var or = false;
+
+  for (var i = 0, l = tests.length; i < l; i += 2) {
+    if (tests[i].indexOf(":!") > -1) {
+      truthy = false;
+      value = tests[i].split(":!");
+    } else if (tests[i].indexOf(":") === -1) {
+      truthy = false;
+      value = [tests[i], undefined];
+    } else {
+      truthy = true;
+      value = tests[i].split(":");
+    }
+
+    key = value[0];
+    value = value[1];
+
+    if (value === "undefined") {
+      value = undefined; // undefined is unmappable
+    } else {
+      value = MAP[value] === undefined ? value : MAP[value];
+    } // perform filter test, exception undefined is not matched for negated non-undefined values
+
+
+    value = truthy ? value === obj[key] : value !== obj[key] && (obj[key] !== undefined || key === undefined);
+
+    if (or) {
+      isValid = isValid || value;
+    } else {
+      isValid = isValid && value;
+    }
+
+    or = tests[i + 1] === "||";
+  }
+
+  return isValid;
+}
+
+exports.values = filterValues;
+exports.keys = filterKeys;
+exports.valid = valid;
+
+/***/ }),
+
+/***/ "./node_modules/gson-query/lib/get.js":
+/*!********************************************!*\
+  !*** ./node_modules/gson-query/lib/get.js ***!
+  \********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* eslint no-unused-vars: 0 */
+var query = __webpack_require__(/*! ./run */ "./node_modules/gson-query/lib/run.js");
+/**
+ * Returns the query results as an array or object, depending on its callback
+ *
+ * ## return type
+ *
+ * - get.ALL = 'all' returns all arguments of query callback [value, key, parent, pointer]
+ * - get.POINTER = 'pointer' returns only the json pointers to the targets
+ * - get.VALUE = 'value' Default. Returns only the matched value
+ * - get.MAP = Returns an object with all available pointers and their data, like { pointer: value }
+ *
+ * @param  {Mixed} obj
+ * @param  {Pointer} jsonPointer
+ * @param  {String} type			- type of return value. Defaults to "value"
+ * @return {Array|Object} containing result in specified format
+ */
+
+
+function queryGet(obj, jsonPointer, type) {
+  var matches = type === queryGet.MAP ? {} : [];
+  var cb = getCbFactory(type, matches);
+  query(obj, jsonPointer, cb);
+  return matches;
+}
+
+queryGet.ALL = "all";
+queryGet.MAP = "map";
+queryGet.POINTER = "pointer";
+queryGet.VALUE = "value";
+
+function getCbFactory(type, matches) {
+  if (typeof type === "function") {
+    return function cb(value, key, obj, pointer) {
+      matches.push(type(obj[key], key, obj, pointer));
+    };
+  }
+
+  switch (type) {
+    case queryGet.ALL:
+      return function cbGetAll(value, key, obj, pointer) {
+        matches.push([obj[key], key, obj, pointer]);
+      };
+
+    case queryGet.MAP:
+      return function cbGetMap(value, key, obj, pointer) {
+        matches[pointer] = value;
+      };
+
+    case queryGet.POINTER:
+      return function cbGetPointer(value, key, obj, pointer) {
+        matches.push(pointer);
+      };
+
+    case queryGet.VALUE:
+      return function cbGetValue(value, key, obj, pointer) {
+        matches.push(value);
+      };
+
+    default:
+      return function cbGetValue(value, key, obj, pointer) {
+        matches.push(value);
+      };
+  }
+}
+
+module.exports = queryGet;
+
+/***/ }),
+
+/***/ "./node_modules/gson-query/lib/index.js":
+/*!**********************************************!*\
+  !*** ./node_modules/gson-query/lib/index.js ***!
+  \**********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.get = __webpack_require__(/*! ./get */ "./node_modules/gson-query/lib/get.js");
+exports.run = __webpack_require__(/*! ./run */ "./node_modules/gson-query/lib/run.js");
+exports["delete"] = __webpack_require__(/*! ./delete */ "./node_modules/gson-query/lib/delete.js");
+exports.filter = __webpack_require__(/*! ./filter */ "./node_modules/gson-query/lib/filter.js");
+
+/***/ }),
+
+/***/ "./node_modules/gson-query/lib/run.js":
+/*!********************************************!*\
+  !*** ./node_modules/gson-query/lib/run.js ***!
+  \********************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var filter = __webpack_require__(/*! ./filter */ "./node_modules/gson-query/lib/filter.js");
+
+var parsePointer = __webpack_require__(/*! ./common */ "./node_modules/gson-query/lib/common.js").parsePointer; // @note gson-pointer: only strings are valid pointer properties to join. Ensure key is a string (could be index)
+
+
+var join = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js").join;
+/**
+ * callback for each match of json-glob-pointer
+ *
+ * @param  {Any} obj
+ * @param  {String} jsonPointer - function (value, key, parentObject, pointerToValue)
+ * @param  {Function} cb
+ */
+
+
+function queryRun(obj, jsonPointer, cb) {
+  // get steps into obj
+  var steps = parsePointer(jsonPointer); // cleanup first and last
+
+  if (steps[0] === "") {
+    // @todo due to pointer cleanup, this is probably never called
+    steps.shift();
+  }
+
+  if (steps[steps.length - 1] === "") {
+    steps.length -= 1;
+  }
+
+  _query(obj, steps, cb, "#");
+}
+
+function cbPassAll(obj, cb, pointer) {
+  return function (key) {
+    cb(obj[key], key, obj, join(pointer, String(key)));
+  };
+}
+
+function _query(obj, steps, cb, pointer) {
+  var matches;
+  var query = steps.shift();
+
+  if (steps.length === 0) {
+    // get keys matching the query and call back
+    matches = filter.keys(obj, query);
+    matches.forEach(cbPassAll(obj, cb, pointer));
+  } else if (/^\*\*/.test(query)) {
+    // run next query on current object
+    _query(obj, steps.slice(0), cb, pointer);
+  } else {
+    matches = filter.keys(obj, query);
+    matches.forEach(function (key) {
+      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
+    });
+  }
+
+  if (/^\*\*/.test(query)) {
+    // match this query (**) again
+    steps.unshift(query);
+    matches = filter.keys(obj, query);
+    matches.forEach(function (key) {
+      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
+    });
+  }
+}
+
+module.exports = queryRun;
 
 /***/ }),
 
@@ -6931,7 +8010,7 @@ module.exports = function resolveRefMerge(schema, rootSchema) {
 
 var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
-var gq = __webpack_require__(/*! gson-query */ "./node_modules/json-schema-library/node_modules/gson-query/lib/index.js");
+var gq = __webpack_require__(/*! gson-query */ "./node_modules/gson-query/lib/index.js");
 
 var getTypeId = __webpack_require__(/*! ./getTypeId */ "./node_modules/json-schema-library/lib/schema/getTypeId.js");
 
@@ -7235,7 +8314,7 @@ var stepType = {
       } // check if there is a oneOf selection, which must be resolved
 
 
-      if (targetSchema && Array.isArray(targetSchema.oneOf)) {
+      if (targetSchema.oneOf && Array.isArray(targetSchema.oneOf)) {
         // @special case: this is a mix of a schema and optional definitions
         // we resolve the schema here and add the original schema to `oneOfSchema`
         var resolvedSchema = core.resolveOneOf(data[key], targetSchema, "".concat(pointer, "/").concat(key));
@@ -7461,7 +8540,7 @@ module.exports = flattenArray;
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-var deepmerge = __webpack_require__(/*! deepmerge */ "./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js");
+var deepmerge = __webpack_require__(/*! deepmerge */ "./node_modules/deepmerge/dist/cjs.js");
 
 var overwriteMerge = function overwriteMerge(destinationArray, sourceArray) {
   return sourceArray;
@@ -7767,7 +8846,7 @@ module.exports = errors;
 /* eslint-disable max-len */
 var errors = __webpack_require__(/*! ./errors */ "./node_modules/json-schema-library/lib/validation/errors.js");
 
-var validUrl = __webpack_require__(/*! valid-url */ "./node_modules/json-schema-library/node_modules/valid-url/index.js"); // https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
+var validUrl = __webpack_require__(/*! valid-url */ "./node_modules/valid-url/index.js"); // https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
 
 
 var isValidDateTime = new RegExp("^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?(([Zz])|([\\+|\\-]([01][0-9]|2[0-3]):[0-5][0-9]))$"); // https://stackoverflow.com/questions/23483855/javascript-regex-to-validate-ipv4-and-ipv6-address-no-hostnames
@@ -8514,892 +9593,6 @@ module.exports = {
   number: ["enum", "format", "maximum", "minimum", "multipleOf", "not", "oneOf", "allOf", "anyOf"],
   "null": ["enum", "format", "not", "oneOf", "allOf", "anyOf"]
 };
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js":
-/*!*****************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-var isMergeableObject = function isMergeableObject(value) {
-  return isNonNullObject(value) && !isSpecial(value);
-};
-
-function isNonNullObject(value) {
-  return !!value && _typeof(value) === 'object';
-}
-
-function isSpecial(value) {
-  var stringValue = Object.prototype.toString.call(value);
-  return stringValue === '[object RegExp]' || stringValue === '[object Date]' || isReactElement(value);
-} // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
-
-
-var canUseSymbol = typeof Symbol === 'function' && Symbol["for"];
-var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol["for"]('react.element') : 0xeac7;
-
-function isReactElement(value) {
-  return value.$$typeof === REACT_ELEMENT_TYPE;
-}
-
-function emptyTarget(val) {
-  return Array.isArray(val) ? [] : {};
-}
-
-function cloneUnlessOtherwiseSpecified(value, options) {
-  return options.clone !== false && options.isMergeableObject(value) ? deepmerge(emptyTarget(value), value, options) : value;
-}
-
-function defaultArrayMerge(target, source, options) {
-  return target.concat(source).map(function (element) {
-    return cloneUnlessOtherwiseSpecified(element, options);
-  });
-}
-
-function getMergeFunction(key, options) {
-  if (!options.customMerge) {
-    return deepmerge;
-  }
-
-  var customMerge = options.customMerge(key);
-  return typeof customMerge === 'function' ? customMerge : deepmerge;
-}
-
-function getEnumerableOwnPropertySymbols(target) {
-  return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function (symbol) {
-    return target.propertyIsEnumerable(symbol);
-  }) : [];
-}
-
-function getKeys(target) {
-  return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target));
-}
-
-function mergeObject(target, source, options) {
-  var destination = {};
-
-  if (options.isMergeableObject(target)) {
-    getKeys(target).forEach(function (key) {
-      destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
-    });
-  }
-
-  getKeys(source).forEach(function (key) {
-    if (!options.isMergeableObject(source[key]) || !target[key]) {
-      destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
-    } else {
-      destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
-    }
-  });
-  return destination;
-}
-
-function deepmerge(target, source, options) {
-  options = options || {};
-  options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-  options.isMergeableObject = options.isMergeableObject || isMergeableObject;
-  var sourceIsArray = Array.isArray(source);
-  var targetIsArray = Array.isArray(target);
-  var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
-
-  if (!sourceAndTargetTypesMatch) {
-    return cloneUnlessOtherwiseSpecified(source, options);
-  } else if (sourceIsArray) {
-    return options.arrayMerge(target, source, options);
-  } else {
-    return mergeObject(target, source, options);
-  }
-}
-
-deepmerge.all = function deepmergeAll(array, options) {
-  if (!Array.isArray(array)) {
-    throw new Error('first argument should be an array');
-  }
-
-  return array.reduce(function (prev, next) {
-    return deepmerge(prev, next, options);
-  }, {});
-};
-
-var deepmerge_1 = deepmerge;
-module.exports = deepmerge_1;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js":
-/*!***********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Converts an object to an array
- *
- * @param  {Mixed} value to convert to array
- * @return {Array} to array converted input
- */
-
-function asArray(value) {
-  if (Array.isArray(value)) {
-    return value; // prevent duplication
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    return Object.keys(value).map(function (key) {
-      return value[key];
-    });
-  } else {
-    return [];
-  }
-}
-
-module.exports = asArray;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js":
-/*!***********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Iterates over object or array, passing each key, value and parentObject to the callback
- *
- * @param  {Object|Array} value	to iterate
- * @param  {Function} callback	receiving key on given input value
- */
-
-function forEach(object, callback) {
-  var keys;
-
-  if (Array.isArray(object)) {
-    object.forEach(callback);
-  } else if (Object.prototype.toString.call(object) === "[object Object]") {
-    Object.keys(object).forEach(function (key) {
-      callback(object[key], key, object);
-    });
-  }
-}
-
-module.exports = forEach;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js":
-/*!*********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.values = __webpack_require__(/*! ./values */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js");
-exports.asArray = __webpack_require__(/*! ./asArray */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js");
-exports.forEach = __webpack_require__(/*! ./forEach */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js");
-exports.keyOf = __webpack_require__(/*! ./keyOf */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js");
-exports.keys = __webpack_require__(/*! ./keys */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js");
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js":
-/*!*********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js ***!
-  \*********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var forEach = __webpack_require__(/*! ./forEach */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js");
-/**
- * Returns the key of the value
- *
- * @param  {Object|Array} data	to scan
- * @param  {Mixed} value 		to search
- * @return {String|Number} key of (last) found result or null
- */
-
-
-function keyOf(data, value) {
-  var resultKey = null;
-  forEach(data, function (itemValue, itemKey) {
-    if (value === itemValue) {
-      resultKey = itemKey;
-    }
-  });
-  return resultKey;
-}
-
-module.exports = keyOf;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js":
-/*!********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Returns all keys of the given input data
- *
- * @param  {Mixed} value
- * @return {Array} containing keys of given value
- */
-
-function keys(value) {
-  var keys;
-
-  if (Array.isArray(value)) {
-    keys = value.map(function (value, index) {
-      return index;
-    });
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    return Object.keys(value);
-  } else {
-    keys = [];
-  }
-
-  return keys;
-}
-
-module.exports = keys;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js":
-/*!**********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js ***!
-  \**********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Returns all values of the given input data
- * @param  {Mixed} value input data
- * @return {Array} array of input data's values
- */
-
-function values(value) {
-  var values;
-
-  if (Array.isArray(value)) {
-    // []
-    values = value;
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    // {}
-    values = Object.keys(value).map(function (key) {
-      return value[key];
-    });
-  } else if (value != null) {
-    // *
-    values = [value];
-  } else {
-    values = [];
-  }
-
-  return values;
-}
-
-module.exports = values;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js":
-/*!********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/common.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-var rIsRegExp = /^\{.*\}$/;
-/**
- * Removes root prefix of pointer
- *
- * @param  {String} pointer
- * @return {String} simple pointer path
- */
-
-function stripPointerPrefix(pointer) {
-  pointer = pointer.toString();
-  return pointer.replace(/[#/]*/, "");
-}
-
-function convertToRegExp(pointerPartial) {
-  return new RegExp(pointerPartial.replace(/^\{|\}$/g, ""));
-}
-
-function splitRegExp(pointer) {
-  pointer = pointer.replace(/^\{|\/\{/g, "§{");
-  pointer = pointer.replace(/\}\/|\}$/g, "}§");
-  return pointer.split("§");
-}
-/**
- * Can not be used in conjuction with filters...
- * REMOVE stripPointer...
- *
- * @param  {String} pointer
- * @return {Array}
- */
-
-
-function parsePointer(pointer) {
-  var partials;
-  var current;
-  var result;
-  pointer = stripPointerPrefix(pointer);
-
-  if (pointer.indexOf("{") === -1) {
-    return pointer.split("/");
-  }
-
-  result = [];
-  partials = splitRegExp(pointer);
-
-  while ((current = partials.shift()) != null) {
-    if (current === "") {
-      continue;
-    }
-
-    if (rIsRegExp.test(current)) {
-      result.push(current);
-    } else {
-      result.push.apply(result, current.split("/"));
-    }
-  }
-
-  return result;
-}
-
-exports.rIsRegExp = rIsRegExp;
-exports.convertToRegExp = convertToRegExp;
-exports.splitRegExp = splitRegExp;
-exports.parsePointer = parsePointer;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js":
-/*!********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var pointerDelete = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js")["delete"];
-
-var removeUndefinedItems = __webpack_require__(/*! gson-pointer/lib/removeUndefinedItems */ "./node_modules/gson-pointer/lib/removeUndefinedItems.js");
-
-var queryGet = __webpack_require__(/*! ./get */ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js");
-
-var POINTER = 3;
-var PARENT = 2;
-
-function queryDelete(obj, jsonPointer) {
-  var matches = queryGet(obj, jsonPointer, queryGet.ALL);
-  matches.forEach(function (match) {
-    pointerDelete(obj, match[POINTER], true);
-  });
-  matches.forEach(function (match) {
-    if (Array.isArray(match[PARENT])) {
-      removeUndefinedItems(match[PARENT]);
-    }
-  });
-  return obj;
-}
-
-module.exports = queryDelete;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js":
-/*!********************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var o = __webpack_require__(/*! gson-conform */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js");
-
-var common = __webpack_require__(/*! ./common */ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js");
-
-var f = {
-  queryKey: function queryKey(obj, query) {
-    return function (key) {
-      return valid(obj[key], query);
-    };
-  },
-  queryRegExp: function queryRegExp(obj, query, regex) {
-    return function (key) {
-      return regex.test(key) ? valid(obj[key], query) : false;
-    };
-  }
-};
-var MAP = {
-  "false": false,
-  "true": true,
-  "null": null
-};
-/**
- * Filter properties by query: select|if:property
- *
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Array} values matching the given query
- */
-
-function filterValues(obj, query) {
-  return filterKeys(obj, query).map(function (key) {
-    return obj[key];
-  });
-}
-/**
- * Filter properties by query: select|if:property
- *
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Array} object keys matching the given query
- */
-
-
-function filterKeys(obj, query) {
-  if (obj && query) {
-    var matches = query.split("?", 2);
-    var keys;
-    var regex;
-
-    if (matches[0] === "*" || matches[0] === "**") {
-      keys = o.keys(obj);
-      return keys.filter(f.queryKey(obj, matches[1]));
-    } else if (common.rIsRegExp.test(matches[0])) {
-      keys = o.keys(obj);
-      regex = common.convertToRegExp(matches[0]);
-      return keys.filter(f.queryRegExp(obj, matches[1], regex));
-    } else if (obj[matches[0]] && valid(obj[matches[0]], matches[1])) {
-      return [matches[0]];
-    }
-  }
-
-  return [];
-}
-/**
- * Returns true if the query matches. Query: key:value&key:value
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Boolean} if query matched object
- */
-
-
-function valid(obj, query) {
-  if (!query) {
-    return true;
-  }
-
-  if (!obj) {
-    return false;
-  }
-
-  var key;
-  var value;
-  var isValid = true;
-  var truthy;
-  var tests = query.replace(/(&&)/g, "§$1§").replace(/(\|\|)/g, "§$1§").split("§");
-  var or = false;
-
-  for (var i = 0, l = tests.length; i < l; i += 2) {
-    if (tests[i].indexOf(":!") > -1) {
-      truthy = false;
-      value = tests[i].split(":!");
-    } else if (tests[i].indexOf(":") === -1) {
-      truthy = false;
-      value = [tests[i], undefined];
-    } else {
-      truthy = true;
-      value = tests[i].split(":");
-    }
-
-    key = value[0];
-    value = value[1];
-
-    if (value === "undefined") {
-      // undefined is unmappable
-      value = undefined;
-    } else {
-      value = MAP[value] === undefined ? value : MAP[value];
-    }
-
-    value = truthy ? value === obj[key] : value !== obj[key] && (obj[key] !== undefined || key === undefined);
-
-    if (or) {
-      isValid = isValid || value;
-    } else {
-      isValid = isValid && value;
-    }
-
-    or = tests[i + 1] === "||";
-  }
-
-  return isValid;
-}
-
-exports.values = filterValues;
-exports.keys = filterKeys;
-exports.valid = valid;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js":
-/*!*****************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/get.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint no-unused-vars: 0 */
-var query = __webpack_require__(/*! ./run */ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js");
-/**
- * Returns the query results as an array or object, depending on its callback
- *
- * ## return type
- *
- * - get.ALL = 'all' returns all arguments of query callback [value, key, parent, pointer]
- * - get.POINTER = 'pointer' returns only the json pointers to the targets
- * - get.VALUE = 'value' Default. Returns only the matched value
- * - get.MAP = Returns an object with all available pointers and their data, like { pointer: value }
- *
- * @param  {Mixed} obj
- * @param  {Pointer} jsonPointer
- * @param  {String} type			- type of return value. Defaults to "value"
- * @return {Array|Object} containing result in specified format
- */
-
-
-function queryGet(obj, jsonPointer, type) {
-  var matches = type === queryGet.MAP ? {} : [];
-  var cb = getCbFactory(type, matches);
-  query(obj, jsonPointer, cb);
-  return matches;
-}
-
-queryGet.ALL = "all";
-queryGet.MAP = "map";
-queryGet.POINTER = "pointer";
-queryGet.VALUE = "value";
-
-function getCbFactory(type, matches) {
-  if (typeof type === "function") {
-    return function cb(value, key, obj, pointer) {
-      matches.push(type(obj[key], key, obj, pointer));
-    };
-  }
-
-  switch (type) {
-    case queryGet.ALL:
-      return function cbGetAll(value, key, obj, pointer) {
-        matches.push([obj[key], key, obj, pointer]);
-      };
-
-    case queryGet.MAP:
-      return function cbGetMap(value, key, obj, pointer) {
-        matches[pointer] = value;
-      };
-
-    case queryGet.POINTER:
-      return function cbGetPointer(value, key, obj, pointer) {
-        matches.push(pointer);
-      };
-
-    case queryGet.VALUE:
-      return function cbGetValue(value, key, obj, pointer) {
-        matches.push(value);
-      };
-
-    default:
-      return function cbGetValue(value, key, obj, pointer) {
-        matches.push(value);
-      };
-  }
-}
-
-module.exports = queryGet;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/index.js":
-/*!*******************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/index.js ***!
-  \*******************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports.get = __webpack_require__(/*! ./get */ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js");
-exports.run = __webpack_require__(/*! ./run */ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js");
-exports["delete"] = __webpack_require__(/*! ./delete */ "./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js");
-exports.filter = __webpack_require__(/*! ./filter */ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js");
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js":
-/*!*****************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/run.js ***!
-  \*****************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var filter = __webpack_require__(/*! ./filter */ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js");
-
-var parsePointer = __webpack_require__(/*! ./common */ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js").parsePointer; // @note gson-pointer: only strings are valid pointer properties to join. Ensure key is a string (could be index)
-
-
-var join = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js").join;
-/**
- * callback for each match of json-glob-pointer
- *
- * @param  {Any} obj
- * @param  {String} jsonPointer - function (value, key, parentObject, pointerToValue)
- * @param  {Function} cb
- */
-
-
-function queryRun(obj, jsonPointer, cb) {
-  // get steps into obj
-  var steps = parsePointer(jsonPointer); // cleanup first and last
-
-  if (steps[0] === "") {
-    // @todo due to pointer cleanup, this is probably never called
-    steps.shift();
-  }
-
-  if (steps[steps.length - 1] === "") {
-    steps.length -= 1;
-  }
-
-  _query(obj, steps, cb, "#");
-}
-
-function cbPassAll(obj, cb, pointer) {
-  return function (key) {
-    cb(obj[key], key, obj, join(pointer, String(key)));
-  };
-}
-
-function _query(obj, steps, cb, pointer) {
-  var matches;
-  var query = steps.shift();
-
-  if (steps.length === 0) {
-    // get keys matching the query and call back
-    matches = filter.keys(obj, query);
-    matches.forEach(cbPassAll(obj, cb, pointer));
-  } else if (/^\*\*/.test(query)) {
-    // run next query on current object
-    _query(obj, steps.slice(0), cb, pointer);
-  } else {
-    matches = filter.keys(obj, query);
-    matches.forEach(function (key) {
-      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
-    });
-  }
-
-  if (/^\*\*/.test(query)) {
-    // match this query (**) again
-    steps.unshift(query);
-    matches = filter.keys(obj, query);
-    matches.forEach(function (key) {
-      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
-    });
-  }
-}
-
-module.exports = queryRun;
-
-/***/ }),
-
-/***/ "./node_modules/json-schema-library/node_modules/valid-url/index.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/json-schema-library/node_modules/valid-url/index.js ***!
-  \**************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(module) {(function (module) {
-  'use strict';
-
-  module.exports.is_uri = is_iri;
-  module.exports.is_http_uri = is_http_iri;
-  module.exports.is_https_uri = is_https_iri;
-  module.exports.is_web_uri = is_web_iri; // Create aliases
-
-  module.exports.isUri = is_iri;
-  module.exports.isHttpUri = is_http_iri;
-  module.exports.isHttpsUri = is_https_iri;
-  module.exports.isWebUri = is_web_iri; // private function
-  // internal URI spitter method - direct from RFC 3986
-
-  var splitUri = function splitUri(uri) {
-    var splitted = uri.match(/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/);
-    return splitted;
-  };
-
-  function is_iri(value) {
-    if (!value) {
-      return;
-    } // check for illegal characters
-
-
-    if (/[^a-z0-9\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\.\-\_\~\%]/i.test(value)) return; // check for hex escapes that aren't complete
-
-    if (/%[^0-9a-f]/i.test(value)) return;
-    if (/%[0-9a-f](:?[^0-9a-f]|$)/i.test(value)) return;
-    var splitted = [];
-    var scheme = '';
-    var authority = '';
-    var path = '';
-    var query = '';
-    var fragment = '';
-    var out = ''; // from RFC 3986
-
-    splitted = splitUri(value);
-    scheme = splitted[1];
-    authority = splitted[2];
-    path = splitted[3];
-    query = splitted[4];
-    fragment = splitted[5]; // scheme and path are required, though the path can be empty
-
-    if (!(scheme && scheme.length && path.length >= 0)) return; // if authority is present, the path must be empty or begin with a /
-
-    if (authority && authority.length) {
-      if (!(path.length === 0 || /^\//.test(path))) return;
-    } else {
-      // if authority is not present, the path must not start with //
-      if (/^\/\//.test(path)) return;
-    } // scheme must begin with a letter, then consist of letters, digits, +, ., or -
-
-
-    if (!/^[a-z][a-z0-9\+\-\.]*$/.test(scheme.toLowerCase())) return; // re-assemble the URL per section 5.3 in RFC 3986
-
-    out += scheme + ':';
-
-    if (authority && authority.length) {
-      out += '//' + authority;
-    }
-
-    out += path;
-
-    if (query && query.length) {
-      out += '?' + query;
-    }
-
-    if (fragment && fragment.length) {
-      out += '#' + fragment;
-    }
-
-    return out;
-  }
-
-  function is_http_iri(value, allowHttps) {
-    if (!is_iri(value)) {
-      return;
-    }
-
-    var splitted = [];
-    var scheme = '';
-    var authority = '';
-    var path = '';
-    var port = '';
-    var query = '';
-    var fragment = '';
-    var out = ''; // from RFC 3986
-
-    splitted = splitUri(value);
-    scheme = splitted[1];
-    authority = splitted[2];
-    path = splitted[3];
-    query = splitted[4];
-    fragment = splitted[5];
-    if (!scheme) return;
-
-    if (allowHttps) {
-      if (scheme.toLowerCase() != 'https') return;
-    } else {
-      if (scheme.toLowerCase() != 'http') return;
-    } // fully-qualified URIs must have an authority section that is
-    // a valid host
-
-
-    if (!authority) {
-      return;
-    } // enable port component
-
-
-    if (/:(\d+)$/.test(authority)) {
-      port = authority.match(/:(\d+)$/)[0];
-      authority = authority.replace(/:\d+$/, '');
-    }
-
-    out += scheme + ':';
-    out += '//' + authority;
-
-    if (port) {
-      out += port;
-    }
-
-    out += path;
-
-    if (query && query.length) {
-      out += '?' + query;
-    }
-
-    if (fragment && fragment.length) {
-      out += '#' + fragment;
-    }
-
-    return out;
-  }
-
-  function is_https_iri(value) {
-    return is_http_iri(value, true);
-  }
-
-  function is_web_iri(value) {
-    return is_http_iri(value) || is_https_iri(value);
-  }
-})(module);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
@@ -15710,7 +15903,7 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
 var m = __webpack_require__(/*! mithril */ "mithril");
 
-var autosize = __webpack_require__(/*! autosize */ "./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js");
+var autosize = __webpack_require__(/*! autosize */ "./node_modules/autosize/dist/autosize.js");
 
 module.exports = {
   onupdate: function onupdate(vnode) {
@@ -15872,303 +16065,6 @@ module.exports = {
   textareaForm: __webpack_require__(/*! ./components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js"),
   imagePreview: __webpack_require__(/*! ./components/imagepreview */ "./node_modules/mithril-material-forms/components/imagepreview/index.js")
 };
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js":
-/*!************************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js ***!
-  \************************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	autosize 4.0.2
-	license: MIT
-	http://www.jacklmoore.com/autosize
-*/
-(function (global, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else { var mod; }
-})(this, function (module, exports) {
-  'use strict';
-
-  var map = typeof Map === "function" ? new Map() : function () {
-    var keys = [];
-    var values = [];
-    return {
-      has: function has(key) {
-        return keys.indexOf(key) > -1;
-      },
-      get: function get(key) {
-        return values[keys.indexOf(key)];
-      },
-      set: function set(key, value) {
-        if (keys.indexOf(key) === -1) {
-          keys.push(key);
-          values.push(value);
-        }
-      },
-      "delete": function _delete(key) {
-        var index = keys.indexOf(key);
-
-        if (index > -1) {
-          keys.splice(index, 1);
-          values.splice(index, 1);
-        }
-      }
-    };
-  }();
-
-  var createEvent = function createEvent(name) {
-    return new Event(name, {
-      bubbles: true
-    });
-  };
-
-  try {
-    new Event('test');
-  } catch (e) {
-    // IE does not support `new Event()`
-    createEvent = function createEvent(name) {
-      var evt = document.createEvent('Event');
-      evt.initEvent(name, true, false);
-      return evt;
-    };
-  }
-
-  function assign(ta) {
-    if (!ta || !ta.nodeName || ta.nodeName !== 'TEXTAREA' || map.has(ta)) return;
-    var heightOffset = null;
-    var clientWidth = null;
-    var cachedHeight = null;
-
-    function init() {
-      var style = window.getComputedStyle(ta, null);
-
-      if (style.resize === 'vertical') {
-        ta.style.resize = 'none';
-      } else if (style.resize === 'both') {
-        ta.style.resize = 'horizontal';
-      }
-
-      if (style.boxSizing === 'content-box') {
-        heightOffset = -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
-      } else {
-        heightOffset = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-      } // Fix when a textarea is not on document body and heightOffset is Not a Number
-
-
-      if (isNaN(heightOffset)) {
-        heightOffset = 0;
-      }
-
-      update();
-    }
-
-    function changeOverflow(value) {
-      {
-        // Chrome/Safari-specific fix:
-        // When the textarea y-overflow is hidden, Chrome/Safari do not reflow the text to account for the space
-        // made available by removing the scrollbar. The following forces the necessary text reflow.
-        var width = ta.style.width;
-        ta.style.width = '0px'; // Force reflow:
-
-        /* jshint ignore:start */
-
-        ta.offsetWidth;
-        /* jshint ignore:end */
-
-        ta.style.width = width;
-      }
-      ta.style.overflowY = value;
-    }
-
-    function getParentOverflows(el) {
-      var arr = [];
-
-      while (el && el.parentNode && el.parentNode instanceof Element) {
-        if (el.parentNode.scrollTop) {
-          arr.push({
-            node: el.parentNode,
-            scrollTop: el.parentNode.scrollTop
-          });
-        }
-
-        el = el.parentNode;
-      }
-
-      return arr;
-    }
-
-    function resize() {
-      if (ta.scrollHeight === 0) {
-        // If the scrollHeight is 0, then the element probably has display:none or is detached from the DOM.
-        return;
-      }
-
-      var overflows = getParentOverflows(ta);
-      var docTop = document.documentElement && document.documentElement.scrollTop; // Needed for Mobile IE (ticket #240)
-
-      ta.style.height = '';
-      ta.style.height = ta.scrollHeight + heightOffset + 'px'; // used to check if an update is actually necessary on window.resize
-
-      clientWidth = ta.clientWidth; // prevents scroll-position jumping
-
-      overflows.forEach(function (el) {
-        el.node.scrollTop = el.scrollTop;
-      });
-
-      if (docTop) {
-        document.documentElement.scrollTop = docTop;
-      }
-    }
-
-    function update() {
-      resize();
-      var styleHeight = Math.round(parseFloat(ta.style.height));
-      var computed = window.getComputedStyle(ta, null); // Using offsetHeight as a replacement for computed.height in IE, because IE does not account use of border-box
-
-      var actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(computed.height)) : ta.offsetHeight; // The actual height not matching the style height (set via the resize method) indicates that 
-      // the max-height has been exceeded, in which case the overflow should be allowed.
-
-      if (actualHeight < styleHeight) {
-        if (computed.overflowY === 'hidden') {
-          changeOverflow('scroll');
-          resize();
-          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
-        }
-      } else {
-        // Normally keep overflow set to hidden, to avoid flash of scrollbar as the textarea expands.
-        if (computed.overflowY !== 'hidden') {
-          changeOverflow('hidden');
-          resize();
-          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
-        }
-      }
-
-      if (cachedHeight !== actualHeight) {
-        cachedHeight = actualHeight;
-        var evt = createEvent('autosize:resized');
-
-        try {
-          ta.dispatchEvent(evt);
-        } catch (err) {// Firefox will throw an error on dispatchEvent for a detached element
-          // https://bugzilla.mozilla.org/show_bug.cgi?id=889376
-        }
-      }
-    }
-
-    var pageResize = function pageResize() {
-      if (ta.clientWidth !== clientWidth) {
-        update();
-      }
-    };
-
-    var destroy = function (style) {
-      window.removeEventListener('resize', pageResize, false);
-      ta.removeEventListener('input', update, false);
-      ta.removeEventListener('keyup', update, false);
-      ta.removeEventListener('autosize:destroy', destroy, false);
-      ta.removeEventListener('autosize:update', update, false);
-      Object.keys(style).forEach(function (key) {
-        ta.style[key] = style[key];
-      });
-      map["delete"](ta);
-    }.bind(ta, {
-      height: ta.style.height,
-      resize: ta.style.resize,
-      overflowY: ta.style.overflowY,
-      overflowX: ta.style.overflowX,
-      wordWrap: ta.style.wordWrap
-    });
-
-    ta.addEventListener('autosize:destroy', destroy, false); // IE9 does not fire onpropertychange or oninput for deletions,
-    // so binding to onkeyup to catch most of those events.
-    // There is no way that I know of to detect something like 'cut' in IE9.
-
-    if ('onpropertychange' in ta && 'oninput' in ta) {
-      ta.addEventListener('keyup', update, false);
-    }
-
-    window.addEventListener('resize', pageResize, false);
-    ta.addEventListener('input', update, false);
-    ta.addEventListener('autosize:update', update, false);
-    ta.style.overflowX = 'hidden';
-    ta.style.wordWrap = 'break-word';
-    map.set(ta, {
-      destroy: destroy,
-      update: update
-    });
-    init();
-  }
-
-  function destroy(ta) {
-    var methods = map.get(ta);
-
-    if (methods) {
-      methods.destroy();
-    }
-  }
-
-  function update(ta) {
-    var methods = map.get(ta);
-
-    if (methods) {
-      methods.update();
-    }
-  }
-
-  var autosize = null; // Do nothing in Node.js environment and IE8 (or lower)
-
-  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
-    autosize = function autosize(el) {
-      return el;
-    };
-
-    autosize.destroy = function (el) {
-      return el;
-    };
-
-    autosize.update = function (el) {
-      return el;
-    };
-  } else {
-    autosize = function autosize(el, options) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], function (x) {
-          return assign(x, options);
-        });
-      }
-
-      return el;
-    };
-
-    autosize.destroy = function (el) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], destroy);
-      }
-
-      return el;
-    };
-
-    autosize.update = function (el) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], update);
-      }
-
-      return el;
-    };
-  }
-
-  exports["default"] = autosize;
-  module.exports = exports['default'];
-});
 
 /***/ }),
 
@@ -17648,6 +17544,161 @@ function symbolObservablePonyfill(root) {
   return result;
 }
 ;
+
+/***/ }),
+
+/***/ "./node_modules/valid-url/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/valid-url/index.js ***!
+  \*****************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {(function (module) {
+  'use strict';
+
+  module.exports.is_uri = is_iri;
+  module.exports.is_http_uri = is_http_iri;
+  module.exports.is_https_uri = is_https_iri;
+  module.exports.is_web_uri = is_web_iri; // Create aliases
+
+  module.exports.isUri = is_iri;
+  module.exports.isHttpUri = is_http_iri;
+  module.exports.isHttpsUri = is_https_iri;
+  module.exports.isWebUri = is_web_iri; // private function
+  // internal URI spitter method - direct from RFC 3986
+
+  var splitUri = function splitUri(uri) {
+    var splitted = uri.match(/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/);
+    return splitted;
+  };
+
+  function is_iri(value) {
+    if (!value) {
+      return;
+    } // check for illegal characters
+
+
+    if (/[^a-z0-9\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\.\-\_\~\%]/i.test(value)) return; // check for hex escapes that aren't complete
+
+    if (/%[^0-9a-f]/i.test(value)) return;
+    if (/%[0-9a-f](:?[^0-9a-f]|$)/i.test(value)) return;
+    var splitted = [];
+    var scheme = '';
+    var authority = '';
+    var path = '';
+    var query = '';
+    var fragment = '';
+    var out = ''; // from RFC 3986
+
+    splitted = splitUri(value);
+    scheme = splitted[1];
+    authority = splitted[2];
+    path = splitted[3];
+    query = splitted[4];
+    fragment = splitted[5]; // scheme and path are required, though the path can be empty
+
+    if (!(scheme && scheme.length && path.length >= 0)) return; // if authority is present, the path must be empty or begin with a /
+
+    if (authority && authority.length) {
+      if (!(path.length === 0 || /^\//.test(path))) return;
+    } else {
+      // if authority is not present, the path must not start with //
+      if (/^\/\//.test(path)) return;
+    } // scheme must begin with a letter, then consist of letters, digits, +, ., or -
+
+
+    if (!/^[a-z][a-z0-9\+\-\.]*$/.test(scheme.toLowerCase())) return; // re-assemble the URL per section 5.3 in RFC 3986
+
+    out += scheme + ':';
+
+    if (authority && authority.length) {
+      out += '//' + authority;
+    }
+
+    out += path;
+
+    if (query && query.length) {
+      out += '?' + query;
+    }
+
+    if (fragment && fragment.length) {
+      out += '#' + fragment;
+    }
+
+    return out;
+  }
+
+  function is_http_iri(value, allowHttps) {
+    if (!is_iri(value)) {
+      return;
+    }
+
+    var splitted = [];
+    var scheme = '';
+    var authority = '';
+    var path = '';
+    var port = '';
+    var query = '';
+    var fragment = '';
+    var out = ''; // from RFC 3986
+
+    splitted = splitUri(value);
+    scheme = splitted[1];
+    authority = splitted[2];
+    path = splitted[3];
+    query = splitted[4];
+    fragment = splitted[5];
+    if (!scheme) return;
+
+    if (allowHttps) {
+      if (scheme.toLowerCase() != 'https') return;
+    } else {
+      if (scheme.toLowerCase() != 'http') return;
+    } // fully-qualified URIs must have an authority section that is
+    // a valid host
+
+
+    if (!authority) {
+      return;
+    } // enable port component
+
+
+    if (/:(\d+)$/.test(authority)) {
+      port = authority.match(/:(\d+)$/)[0];
+      authority = authority.replace(/:\d+$/, '');
+    }
+
+    out += scheme + ':';
+    out += '//' + authority;
+
+    if (port) {
+      out += port;
+    }
+
+    out += path;
+
+    if (query && query.length) {
+      out += '?' + query;
+    }
+
+    if (fragment && fragment.length) {
+      out += '#' + fragment;
+    }
+
+    return out;
+  }
+
+  function is_https_iri(value) {
+    return is_http_iri(value, true);
+  }
+
+  function is_web_iri(value) {
+    return is_http_iri(value) || is_https_iri(value);
+  }
+})(module);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
