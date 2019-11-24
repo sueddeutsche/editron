@@ -142,7 +142,6 @@ class Controller {
     setActive(active = true) {
         this.disabled = active === false;
         eachInstance(this.getInstances(), (pointer, editor) => {
-            console.log("pointer", pointer, editor);
             editor.setActive(!this.disabled);
         });
     }
