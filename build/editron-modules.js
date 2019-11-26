@@ -292,7 +292,6 @@ function () {
       var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       this.disabled = active === false;
       eachInstance(this.getInstances(), function (pointer, editor) {
-        console.log("pointer", pointer, editor);
         editor.setActive(!_this2.disabled);
       });
     }

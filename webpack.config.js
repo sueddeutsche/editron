@@ -34,6 +34,7 @@ const editronModulesConfig = {
         symlinks: false,
         modules: [".", "node_modules"],
         alias: {
+            editron: path.resolve("./node_modules/editron"),
             mitt: path.resolve("./node_modules/mitt/dist/mitt.js"),
             "medium-editor-styles": path.resolve("./node_modules/medium-editor/dist/css/medium-editor.min.css"),
             "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css"),

@@ -1,12 +1,15 @@
 type JSONObject = { [p:string]: any };
-type JSONSchema = { 
+
+type JSONSchema = {
     type: "object"|"array"|"string"|"boolean"|"number"|"integer"|"null";
-    [p:string]: any 
+    [p:string]: any
 };
+
 type JSONPointer = string;
+
 type JSONData = Array<any>|JSONObject|number|string|boolean;
 
-type validationError = { 
+type validationError = {
     type: "error"|"warning";
     message: string;
     data: {
@@ -37,23 +40,29 @@ declare class JSONLibCore {
 
 
 export declare class Editor {
-    static editorOf(pointer: JSONPointer, controller: Controller, options: JSONObject): boolean;
+    /** for the given input, returns true if this editor-class should be used for editing */
+    static editorOf(pointer: JSONPointer, controller: Controller, options?: JSONObject): boolean;
+
     constructor(pointer: JSONPointer, controller: Controller, options: JSONObject);
-    update(JSONObject?): void;
+    // update is used as a convention, not enforced, nor required
+    // update(DataServiceEvent): void;
     updatePointer(newPointer: JSONPointer): void;
+    /** returns the editors root element */
     toElement(): HTMLElement;
+    /** destroys the editor */
     destroy(): void;
-    render(): void;
+    // render is used as a convention, not enforced, nor required
+    // render(): void;
 }
 
 
 export declare class DataService {
     constructor(state: JSONObject, data: JSONObject);
-    
+
     /** return copy of data at json-pointer */
-    get(pointer: JSONPointer): JSONObject;
-   
-    /** return data by reference at json-pointer */ 
+    get(pointer?: JSONPointer): JSONObject;
+
+    /** return data by reference at json-pointer */
     getDataByReference(pointer?: JSONPointer): JSONObject;
     /**
      * Change data at the given pointer
@@ -61,32 +70,42 @@ export declare class DataService {
      * @param value      - new value at pointer
      */
     set(pointer: JSONPointer, value: JSONObject): void;
-    
+
     /** Delete data at the given_pointer */
     delete(pointer: JSONPointer): void;
 
-    /** reset undo history */    
+    /** reset undo history */
     resetUndoRedo(): void;
+    /** get valid undo count */
     undoCount(): number;
+    /** get valid redo count */
     redoCount(): number;
+    /** perform undo */
     undo(): void;
+    /** perform redo */
     redo(): void;
 
     /** test if the given json-pointer points to a value in data */
     isValid(pointer: JSONPointer): boolean;
 
-    on(eventType: string, DataService: DataServiceEventListener): DataServiceEventListener;
-    off(eventType: string, callback: DataServiceObserveCallback): void;
+    on(eventType: "beforeUpdate"|"afterUpdate", DataService: DataServiceEventListener): DataServiceEventListener;
+    off(eventType: "beforeUpdate"|"afterUpdate", callback: DataServiceObserveCallback): void;
     /** send a notification to event-listeners */
     emit(eventType: string, pointer: JSONPointer, data: JSONData): void;
 
+    /**
+     * observes changes in data at the specified json-pointer
+     * @param pointer   json-pointer to watch
+     * @param callback  called on a change
+     * @param bubbleEvents set to true to receive notifications changes in children of pointer
+     */
     observe(pointer: JSONPointer, callback: DataServiceObserveCallback, bubbleEvents: boolean): void;
     removeObserver(pointer: JSONPointer, callback: DataServiceObserveCallback): void;
     bubbleObservers(pointer: JSONPointer, data: JSONData): void;
     /** send an event to all json-pointer observers */
     notify(pointer: JSONPointer, event: DataServiceEvent): void;
 
-    /** destory service */     
+    /** destory service */
     destroy(): void;
 }
 
@@ -161,7 +180,7 @@ export declare class ValidationService {
      * @return promise, resolving with list of errors when all async validations are performed
      */
     validate(data: JSONData, schema?: JSONSchema): Promise<Array<validationError>>;
-    
+
     set(schema: JSONSchema): void;
     get(): JSONSchema;
 
@@ -190,7 +209,7 @@ export interface LocationService {
 
     /** refocus current target */
     focus(): void;
-    
+
     /** defous current target */
     blur(pointer: JSONPointer): void;
 
@@ -210,7 +229,7 @@ export declare class Controller {
      * @param  [options]  - individual editor options
      * @return created editor-instance or undefined;
      */
-    createEditor(pointer: JSONPointer, element: HTMLElement, options: JSONObject): Editor;
+    createEditor(pointer: JSONPointer, element: Element, options?: JSONObject): Editor;
 
     /**
      * enable or disable the editor input-interaction
@@ -306,7 +325,7 @@ export declare class Controller {
 
     /** resets undo-history */
     resetUndoRedo(): void;
-    
+
     /**
      * Helper to create dom elements via mithril syntax
      * @param  selector    - a css selector describing the desired element
