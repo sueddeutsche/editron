@@ -1,9 +1,12 @@
 type JSONObject = { [p:string]: any };
+
 type JSONSchema = {
     type: "object"|"array"|"string"|"boolean"|"number"|"integer"|"null";
     [p:string]: any
 };
+
 type JSONPointer = string;
+
 type JSONData = Array<any>|JSONObject|number|string|boolean;
 
 type validationError = {
@@ -38,7 +41,7 @@ declare class JSONLibCore {
 
 export declare class Editor {
     /** for the given input, returns true if this editor-class should be used for editing */
-    static editorOf(pointer: JSONPointer, controller: Controller, options: JSONObject): boolean;
+    static editorOf(pointer: JSONPointer, controller: Controller, options?: JSONObject): boolean;
 
     constructor(pointer: JSONPointer, controller: Controller, options: JSONObject);
     // update is used as a convention, not enforced, nor required
@@ -57,7 +60,7 @@ export declare class DataService {
     constructor(state: JSONObject, data: JSONObject);
 
     /** return copy of data at json-pointer */
-    get(pointer: JSONPointer): JSONObject;
+    get(pointer?: JSONPointer): JSONObject;
 
     /** return data by reference at json-pointer */
     getDataByReference(pointer?: JSONPointer): JSONObject;
@@ -84,7 +87,7 @@ export declare class DataService {
 
     /** test if the given json-pointer points to a value in data */
     isValid(pointer: JSONPointer): boolean;
-    
+
     on(eventType: "beforeUpdate"|"afterUpdate", DataService: DataServiceEventListener): DataServiceEventListener;
     off(eventType: "beforeUpdate"|"afterUpdate", callback: DataServiceObserveCallback): void;
     /** send a notification to event-listeners */
@@ -98,9 +101,9 @@ export declare class DataService {
      */
     observe(pointer: JSONPointer, callback: DataServiceObserveCallback, bubbleEvents: boolean): void;
     removeObserver(pointer: JSONPointer, callback: DataServiceObserveCallback): void;
-    private bubbleObservers(pointer: JSONPointer, data: JSONData): void;
+    bubbleObservers(pointer: JSONPointer, data: JSONData): void;
     /** send an event to all json-pointer observers */
-    private notify(pointer: JSONPointer, event: DataServiceEvent): void;
+    notify(pointer: JSONPointer, event: DataServiceEvent): void;
 
     /** destory service */
     destroy(): void;
@@ -144,7 +147,7 @@ export declare class SchemaService {
     /** set or change the application schema */
     setSchema(schema: JSONSchema): void;
 
-    private resetCache(): void;
+    resetCache(): void;
 
     /**
      * Return the json-schema for the requested pointer. Resolved the pointer on the stored schema by the accompanied
@@ -226,7 +229,7 @@ export declare class Controller {
      * @param  [options]  - individual editor options
      * @return created editor-instance or undefined;
      */
-    createEditor(pointer: JSONPointer, element: HTMLElement, options: JSONObject): Editor;
+    createEditor(pointer: JSONPointer, element: Element, options?: JSONObject): Editor;
 
     /**
      * enable or disable the editor input-interaction
