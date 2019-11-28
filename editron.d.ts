@@ -166,6 +166,7 @@ export declare class SchemaService {
 
 type errorHandler = (error: any) => any;
 
+type ValidationServiceEvents = "beforeValidation"|"afterValidation"|"onError";
 
 export declare class ValidationService {
     constructor(state: any, schema?: JSONSchema, core?: JSONLibCore);
@@ -184,8 +185,8 @@ export declare class ValidationService {
     set(schema: JSONSchema): void;
     get(): JSONSchema;
 
-    on(eventType: string, callback: Function): Function;
-    off(eventType, callback: Function): Function;
+    on(eventType: ValidationServiceEvents, callback: Function): Function;
+    off(eventType: ValidationServiceEvents, callback: Function): Function;
     emit(eventType: string, event: JSONObject): void;
     observe(pointer: JSONPointer, callback: Function, bubbledEvents: boolean): Function;
     removeObserver(pointer: string, callback: Function): void;
