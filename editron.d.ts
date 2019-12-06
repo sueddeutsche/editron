@@ -39,6 +39,38 @@ declare class JSONLibCore {
 }
 
 
+export declare class AbstractEditor {
+    /** for the given input, returns true if this editor-class should be used for editing */
+    static editorOf(pointer: JSONPointer, controller: Controller, options?: JSONObject): boolean;
+
+    constructor(pointer: JSONPointer, controller: Controller, options: JSONObject);
+
+    update(DataServiceEvent): void;
+
+    updatePointer(newPointer: JSONPointer): void;
+
+    getData(): any;
+
+    setData(value: any): any;
+
+    getErrors(): Array<{ [p: string]: any }>;
+
+    getSchema(): [p: string]: any };
+
+    getPointer(): string;
+    focus(): void;
+    blur(): void;
+
+    setErrors(Array<{ [p: string]: any }>)
+
+    /** returns the editors root element */
+    toElement(): HTMLElement;
+
+    /** destroys the editor */
+    destroy(): void;
+}
+
+
 export declare class Editor {
     /** for the given input, returns true if this editor-class should be used for editing */
     static editorOf(pointer: JSONPointer, controller: Controller, options?: JSONObject): boolean;
@@ -47,6 +79,7 @@ export declare class Editor {
     // update is used as a convention, not enforced, nor required
     // update(DataServiceEvent): void;
     updatePointer(newPointer: JSONPointer): void;
+    updateErrors?(errors: Array<{ [p: string]: any }>): void;
     /** returns the editors root element */
     toElement(): HTMLElement;
     /** destroys the editor */
