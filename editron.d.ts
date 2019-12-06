@@ -9,7 +9,7 @@ type JSONPointer = string;
 
 type JSONData = Array<any>|JSONObject|number|string|boolean;
 
-type validationError = {
+type ValidationError = {
     type: "error"|"warning";
     message: string;
     data: {
@@ -18,7 +18,7 @@ type validationError = {
     }
 }
 
-type validationResult = undefined|validationError|Array<undefined|validationError>;
+type validationResult = undefined|ValidationError|Array<undefined|ValidationError>;
 
 type DataServiceEventListener = (DataServiceEvent) => void;
 
@@ -38,8 +38,8 @@ declare class JSONLibCore {
     [p: string]: any;
 }
 
-
-export declare class AbstractEditor {
+/** base editron editor class */
+export declare abstract class AbstractEditor {
     /** for the given input, returns true if this editor-class should be used for editing */
     static editorOf(pointer: JSONPointer, controller: Controller, options?: JSONObject): boolean;
 
@@ -53,15 +53,15 @@ export declare class AbstractEditor {
 
     setData(value: any): any;
 
-    getErrors(): Array<{ [p: string]: any }>;
+    getErrors(): Array<ValidationError>;
 
-    getSchema(): [p: string]: any };
+    getSchema(): { [p: string]: any };
 
     getPointer(): string;
     focus(): void;
     blur(): void;
 
-    setErrors(Array<{ [p: string]: any }>)
+    setErrors(errors: Array<ValidationError>): void;
 
     /** returns the editors root element */
     toElement(): HTMLElement;
@@ -76,14 +76,20 @@ export declare class Editor {
     static editorOf(pointer: JSONPointer, controller: Controller, options?: JSONObject): boolean;
 
     constructor(pointer: JSONPointer, controller: Controller, options: JSONObject);
+
     // update is used as a convention, not enforced, nor required
     // update(DataServiceEvent): void;
+
     updatePointer(newPointer: JSONPointer): void;
+
     updateErrors?(errors: Array<{ [p: string]: any }>): void;
+
     /** returns the editors root element */
     toElement(): HTMLElement;
+
     /** destroys the editor */
     destroy(): void;
+
     // render is used as a convention, not enforced, nor required
     // render(): void;
 }
@@ -132,7 +138,7 @@ export declare class DataService {
      * @param callback  called on a change
      * @param bubbleEvents set to true to receive notifications changes in children of pointer
      */
-    observe(pointer: JSONPointer, callback: DataServiceObserveCallback, bubbleEvents: boolean): void;
+    observe(pointer: JSONPointer, callback: DataServiceObserveCallback, bubbleEvents?: boolean): void;
     removeObserver(pointer: JSONPointer, callback: DataServiceObserveCallback): void;
     bubbleObservers(pointer: JSONPointer, data: JSONData): void;
     /** send an event to all json-pointer observers */
@@ -213,7 +219,7 @@ export declare class ValidationService {
      * @param  schema   - optional json-schema. Per default the root schema is used
      * @return promise, resolving with list of errors when all async validations are performed
      */
-    validate(data: JSONData, schema?: JSONSchema): Promise<Array<validationError>>;
+    validate(data: JSONData, schema?: JSONSchema): Promise<Array<ValidationError>>;
 
     set(schema: JSONSchema): void;
     get(): JSONSchema;
@@ -221,12 +227,12 @@ export declare class ValidationService {
     on(eventType: ValidationServiceEvents, callback: Function): Function;
     off(eventType: ValidationServiceEvents, callback: Function): Function;
     emit(eventType: string, event: JSONObject): void;
-    observe(pointer: JSONPointer, callback: Function, bubbledEvents: boolean): Function;
+    observe(pointer: JSONPointer, callback: Function, bubbledEvents?: boolean): Function;
     removeObserver(pointer: string, callback: Function): void;
     notify(pointer: JSONPointer, event: any): void;
-    getErrorsAndWarnings(pointer?: string, withChildErrors?: boolean): Array<validationError>;
-    getErrors(pointer?: JSONPointer, withChildErrors?: boolean): Array<validationError>;
-    getWarnings(pointer?: JSONPointer, withChildWarnings?: boolean): Array<validationError>;
+    getErrorsAndWarnings(pointer?: string, withChildErrors?: boolean): Array<ValidationError>;
+    getErrors(pointer?: JSONPointer, withChildErrors?: boolean): Array<ValidationError>;
+    getWarnings(pointer?: JSONPointer, withChildWarnings?: boolean): Array<ValidationError>;
 
     destroy():void;
 }
@@ -368,3 +374,15 @@ export declare class Controller {
      */
     createElement(selector: string, attributes: JSON): HTMLElement;
 }
+
+
+export interface Plugin {
+    editor(editor: any): void;
+    validator(keyword: string, value: string, validator: validator): void;
+    keywordValidator(datatype: string, property: string, validator: validator): void;
+    getEditors(): Array<Editor>;
+    getValidators(): Array<validator>;
+}
+
+
+export declare const plugin: Plugin;
