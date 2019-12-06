@@ -31,7 +31,7 @@ type DataServiceEvent = {
 type DataServiceObserveCallback = (DataServiceEvent) => void;
 
 // {type: "error", message: "err-msg", data: { pointer }}
-type validator = (core: Controller, schema: JSONSchema, value: JSONObject, pointer: string) => validationResult|Promise<validationResult>;
+type Validator = (core: Controller, schema: JSONSchema, value: JSONObject, pointer: string) => validationResult|Promise<validationResult>;
 
 
 declare class JSONLibCore {
@@ -316,7 +316,7 @@ export declare class Controller {
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
      *      als return a promise
      */
-    addFormatValidator(format: string, validator: validator): void;
+    addFormatValidator(format: string, validator: Validator): void;
 
     /**
      * @param datatype    - JSON-Schema datatype to register attribute, e.g. "string" or "object"
@@ -325,7 +325,7 @@ export declare class Controller {
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
      *      als return a promise
      */
-    addKeywordValidator(datatype: string, keyword: string, validator: validator): void;
+    addKeywordValidator(datatype: string, keyword: string, validator: Validator): void;
 
     /**
      * Change the new schema for the current data
@@ -378,10 +378,10 @@ export declare class Controller {
 
 export interface Plugin {
     editor(editor: any): void;
-    validator(keyword: string, value: string, validator: validator): void;
-    keywordValidator(datatype: string, property: string, validator: validator): void;
+    validator(keyword: string, value: string, validator: Validator): void;
+    keywordValidator(datatype: string, property: string, validator: Validator): void;
     getEditors(): Array<Editor>;
-    getValidators(): Array<validator>;
+    getValidators(): Array<Validator>;
 }
 
 
