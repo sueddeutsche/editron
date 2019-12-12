@@ -60,6 +60,9 @@
                         type: "string",
                         title: "Textarea",
                         format: "textarea",
+                        "editron:ui": {
+                            "textarea:rows": 3
+                        },
                         minLength: 1
                     },
                     list: {
@@ -83,7 +86,7 @@
                 }
             }, { list: ["1", "2", "3"] });
             controller.createEditor("#", document.querySelector(".editor"));
-            controller.setActive(false);
+            controller.setActive(true);
             controller.data().observe("#", (pointer, value) => {
                 console.log("changed", controller.getData());
             }, true);
