@@ -2,7 +2,7 @@ const m = require("mithril");
 const getId = require("../utils/getID");
 
 const convert = {
-    "boolean": (value) => {
+    "boolean": value => {
         if (value === "true") {
             return true;
         }
@@ -11,14 +11,14 @@ const convert = {
         }
         return value;
     },
-    integer: (value) => {
+    integer: value => {
         const converted = parseInt(value);
         if (isNaN(converted) === false) {
             return converted;
         }
         return value;
     },
-    number: (value) => {
+    number: value => {
         const converted = parseFloat(value);
         if (isNaN(converted) === false) {
             return converted;
@@ -92,10 +92,11 @@ class AbstractValueEditor {
             value: controller.data().get(pointer),
             instantUpdate: options.instantUpdate,
             schema,
+            options,
             errors: controller.validator().getErrorsAndWarnings(pointer),
             onfocus: () => controller.location().setCurrent(pointer),
             onblur: () => controller.location().blur(pointer),
-            onchange: (value) => {
+            onchange: value => {
                 if (convert[schema.type]) {
                     value = convert[schema.type](value);
                 }

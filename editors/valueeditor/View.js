@@ -7,7 +7,7 @@ const InputForm = require("mithril-material-forms/components/inputform");
 const UISchema = require("../../utils/UISchema");
 
 
-function chooseInput(attrs) {
+function chooseInput(attrs, options = {}) {
     const schema = attrs.schema;
     const config = Object.assign({
         type: schema.type,
@@ -29,6 +29,7 @@ function chooseInput(attrs) {
         return m(TextareaForm, config);
     }
     if (schema.type === "string" && schema.format === "textarea") {
+        config.rows = options["textarea:rows"] || 1;
         return m(TextareaForm, config);
     }
     return m(InputForm, config);
@@ -37,6 +38,6 @@ function chooseInput(attrs) {
 
 module.exports = {
     view(vnode) {
-        return chooseInput(vnode.attrs);
+        return chooseInput(vnode.attrs, vnode.attrs.options);
     }
 };
