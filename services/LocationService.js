@@ -1,4 +1,3 @@
-/* global document */
 const mitt = require("mitt");
 const gp = require("gson-pointer");
 const UIState = require("./uistate");
@@ -95,8 +94,8 @@ const LocationService = {
     off: (...args) => emitter.off(...args)
 };
 
-UIState.on(UIState.EVENTS.CURRENT_PAGE_EVENT, (pointer) => emitter.emit(LocationService.PAGE_EVENT, pointer));
-UIState.on(UIState.EVENTS.CURRENT_POINTER_EVENT, (pointer) => emitter.emit(LocationService.TARGET_EVENT, pointer));
+UIState.on(UIState.EVENTS.CURRENT_PAGE_EVENT, pointer => emitter.emit(LocationService.PAGE_EVENT, pointer));
+UIState.on(UIState.EVENTS.CURRENT_POINTER_EVENT, pointer => emitter.emit(LocationService.TARGET_EVENT, pointer));
 
 
 module.exports = LocationService;
