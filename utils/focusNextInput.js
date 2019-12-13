@@ -43,16 +43,18 @@ function mayBlur(element, direction) {
  * inputs being (textarea, input and select with an id-attribute containing a json-pointer-id)
  *
  * @param  {Controller}  controller
- * @param  {string}  direction      "up" | "left" | "down" | "right"
- * @param  {Boolean} force        ignores movement restrictions (e.g. navigation in textarea)
+ * @param  {string}  direction        "up" | "left" | "down" | "right"
+ * @param  {Object} options
+ * @param  {Boolean} options.force    ignores movement restrictions (e.g. navigation in textarea)
+ * @param  {HTMLElement} options.parent    scan only in given parentNode
  * @returns {Boolean} true - if there was a new target was found or the move prevented
  */
-module.exports = function focusNextInput(controller, direction = "down", force = false) {
+module.exports = function focusNextInput(controller, direction = "down", { force = false, parent = document } = {}) {
     const currentPointer = controller.location().getCurrent();
 
     const dir = (direction === "down" || direction === "right") ? 1 : -1;
-    const targets = [...document.querySelectorAll("input[id],textarea[id],select[id]")];
-    const currentElement = document.getElementById(getID(currentPointer));
+    const targets = [...parent.querySelectorAll("input[id],textarea[id],select[id]")];
+    const currentElement = parent.querySelector(`#${getID(currentPointer)}`);
     const currentIndex = targets.indexOf(currentElement);
     if (currentIndex === -1) {
         console.log(`could not find current element id: '${getID(currentPointer)}' pointer: '${currentPointer}'`);
