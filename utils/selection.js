@@ -29,7 +29,20 @@ function mayBlur(element, direction) {
         return false;
     }
 
-    if (element.tagName === "TEXTAREA" || element.tagName === "INPUT") {
+    if (element.tagName === "INPUT") {
+        if (direction === "up" || direction === "down") {
+            return true;
+        }
+        if (direction === "left" && element.selectionStart === 0) {
+            return true;
+        }
+        if (direction === "right" && element.value.length === element.selectionEnd) {
+            return true;
+        }
+        return false;
+    }
+
+    if (element.tagName === "TEXTAREA") {
         if (element.value === "") {
             return true;
         } else if (dir === -1 && element.selectionStart === 0) {
@@ -53,10 +66,16 @@ function getActiveInput(controller, parent) {
     const currentPointer = controller.location().getCurrent();
     const currentId = `#${getID(currentPointer)}`;
     if (currentId === "#") {
-        console.log("abort empty selection", currentPointer);
+        console.log("abort empty selection", currentPointer, "active element", document.activeElement);
         return false;
     }
-    return parent.querySelector(currentId) || false;
+
+    const activeInput = parent.querySelector(currentId);
+    if (activeInput == null) { return false; }
+    if (activeInput !== document.activeElement) {
+        console.log("selection: active input is not the same as current editor", activeInput, document.activeElement);
+    }
+    return activeInput;
 }
 
 
@@ -123,5 +142,7 @@ function focusNextInput(controller, direction = "down", options = {}) {
 module.exports = {
     focusNextInput,
     getNextInput,
+    getAvailableInputs,
+    getActiveInput,
     mayBlur
 };
