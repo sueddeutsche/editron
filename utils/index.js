@@ -6,6 +6,7 @@ module.exports = {
     i18n: require("./i18n"),
     isNodeContext: require("./isNodeContext"),
     populated: require("./populated"),
+    selection: require("./selection"),
     selectEditor: require("./selectEditor"),
     UISchem: require("./UISchema")
 };
