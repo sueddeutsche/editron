@@ -62,7 +62,7 @@ function mayBlur(element, direction) {
  * @param  {HTMLElement} parent
  * @return {HTMLElement|false}
  */
-function getActiveInput(controller, parent) {
+function getActiveInput(controller, parent = document) {
     const currentPointer = controller.location().getCurrent();
     const currentId = `#${getID(currentPointer)}`;
     if (currentId === "#") {
