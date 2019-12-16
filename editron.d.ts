@@ -375,6 +375,21 @@ export declare class Controller {
     createElement(selector: string, attributes: JSON): HTMLElement;
 }
 
+export type Direction = "up"|"down"|"left"|"right";
+
+export interface Selection {
+    /** returns true if one may trigger blur on the element via cursor movement **/
+    mayBlur(element: HTMLElement, direction: Direction): boolean;
+    /** returns the current active (editron) input element or false */
+    getActiveInput(controller: Controller, parent?: HTMLElement): HTMLElement|false;
+    /** returns a list of available editron input-elements (including textaras, select) */
+    getAvailableInputs(parent: HTMLElement): Array<HTMLElement>;
+    /** returns the next input element in direction or false if it is last/first */
+    getNextInput(controller: Controller, direction: Direction, options: { parent?: HTMLElement }): HTMLElement|false;
+    /** returns true if the element in direction has been focused */
+    focusNextInput(controller: Controller, direction: Direction, options: { parent?: HTMLElement, force?: boolean }): boolean;
+}
+
 
 export interface Plugin {
     editor(editor: any): void;
