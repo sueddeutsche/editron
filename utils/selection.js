@@ -80,7 +80,7 @@ function getActiveInput(controller, parent) {
 
 
 function getAvailableInputs(parent) {
-    return [...parent.querySelectorAll("input[id],textarea[id],select[id]")];
+    return [...parent.querySelectorAll("input,textarea,select")];
 }
 
 
