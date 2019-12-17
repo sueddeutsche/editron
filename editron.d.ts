@@ -7,7 +7,7 @@ type JSONSchema = {
 
 type JSONPointer = string;
 
-type JSONData = Array<any>|JSONObject|number|string|boolean;
+type JSONData = Array<any>|JSONObject|number|string|boolean|null;
 
 type ValidationError = {
     type: "error"|"warning";
@@ -108,7 +108,7 @@ export declare class DataService {
      * @param pointer    - data location to modify
      * @param value      - new value at pointer
      */
-    set(pointer: JSONPointer, value: JSONObject): void;
+    set(pointer: JSONPointer, value: JSONData): void;
 
     /** Delete data at the given_pointer */
     delete(pointer: JSONPointer): void;
