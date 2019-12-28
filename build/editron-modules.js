@@ -570,9 +570,18 @@ function () {
     }
   }, {
     key: "onAfterDataUpdate",
-    value: function onAfterDataUpdate() {
-      this.update();
-      this.validateAll();
+    value: function onAfterDataUpdate(_ref3) {
+      var _this5 = this;
+
+      var pointer = _ref3.pointer;
+      this.update(); // @feature selective-validation
+      // this.validateAll();
+
+      setTimeout(function () {
+        var data = _this5.dataService.getDataByReference();
+
+        _this5.destroyed !== true && _this5.validationService.validate(data, pointer);
+      });
     }
   }, {
     key: "changePointer",
@@ -15523,6 +15532,7 @@ module.exports = {
       // id: attrs.id, // if the element is pointer sensitive it will be rebuild on pointer updates, loosing focus
       type: attrs.type,
       value: value,
+      placeholder: attrs.placeholder,
       disabled: attrs.disabled === true,
       oninput: function oninput(e) {
         return _this.value = e.target.value;
@@ -15626,6 +15636,7 @@ module.exports = {
       id: attrs.id,
       disabled: attrs.disabled,
       instantUpdate: attrs.instantUpdate,
+      placeholder: attrs.placeholder,
       onchange: function onchange(value) {
         return attrs.onchange(sanitizeValue(inputType, value));
       },
@@ -15812,6 +15823,7 @@ module.exports = {
       id: null,
       value: "",
       rows: 1,
+      placeholder: "",
       disabled: false,
       instantUpdate: false,
       onblur: Function.prototype,
@@ -15827,6 +15839,7 @@ module.exports = {
       value: attrs.value,
       rows: attrs.rows,
       disabled: disabled,
+      placeholder: attrs.placeholder,
       onblur: attrs.onblur,
       onfocus: attrs.onfocus,
       onupdate: function onupdate(node) {
@@ -15909,6 +15922,7 @@ module.exports = {
       disabled: false,
       description: "",
       placeholder: "",
+      rows: 1,
       instantUpdate: false,
       onblur: Function.prototype,
       onfocus: Function.prototype,
@@ -15923,6 +15937,7 @@ module.exports = {
       value: attrs.value,
       disabled: disabled,
       instantUpdate: attrs.instantUpdate,
+      rows: attrs.rows,
       // onchange: m.withAttr("value", attrs.onchange),
       onchange: attrs.onchange,
       onblur: function onblur(e) {
@@ -18828,7 +18843,7 @@ function () {
      * Starts the validation, executing callback handlers and emitters on the go
      *
      * @param  {Any} data               - data to validate
-     * @param  {JsonSchema} [schema]    - optional json-schema. Per default the root schema is used
+     * @param  {JsonPointer} [pointer]  - optional location. Per default all data is validated
      * @return {Promise} promise, resolving with list of errors when all async validations are performed
      */
 
@@ -18837,16 +18852,18 @@ function () {
     value: function validate(data) {
       var _this = this;
 
-      var schema = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.schema;
+      var pointer = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "#";
 
       if (this.currentValidation) {
         this.currentValidation.cancel();
       }
 
-      this.emit(EVENTS.BEFORE_VALIDATION);
-      this.observer.reset();
+      this.emit(EVENTS.BEFORE_VALIDATION); // @feature selective-validation
+      // this.observer.reset();
+
+      this.observer.clearEvents(pointer);
       this.state.dispatch(ActionCreators.setErrors([]));
-      this.currentValidation = new Validation(data, schema, this.errorHandler);
+      this.currentValidation = new Validation(data, pointer, this.errorHandler);
       return this.currentValidation.start(this.core, function (newError, currentErrors) {
         _this.state.dispatch(ActionCreators.setErrors(currentErrors));
 
@@ -19435,8 +19452,9 @@ function () {
     this.bubbleCollection = {};
   }
   /**
-   * Observe events on the _pointer_ (`#/observe/location`). May also observe events of
-   * _child-pointers_ (`#/observe/location/child/item`) with the option `receiveChildEvents` set to `true`
+   * Observe events on the _pointer_ (`#/observe/location`). May also observe
+   * events of _child-pointers_ (`#/observe/location/child/item`) with the
+   * option `receiveChildEvents` set to `true`
    *
    * @param  {JsonPointer} pointer        - location to observe
    * @param  {Function} cb                - observer
@@ -19478,8 +19496,11 @@ function () {
       }
     }
     /**
-     * Reset all collections from the previous events, starting with a list of empty events. Any previously called
-     * observers will be called again with an empty event-list `[]`.
+     * @todo this might become obsolete by clearEvents
+     *
+     * Reset all collections from the previous events, starting with a list of
+     * empty events. Any previously called observers will be called again with
+     * an empty event-list `[]`.
      */
 
   }, {
@@ -19502,9 +19523,77 @@ function () {
       this.bubbleCollection = {};
     }
     /**
-     * Notify observers at _pointer_. Note that the received event is a aggregated event-list []. For a first call
-     * the received event will look like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`, etc,
-     * until `reset()` ist called by the observable.
+     * Clears all events at a given pointer and notifies all listeners with
+     * their changed list of events
+     *
+     * @param  {JsonPointer} pointer
+     * @param  {boolean} [clearChildren=true]    if false, children of `pointer` will not be reset
+     */
+
+  }, {
+    key: "clearEvents",
+    value: function clearEvents(pointer) {
+      var _this2 = this;
+
+      var clearChildren = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+      var changed = false;
+
+      if (clearChildren) {
+        Object.keys(this.eventCollection).forEach(function (target) {
+          if (!(target.startsWith(pointer) && target !== pointer)) {
+            return;
+          }
+
+          if (_this2.eventCollection[target].length > 0) {
+            changed = true;
+            _this2.eventCollection[target].length = 0;
+            _this2.bubbleCollection[target] = {}; // reset bubble collection
+
+            _this2._notify(target, target, _this2.eventCollection[target]);
+          }
+        });
+      }
+
+      var collection = this.eventCollection[pointer];
+
+      if (Array.isArray(collection) && collection.length > 0) {
+        changed = true;
+        collection.length = 0;
+        this.bubbleCollection[pointer] = {}; // reset bubble collection
+      }
+
+      if (changed) {
+        // clear target and notify parents
+        this._notifyAll(pointer, collection);
+      }
+    }
+    /**
+     * Notifies all listeners of `pointer` (bubble notification)
+     *
+     * @param  {JsonPointer} pointer
+     * @param  {Array} eventCollection    - array of events at target `pointer`
+     */
+
+  }, {
+    key: "_notifyAll",
+    value: function _notifyAll(pointer, eventCollection) {
+      var frags = gp.split(pointer);
+
+      while (frags.length > 0) {
+        var p = gp.join(frags, true);
+
+        this._notify(p, pointer, eventCollection);
+
+        frags.pop();
+      }
+
+      this._notify("#", pointer, eventCollection);
+    }
+    /**
+     * Notify observers at _pointer_. Note that the received event is a
+     * aggregated event-list []. For a first call the received event will look
+     * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
+     * etc, until `reset()` ist called by the observable.
      *
      * @param  {JsonPointer} pointer
      * @param  {Any} event
@@ -19515,22 +19604,13 @@ function () {
     value: function notify(pointer, event) {
       this.eventCollection[pointer] = this.eventCollection[pointer] || [];
       this.eventCollection[pointer].push(event);
-      var frags = gp.split(pointer);
 
-      while (frags.length > 0) {
-        var p = gp.join(frags, true);
-
-        this._notify(p, pointer, this.eventCollection[pointer]);
-
-        frags.pop();
-      }
-
-      this._notify("#", pointer, this.eventCollection[pointer]);
+      this._notifyAll(pointer, this.eventCollection[pointer]);
     }
   }, {
     key: "_notify",
     value: function _notify(observerPointer, sourcePointer, event) {
-      var _this2 = this;
+      var _this3 = this;
 
       if (this.observers[observerPointer] == null) {
         return;
@@ -19546,8 +19626,8 @@ function () {
           return;
         }
 
-        _this2.bubbleCollection[observerPointer] = _this2.bubbleCollection[observerPointer] || {};
-        var map = _this2.bubbleCollection[observerPointer];
+        _this3.bubbleCollection[observerPointer] = _this3.bubbleCollection[observerPointer] || {};
+        var map = _this3.bubbleCollection[observerPointer];
         map[sourcePointer] = event;
         var events = Object.keys(map).reduce(function (res, next) {
           return res.concat(map[next]);
@@ -19578,6 +19658,8 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+
 var validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
 /**
  * @class  Validation
@@ -19591,12 +19673,12 @@ var validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsyn
 var Validation =
 /*#__PURE__*/
 function () {
-  function Validation(data, schema, errorHandler) {
+  function Validation(data, pointer, errorHandler) {
     _classCallCheck(this, Validation);
 
     this.errors = [];
     this.data = data;
-    this.schema = schema;
+    this.pointer = pointer;
     this.canceled = false;
     this.errorHandler = errorHandler;
   }
@@ -19607,10 +19689,22 @@ function () {
       var _this = this;
 
       this.cbDone = onDoneCb;
-      this.cbError = onErrorCb; // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
+      this.cbError = onErrorCb; // @feature selective-validation
 
-      return validateAsync(core, this.data, {
-        schema: this.schema,
+      var pointer = this.pointer;
+      var data = this.data;
+      var schema = core.getSchema();
+
+      if (pointer !== "#") {
+        schema = core.getSchema(pointer, data);
+        data = gp.get(data, pointer);
+      } // console.log("validate", pointer, data, JSON.stringify(schema, null, 2));
+      // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
+
+
+      return validateAsync(core, data, {
+        schema: schema,
+        pointer: pointer,
         onError: this.onError.bind(this)
       }).then(function (errors) {
         _this.onDone(errors);
