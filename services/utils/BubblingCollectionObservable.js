@@ -83,8 +83,9 @@ class BubblingCollectionObservable {
     }
 
     /**
-     * Observe events on the _pointer_ (`#/observe/location`). May also observe events of
-     * _child-pointers_ (`#/observe/location/child/item`) with the option `receiveChildEvents` set to `true`
+     * Observe events on the _pointer_ (`#/observe/location`). May also observe
+     * events of _child-pointers_ (`#/observe/location/child/item`) with the
+     * option `receiveChildEvents` set to `true`
      *
      * @param  {JsonPointer} pointer        - location to observe
      * @param  {Function} cb                - observer
@@ -116,8 +117,9 @@ class BubblingCollectionObservable {
     }
 
     /**
-     * Reset all collections from the previous events, starting with a list of empty events. Any previously called
-     * observers will be called again with an empty event-list `[]`.
+     * Reset all collections from the previous events, starting with a list of
+     * empty events. Any previously called observers will be called again with
+     * an empty event-list `[]`.
      */
     reset() {
         // notify observers of reset by sending an empty list of events
@@ -133,9 +135,40 @@ class BubblingCollectionObservable {
     }
 
     /**
-     * Notify observers at _pointer_. Note that the received event is a aggregated event-list []. For a first call
-     * the received event will look like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`, etc,
-     * until `reset()` ist called by the observable.
+     * Clears all events at a given pointer and notifies all listeners with
+     * their changed list of events
+     *
+     * @param  {JsonPointer} pointer
+     */
+    clearEvents(pointer) {
+        const collection = this.eventCollection[pointer];
+        if (Array.isArray(collection) && collection.length > 0) {
+            collection.length = 0;
+            this._notifyAll(pointer, collection);
+        }
+    }
+
+    /**
+     * Notifies all listeners of `pointer` (bubble notification)
+     *
+     * @param  {JsonPointer} pointer
+     * @param  {Array} eventCollection    - array of events at target `pointer`
+     */
+    _notifyAll(pointer, eventCollection) {
+        const frags = gp.split(pointer);
+        while (frags.length > 0) {
+            const p = gp.join(frags, true);
+            this._notify(p, pointer, eventCollection);
+            frags.pop();
+        }
+        this._notify("#", pointer, eventCollection);
+    }
+
+    /**
+     * Notify observers at _pointer_. Note that the received event is a
+     * aggregated event-list []. For a first call the received event will look
+     * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
+     * etc, until `reset()` ist called by the observable.
      *
      * @param  {JsonPointer} pointer
      * @param  {Any} event
@@ -144,14 +177,9 @@ class BubblingCollectionObservable {
         this.eventCollection[pointer] = this.eventCollection[pointer] || [];
         this.eventCollection[pointer].push(event);
 
-        const frags = gp.split(pointer);
-        while (frags.length > 0) {
-            const p = gp.join(frags, true);
-            this._notify(p, pointer, this.eventCollection[pointer]);
-            frags.pop();
-        }
-        this._notify("#", pointer, this.eventCollection[pointer]);
+        this._notifyAll(pointer, this.eventCollection[pointer]);
     }
+
     _notify(observerPointer, sourcePointer, event) {
         if (this.observers[observerPointer] == null) {
             return;

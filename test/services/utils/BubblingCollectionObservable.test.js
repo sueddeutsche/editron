@@ -92,6 +92,32 @@ test("should collect events occuring within parent-pointer and itself", t => {
     t.is(events[2].length, 3, "should have collected events from all children and itself");
 });
 
+
+// CLEAR pointer
+
+test("should clear events on pointer", t => {
+    const targetEvents = [];
+    const parentEvents = [];
+    const b = new Bubbles();
+    b.observe("#/parent/target", e => targetEvents.push(e));
+    b.observe("#/parent", e => parentEvents.push(e), true);
+
+    b.notify("#/parent/target", { id: 1 });
+    b.notify("#/parent", { id: 2 });
+    t.deepEqual(targetEvents, [[{ id: 1 }]]);
+    t.deepEqual(parentEvents, [[{ id: 1 }], [{ id: 1 }, { id: 2 }]]);
+    targetEvents.length = 0;
+    parentEvents.length = 0;
+
+    b.clearEvents("#/parent/target");
+
+    t.deepEqual(parentEvents, [[{ id: 2 }]], "should have notified parent with removed event");
+    t.deepEqual(targetEvents, [[]], "should have notified target with empty event-list");
+});
+
+
+// RESET
+
 test("should reset any collection", t => {
     const events = [];
     const b = new Bubbles();
