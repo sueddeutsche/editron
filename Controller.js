@@ -364,9 +364,15 @@ class Controller {
         this.dataService.off(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 
-    onAfterDataUpdate() {
+    onAfterDataUpdate({ pointer }) {
         this.update();
-        this.validateAll();
+
+        // @feature selective-validation
+        // this.validateAll();
+        setTimeout(() => {
+            const data = this.dataService.getDataByReference();
+            this.destroyed !== true && this.validationService.validate(data, pointer);
+        });
     }
 
     changePointer(newPointer, editor) {

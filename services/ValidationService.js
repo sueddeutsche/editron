@@ -43,18 +43,22 @@ class ValidationService {
      * Starts the validation, executing callback handlers and emitters on the go
      *
      * @param  {Any} data               - data to validate
-     * @param  {JsonSchema} [schema]    - optional json-schema. Per default the root schema is used
+     * @param  {JsonPointer} [pointer]  - optional location. Per default all data is validated
      * @return {Promise} promise, resolving with list of errors when all async validations are performed
      */
-    validate(data, schema = this.schema) {
+    validate(data, pointer = "#") {
         if (this.currentValidation) {
             this.currentValidation.cancel();
         }
 
         this.emit(EVENTS.BEFORE_VALIDATION);
-        this.observer.reset();
+
+        // @feature selective-validation
+        // this.observer.reset();
+        this.observer.clearEvents(pointer);
+
         this.state.dispatch(ActionCreators.setErrors([]));
-        this.currentValidation = new Validation(data, schema, this.errorHandler);
+        this.currentValidation = new Validation(data, pointer, this.errorHandler);
 
         return this.currentValidation.start(
             this.core,

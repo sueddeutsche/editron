@@ -115,6 +115,23 @@ test("should clear events on pointer", t => {
     t.deepEqual(targetEvents, [[]], "should have notified target with empty event-list");
 });
 
+test("should clear events of children", t => {
+    const targetEvents = [];
+    const parentEvents = [];
+    const b = new Bubbles();
+    b.observe("#/parent/target", e => targetEvents.push(e));
+    b.observe("#/parent", e => parentEvents.push(e), true);
+    b.notify("#/parent/target", { id: 1 });
+    b.notify("#/parent", { id: 2 });
+    targetEvents.length = 0;
+    parentEvents.length = 0;
+
+    b.clearEvents("#/parent");
+
+    t.deepEqual(parentEvents, [[]], "should have cleared target-events");
+    t.deepEqual(targetEvents, [[]], "should have cleared child-events");
+});
+
 
 // RESET
 

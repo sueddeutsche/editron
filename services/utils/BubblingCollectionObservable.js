@@ -117,6 +117,8 @@ class BubblingCollectionObservable {
     }
 
     /**
+     * @todo this might become obsolete by clearEvents
+     *
      * Reset all collections from the previous events, starting with a list of
      * empty events. Any previously called observers will be called again with
      * an empty event-list `[]`.
@@ -139,11 +141,34 @@ class BubblingCollectionObservable {
      * their changed list of events
      *
      * @param  {JsonPointer} pointer
+     * @param  {boolean} [clearChildren=true]    if false, children of `pointer` will not be reset
      */
-    clearEvents(pointer) {
+    clearEvents(pointer, clearChildren = true) {
+        let changed = false;
+
+        if (clearChildren) {
+            Object.keys(this.eventCollection).forEach(target => {
+                if (!(target.startsWith(pointer) && target !== pointer)) {
+                    return;
+                }
+                if (this.eventCollection[target].length > 0) {
+                    changed = true;
+                    this.eventCollection[target].length = 0;
+                    this.bubbleCollection[target] = {}; // reset bubble collection
+                    this._notify(target, target, this.eventCollection[target]);
+                }
+            });
+        }
+
         const collection = this.eventCollection[pointer];
-        if (Array.isArray(collection) && collection.length > 0) {
+        if ((Array.isArray(collection) && collection.length > 0)) {
+            changed = true;
             collection.length = 0;
+            this.bubbleCollection[pointer] = {}; // reset bubble collection
+        }
+
+        if (changed) {
+            // clear target and notify parents
             this._notifyAll(pointer, collection);
         }
     }

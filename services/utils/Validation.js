@@ -1,3 +1,4 @@
+const gp = require("gson-pointer");
 const validateAsync = require("json-schema-library/lib/validateAsync");
 
 
@@ -10,10 +11,10 @@ const validateAsync = require("json-schema-library/lib/validateAsync");
  */
 class Validation {
 
-    constructor(data, schema, errorHandler) {
+    constructor(data, pointer, errorHandler) {
         this.errors = [];
         this.data = data;
-        this.schema = schema;
+        this.pointer = pointer;
         this.canceled = false;
         this.errorHandler = errorHandler;
     }
@@ -22,8 +23,19 @@ class Validation {
         this.cbDone = onDoneCb;
         this.cbError = onErrorCb;
 
+        // @feature selective-validation
+        const pointer = this.pointer;
+        let data = this.data;
+        let schema = core.getSchema();
+        if (pointer !== "#") {
+            schema = core.getSchema(pointer, data);
+            data = gp.get(data, pointer);
+        }
+
+        // console.log("validate", pointer, data, JSON.stringify(schema, null, 2));
+
         // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
-        return validateAsync(core, this.data, { schema: this.schema, onError: this.onError.bind(this) })
+        return validateAsync(core, data, { schema, pointer, onError: this.onError.bind(this) })
             .then(errors => {
                 this.onDone(errors);
                 return errors;
