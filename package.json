@@ -1,6 +1,6 @@
 {
   "name": "editron",
-  "version": "7.2.2",
+  "version": "7.3.0",
   "description": "Editron - json-editor",
   "main": "editron.js",
   "types": "editron.d.ts",
