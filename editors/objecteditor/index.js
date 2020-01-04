@@ -119,7 +119,6 @@ class ObjectEditor {
     }
 
     deleteProperty(property) {
-        console.log("DELETE PROPERTY", property);
         const data = this.controller.data().get(this.pointer);
         delete data[property];
         this.controller.data().set(this.pointer, data);
@@ -130,11 +129,11 @@ class ObjectEditor {
         showJSON(this.controller, propertyData, property);
     }
 
-    setErrors(errors) {
+    setErrors(errors = []) {
         // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
         // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
         // arrays this should come per default, as the may insert in add items...
-        this.viewModel.errors = errors.map((error) => {
+        this.viewModel.errors = errors.map(error => {
             if (error.code === "no-additional-properties-error") {
                 const message = error.message;
                 const property = error.data.property;

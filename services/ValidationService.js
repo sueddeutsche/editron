@@ -114,9 +114,9 @@ class ValidationService {
     }
 
     getErrorsAndWarnings(pointer = undefined, withChildErrors = false) {
-        const errors = this.state.get(this.id) || [];
-        if (pointer == null) {
-            return errors;
+        const errors = this.state.get(this.id);
+        if (pointer == null || errors == null) {
+            return [];
         }
         // filter by pointer
         const selectError = new RegExp(`^${pointer}${withChildErrors ? "" : "$"}`);
