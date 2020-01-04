@@ -1918,7 +1918,6 @@ function () {
   }, {
     key: "deleteProperty",
     value: function deleteProperty(property) {
-      console.log("DELETE PROPERTY", property);
       var data = this.controller.data().get(this.pointer);
       delete data[property];
       this.controller.data().set(this.pointer, data);
@@ -1931,9 +1930,10 @@ function () {
     }
   }, {
     key: "setErrors",
-    value: function setErrors(errors) {
+    value: function setErrors() {
       var _this3 = this;
 
+      var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
       // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
       // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
       // arrays this should come per default, as the may insert in add items...
