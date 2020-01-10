@@ -16,7 +16,7 @@ function chooseInput(attrs, options = {}) {
         onblur: attrs.onblur || Function.prototype,
         onfocus: attrs.onfocus || Function.prototype,
         onchange: attrs.onchange || Function.prototype
-    }, attrs);
+    }, attrs, options);
 
     if (schema.enum && schema.enum.length > 0) {
         config.options = UISchema.enumOptions(schema);
