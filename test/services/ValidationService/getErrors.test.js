@@ -100,3 +100,20 @@ test("should return all errors from '#/video'", t => {
     t.is(errors[0].data.pointer, "#/video");
     t.is(errors[1].data.pointer, "#/video/url");
 });
+
+test("should return remaining errors after validation at `pointer`", t => {
+    // errors are now validated per pointer only. a simple reset to an empty
+    // list will not suffice, the errors must be filtered from validation-target
+    const validator = new ValidationService(new State(), { type: "object", properties: {
+        url: { type: "string", minLength: 1 },
+        title: { type: "string", minLength: 1 }
+    } });
+
+    // pretest
+    validator.validate({ url: "", title: "" });
+    t.is(validator.getErrors().length, 2);
+
+    validator.validate({ url: "", title: "mimi" }, "#/title");
+    t.is(validator.getErrors().length, 1, "should modify error-collection by validation result");
+    t.is(validator.getErrors()[0].data.pointer, "#/url", "should have removed correct error");
+});

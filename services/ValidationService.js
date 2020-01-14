@@ -54,22 +54,33 @@ class ValidationService {
         this.emit(EVENTS.BEFORE_VALIDATION);
 
         // @feature selective-validation
-        // this.observer.reset();
         this.observer.clearEvents(pointer);
+        // reset stored list of events
+        let remainingErrors = [];
+        if (pointer !== "#") {
+            // the following filtering is a duplicate from BubblingCollectionObservable.clearEvents
+            remainingErrors = this.state.get(this.id)
+                .filter(e => e.data.pointer == null || e.data.pointer.startsWith(pointer) === false);
+        }
 
-        this.state.dispatch(ActionCreators.setErrors([]));
+        this.state.dispatch(ActionCreators.setErrors(remainingErrors));
         this.currentValidation = new Validation(data, pointer, this.errorHandler);
-
         return this.currentValidation.start(
             this.core,
             (newError, currentErrors) => {
-                this.state.dispatch(ActionCreators.setErrors(currentErrors));
+                // @feature selective-validation
+                const completeListOfErrors = remainingErrors.concat(currentErrors);
+
+                this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
                 this.observer.notify(newError.data.pointer, newError);
                 this.emit(EVENTS.ON_ERROR, newError);
             },
             validationErrors => {
-                this.state.dispatch(ActionCreators.setErrors(validationErrors));
-                this.emit(EVENTS.AFTER_VALIDATION, validationErrors);
+                // @feature selective-validation
+                const completeListOfErrors = remainingErrors.concat(validationErrors);
+
+                this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
+                this.emit(EVENTS.AFTER_VALIDATION, completeListOfErrors);
                 this.currentValidation = null;
             }
         );
