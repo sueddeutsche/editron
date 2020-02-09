@@ -31,7 +31,7 @@ type DataServiceEvent = {
 type DataServiceObserveCallback = (DataServiceEvent) => void;
 
 // {type: "error", message: "err-msg", data: { pointer }}
-type Validator = (core: Controller, schema: JSONSchema, value: JSONObject, pointer: string) => validationResult|Promise<validationResult>;
+type Validator = (core: Controller, schema: JSONSchema, value: any, pointer: string) => validationResult|Promise<validationResult>;
 
 
 declare class JSONLibCore {
