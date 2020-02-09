@@ -70,7 +70,7 @@ module.exports = function testEditorIntegration(Constructor, pointer, schema, da
         const editorInstance = new Constructor(pointer, t.context.controller);
 
         t.true(typeof editorInstance.toElement === "function", "should have a method 'toElement'");
-        t.true(editorInstance.toElement() instanceof HTMLElement, "'toElement()' should return a HTML Node");
+        t.true(editorInstance.toElement() instanceof window.HTMLElement, "'toElement()' should return a HTML Node");
         t.true(typeof editorInstance.getPointer === "function", "should have a method 'getPointer'");
         t.true(typeof editorInstance.getPointer() === "string", "'getPointer()' should return the editors pointer");
         t.true(typeof editorInstance.updatePointer === "function", "should have a method 'updatePointer'");

@@ -42,7 +42,6 @@
     "@babel/preset-env": "^7.7.1",
     "ava": "^2.4.0",
     "babel-loader": "^8.0.0",
-    "browser-env": "^3.3.0",
     "chalk": "^3.0.0",
     "css-loader": "^3.2.0",
     "eslint": "^6.6.0",
@@ -75,11 +74,13 @@
   "dependencies": {
     "diff_match_patch": "^0.1.1",
     "gson-pointer": "3.x",
+    "jsdom": "^16.1.0",
     "json-schema-library": "4.x",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
     "mithril-material-forms": "3.x",
     "mitt": "^1.2.0",
+    "ospec": "^4.0.1",
     "redux": "^3.6.0",
     "redux-undo": "^0.6.1",
     "with-observable": "^1.2.0"
