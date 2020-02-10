@@ -1,6 +1,6 @@
 {
   "name": "editron",
-  "version": "7.3.4",
+  "version": "7.3.5",
   "description": "Editron - json-editor",
   "main": "editron.js",
   "types": "editron.d.ts",
@@ -73,12 +73,12 @@
   },
   "dependencies": {
     "diff_match_patch": "^0.1.1",
-    "gson-pointer": "3.x",
+    "gson-pointer": "^3.4.3",
     "jsdom": "^16.1.0",
-    "json-schema-library": "4.x",
+    "json-schema-library": "^4.1.1",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
-    "mithril-material-forms": "3.x",
+    "mithril-material-forms": "^3.2.1",
     "mitt": "^1.2.0",
     "ospec": "^4.0.1",
     "redux": "^3.6.0",

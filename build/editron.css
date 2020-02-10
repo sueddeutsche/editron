@@ -25,6 +25,9 @@ button.mmf-button {
   button.mmf-button::-moz-focus-inner, button.mmf-button::-moz-focus-inner {
     border: 0;
     padding: 0; }
+  button.mmf-button:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000; }
   button.mmf-button.is-enabled:hover, button.mmf-button.is-enabled:focus {
     background-color: #ECEFF1; }
   button.mmf-button.is-disabled {
@@ -134,6 +137,9 @@ select.mmf-select {
   background-color: inherit; }
   select.mmf-select::-ms-expand {
     display: none; }
+  select.mmf-select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 #000; }
   select.mmf-select * {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -320,7 +326,8 @@ input.mmf-checkbox {
 
 .mmf-label {
   color: inherit;
-  font-size: inherit; }
+  font-size: inherit;
+  display: inline-block; }
 
 .mmf-form .mmf-label:hover {
   cursor: pointer; }
@@ -396,7 +403,7 @@ textarea.mmf-textarea {
 .mmf-form--textarea textarea {
   width: 100%;
   resize: vertical;
-  border-sizing: border-box;
+  box-sizing: border-box;
   border: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.54);
   line-height: 1.4em;
