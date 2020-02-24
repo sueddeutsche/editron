@@ -1225,6 +1225,11 @@ function () {
     value: function setActive() {
       var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
       this.viewModel.disabled = active === false;
+
+      if (this.viewModel.options) {
+        this.viewModel.options.disabled = this.viewModel.disabled;
+      }
+
       this.render();
     } // update display value in view
 
