@@ -138,6 +138,9 @@ class AbstractValueEditor {
 
     setActive(active = true) {
         this.viewModel.disabled = active === false;
+        if (this.viewModel.options) {
+            this.viewModel.options.disabled = this.viewModel.disabled;
+        }
         this.render();
     }
 
