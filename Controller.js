@@ -13,6 +13,7 @@ const UISchema = require("./utils/UISchema");
 const getID = require("./utils/getID");
 const plugin = require("./plugin");
 const i18n = require("./utils/i18n");
+const createProxy = require("./utils/createProxy");
 
 
 function isValidPointer(pointer) {
@@ -106,6 +107,7 @@ class Controller {
         this.state = new State();
         this.instances = {};
         this.core = new Core();
+        this._proxy = createProxy(this.options.proxy);
 
         plugin.getValidators().forEach(([validationType, ...validator]) => {
             try {
@@ -256,6 +258,11 @@ class Controller {
     schema() { return this.schemaService; }
 
     /**
+     * @return {Foxy} proxy instance
+     */
+    proxy() { return this._proxy; }
+
+    /**
      * Validate data based on a json-schema and register to generated error events
      *
      * - start validation
@@ -368,7 +375,12 @@ class Controller {
         this.update();
 
         // @feature selective-validation
-        // this.validateAll();
+        if (pointer.includes("/")) {
+            // @attention validate parent-object or array, in order to support parent-validators.
+            // Any higher validators will still be ignore
+            pointer = pointer.replace(/\/[^/]+$/, "");
+        }
+
         setTimeout(() => {
             const data = this.dataService.getDataByReference();
             this.destroyed !== true && this.validationService.validate(data, pointer);

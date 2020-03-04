@@ -1,6 +1,3 @@
-/* global localStorage */
-
-
 /**
  * Simple session service to store and retrieve user-specific data
  * @type {Object}

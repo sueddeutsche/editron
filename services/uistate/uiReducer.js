@@ -27,7 +27,7 @@ function uiReducer(state = defaultState, action) {
     }
 }
 
-function hasChanged(state = false, action) {
+function hasChanged(state = false, action) { // eslint-disable-line @typescript-eslint/no-unused-vars
     return ActionTypes[action.type] == null ? false : action.type;
 }
 

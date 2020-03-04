@@ -1,3 +1,4 @@
+/* eslint-env node */
 const path = require("path");
 const webpack = require("webpack");
 const PRODUCTION = process.env.NODE_ENV === "production";
@@ -92,7 +93,7 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
                 new (require("uglifyjs-webpack-plugin"))({
                     sourceMap: false,
                     uglifyOptions: {
-                        compress: { drop_console: true }
+                        compress: { drop_console: true } // eslint-disable-line @typescript-eslint/camelcase
                     }
                 })
             ] : [])
