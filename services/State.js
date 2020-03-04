@@ -11,7 +11,7 @@ class State {
             action: (state, action) => action
         };
         this.emitter = mitt();
-        this.store = redux.createStore(() => {}); // eslint-disable-line no-empty-function
+        this.store = redux.createStore(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
         this.store.subscribe(() => this.onChange(this.store.getState()));
     }
 

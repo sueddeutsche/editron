@@ -11,16 +11,17 @@
     "url": "https://github.com/sueddeutsche/editron.git"
   },
   "scripts": {
+    "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
     "build": "rm -rf build; webpack && webpack --config webpack.build.js",
     "dist": "rm -rf dist; NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
-    "watch": "watch 'npm run dist' editors components sass services utils",
-    "release": "npm run build; npm run dist",
-    "prepublishOnly": "npm run release",
-    "test": "ava",
-    "serve": "webpack-dev-server --config webpack.serve.js",
-    "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
     "docs": "npx documentation build -o docs/api -f html editron.js --config documentation.yml",
-    "docs:serve": "npx documentation serve -f html editron.js --watch --config documentation.yml"
+    "docs:serve": "npx documentation serve -f html editron.js --watch --config documentation.yml",
+    "lint": "eslint services plugin utils test Controller.js editron.js",
+    "prepublishOnly": "npm run release",
+    "release": "npm run build; npm run dist",
+    "serve": "webpack-dev-server --config webpack.serve.js",
+    "test": "ava",
+    "watch": "watch 'npm run dist' editors components sass services utils"
   },
   "pre-push": [
     "test"
@@ -55,6 +56,7 @@
     "sass-loader": "^8.0.0",
     "sinon": "^7.5.0",
     "style-loader": "^1.0.0",
+    "typescript": "^3.8.3",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "url-loader": "^2.2.0",
     "watch": "1.x",
@@ -72,7 +74,12 @@
     "webpack": "4.x"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.22.0",
+    "@typescript-eslint/parser": "^2.22.0",
     "diff_match_patch": "^0.1.1",
+    "eslint-plugin-array-func": "^3.1.4",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-optimize-regex": "^1.1.7",
     "gson-pointer": "^3.4.3",
     "jsdom": "^16.1.0",
     "json-schema-library": "^4.1.1",

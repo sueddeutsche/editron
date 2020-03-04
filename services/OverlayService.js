@@ -1,4 +1,3 @@
-/* global document */
 /* eslint no-use-before-define: 0 */
 const m = require("mithril");
 const Overlay = require("../components/overlay");

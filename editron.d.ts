@@ -1,3 +1,5 @@
+import { Foxy } from "@technik-sde/foxy";
+
 type JSONObject = { [p:string]: any };
 
 type JSONSchema = {
@@ -291,6 +293,8 @@ export declare class Controller {
 
     /** service to focus/blur current input-editor */
     location(): LocationService;
+
+    proxy(): Foxy;
 
     /**
      * set application data

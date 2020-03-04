@@ -19,14 +19,13 @@
     },
 
     "globals": {
-        "require": true,
-        "module": true
+        "window": true
     },
 
     "env": {
         "es6": true,
-        "node": false,
-        "browser": true,
+        "node": true,
+        "browser": false,
         "mocha": true
     },
 
@@ -43,7 +42,6 @@
     "rules": {
         "@typescript-eslint/explicit-function-return-type": "off",
         "@typescript-eslint/ban-ts-ignore": "off",
-        "@typescript-eslint/no-var-requires": "off",
-        "@typescript-eslint/no-use-before-define": "off"
+        "@typescript-eslint/no-var-requires": "off"
     }
 }
