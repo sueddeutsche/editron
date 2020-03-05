@@ -9,8 +9,9 @@ const defaultOptions = {
     ]
 };
 
-module.exports = function createProxy(options) {
-    if (options instanceof Foxy) {
+
+module.exports = function createProxy(options = {}) {
+    if (options.constructor.name === "Foxy") {
         return options;
     }
 
