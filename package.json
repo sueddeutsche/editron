@@ -1,6 +1,6 @@
 {
   "name": "editron",
-  "version": "7.4.0",
+  "version": "7.4.1",
   "description": "Editron - json-editor",
   "main": "editron.js",
   "types": "editron.d.ts",
@@ -74,7 +74,7 @@
     "webpack": "4.x"
   },
   "dependencies": {
-    "@technik-sde/foxy": "^0.1.0",
+    "@technik-sde/foxy": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^2.22.0",
     "@typescript-eslint/parser": "^2.22.0",
     "diff_match_patch": "^0.1.1",

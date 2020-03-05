@@ -2468,81 +2468,25 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     "use strict";
 
     n.r(t), n.d(t, "Foxy", function () {
-      return s;
-    }), n.d(t, "utils", function () {
       return r;
     }), n.d(t, "handler", function () {
       return u;
+    }), n.d(t, "utils", function () {
+      return o;
     });
-    var r = {
-      loadImageInfo: function loadImageInfo(e) {
-        var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        var n = {
-          image: new Image(),
-          type: "",
-          width: 0,
-          height: 0
-        };
-        return fetch(e, t).then(function (e) {
-          return e.blob();
-        }).then(function (e) {
-          return n.type = e.type.replace(/^[^/]+\//, ""), URL.createObjectURL(e);
-        }).then(function (e) {
-          return new Promise(function (t, r) {
-            n.image.addEventListener("load", function () {
-              return t();
-            }), n.image.addEventListener("error", r), n.image.src = e;
-          });
-        }).then(function () {
-          return n.width = n.image.naturalWidth, n.height = n.image.naturalHeight, n;
-        });
-      },
-      loadVideoInfo: function loadVideoInfo(e) {
-        var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-        var n = {
-          type: "",
-          width: 0,
-          height: 0,
-          video: document.createElement("video"),
-          duration: 0,
-          poster: ""
-        };
-        return fetch(e, t).then(function (e) {
-          return e.blob();
-        }).then(function (e) {
-          return n.type = e.type.replace(/^[^/]+\//, ""), URL.createObjectURL(e);
-        }).then(function (e) {
-          return new Promise(function (t, r) {
-            n.video.addEventListener("error", r), n.video.addEventListener("loadedmetadata", function () {
-              var e = n.video;
-              n.width = e.videoWidth, n.height = e.videoHeight, n.duration = e.duration, n.poster = e.poster, t(n);
-            });
-            var o = document.createElement("source");
-            o.setAttribute("src", e), n.video.appendChild(o);
-          });
-        });
-      }
-    };
-    var o = /^https:\/\/images\.unsplash\.com\/photo-\d{13}-[0-9a-f]{12}/;
 
-    function i(e) {
-      var t = e.url.replace(/\?.*$/, ""),
-          n = new URLSearchParams(e.url.replace(/^.*\?/, ""));
-      return e.width && n.set("w", e.width), e.height && n.set("h", e.height), e.quality && n.set("q", e.quality), e.fit && n.set("fit", e.fit), e.auto && n.set("fit", e.auto), "".concat(t, "?").concat(n.toString());
-    }
-
-    var s =
+    var r =
     /*#__PURE__*/
     function () {
-      function s() {
+      function r() {
         var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-        _classCallCheck(this, s);
+        _classCallCheck(this, r);
 
         this.handlers = e.handlers || [];
       }
 
-      _createClass(s, [{
+      _createClass(r, [{
         key: "addHandler",
         value: function addHandler(e) {
           var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
@@ -2616,19 +2560,80 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       }]);
 
-      return s;
+      return r;
     }();
+
+    var o = {
+      loadImageInfo: function loadImageInfo(e) {
+        var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var n = {
+          src: e,
+          image: new Image(),
+          type: "",
+          width: 0,
+          height: 0
+        };
+        return fetch(e, t).then(function (e) {
+          return e.blob();
+        }).then(function (e) {
+          return n.type = e.type.replace(/^[^/]+\//, ""), URL.createObjectURL(e);
+        }).then(function (e) {
+          return new Promise(function (t, r) {
+            n.image.addEventListener("load", function () {
+              return t();
+            }), n.image.addEventListener("error", r), n.image.src = e;
+          });
+        }).then(function () {
+          return n.width = n.image.naturalWidth, n.height = n.image.naturalHeight, n;
+        });
+      },
+      loadVideoInfo: function loadVideoInfo(e) {
+        var t = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+        var n = {
+          src: e,
+          width: 0,
+          height: 0,
+          video: document.createElement("video"),
+          duration: 0,
+          poster: ""
+        };
+        return fetch(e, t).then(function (e) {
+          return e.blob();
+        }).then(function (e) {
+          return n.type = e.type.replace(/^[^/]+\//, ""), URL.createObjectURL(e);
+        }).then(function (e) {
+          return new Promise(function (t, r) {
+            n.video.addEventListener("error", r), n.video.addEventListener("loadedmetadata", function () {
+              var e = n.video;
+              n.width = e.videoWidth, n.height = e.videoHeight, n.duration = e.duration, n.poster = e.poster, t(n);
+            });
+            var o = document.createElement("source");
+            o.setAttribute("src", e), n.video.appendChild(o);
+          });
+        });
+      },
+      isHandler: function isHandler(e) {
+        return "[object Object]" === Object.prototype.toString.call(e) && "function" == typeof e.use;
+      }
+    };
+    var i = /^https:\/\/images\.unsplash\.com\/photo-\d{13}-[0-9a-f]{12}/;
+
+    function s(e) {
+      var t = e.url.replace(/\?.*$/, ""),
+          n = new URLSearchParams(e.url.replace(/^.*\?/, ""));
+      return e.width && n.set("w", e.width), e.height && n.set("h", e.height), e.quality && n.set("q", e.quality), e.fit && n.set("fit", e.fit), e.auto && n.set("auto", e.auto), "".concat(t, "?").concat(n.toString());
+    }
 
     var u = {
       unsplash: {
         use: function use(e) {
-          return o.test(e.url);
+          return i.test(e.url);
         },
         getImageURL: function getImageURL(e) {
-          return Promise.resolve(i(e));
+          return Promise.resolve(s(e));
         },
         getImageInfo: function getImageInfo(e) {
-          return r.loadImageInfo(i(e));
+          return o.loadImageInfo(s(e));
         }
       },
       image: {
@@ -2639,7 +2644,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return Promise.resolve(e.url);
         },
         getImageInfo: function getImageInfo(e) {
-          return r.loadImageInfo(e.url);
+          return o.loadImageInfo(e.url);
         }
       },
       video: {
@@ -2650,7 +2655,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           return Promise.resolve(e.url);
         },
         getVideoInfo: function getVideoInfo(e) {
-          return r.loadVideoInfo(e.url);
+          return o.loadVideoInfo(e.url);
         }
       }
     };
@@ -20755,8 +20760,10 @@ var defaultOptions = {
   handlers: [handler.unsplash, handler.image, handler.video]
 };
 
-module.exports = function createProxy(options) {
-  if (options instanceof Foxy) {
+module.exports = function createProxy() {
+  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+  if (options.constructor.name === "Foxy") {
     return options;
   }
 
