@@ -129,8 +129,8 @@ export declare class DataService {
     /** test if the given json-pointer points to a value in data */
     isValid(pointer: JSONPointer): boolean;
 
-    on(eventType: "beforeUpdate"|"afterUpdate", DataService: DataServiceEventListener): DataServiceEventListener;
-    off(eventType: "beforeUpdate"|"afterUpdate", callback: DataServiceObserveCallback): void;
+    on(eventType: "beforeUpdate"|"afterUpdate"|"finalUpdate", DataService: DataServiceEventListener): DataServiceEventListener;
+    off(eventType: "beforeUpdate"|"afterUpdate"|"finalUpdate", callback: DataServiceObserveCallback): void;
     /** send a notification to event-listeners */
     emit(eventType: string, pointer: JSONPointer, data: JSONData): void;
 
