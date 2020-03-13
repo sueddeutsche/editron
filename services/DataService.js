@@ -21,7 +21,8 @@ const DEBUG = false;
  */
 const EVENTS = {
     BEFORE_UPDATE: "beforeUpdate",
-    AFTER_UPDATE: "afterUpdate"
+    AFTER_UPDATE: "afterUpdate",
+    FINAL_UPDATE: "finalUpdate"
 };
 
 
@@ -66,6 +67,7 @@ class DataService {
                 this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
             }
 
+            this.emitter.emit(EVENTS.FINAL_UPDATE);
             lastUpdate = current.data.present;
         };
 
