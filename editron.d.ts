@@ -41,7 +41,7 @@ declare class JSONLibCore {
 }
 
 /** base editron editor class */
-export declare abstract class AbstractEditor {
+export declare class AbstractEditor {
     /** for the given input, returns true if this editor-class should be used for editing */
     static editorOf(pointer: JSONPointer, controller: Controller, options?: JSONObject): boolean;
 
