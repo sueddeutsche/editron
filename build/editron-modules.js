@@ -18338,7 +18338,7 @@ function () {
         });
       }
 
-      _this.emitter.emit(EVENTS.FINAL_UPDATE);
+      _this.emitter.emit(EVENTS.FINAL_UPDATE, patches);
 
       lastUpdate = current.data.present;
     };
