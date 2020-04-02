@@ -67,7 +67,7 @@ class DataService {
                 this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
             }
 
-            this.emitter.emit(EVENTS.FINAL_UPDATE);
+            this.emitter.emit(EVENTS.FINAL_UPDATE, patches);
             lastUpdate = current.data.present;
         };
 
