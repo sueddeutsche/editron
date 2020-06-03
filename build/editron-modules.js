@@ -16289,12 +16289,16 @@ var autosize = __webpack_require__(/*! autosize */ "./node_modules/autosize/dist
 
 var raf = window.requestAnimationFrame;
 module.exports = {
+  textarea: null,
+  focus: false,
   onupdate: function onupdate(vnode) {
     raf(function () {
       return autosize.update(vnode.dom);
     });
   },
   view: function view(vnode) {
+    var _this = this;
+
     var attrs = _extends({
       id: null,
       value: "",
@@ -16310,18 +16314,33 @@ module.exports = {
     }, vnode.attrs);
 
     var disabled = attrs.disabled === true;
+
+    if (this.focus) {
+      // keep current value, while input is being active this prevents
+      // jumps in cursor, caused by race conditions
+      // @attention - this may produce other problems
+      attrs.value = this.textarea.value;
+    }
+
     var textareaAttributes = {
       id: attrs.id,
       value: attrs.value,
       rows: attrs.rows,
       disabled: disabled,
       placeholder: attrs.placeholder,
-      onblur: attrs.onblur,
-      onfocus: attrs.onfocus,
+      onblur: function onblur() {
+        _this.focus = false;
+        attrs.onblur && attrs.onblur();
+      },
+      onfocus: function onfocus() {
+        _this.focus = true;
+        attrs.onfocus && attrs.onfocus();
+      },
       onupdate: function onupdate(node) {
         return autosize.update(node.dom);
       },
       oncreate: function oncreate(node) {
+        _this.textarea = node.dom;
         attrs.oncreate(node);
         autosize(node.dom);
         autosize.update(vnode.dom);
