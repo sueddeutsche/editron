@@ -8,7 +8,7 @@ const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 const config = {
     mode: PRODUCTION ? "production" : "development",
     entry: {
-        editron: path.join(__dirname, "editron.js")
+        editron: path.join(__dirname, "editron.ts")
     },
     output: {
         filename: "[name].js",
@@ -25,6 +25,7 @@ const config = {
     },
 
     resolve: {
+        extensions: [".tsx", ".ts", ".js"],
         modules: [".", "node_modules"],
         alias: {
             mitt: path.resolve("./node_modules/mitt/dist/mitt.js"),
@@ -35,6 +36,18 @@ const config = {
 
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                use: {
+                    loader: "ts-loader",
+                    options: {
+                        configFile: path.resolve(__dirname, "tsconfig.json"),
+                        compilerOptions: {
+                            sourceMap: !PRODUCTION
+                        }
+                    }
+                }
+            },
             {
                 test: /.*.js$/,
                 loader: require.resolve("babel-loader"),

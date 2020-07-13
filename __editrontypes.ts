@@ -3,8 +3,8 @@ import { Foxy } from "@technik-sde/foxy";
 type JSONObject = { [p:string]: any };
 
 type JSONSchema = {
-    type: "object"|"array"|"string"|"boolean"|"number"|"integer"|"null";
-    [p:string]: any
+    type?: "object"|"array"|"string"|"boolean"|"number"|"integer"|"null";
+    [p:string]: any;
 };
 
 type JSONPointer = string;
@@ -115,7 +115,7 @@ export declare class DataService {
     /** Delete data at the given_pointer */
     delete(pointer: JSONPointer): void;
 
-    /** reset undo history */
+
     resetUndoRedo(): void;
     /** get valid undo count */
     undoCount(): number;
@@ -273,13 +273,10 @@ export declare class Controller {
      */
     createEditor(pointer: JSONPointer, element: Element, options?: JSONObject): Editor;
 
-    /**
-     * enable or disable the editor input-interaction
-     * @param active id false, deactivates editor
-     */
+
     setActive(active: boolean): void;
 
-    /** returns the editors active state */
+
     isActive(): boolean;
 
     /** service to get or update data from a pointer */

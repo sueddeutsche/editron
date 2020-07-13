@@ -1,26 +1,37 @@
-const gp = require("gson-pointer");
-const Core = require("json-schema-library").cores.JsonEditor;
-const addValidator = require("json-schema-library/lib/addValidator");
-const DataService = require("./services/DataService");
-const SchemaService = require("./services/SchemaService");
-const ValidationService = require("./services/ValidationService");
-const LocationService = require("./services/LocationService");
-const State = require("./services/State");
-const selectEditor = require("./utils/selectEditor");
-const _createElement = require("./utils/createElement");
-const addItem = require("./utils/addItem");
-const UISchema = require("./utils/UISchema");
-const getID = require("./utils/getID");
-const plugin = require("./plugin");
-const i18n = require("./utils/i18n");
-const createProxy = require("./utils/createProxy");
+import gp from "gson-pointer";
+import jsonSchemaLibrary from "json-schema-library";
+import addValidator from "json-schema-library/lib/addValidator";
+import DataService from "../services/DataService";
+import SchemaService from "../services/SchemaService";
+import ValidationService from "../services/ValidationService";
+import LocationService from "../services/LocationService";
+import State from "../services/State";
+import selectEditor from "../utils/selectEditor";
+import _createElement from "../utils/createElement";
+import addItem from "../utils/addItem";
+import UISchema from "../utils/UISchema";
+import getID from "../utils/getID";
+import plugin from "./plugin";
+import i18n from "../utils/i18n";
+import createProxy from "../utils/createProxy";
+import { JSONPointer, JSONSchema, JSONData } from "./types";
+
+import oneOfEditor from "../editors/oneofeditor";
+import arrayEditor from "../editors/arrayeditor";
+import objectEditor from "../editors/objecteditor";
+import valueEditor from "../editors/valueeditor";
+
+const { JsonEditor: Core } = jsonSchemaLibrary.cores;
+
+export interface Editor {}
 
 
-function isValidPointer(pointer) {
+function isValidPointer(pointer: JSONPointer): boolean {
     return pointer[0] === "#";
 }
 
-function assertValidPointer(pointer) {
+/** throws an error, when given pointer is not a valid jons-pointer */
+function assertValidPointer(pointer: JSONPointer): void {
     if (isValidPointer(pointer) === false) {
         throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
     }
@@ -43,6 +54,12 @@ function eachInstance(instances, cb) {
         instances[pointer].forEach(editor => cb(pointer, editor));
     });
 }
+
+
+export type Options = {
+    editors?: Array<object>;
+    proxy?: any;
+};
 
 
 /**
@@ -88,21 +105,36 @@ function eachInstance(instances, cb) {
  * @param  {Array} options.editors  - list of editron-editors/widgets to use. Order defines editor to use
  *      (based on editorOf-method)
  */
-class Controller {
-    constructor(schema = {}, data = {}, options = {}) {
+export default class Controller {
+
+    _proxy;
+    core;
+    dataService: DataService;
+    destroyed = false;
+    disabled = false;
+    editors: Array<Editor>;
+    instances: { [p:string]: any };
+    locationService;
+    options: Options;
+    schemaService: SchemaService;
+    state;
+    validationService: ValidationService;
+
+
+    constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, options: Options = {}) {
         schema = UISchema.extendSchema(schema);
 
-        this.options = Object.assign({
+        this.options = {
             editors: [
                 ...plugin.getEditors(),
-                require("./editors/oneofeditor"),
-                require("./editors/arrayeditor"),
-                require("./editors/objecteditor"),
-                require("./editors/valueeditor")
-            ]
-        }, options);
+                oneOfEditor,
+                arrayEditor,
+                objectEditor,
+                valueEditor
+            ],
+            ...options,
+        };
 
-        this.disabled = false;
         this.editors = this.options.editors;
         this.state = new State();
         this.instances = {};
@@ -112,8 +144,10 @@ class Controller {
         plugin.getValidators().forEach(([validationType, ...validator]) => {
             try {
                 if (validationType === "format") {
+                    // @ts-ignore
                     return this.addFormatValidator(...validator);
                 } else if (validationType === "keyword") {
+                    // @ts-ignore
                     return this.addKeywordValidator(...validator);
                 }
                 throw new Error(`Unknown validation type '${validationType}'`);
@@ -137,11 +171,16 @@ class Controller {
         this.validateAll();
     }
 
-    resetUndoRedo() {
+    /** reset undo history */
+    resetUndoRedo(): void {
         this.dataService.resetUndoRedo();
     }
 
-    setActive(active = true) {
+    /**
+     * enable or disable the editor input-interaction
+     * @param active if false, deactivates editor
+     */
+    setActive(active = true) : void{
         const disabled = active === false;
         if (this.disabled === disabled) {
             return;
@@ -152,7 +191,8 @@ class Controller {
         });
     }
 
-    isActive() {
+    /** returns the editors active state */
+    isActive(): boolean {
         return !this.disabled;
     }
 
@@ -161,22 +201,23 @@ class Controller {
      *
      * @param  {String} selector    - a css selector describing the desired element
      * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
-     * @return {HTMLDomElement} the resulting DOMHtml element (not attached)
+     * @return the resulting dom-element (not attached)
      */
-    createElement(selector, attributes) { // eslint-disable-line class-methods-use-this
+    createElement(selector: string, attributes): HTMLElement { // eslint-disable-line class-methods-use-this
         return _createElement(selector, attributes);
     }
 
     /**
+     * @throws
      * The only entry point to create editors.
      * Use in application and from editors to create (delegate) child editors
      *
-     * @param  {String} pointer         - data pointer to editor in current state
-     * @param  {HTMLElement} element    - parent element of create editor. Will be appended automatically
-     * @param  {Object} [options]       - individual editor options
-     * @return {Object|undefined} created editor-instance or undefined;
+     * @param  pointer - data pointer to editor in current state
+     * @param  element - parent element of create editor. Will be appended automatically
+     * @param  [options] - individual editor options
+     * @return created editor-instance or undefined;
      */
-    createEditor(pointer, element, options) {
+    createEditor(pointer: JSONPointer, element: HTMLElement, options): Editor|undefined {
         if (pointer == null || element == null) {
             throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
         }
@@ -229,7 +270,7 @@ class Controller {
         removeEditorFrom(this.instances, editor);
     }
 
-    addInstance(pointer, editor) {
+    addInstance(pointer: JSONPointer, editor) {
         this.instances[pointer] = this.instances[pointer] || [];
         this.instances[pointer].push(editor);
     }
@@ -240,7 +281,7 @@ class Controller {
      * @param {String} pointer  - to array on which to insert the child
      * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
      */
-    addItemTo(pointer, index = 0) {
+    addItemTo(pointer: JSONPointer, index = 0) {
         addItem(this.data(), this.schema(), pointer, index);
         LocationService.goto(gp.join(pointer, index, true));
     }
@@ -286,7 +327,7 @@ class Controller {
      * Set the application data
      * @param {Any} data    - json data matching registered json-schema
      */
-    setData(data) {
+    setData(data: JSONData) {
         data = this.schemaService.addDefaultData(data);
         this.data().set("#", data);
     }
@@ -295,7 +336,7 @@ class Controller {
      * @param {JsonPointer} [pointer="#"] - location of data to fetch. Defaults to root (all) data
      * @return {Any} data at the given location
      */
-    getData(pointer = "#") {
+    getData(pointer: JSONPointer = "#") {
         return this.data().get(pointer);
     }
 
@@ -334,7 +375,7 @@ class Controller {
      * Change the new schema for the current data
      * @param {Object} schema   - a valid json-schema
      */
-    setSchema(schema) {
+    setSchema(schema: JSONSchema) {
         schema = UISchema.extendSchema(schema);
         this.validationService.set(schema);
         this.schemaService.setSchema(schema);
@@ -387,11 +428,8 @@ class Controller {
         });
     }
 
-    changePointer(newPointer, editor) {
+    changePointer(newPointer: JSONPointer, editor) {
         removeEditorFrom(this.instances, editor);
         this.addInstance(newPointer, editor);
     }
 }
-
-
-module.exports = Controller;

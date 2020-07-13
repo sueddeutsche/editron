@@ -8,7 +8,7 @@ const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
 const editronModulesConfig = {
     mode: PRODUCTION ? "production" : "development",
     entry: [
-        path.join(__dirname, "editron.js"),
+        path.join(__dirname, "editron"),
         path.join(__dirname, "editron.scss"),
         path.resolve("./node_modules/mithril-material-forms"),
         path.resolve("./node_modules/json-schema-library"),
@@ -33,6 +33,7 @@ const editronModulesConfig = {
 
     resolve: {
         symlinks: false,
+        extensions: [".tsx", ".ts", ".js"],
         modules: [".", "node_modules"],
         alias: {
             editron: path.resolve("./node_modules/editron"),
@@ -48,6 +49,18 @@ const editronModulesConfig = {
 
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                use: {
+                    loader: "ts-loader",
+                    options: {
+                        configFile: path.resolve(__dirname, "tsconfig.json"),
+                        compilerOptions: {
+                            sourceMap: !PRODUCTION
+                        }
+                    }
+                }
+            },
             {
                 test: /.*.js$/,
                 loader: require.resolve("babel-loader"),

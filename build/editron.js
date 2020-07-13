@@ -82,19 +82,19 @@ var editron =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./editron.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./editron.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./editron.js":
+/***/ "./editron.ts":
 /*!****************************************************************!*\
-  !*** delegated ./editron.js from dll-reference editronModules ***!
+  !*** delegated ./editron.ts from dll-reference editronModules ***!
   \****************************************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(/*! dll-reference editronModules */ "dll-reference editronModules"))("./editron.js");
+module.exports = (__webpack_require__(/*! dll-reference editronModules */ "dll-reference editronModules"))("./editron.ts");
 
 /***/ }),
 
