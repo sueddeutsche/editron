@@ -203,7 +203,7 @@ export default class Controller {
      * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
      * @return the resulting dom-element (not attached)
      */
-    createElement(selector: string, attributes): HTMLElement { // eslint-disable-line class-methods-use-this
+    createElement(selector: string, attributes?: object): HTMLElement { // eslint-disable-line class-methods-use-this
         return _createElement(selector, attributes);
     }
 

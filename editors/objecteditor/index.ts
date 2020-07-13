@@ -1,10 +1,12 @@
-const m = require("mithril");
-const TextareaForm = require("mithril-material-forms/components/textareaform");
-const OverlayService = require("../../services/OverlayService");
-const View = require("../../components/container");
+import m from "mithril";
+import TextareaForm from "mithril-material-forms/components/textareaform";
+import OverlayService from "../../services/OverlayService";
+import View from "../../components/container";
+import { JSONPointer, JSONData } from "../../src/types";
+import Controller from "../../src/Controller";
 
 
-function showJSON(controller, data, title) {
+function showJSON(controller: Controller, data: JSONData, title: string) {
     const element = controller.createElement(".overlay__item.overlay__item--json");
     OverlayService.open(element, { ok: true, save: false });
     // render textarea after it is injected into dom, to correctly update textarea size
@@ -12,14 +14,43 @@ function showJSON(controller, data, title) {
 }
 
 
-class ObjectEditor {
+export type Options = {
+    id?: string;
+    attrs?: object;
+    icon?: string;
+    hideTitle?: boolean;
+    title?: string;
+    description?: string;
+    addDelete?: boolean;
+}
 
-    static editorOf(pointer, controller) {
+export type ViewModel = {
+    pointer: JSONPointer;
+    icon?: string;
+    errors: Array<any>;
+    attrs: { [p: string]: any };
+    hideTitle?: boolean;
+    title?: string;
+    description?: string;
+    disabled?: boolean;
+    ondelete?: Function;
+}
+
+export default class ObjectEditor {
+    viewModel: ViewModel;
+    private $element: HTMLElement;
+    pointer: JSONPointer;
+    options;
+    controller;
+    childEditors: Array<any>;
+    $children: HTMLElement;
+
+    static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.schema().get(pointer);
         return schema.type === "object";
     }
 
-    constructor(pointer, controller, options = {}) {
+    constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
         // add id to element, since no other input-form is associated with this editor
         options.attrs = Object.assign({ id: options.id }, options.attrs);
 
@@ -28,15 +59,16 @@ class ObjectEditor {
         this.options = options;
         this.controller = controller;
         this.childEditors = [];
-        this.viewModel = Object.assign({
+        this.viewModel = {
             pointer,
             icon: options.icon,
             errors: [],
             attrs: {},
             hideTitle: options.hideTitle,
             title: options.title,
-            description: options.description
-        }, options);
+            description: options.description,
+            ...options
+        };
 
         if (options.addDelete) {
             this.viewModel.ondelete = () => controller.data().delete(pointer);
@@ -51,7 +83,7 @@ class ObjectEditor {
         this.rebuildChildren();
     }
 
-    updatePointer(pointer) {
+    updatePointer(pointer: JSONPointer) {
         if (this.pointer === pointer || this.viewModel == null) {
             return;
         }
@@ -73,24 +105,21 @@ class ObjectEditor {
         controller.validator().removeObserver(oldPointer, this.setErrors);
         controller.data().observe(pointer, this.rebuildChildren);
         controller.validator().observe(pointer, this.setErrors);
-
-        this.childEditors.forEach(editor => {
-            editor.updatePointer(`${this.pointer}/${editor._property}`);
-        });
+        this.childEditors.forEach(editor => editor.updatePointer(`${this.pointer}/${editor._property}`));
 
         this.render();
     }
 
-    setActive(active = true) {
+    setActive(active = true): void {
         this.viewModel.disabled = active === false;
         this.render();
     }
 
-    update() {
+    update(): void {
         this.rebuildChildren();
     }
 
-    rebuildChildren() {
+    rebuildChildren(): void {
         if (this.viewModel == null) {
             console.error(`destroyed ObjectEditor receives an update event
                 - this may be invoked through oneOf-Editor`, this);
@@ -178,6 +207,3 @@ class ObjectEditor {
         }
     }
 }
-
-
-module.exports = ObjectEditor;

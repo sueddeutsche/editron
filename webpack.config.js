@@ -119,7 +119,7 @@ const editronModulesConfig = {
             new (require("uglifyjs-webpack-plugin"))({
                 sourceMap: false,
                 uglifyOptions: {
-                    compress: { drop_console: true } // eslint-disable-line @typescript-eslint/camelcase
+                    compress: { drop_console: true }
                 }
             })
         ] : [])
