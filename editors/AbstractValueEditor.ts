@@ -1,8 +1,12 @@
-const m = require("mithril");
-const getId = require("../utils/getID");
+import m from "mithril";
+import getId from "../utils/getID";
+import { JSONPointer } from "../src/types";
+import Controller from "../src/Controller";
+
 
 const convert = {
-    "boolean": value => {
+
+    boolean(value): boolean {
         if (value === "true") {
             return true;
         }
@@ -11,14 +15,16 @@ const convert = {
         }
         return value;
     },
-    integer: value => {
+
+    integer(value): number {
         const converted = parseInt(value);
         if (isNaN(converted) === false) {
             return converted;
         }
         return value;
     },
-    number: value => {
+
+    number(value): number {
         const converted = parseFloat(value);
         if (isNaN(converted) === false) {
             return converted;
@@ -44,9 +50,13 @@ const convert = {
  *      }
  * ```
  */
-class AbstractValueEditor {
+export default class AbstractValueEditor {
+    pointer: JSONPointer;
+    controller: Controller;
+    $element: HTMLElement;
+    viewModel;
 
-    static editorOf(pointer, controller) {
+    static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.schema().get(pointer);
         return schema.type !== "object" && schema.type !== "array";
     }
@@ -61,7 +71,7 @@ class AbstractValueEditor {
      * @param  {Controller} controller  - json editor controller
      * @param  {Object} options
      */
-    constructor(pointer, controller, options) {
+    constructor(pointer: JSONPointer, controller: Controller, options) {
         this.pointer = pointer;
         this.controller = controller;
 
@@ -176,19 +186,15 @@ class AbstractValueEditor {
 
     // destroy this editor
     destroy() {
-        if (this.viewModel) {
-            this.controller.removeInstance(this);
-
-            // destroy this editor only once
-            m.render(this.$element, m("i"));
-
-            this.viewModel = null;
-            this.controller.data().removeObserver(this.pointer, this.update);
-            this.controller.validator().removeObserver(this.pointer, this.setErrors);
-            this.$element = null;
+        if (this.viewModel == null) {
+            return;
         }
+        this.controller.removeInstance(this);
+        // destroy this editor only once
+        m.render(this.$element, m("i"));
+        this.viewModel = null;
+        this.controller.data().removeObserver(this.pointer, this.update);
+        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        this.$element = null;
     }
 }
-
-
-module.exports = AbstractValueEditor;

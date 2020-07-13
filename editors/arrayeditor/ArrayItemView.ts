@@ -3,6 +3,7 @@ import m from "mithril";
 
 export const EditorTarget = ".editron-item";
 
+
 export type Attrs = {
     disabled?: boolean;
     minItems?: number;
@@ -11,13 +12,12 @@ export type Attrs = {
     index: number;
     length: number;
     add?: boolean;
-    onadd?: Function;
+    onadd?: (index: number) => void;
     remove?: boolean;
-    ondelete?: Function;
+    onremove?: (index: number) => void;
     move?: boolean;
-    onmove?: Function;
+    onmove?: (index: number) => void;
     insert?: boolean;
-    oninsert?: Function;
 };
 
 
@@ -43,8 +43,8 @@ export default {
                     { onclick: () => !disabled && attrs.onmove(attrs.index + 1) },
                     m("i.mmf-icon", "arrow_downward")
                 ),
-                (attrs.remove && attrs.ondelete && canRemove) ? m("li",
-                    { onclick: () => !disabled && attrs.ondelete(attrs.index) },
+                (attrs.remove && attrs.onremove && canRemove) ? m("li",
+                    { onclick: () => !disabled && attrs.onremove(attrs.index) },
                     m("i.mmf-icon", "delete")
                 ) : "",
                 (attrs.add && attrs.onadd && canAdd) ? m("li",

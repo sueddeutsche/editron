@@ -1,5 +1,4 @@
 import m from "mithril";
-
 import CheckboxForm from "mithril-material-forms/components/checkboxform";
 import SelectForm from "mithril-material-forms/components/selectform";
 import TextareaForm from "mithril-material-forms/components/textareaform";

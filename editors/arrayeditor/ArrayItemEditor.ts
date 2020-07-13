@@ -2,12 +2,31 @@ import m from "mithril";
 import gp from "gson-pointer";
 import ArrayItemView, { EditorTarget } from "./ArrayItemView";
 import arrayUtils from "../../utils/array";
-import { JSONPointer } from "../../src/types";
+import { JSONPointer, EditronConfigAttrs } from "../../src/types";
 import Controller from "../../src/Controller";
 
 
 export type Options = {
-    attrs?: object;
+    index: number;
+    pointer: JSONPointer;
+    length: number;
+    attrs?: EditronConfigAttrs;
+    disabled?: boolean;
+    onadd?: () => void;
+    onremove?: () => void;
+    onmove?: () => void;
+}
+
+
+export type ViewModel = {
+    index: number;
+    pointer: JSONPointer;
+    length: number;
+    disabled: boolean;
+    onadd: () => void;
+    onremove: () => void;
+    onmove: () => void;
+    attrs?: EditronConfigAttrs;
 }
 
 
@@ -15,23 +34,21 @@ export default class ArrayItemEditor {
     $element: HTMLElement;
     controller: Controller;
     editor;
-    onAdd: Function;
-    onRemove: Function;
     parentPointer: JSONPointer;
-    viewModel;
+    viewModel: ViewModel;
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
+    constructor(pointer: JSONPointer, controller: Controller, options) {
         // eslint-disable-next-line max-len
         this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
         this.controller = controller;
 
-        this.onAdd = () => this.add();
-        this.onRemove = () => this.remove();
+        const onadd = () => this.add();
+        const onremove = () => this.remove();
 
         this.viewModel = {
             disabled: false,
-            onadd: this.onAdd,
-            onremove: this.onRemove,
+            onadd,
+            onremove,
             onmove: index => this.move(index),
             ...options
         };
@@ -40,29 +57,29 @@ export default class ArrayItemEditor {
 
         const $target = this.$element.querySelector(EditorTarget) as HTMLElement;
         this.editor = controller.createEditor(pointer, $target, {
-            ondelete: this.onRemove
+            ondelete: onremove
         });
 
         this.updatePointer(pointer);
     }
 
-    render() {
+    render(): void {
         m.render(this.$element, m(ArrayItemView, this.viewModel));
     }
 
-    add() {
+    add(): void {
         arrayUtils.addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
     }
 
-    remove() {
+    remove(): void {
         arrayUtils.removeItem(this.parentPointer, this.controller, this.viewModel.index);
     }
 
-    move(to) {
+    move(to): void {
         arrayUtils.moveItem(this.parentPointer, this.controller, this.viewModel.index, to);
     }
 
-    updatePointer(newPointer) {
+    updatePointer(newPointer): void {
         this.parentPointer = gp.join(newPointer, "..", true);
         this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
         this.viewModel.pointer = newPointer;
