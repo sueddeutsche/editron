@@ -50,7 +50,9 @@ module.exports = {
             {
                 onclick: (e) => {
                     const value = getDataValue(e.target);
-                    attrs.onchange(value);
+                    if (value) { // e.target can be the container element with no "data-value" attribute
+                        attrs.onchange(value);
+                    }
                 }
             },
             attrs.options.map((tile) =>
