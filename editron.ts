@@ -1,11 +1,3 @@
-import Controller from "./src/Controller";
-import components from "./components";
-import editors from "./editors";
-import services from "./services";
-import utils from "./utils";
-import plugin from "./src/plugin";
-
-
 /**
  * Editron-Core. Depending on your build setup, use
  *
@@ -25,11 +17,11 @@ import plugin from "./src/plugin";
  * @property utils             - utility functions, to generate ids, translate strings and resolve editors
  * @property plugin            - basic plugin implementation for editor registration
  */
-export default {
-    Controller,
-    components,
-    editors,
-    services,
-    utils,
-    plugin
-};
+import Controller from "./src/Controller";
+
+export default Controller;
+export { default as components } from "./components";
+export { default as editors } from "./editors";
+export { default as services } from "./services";
+export { default as utils } from "./utils";
+export { default as plugin } from "./src/plugin";

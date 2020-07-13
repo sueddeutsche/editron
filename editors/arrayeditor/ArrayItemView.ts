@@ -1,9 +1,27 @@
-const m = require("mithril");
+import m from "mithril";
 
 
-const ArrayItemView = {
+export const EditorTarget = ".editron-item";
 
-    editorTarget: ".editron-item",
+export type Attrs = {
+    disabled?: boolean;
+    minItems?: number;
+    maxItems?: number;
+    showIndex?: boolean;
+    index: number;
+    length: number;
+    add?: boolean;
+    onadd?: Function;
+    remove?: boolean;
+    ondelete?: Function;
+    move?: boolean;
+    onmove?: Function;
+    insert?: boolean;
+    oninsert?: Function;
+};
+
+
+export default {
 
     view({ attrs }) {
         const { disabled = false } = attrs;
@@ -36,7 +54,7 @@ const ArrayItemView = {
             ),
 
             // TARGET CONTAINER FOR EDITOR
-            m(this.editorTarget, {
+            m(EditorTarget, {
                 "data-index": `${attrs.index + 1} / ${attrs.length}`,
                 "class": [
                     disabled ? "is-disabled" : "",
@@ -64,7 +82,5 @@ const ArrayItemView = {
             ) : ""
         ];
     }
-};
 
-
-module.exports = ArrayItemView;
+} as m.Component<Attrs>;

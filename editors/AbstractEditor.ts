@@ -1,4 +1,8 @@
-function getTypeClass(schema) {
+import { JSONData, JSONPointer, JSONSchema } from "../src/types";
+import Controller from "../src/Controller";
+
+
+function getTypeClass(schema: JSONSchema): string {
     return schema.type === "array" || schema.type === "object" ? schema.type : "value";
 }
 
@@ -31,13 +35,21 @@ function getTypeClass(schema) {
  * @param {Controller} controller   - editron controller instance
  * @param {Object} options          - resolved options object
  */
-class AbstractEditor {
+export default class AbstractEditor {
+    pointer: JSONPointer;
+    controller: Controller;
+    options: any;
+    errors: Array<any>;
+    dom: HTMLElement;
+    updateErrors: Function;
+    _addError: Function;
+    _clearErrors: Function;
 
-    static editorOf(pointer, controller, options) { // eslint-disable-line
+    static editorOf(pointer: JSONPointer, controller: Controller, options) { // eslint-disable-line
         throw new Error("Missing editorOf-method in custom editor");
     }
 
-    constructor(pointer, controller, options) {
+    constructor(pointer: JSONPointer, controller: Controller, options: any) {
         this.pointer = pointer;
         this.controller = controller;
         this.options = options;
@@ -59,7 +71,7 @@ class AbstractEditor {
         throw new Error("Missing implemented of method 'update' in custom editor");
     }
 
-    updatePointer(newPointer) {
+    updatePointer(newPointer: JSONPointer): [JSONPointer, JSONPointer] {
         const oldPointer = this.pointer;
 
         this.controller.data().removeObserver(oldPointer, this.update);
@@ -73,11 +85,11 @@ class AbstractEditor {
         return [newPointer, oldPointer];
     }
 
-    getData() {
+    getData(): any {
         return this.controller.data().get(this.pointer);
     }
 
-    setData(data) {
+    setData(data: JSONData) {
         return this.controller.data().set(this.pointer, data);
     }
 
@@ -85,40 +97,37 @@ class AbstractEditor {
         return this.errors;
     }
 
-    getSchema() {
+    getSchema(): JSONSchema {
         return this.controller.schema().get(this.pointer);
     }
 
-    getPointer() {
+    getPointer(): JSONPointer {
         return this.pointer;
     }
 
-    focus() {
+    focus(): void {
         this.controller.location().setCurrent(this.pointer);
     }
 
-    blur() {
+    blur(): void {
         this.controller.location().blur(this.pointer);
     }
 
-    toElement() {
+    toElement(): HTMLElement {
         return this.dom;
     }
 
-    destroy() {
+    destroy(): void {
         this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
         this.controller.data().removeObserver(this.pointer, this.update);
         this.controller.validator().removeObserver(this.pointer, this._addError);
         this.controller.validator().off("beforeValidation", this._clearErrors);
     }
 
-    setErrors(errors) {
+    setErrors(errors): void {
         this.errors = errors;
         if (this.updateErrors) {
             this.updateErrors(this.errors);
         }
     }
 }
-
-
-module.exports = AbstractEditor;

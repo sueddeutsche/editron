@@ -38,7 +38,7 @@
                 }
             };
 
-            const { Controller } = window.editron;
+            const Controller = window.editron.default;
             const controller = new Controller(window.jsonSchema);
             controller.createEditor("#", document.querySelector(".editor"));
 

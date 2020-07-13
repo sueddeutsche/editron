@@ -1,17 +1,53 @@
-const m = require("mithril");
-const ArrayItemEditor = require("./ArrayItemEditor");
-const diffpatch = require("../../services/utils/diffpatch");
-const View = require("../../components/container");
+import ArrayItemEditor from "./ArrayItemEditor";
+import Controller from "../../src/Controller";
+import diffpatch from "../../services/utils/diffpatch";
+import m from "mithril";
+import View from "../../components/container";
+import { JSONPointer, JSONSchema } from "../../src/types";
 
 
-class ArrayEditor {
+export type Controls = {
+    add?: boolean;
+    remove?: boolean;
+    move?: boolean;
+    insert?: boolean;
+    maxItems?: number;
+    minItems?: number;
+}
 
-    static editorOf(pointer, controller) {
+export type ViewModel = {
+    pointer: string;
+    attrs: object;
+    errors: Array<any>;
+    onAdd: Function;
+    length: number;
+    maxItems: number;
+    minItems: number;
+    controls: Controls;
+}
+
+export type Options = {
+    id: string;
+    attrs?: object;
+    controls?: Controls;
+}
+
+
+export default class ArrayEditor {
+    viewModel;
+    $element: HTMLElement;
+    controller: Controller;
+    pointer: string;
+    children: Array<any>;
+    $items: HTMLElement;
+    onAdd: Function;
+
+    static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.schema().get(pointer);
         return schema.type === "array";
     }
 
-    constructor(pointer, controller, options = {}) {
+    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
         // add id to element, since no other input-form is associated with this editor
         options.attrs = Object.assign({ id: options.id }, options.attrs);
         const schema = controller.schema().get(pointer);
@@ -29,25 +65,27 @@ class ArrayEditor {
         this.controller = controller;
         this.pointer = pointer;
         this.children = [];
-        this.viewModel = Object.assign({
+        this.viewModel = {
             pointer,
             attrs: {},
             errors: controller.validator().getErrorsAndWarnings(pointer),
             onadd: this.onAdd,
             length: data.length,
             maxItems: schema.maxItems || Infinity,
-            minItems: schema.minItems || 0
-        }, options);
+            minItems: schema.minItems || 0,
+            ...options,
 
-        this.viewModel.controls = Object.assign({
-            add: false,
-            remove: true,
-            move: true,
-            insert: true,
-            showIndex: options["array:index"] === true,
-            maxItems: schema.maxItems || Infinity,
-            minItems: schema.minItems || 0
-        }, options.controls);
+            controls: {
+                add: false,
+                remove: true,
+                move: true,
+                insert: true,
+                showIndex: options["array:index"] === true,
+                maxItems: schema.maxItems || Infinity,
+                minItems: schema.minItems || 0,
+                ...options.controls
+            }
+        };
 
         this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
         this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
@@ -58,7 +96,7 @@ class ArrayEditor {
         this.updateControls();
     }
 
-    setActive(active = true) {
+    setActive(active = true): void {
         const disabled = active === false;
         this.viewModel.disabled = disabled;
         this.viewModel.controls.disabled = disabled;
@@ -66,12 +104,12 @@ class ArrayEditor {
         this.render();
     }
 
-    update() {
+    update(): void {
         this.rebuildChildren();
         this.updateControls();
     }
 
-    updatePointer(newPointer) {
+    updatePointer(newPointer: JSONPointer): void {
         if (this.pointer === newPointer) {
             return;
         }
@@ -92,7 +130,7 @@ class ArrayEditor {
         this.render();
     }
 
-    updateView(changeEvent) {
+    updateView(changeEvent): void {
         if (changeEvent && changeEvent.patch) {
             this.applyPatches(changeEvent.patch);
         } else {
@@ -101,7 +139,7 @@ class ArrayEditor {
         this.updateControls();
     }
 
-    applyPatches(patch) {
+    applyPatches(patch): void {
         // fetch a copy of the original list
         const originalChildren = this.children.slice(0);
         // and patch the current list
@@ -152,7 +190,7 @@ class ArrayEditor {
         }
     }
 
-    rebuildChildren() {
+    rebuildChildren(): void {
         const data = this.controller.data().get(this.pointer);
 
         // delete all child editors
@@ -169,7 +207,7 @@ class ArrayEditor {
         });
     }
 
-    updateControls() {
+    updateControls(): void {
         this.viewModel.length = this.children.length;
         this.viewModel.onadd = this.viewModel.maxItems > this.children.length ? this.onAdd : false;
 
@@ -177,35 +215,33 @@ class ArrayEditor {
         this.$element.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
     }
 
-    getPointer() {
+    getPointer(): JSONPointer {
         return this.pointer;
     }
 
-    setErrors(errors) {
+    setErrors(errors): void {
         this.viewModel.errors = errors;
         this.render();
     }
 
-    render() {
+    render(): void {
         m.render(this.$element, m(View, this.viewModel));
     }
 
-    toElement() {
+    toElement(): HTMLElement {
         return this.$element;
     }
 
-    destroy() {
-        if (this.viewModel) {
-            this.controller.removeInstance(this);
-
-            this.viewModel = null;
-            m.render(this.$element, m("i"));
-            this.controller.data().removeObserver(this.pointer, this.updateView);
-            this.controller.validator().removeObserver(this.pointer, this.setErrors);
-            this.children.forEach(editor => editor.destroy());
+    destroy(): void {
+        if (this.viewModel == null) {
+            return;
         }
+
+        this.controller.removeInstance(this);
+        this.viewModel = null;
+        m.render(this.$element, m("i"));
+        this.controller.data().removeObserver(this.pointer, this.updateView);
+        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        this.children.forEach(editor => editor.destroy());
     }
 }
-
-
-module.exports = ArrayEditor;

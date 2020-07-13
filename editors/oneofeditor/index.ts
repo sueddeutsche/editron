@@ -1,18 +1,47 @@
-const m = require("mithril");
-const gp = require("gson-pointer");
-const Select = require("mithril-material-forms/components/select");
-const getId = require("../../utils/getID");
-const View = require("../../components/container");
-const UI_PROPERTY = require("../../utils/UISchema").UI_PROPERTY;
+import m from "mithril";
+import gp from "gson-pointer";
+import Select from "mithril-material-forms/components/select";
+import getId from "../../utils/getID";
+import View from "../../components/container";
+import UISchema from "../../utils/UISchema";
+import { JSONSchema, JSONPointer } from "../../src/types";
+import Controller from "../../src/Controller";
+
+const { UI_PROPERTY } = UISchema;
 
 
-class OneOfEditor {
-    static editorOf(pointer, controller, options) {
+export type ViewModel = {
+    description?: string;
+    disabled?: boolean;
+    id: string;
+    onchange?: Function;
+    options?: any;
+    pointer: JSONPointer;
+    title?: string;
+    value?: any;
+};
+
+export type Options = {
+    renderOneOf?: boolean;
+};
+
+
+export default class OneOfEditor {
+    $childContainer: HTMLElement;
+    $element: HTMLElement;
+    childEditor: any;
+    childSchema: JSONSchema;
+    controller;
+    pointer: JSONPointer;
+    schema: JSONSchema;
+    viewModel: ViewModel;
+
+    static editorOf(pointer: JSONPointer, controller: Controller, options: Options) {
         const schema = controller.schema().get(pointer);
         return schema.oneOfSchema && !schema.items && !options.renderOneOf;
     }
 
-    constructor(pointer, controller, options) {
+    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
         const childSchema = controller.schema().get(pointer);
         // @special case. Our options lie in `schema.oneOfSchema`
         const schema = childSchema.oneOfSchema;
@@ -31,9 +60,7 @@ class OneOfEditor {
             id: getId(pointer),
             pointer,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
-            onchange: oneOfIndex => {
-                this.changeChild(schema.oneOf[oneOfIndex]);
-            },
+            onchange: (oneOfIndex: number) => this.changeChild(schema.oneOf[oneOfIndex]),
             value: this.getIndexOf(childSchema),
             title: schema.title,
             description: schema.description
@@ -47,18 +74,18 @@ class OneOfEditor {
         this.rebuild();
     }
 
-    setActive(active = true) {
+    setActive(active = true): void {
         this.viewModel.disabled = active === false;
         this.render();
     }
 
-    changeChild(schema) {
+    changeChild(schema): void {
         this.childEditor && this.childEditor.destroy();
         const data = this.controller.schema().getTemplate(schema);
         this.controller.data().set(this.pointer, data);
     }
 
-    getIndexOf(currentSchema) {
+    getIndexOf(currentSchema): number {
         for (let i = 0, l = this.schema.oneOf.length; i < l; i += 1) {
             if (this.schema.oneOf[i].title === currentSchema.title) {
                 return i;
@@ -67,7 +94,7 @@ class OneOfEditor {
         return 0;
     }
 
-    updatePointer(newPointer) {
+    updatePointer(newPointer: JSONPointer): void {
         const oldPointer = this.getPointer();
         if (oldPointer === newPointer) {
             return;
@@ -89,7 +116,7 @@ class OneOfEditor {
         this.render();
     }
 
-    update() {
+    update(): void {
         const currentSchema = this.controller.schema().get(this.pointer);
         delete currentSchema.oneOfSchema; // is recreated each time
         if (currentSchema.title === this.childSchema.title) {
@@ -101,7 +128,7 @@ class OneOfEditor {
         this.rebuild();
     }
 
-    rebuild() {
+    rebuild(): void {
         this.childEditor && this.childEditor.destroy();
         this.$childContainer.innerHTML = "";
         this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
@@ -112,7 +139,7 @@ class OneOfEditor {
         this.render();
     }
 
-    render() {
+    render(): void {
         m.render(this.$element, m(View, this.viewModel,
             m(".editron-value",
                 m(Select, this.viewModel)
@@ -120,24 +147,22 @@ class OneOfEditor {
         ));
     }
 
-    toElement() {
+    toElement(): HTMLElement {
         return this.$element;
     }
 
-    getPointer() {
+    getPointer(): JSONPointer {
         return this.pointer;
     }
 
-    destroy() {
-        if (this.viewModel) {
-            this.controller.removeInstance(this);
-
-            this.viewModel = null;
-            m.render(this.$element, "i");
-            this.controller.data().removeObserver(this.pointer, this.update);
+    destroy(): void {
+        if (this.viewModel == null) {
+            return;
         }
+        this.controller.removeInstance(this);
+
+        this.viewModel = null;
+        m.render(this.$element, "i");
+        this.controller.data().removeObserver(this.pointer, this.update);
     }
 }
-
-
-module.exports = OneOfEditor;

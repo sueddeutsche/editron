@@ -50,7 +50,10 @@ module.exports = {
             {
                 onclick: (e) => {
                     const value = getDataValue(e.target);
-                    attrs.onchange(value);
+                    if (value != null) {
+                        // @todo event-target being may be unexpected
+                        attrs.onchange(value);
+                    }
                 }
             },
             attrs.options.map((tile) =>

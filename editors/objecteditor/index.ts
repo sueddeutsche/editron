@@ -36,6 +36,7 @@ export type ViewModel = {
     ondelete?: Function;
 }
 
+
 export default class ObjectEditor {
     viewModel: ViewModel;
     private $element: HTMLElement;
@@ -51,7 +52,8 @@ export default class ObjectEditor {
     }
 
     constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
-        // add id to element, since no other input-form is associated with this editor
+        // add id to element, since no other input-form is associated with this editor...
+        // @todo ...except another editron-instance
         options.attrs = Object.assign({ id: options.id }, options.attrs);
 
         this.$element = controller.createElement(".editron-container.editron-container--object", options.attrs);
@@ -98,7 +100,6 @@ export default class ObjectEditor {
         this.pointer = pointer;
         this.viewModel.pointer = pointer;
         if (this.options.addDelete) {
-            // console.log("Update ondelete", pointer);
             this.viewModel.ondelete = () => controller.data().delete(pointer);
         }
         controller.data().removeObserver(oldPointer, this.rebuildChildren);
@@ -110,6 +111,7 @@ export default class ObjectEditor {
         this.render();
     }
 
+    /** de/activate this editors user-interaction */
     setActive(active = true): void {
         this.viewModel.disabled = active === false;
         this.render();
@@ -180,30 +182,32 @@ export default class ObjectEditor {
         this.render();
     }
 
-    render() {
+    render(): void {
         m.render(this.$element, m(View, this.viewModel));
     }
 
-    toElement() {
+    toElement(): HTMLElement {
         return this.$element;
     }
 
-    getPointer() {
+    getPointer(): JSONPointer {
         return this.pointer;
     }
 
-    destroy() {
-        if (this.viewModel) {
-            this.controller.removeInstance(this);
-
-            m.render(this.$element, m("i"));
-            this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
-            this.controller.validator().removeObserver(this.pointer, this.setErrors);
-
-            this.childEditors.forEach(editor => editor.destroy());
-            this.childEditors.length = 0;
-            this.$children.innerHTML = "";
-            this.viewModel = null;
+    /** destroy editor, view and event-listeners */
+    destroy(): void {
+        if (this.viewModel == null) {
+            return;
         }
+        this.controller.removeInstance(this);
+
+        m.render(this.$element, m("i"));
+        this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
+        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+
+        this.childEditors.forEach(editor => editor.destroy());
+        this.childEditors.length = 0;
+        this.$children.innerHTML = "";
+        this.viewModel = null;
     }
 }

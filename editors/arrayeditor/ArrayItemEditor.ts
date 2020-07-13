@@ -1,12 +1,26 @@
-const m = require("mithril");
-const gp = require("gson-pointer");
-const ArrayItemView = require("./ArrayItemView");
-const arrayUtils = require("../../utils/array");
+import m from "mithril";
+import gp from "gson-pointer";
+import ArrayItemView, { EditorTarget } from "./ArrayItemView";
+import arrayUtils from "../../utils/array";
+import { JSONPointer } from "../../src/types";
+import Controller from "../../src/Controller";
 
 
-class ArrayItemEditor {
+export type Options = {
+    attrs?: object;
+}
 
-    constructor(pointer, controller, options = {}) {
+
+export default class ArrayItemEditor {
+    $element: HTMLElement;
+    controller: Controller;
+    editor;
+    onAdd: Function;
+    onRemove: Function;
+    parentPointer: JSONPointer;
+    viewModel;
+
+    constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
         // eslint-disable-next-line max-len
         this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
         this.controller = controller;
@@ -14,16 +28,17 @@ class ArrayItemEditor {
         this.onAdd = () => this.add();
         this.onRemove = () => this.remove();
 
-        this.viewModel = Object.assign({
+        this.viewModel = {
             disabled: false,
             onadd: this.onAdd,
             onremove: this.onRemove,
-            onmove: index => this.move(index)
-        }, options);
+            onmove: index => this.move(index),
+            ...options
+        };
 
         this.render();
 
-        const $target = this.$element.querySelector(ArrayItemView.editorTarget);
+        const $target = this.$element.querySelector(EditorTarget) as HTMLElement;
         this.editor = controller.createEditor(pointer, $target, {
             ondelete: this.onRemove
         });
@@ -56,27 +71,25 @@ class ArrayItemEditor {
         this.editor && this.editor.updatePointer(newPointer);
     }
 
-    toElement() {
+    toElement(): HTMLElement {
         return this.$element;
     }
 
-    getPointer() {
+    getPointer(): JSONPointer {
         return this.viewModel.pointer;
     }
 
-    destroy() {
-        if (this.viewModel) {
-            this.viewModel = null;
-            this.editor && this.editor.destroy();
-            this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
+    destroy(): void {
+        if (this.viewModel == null) {
+            return;
         }
+        this.viewModel = null;
+        this.editor && this.editor.destroy();
+        this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
     }
 
-    static getIndex(pointer) {
+    static getIndex(pointer: JSONPointer): number {
         const parentPointer = gp.join(pointer, "..");
         return parseInt(pointer.replace(`${parentPointer}/`, ""));
     }
 }
-
-
-module.exports = ArrayItemEditor;
