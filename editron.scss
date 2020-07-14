@@ -1,10 +1,10 @@
 @import "mithril-material-forms/material-forms";
 @import "./core-editors";
 
-@import "./components/container/container-layout";
-@import "./components/container/container-theme";
-@import "./components/overlay/overlay";
-@import "./components/overlayjson/overlay-json";
-@import "./components/overlayselecttiles/overlay-select-tiles";
-@import "./styles/mmf-card";
-@import "./styles/ui-row";
+@import "./src/components/container/container-layout";
+@import "./src/components/container/container-theme";
+@import "./src/components/overlay/overlay";
+@import "./src/components/overlayjson/overlay-json";
+@import "./src/components/overlayselecttiles/overlay-select-tiles";
+@import "./src/styles/mmf-card";
+@import "./src/styles/ui-row";

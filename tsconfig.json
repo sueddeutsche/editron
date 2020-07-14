@@ -19,7 +19,8 @@
         "plugin/**/*",
         "services/**/*",
         "utils/**/*",
-        "src/**/*"
+        "src/**/*",
+        "@technik-sde/foxy/**/*"
     ],
     "exclude": [
         "node_modules/**/*.test.ts",

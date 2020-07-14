@@ -91,7 +91,7 @@ var editron =
 /*!****************************************************************!*\
   !*** delegated ./editron.ts from dll-reference editronModules ***!
   \****************************************************************/
-/*! exports provided: default */
+/*! exports provided: default, components, editors, services, utils, plugin */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(/*! dll-reference editronModules */ "dll-reference editronModules"))("./editron.ts");

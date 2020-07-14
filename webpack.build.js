@@ -3,6 +3,7 @@ const path = require("path");
 const webpack = require("webpack");
 const PRODUCTION = process.env.NODE_ENV === "production";
 const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
+const TerserPlugin = require("terser-webpack-plugin");
 
 
 const config = {
@@ -79,12 +80,13 @@ const config = {
 
     optimization: {
         minimizer: [].concat(PRODUCTION ? [
-            new (require("uglifyjs-webpack-plugin"))({
-                sourceMap: false,
-                uglifyOptions: {
-                    compress: { drop_console: true } // eslint-disable-line @typescript-eslint/camelcase
-                }
-            })
+            new TerserPlugin()
+            // new (require("uglifyjs-webpack-plugin"))({
+            //     sourceMap: false,
+            //     uglifyOptions: {
+            //         compress: { drop_console: true } // eslint-disable-line @typescript-eslint/camelcase
+            //     }
+            // })
         ] : [])
     },
 

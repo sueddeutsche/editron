@@ -1,25 +1,25 @@
 import gp from "gson-pointer";
 import jsonSchemaLibrary from "json-schema-library";
 import addValidator from "json-schema-library/lib/addValidator";
-import DataService from "../services/DataService";
-import SchemaService from "../services/SchemaService";
-import ValidationService from "../services/ValidationService";
-import LocationService from "../services/LocationService";
-import State from "../services/State";
-import selectEditor from "../utils/selectEditor";
-import _createElement from "../utils/createElement";
-import addItem from "../utils/addItem";
-import UISchema from "../utils/UISchema";
-import getID from "../utils/getID";
+import DataService, { EVENTS as DataServiceEvents } from "./services/DataService";
+import SchemaService from "./services/SchemaService";
+import ValidationService from "./services/ValidationService";
+import LocationService from "./services/LocationService";
+import State from "./services/State";
+import selectEditor from "./utils/selectEditor";
+import _createElement from "./utils/createElement";
+import addItem from "./utils/addItem";
+import UISchema from "./utils/UISchema";
+import getID from "./utils/getID";
 import plugin from "./plugin";
-import i18n from "../utils/i18n";
-import createProxy from "../utils/createProxy";
+import i18n from "./utils/i18n";
+import createProxy from "./utils/createProxy";
 import { JSONPointer, JSONSchema, JSONData } from "./types";
 
-import oneOfEditor from "../editors/oneofeditor";
-import arrayEditor from "../editors/arrayeditor";
-import objectEditor from "../editors/objecteditor";
-import valueEditor from "../editors/valueeditor";
+import oneOfEditor from "./editors/oneofeditor";
+import arrayEditor from "./editors/arrayeditor";
+import objectEditor from "./editors/objecteditor";
+import valueEditor from "./editors/valueeditor";
 
 const { JsonEditor: Core } = jsonSchemaLibrary.cores;
 
@@ -166,7 +166,7 @@ export default class Controller {
         this.dataService = new DataService(this.state, data);
         // start validation after data has been updated
         this.onAfterDataUpdate = this.dataService
-            .on(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+            .on(DataServiceEvents.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
         // run initial validation
         this.validateAll();
     }
@@ -409,7 +409,7 @@ export default class Controller {
         this.schemaService.destroy();
         this.validationService.destroy();
         this.dataService.destroy();
-        this.dataService.off(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate);
+        this.dataService.off(DataServiceEvents.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 
     onAfterDataUpdate({ pointer }) {

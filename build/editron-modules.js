@@ -87,1726 +87,6 @@ var editronModules =
 /************************************************************************/
 /******/ ({
 
-/***/ "./components/container/index.js":
-/*!***************************************!*\
-  !*** ./components/container/index.js ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var ContainerHeader = __webpack_require__(/*! ../containerheader */ "./components/containerheader/index.js");
-
-var ContainerErrors = __webpack_require__(/*! ../containererrors */ "./components/containererrors/index.js");
-
-var ContainerDescription = __webpack_require__(/*! ../containerdescription */ "./components/containerdescription/index.js");
-/**
- * @view ContainerView
- *
- * A Container Component is used for any non-value like object or arrays. They hold other values. This group may expose
- * a group-title and errors. Any childnodes must go to the container '.jed-container__children'.
- *
- * @type {Object}
- */
-
-
-var ContainerView = {
-  childContainerSelector: ".editron-container__children",
-  getChildContainer: function getChildContainer($element) {
-    var $childContainer = $element.querySelector(ContainerView.childContainerSelector);
-
-    if ($childContainer == null) {
-      throw new Error("Container-Component hast not yet been rendered");
-    }
-
-    return $childContainer;
-  },
-  view: function view(vnode) {
-    return [vnode.attrs.hideTitle === true ? null : m(ContainerHeader, vnode.attrs), m(ContainerDescription, vnode.attrs), vnode.children, m(ContainerErrors, vnode.attrs), m(this.childContainerSelector)];
-  }
-};
-module.exports = ContainerView;
-
-/***/ }),
-
-/***/ "./components/containerdescription/index.js":
-/*!**************************************************!*\
-  !*** ./components/containerdescription/index.js ***!
-  \**************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var populated = __webpack_require__(/*! ../../utils/populated */ "./utils/populated.js");
-/**
- * @name   ContainerDescription
- * @description
- * Mithril Component to render a description
- *
- * # Usage
- *
- * render by
- *
- * ```js
- *  m(ContainerDescription, { description: "description" }
- * ```
- *
- * which will result in a html-node like
- *
- * ```html
- *  <div class="editron-container__description mmf-meta">"description"</div>
- * ```
- *
- * @type {Object} m.render(ContainerDescription)
- * @param {String|Object} description  - html string or mithril-vnode of a description
- */
-
-
-module.exports = {
-  view: function view(vnode) {
-    return populated(vnode.attrs.description, m(".editron-container__description.mmf-meta", m.trust(vnode.attrs.description)));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/containererrors/index.js":
-/*!*********************************************!*\
-  !*** ./components/containererrors/index.js ***!
-  \*********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(vnode) {
-    if (Array.isArray(vnode.attrs.errors) === false || vnode.attrs.errors.length === 0) {
-      return null;
-    }
-
-    return m("ul.editron-container__errors", vnode.attrs.errors.map(function (error) {
-      return m("li", {
-        "class": "is-".concat(error.severity || "error")
-      }, error.message);
-    }));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/containerheader/index.js":
-/*!*********************************************!*\
-  !*** ./components/containerheader/index.js ***!
-  \*********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var getID = __webpack_require__(/*! ../../utils/getID */ "./utils/getID.js");
-
-var populated = __webpack_require__(/*! ../../utils/populated */ "./utils/populated.js");
-
-function getClass(_ref) {
-  var title = _ref.title,
-      icon = _ref.icon,
-      hasAction = _ref.hasAction,
-      disabled = _ref.disabled;
-  var classname = "".concat(title ? "withTitle" : "noTitle");
-  classname += " ".concat(hasAction ? "withActions" : "noActions");
-  classname += " ".concat(icon ? "withIcon" : "noIcon");
-  classname += disabled ? " is-disabled" : "";
-  return classname;
-}
-
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({
-      pointer: "",
-      icon: "",
-      title: "",
-      disabled: false // onadd
-      // ondelete
-      // onmoveup
-      // onmovedown
-
-    }, vnode.attrs);
-
-    attrs.hasAction = attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown;
-    return m(".editron-container__header", {
-      "class": getClass(attrs),
-      name: getID(attrs.pointer)
-    }, m(".editron-container__title", populated(vnode.attrs.icon, m("i.mmf-icon", attrs.icon)), !attrs.hideTitle && m("h2", attrs.title)), m(".editron-container__actions", attrs.onmoveup ? m("i.mmf-icon.mmf-icon--add", {
-      onclick: attrs.onmoveup
-    }, "arrow_upward") : "", attrs.onmovedown ? m("i.mmf-icon.mmf-icon--add", {
-      onclick: attrs.onmovedown
-    }, "arrow_downward") : "", attrs.onadd ? m("i.mmf-icon.mmf-icon--add", {
-      onclick: function onclick() {
-        return attrs.onadd();
-      }
-    }, "add") : "", attrs.ondelete ? m("i.mmf-icon.mmf-icon--delete", {
-      onclick: attrs.ondelete
-    }, "delete") : ""));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/index.js":
-/*!*****************************!*\
-  !*** ./components/index.js ***!
-  \*****************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  container: __webpack_require__(/*! ./container */ "./components/container/index.js"),
-  containerdescription: __webpack_require__(/*! ./containerdescription */ "./components/containerdescription/index.js"),
-  containererrors: __webpack_require__(/*! ./containererrors */ "./components/containererrors/index.js"),
-  containerheader: __webpack_require__(/*! ./containerheader */ "./components/containerheader/index.js"),
-  overlay: __webpack_require__(/*! ./overlay */ "./components/overlay/index.js"),
-  // overlayjson: require("./overlayjson"),
-  overlayselecttiles: __webpack_require__(/*! ./overlayselecttiles */ "./components/overlayselecttiles/index.js")
-};
-
-/***/ }),
-
-/***/ "./components/overlay/index.js":
-/*!*************************************!*\
-  !*** ./components/overlay/index.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Button = __webpack_require__(/*! mithril-material-forms */ "./node_modules/mithril-material-forms/index.js").button;
-
-module.exports = {
-  /**
-   * @View mithril
-   * Content overlay
-   *
-   * @param  {VNode} vnode                        - mithril virtual node
-   * @param  {VNode.attrs.container} container    - parent container
-   * @return {Object} virtual node
-   */
-  view: function view(vnode) {
-    return m("section.ui-overlay__card", {
-      "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
-    }, vnode.attrs.header ? m(".ui-card__header", m("h1", vnode.attrs.header)) : "", m(".ui-card__content", {
-      oncreate: function oncreate(contentNode) {
-        return contentNode.dom.appendChild(vnode.attrs.container);
-      }
-    }), m(".ui-card__footer", m(Button, {
-      onClick: vnode.attrs.onAbort
-    }, vnode.attrs.titleAbort), vnode.attrs.showSave ? m(Button, {
-      onClick: vnode.attrs.onSave
-    }, "Speichern") : ""));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/overlayselecttiles/index.js":
-/*!************************************************!*\
-  !*** ./components/overlayselecttiles/index.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Tile = {
-  view: function view(vnode) {
-    return m(".editron-form-box", {
-      "data-value": vnode.attrs.value,
-      "data-type": vnode.attrs.title.toLowerCase() // @uitest
-
-    }, m(".editron-form-box__content", m(".editron-form-box__title", [vnode.attrs.icon ? m(".mmf-icon", vnode.attrs.icon) : "", vnode.attrs.title]), m(".editron-form-box__description", vnode.attrs.description)));
-  }
-};
-
-function getDataValue(node) {
-  while (node.parentNode && node.getAttribute("data-value") == null && node.className.includes("editron-form-tiles") === false) {
-    node = node.parentNode;
-  }
-
-  return node.getAttribute("data-value");
-}
-/**
- * @View mithril
- * Overlay content to pick options. Displayed as tiles
- * @type {Object}
- */
-
-
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({
-      value: 0,
-      options: [{
-        title: "Keine Optionen angegeben",
-        value: false
-      }],
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    return m(".editron-form-tiles", {
-      onclick: function onclick(e) {
-        var value = getDataValue(e.target);
-        attrs.onchange(value);
-      }
-    }, attrs.options.map(function (tile) {
-      return m(Tile, {
-        active: attrs.value === tile.value,
-        title: tile.title,
-        icon: tile.icon,
-        description: m.trust(tile.description),
-        // allow html
-        value: tile.value
-      });
-    }));
-  }
-};
-
-/***/ }),
-
-/***/ "./editors/AbstractEditor.js":
-/*!***********************************!*\
-  !*** ./editors/AbstractEditor.js ***!
-  \***********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function getTypeClass(schema) {
-  return schema.type === "array" || schema.type === "object" ? schema.type : "value";
-}
-/**
- * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
- * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
- * the tedious and redundant controller/serivce/pointer bootstraping.
- *
- * Still required is
- *
- *      1. a custom `static editorOf(p, c, o)`-method, to register on a schema
- *      2. an `update(patch)`-method to respond to changes of the data at _pointer_
- *      3. a custom `updatePointer(newPointer)`-method to respond to changes in the location of the editor. Most of
- *          times, the pointer will be used in rendering and/or when creating child-editors. Dont forget to call
- *          `super.updatePointer(newPointer)`
- *
- * and optionally an `updateErrors(errors)`-method to handle new (or removed) errors.
- *
- * Convenience methods are
- *
- *      - `getData()` to fetch the associated data of the current _pointer_
- *      - `setData(newValue)` to update the associated data of the current _pointer_
- *      - `getSchema()` returning the json-schema of the current _pointer_
- *      - `getErrors()` returning a list of current errors
- *      - `toElement()` gives you the root dom-node for this editor (aka render target)
- *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
- *
- * @param {String} pointer          - pointer referencing the current data and schema
- * @param {Controller} controller   - editron controller instance
- * @param {Object} options          - resolved options object
- */
-
-
-var AbstractEditor = /*#__PURE__*/function () {
-  _createClass(AbstractEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller, options) {
-      // eslint-disable-line
-      throw new Error("Missing editorOf-method in custom editor");
-    }
-  }]);
-
-  function AbstractEditor(pointer, controller, options) {
-    _classCallCheck(this, AbstractEditor);
-
-    this.pointer = pointer;
-    this.controller = controller;
-    this.options = options;
-    this.dom = this.controller.createElement(".editron-container.editron-container--".concat(getTypeClass(this.getSchema())), options.attrs);
-    this.update = controller.data().observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this), options.notifyNestedErrors === true);
-    this.errors = this.controller.validator().getErrorsAndWarnings(pointer);
-  }
-
-  _createClass(AbstractEditor, [{
-    key: "update",
-    value: function update() {
-      throw new Error("Missing implemented of method 'update' in custom editor");
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      var oldPointer = this.pointer;
-      this.controller.data().removeObserver(oldPointer, this.update);
-      this.controller.validator().removeObserver(oldPointer, this.setErrors);
-      this.pointer = newPointer;
-      this.controller.data().observe(newPointer, this.update, this.options.notifyNestedChanges === true);
-      this.setErrors = this.controller.validator().observe(newPointer, this.setErrors);
-      return [newPointer, oldPointer];
-    }
-  }, {
-    key: "getData",
-    value: function getData() {
-      return this.controller.data().get(this.pointer);
-    }
-  }, {
-    key: "setData",
-    value: function setData(data) {
-      return this.controller.data().set(this.pointer, data);
-    }
-  }, {
-    key: "getErrors",
-    value: function getErrors() {
-      return this.errors;
-    }
-  }, {
-    key: "getSchema",
-    value: function getSchema() {
-      return this.controller.schema().get(this.pointer);
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "focus",
-    value: function focus() {
-      this.controller.location().setCurrent(this.pointer);
-    }
-  }, {
-    key: "blur",
-    value: function blur() {
-      this.controller.location().blur(this.pointer);
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.dom;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
-
-      this.controller.data().removeObserver(this.pointer, this.update);
-      this.controller.validator().removeObserver(this.pointer, this._addError);
-      this.controller.validator().off("beforeValidation", this._clearErrors);
-    }
-  }, {
-    key: "setErrors",
-    value: function setErrors(errors) {
-      this.errors = errors;
-
-      if (this.updateErrors) {
-        this.updateErrors(this.errors);
-      }
-    }
-  }]);
-
-  return AbstractEditor;
-}();
-
-module.exports = AbstractEditor;
-
-/***/ }),
-
-/***/ "./editors/AbstractValueEditor.js":
-/*!****************************************!*\
-  !*** ./editors/AbstractValueEditor.js ***!
-  \****************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var getId = __webpack_require__(/*! ../utils/getID */ "./utils/getID.js");
-
-var convert = {
-  "boolean": function boolean(value) {
-    if (value === "true") {
-      return true;
-    }
-
-    if (value === "false") {
-      return false;
-    }
-
-    return value;
-  },
-  integer: function integer(value) {
-    var converted = parseInt(value);
-
-    if (isNaN(converted) === false) {
-      return converted;
-    }
-
-    return value;
-  },
-  number: function number(value) {
-    var converted = parseFloat(value);
-
-    if (isNaN(converted) === false) {
-      return converted;
-    }
-
-    return value;
-  }
-};
-/**
- * Convenience class, which registers required events and base methods for value-editors (not object, array)
- *
- * Usage
- * ```js
- *      MyValueEditor extends AbstractValueEditor {
- *          constructor(pointer, controller, options) {
- *              super(pointer, controller, options);
- *              this.render();
- *          }
- *          render() {
- *              m.render(this.$element, m(MyView, this.viewModel));
- *          }
- *      }
- * ```
- */
-
-var AbstractValueEditor = /*#__PURE__*/function () {
-  _createClass(AbstractValueEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type !== "object" && schema.type !== "array";
-    }
-    /**
-     * #options
-     *      - editorValueType:String - custom type of editor value (added as classname)
-     *      - editorElementProperties:Object - add custom properties to main DOM-element
-     *      - viewModel:Object - viewModel which extends base viewmodel
-     *
-     * @param  {String} pointer         - json pointer to value
-     * @param  {Controller} controller  - json editor controller
-     * @param  {Object} options
-     */
-
-  }]);
-
-  function AbstractValueEditor(pointer, controller, options) {
-    var _this = this;
-
-    _classCallCheck(this, AbstractValueEditor);
-
-    this.pointer = pointer;
-    this.controller = controller;
-    var schema = controller.schema().get(pointer);
-    options = _extends({
-      viewModel: null,
-      title: null,
-      description: null,
-      editorValueType: schema["enum"] ? "select" : schema.type,
-      editorElementProperties: null
-    }, options); // create main DOM-element for view-generation
-
-    this.$element = controller.createElement(".editron-value.editron-value--".concat(options.editorValueType), _extends({
-      name: getId(pointer)
-    }, options.attrs)); // use this model to generate the view. may be customized with `options.viewModel`
-
-    this.viewModel = _extends({
-      pointer: pointer,
-      id: getId(pointer),
-      title: options.title,
-      description: options.description,
-      value: controller.data().get(pointer),
-      instantUpdate: options.instantUpdate,
-      schema: schema,
-      options: options,
-      errors: controller.validator().getErrorsAndWarnings(pointer),
-      onfocus: function onfocus() {
-        return controller.location().setCurrent(pointer);
-      },
-      onblur: function onblur() {
-        return controller.location().blur(pointer);
-      },
-      onchange: function onchange(value) {
-        if (convert[schema.type]) {
-          value = convert[schema.type](value);
-        }
-
-        _this.setValue(value);
-      }
-    }, options.viewModel); // in order to deregister callbacks in destroy(), bind all callbacks to this class
-
-    this.update = controller.data().observe(pointer, this.update.bind(this));
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this)); // this.render();
-  }
-
-  _createClass(AbstractValueEditor, [{
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(pointer) {
-      var _this2 = this;
-
-      if (pointer === this.pointer) {
-        return;
-      }
-
-      this.controller.changePointer(pointer, this);
-      var oldPointer = this.pointer;
-      this.$element.setAttribute("name", "editor-".concat(pointer));
-      this.pointer = pointer;
-      this.viewModel.pointer = pointer;
-      this.viewModel.id = getId(pointer);
-
-      this.viewModel.onfocus = function () {
-        return _this2.controller.location().setCurrent(pointer);
-      };
-
-      this.controller.data().removeObserver(oldPointer, this.update);
-      this.controller.validator().removeObserver(oldPointer, this.setErrors);
-      this.controller.data().observe(pointer, this.update);
-      this.controller.validator().observe(pointer, this.setErrors);
-      this.update();
-    }
-  }, {
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      this.viewModel.disabled = active === false;
-
-      if (this.viewModel.options) {
-        this.viewModel.options.disabled = this.viewModel.disabled;
-      }
-
-      this.render();
-    } // update display value in view
-
-  }, {
-    key: "update",
-    value: function update() {
-      this.viewModel.value = this.controller.data().get(this.pointer);
-      this.viewModel.disabled = !this.controller.isActive();
-      this.render();
-    } // updates value in data-store
-
-  }, {
-    key: "setValue",
-    value: function setValue(value) {
-      this.controller.data().set(this.pointer, value); // do not trigger rendering here. data-observer will notify change event
-    } // adds an error to view
-
-  }, {
-    key: "setErrors",
-    value: function setErrors(errors) {
-      this.viewModel.errors = errors;
-      this.render();
-    } // update view
-
-  }, {
-    key: "render",
-    value: function render() {
-      // this.$element.innerHTML = "<b>Overwrite AbstractValueEditor.render() to generate your view</b>";
-      m.render(this.$element, m("b", "Overwrite AbstractValueEditor.render() to generate view"));
-    } // return main dom element
-
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    } // destroy this editor
-
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this); // destroy this editor only once
-
-        m.render(this.$element, m("i"));
-        this.viewModel = null;
-        this.controller.data().removeObserver(this.pointer, this.update);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.$element = null;
-      }
-    }
-  }]);
-
-  return AbstractValueEditor;
-}();
-
-module.exports = AbstractValueEditor;
-
-/***/ }),
-
-/***/ "./editors/arrayeditor/ArrayItemEditor.js":
-/*!************************************************!*\
-  !*** ./editors/arrayeditor/ArrayItemEditor.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var ArrayItemView = __webpack_require__(/*! ./ArrayItemView */ "./editors/arrayeditor/ArrayItemView.js");
-
-var arrayUtils = __webpack_require__(/*! ../../utils/array */ "./utils/array.js");
-
-var ArrayItemEditor = /*#__PURE__*/function () {
-  function ArrayItemEditor(pointer, controller) {
-    var _this = this;
-
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ArrayItemEditor);
-
-    // eslint-disable-next-line max-len
-    this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
-    this.controller = controller;
-
-    this.onAdd = function () {
-      return _this.add();
-    };
-
-    this.onRemove = function () {
-      return _this.remove();
-    };
-
-    this.viewModel = _extends({
-      disabled: false,
-      onadd: this.onAdd,
-      onremove: this.onRemove,
-      onmove: function onmove(index) {
-        return _this.move(index);
-      }
-    }, options);
-    this.render();
-    var $target = this.$element.querySelector(ArrayItemView.editorTarget);
-    this.editor = controller.createEditor(pointer, $target, {
-      ondelete: this.onRemove
-    });
-    this.updatePointer(pointer);
-  }
-
-  _createClass(ArrayItemEditor, [{
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(ArrayItemView, this.viewModel));
-    }
-  }, {
-    key: "add",
-    value: function add() {
-      arrayUtils.addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
-    }
-  }, {
-    key: "remove",
-    value: function remove() {
-      arrayUtils.removeItem(this.parentPointer, this.controller, this.viewModel.index);
-    }
-  }, {
-    key: "move",
-    value: function move(to) {
-      arrayUtils.moveItem(this.parentPointer, this.controller, this.viewModel.index, to);
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      this.parentPointer = gp.join(newPointer, "..", true);
-      this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
-      this.viewModel.pointer = newPointer;
-      this.viewModel.length = this.controller.data().get(this.parentPointer).length;
-      this.render();
-      this.editor && this.editor.updatePointer(newPointer);
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.viewModel.pointer;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.viewModel = null;
-        this.editor && this.editor.destroy();
-        this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
-      }
-    }
-  }], [{
-    key: "getIndex",
-    value: function getIndex(pointer) {
-      var parentPointer = gp.join(pointer, "..");
-      return parseInt(pointer.replace("".concat(parentPointer, "/"), ""));
-    }
-  }]);
-
-  return ArrayItemEditor;
-}();
-
-module.exports = ArrayItemEditor;
-
-/***/ }),
-
-/***/ "./editors/arrayeditor/ArrayItemView.js":
-/*!**********************************************!*\
-  !*** ./editors/arrayeditor/ArrayItemView.js ***!
-  \**********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var ArrayItemView = {
-  editorTarget: ".editron-item",
-  view: function view(_ref) {
-    var attrs = _ref.attrs;
-    var _attrs$disabled = attrs.disabled,
-        disabled = _attrs$disabled === void 0 ? false : _attrs$disabled;
-    var canRemove = attrs.minItems < attrs.length;
-    var canAdd = attrs.maxItems > attrs.length;
-    var showIndex = attrs.showIndex === true;
-    return [// CONTROLS
-    m("ul.editron-container__controls.editron-container__controls--child", {
-      "class": disabled ? "is-disabled" : undefined
-    }, attrs.move === false || attrs.index === 0 ? "" : m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.onmove(attrs.index - 1);
-      }
-    }, m("i.mmf-icon", "arrow_upward")), attrs.move === false || attrs.index === attrs.length - 1 ? "" : m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.onmove(attrs.index + 1);
-      }
-    }, m("i.mmf-icon", "arrow_downward")), attrs.remove && attrs.ondelete && canRemove ? m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.ondelete(attrs.index);
-      }
-    }, m("i.mmf-icon", "delete")) : "", attrs.add && attrs.onadd && canAdd ? m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.onadd(attrs.index);
-      }
-    }, m("i.mmf-icon", "add")) : ""), // TARGET CONTAINER FOR EDITOR
-    m(this.editorTarget, {
-      "data-index": "".concat(attrs.index + 1, " / ").concat(attrs.length),
-      "class": [disabled ? "is-disabled" : "", canRemove ? "has-remove-enabled" : "has-remove-disabled", canAdd ? "has-add-enabled" : "has-add-disabled", showIndex ? "with-index" : ""].join(" ").trim()
-    }), // ADD BUTTON
-    attrs.insert && canAdd ? m(".editron-container__separator.mmf-row", m(".editron-container__button--add", {
-      "class": disabled ? "is-disabled" : undefined,
-      onclick: function onclick(e) {
-        console.log("add", disabled);
-
-        if (!disabled) {
-          e.preventDefault();
-          attrs.onadd && attrs.onadd(attrs.index);
-        }
-      }
-    }, m("i.mmf-icon", "add_circle"))) : ""];
-  }
-};
-module.exports = ArrayItemView;
-
-/***/ }),
-
-/***/ "./editors/arrayeditor/index.js":
-/*!**************************************!*\
-  !*** ./editors/arrayeditor/index.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var ArrayItemEditor = __webpack_require__(/*! ./ArrayItemEditor */ "./editors/arrayeditor/ArrayItemEditor.js");
-
-var diffpatch = __webpack_require__(/*! ../../services/utils/diffpatch */ "./services/utils/diffpatch.js");
-
-var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
-
-var ArrayEditor = /*#__PURE__*/function () {
-  _createClass(ArrayEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type === "array";
-    }
-  }]);
-
-  function ArrayEditor(pointer, controller) {
-    var _this = this;
-
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ArrayEditor);
-
-    // add id to element, since no other input-form is associated with this editor
-    options.attrs = _extends({
-      id: options.id
-    }, options.attrs);
-    var schema = controller.schema().get(pointer);
-    var data = controller.data().get(pointer);
-
-    this.onAdd = function () {
-      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-
-      if (!_this.viewModel.disabled) {
-        controller.addItemTo(_this.pointer, index);
-      }
-    };
-
-    var arrayHTMLElement = ".editron-container.editron-container--array.withAddButton";
-    this.$element = controller.createElement(arrayHTMLElement, options.attrs);
-    this.controller = controller;
-    this.pointer = pointer;
-    this.children = [];
-    this.viewModel = _extends({
-      pointer: pointer,
-      attrs: {},
-      errors: controller.validator().getErrorsAndWarnings(pointer),
-      onadd: this.onAdd,
-      length: data.length,
-      maxItems: schema.maxItems || Infinity,
-      minItems: schema.minItems || 0
-    }, options);
-    this.viewModel.controls = _extends({
-      add: false,
-      remove: true,
-      move: true,
-      insert: true,
-      showIndex: options["array:index"] === true,
-      maxItems: schema.maxItems || Infinity,
-      minItems: schema.minItems || 0
-    }, options.controls);
-    this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-    this.render();
-    this.$items = this.$element.querySelector(View.childContainerSelector);
-    this.rebuildChildren();
-    this.updateControls();
-  }
-
-  _createClass(ArrayEditor, [{
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      var disabled = active === false;
-      this.viewModel.disabled = disabled;
-      this.viewModel.controls.disabled = disabled;
-      this.rebuildChildren();
-      this.render();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      this.rebuildChildren();
-      this.updateControls();
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      if (this.pointer === newPointer) {
-        return;
-      }
-
-      this.controller.changePointer(newPointer, this);
-      var previousPointer = this.pointer;
-      this.pointer = newPointer;
-      this.viewModel.pointer = newPointer;
-      this.viewModel.attrs.id = newPointer;
-      this.controller.data().removeObserver(previousPointer, this.updateView);
-      this.controller.validator().removeObserver(previousPointer, this.setErrors);
-      this.controller.data().observe(newPointer, this.updateView);
-      this.controller.validator().observe(newPointer, this.setErrors);
-      this.children.forEach(function (child, index) {
-        return child.updatePointer("".concat(newPointer, "/").concat(index));
-      });
-      this.render();
-    }
-  }, {
-    key: "updateView",
-    value: function updateView(changeEvent) {
-      if (changeEvent && changeEvent.patch) {
-        this.applyPatches(changeEvent.patch);
-      } else {
-        this.rebuildChildren();
-      }
-
-      this.updateControls();
-    }
-  }, {
-    key: "applyPatches",
-    value: function applyPatches(patch) {
-      var _this2 = this;
-
-      // fetch a copy of the original list
-      var originalChildren = this.children.slice(0); // and patch the current list
-
-      diffpatch.patch(this.children, patch); // search for inserted children
-
-      this.children.forEach(function (child, index) {
-        if (child instanceof ArrayItemEditor === false) {
-          var pointer = "".concat(_this2.pointer, "/").concat(index);
-          var newChild = new ArrayItemEditor(pointer, _this2.controller, _this2.viewModel.controls); // @insert?
-
-          _this2.children[index] = newChild;
-        }
-      }); // search for removed children
-
-      originalChildren.forEach(function (child) {
-        if (_this2.children.indexOf(child) === -1) {
-          child.destroy();
-        }
-      }); // update view: move and inserts nodes
-
-      var currentLocation = this.controller.location().getCurrent();
-
-      for (var i = 0, l = this.children.length; i < l; i += 1) {
-        var previousPointer = this.children[i].getPointer();
-        var currentPointer = "".concat(this.pointer, "/").concat(i); // update current location
-
-        if (currentLocation.indexOf(previousPointer) === 0) {
-          var editorLocation = currentLocation.replace(previousPointer, currentPointer);
-          this.controller.location().setCurrent(editorLocation);
-        } // update child views to match patched list
-
-
-        this.children[i].updatePointer(currentPointer);
-
-        if (this.$items.children[i] === this.children[i].toElement()) {
-          // skip moving node, already in place
-          continue;
-        } else if (i + 1 < this.$items.children.length) {
-          // move node to correct position
-          this.$items.insertBefore(this.children[i].toElement(), this.$items.children[i + 1]);
-        } else {
-          // remaining nodes may be simply appended
-          this.$items.appendChild(this.children[i].toElement());
-        }
-      }
-    }
-  }, {
-    key: "rebuildChildren",
-    value: function rebuildChildren() {
-      var _this3 = this;
-
-      var data = this.controller.data().get(this.pointer); // delete all child editors
-
-      this.children.forEach(function (editor) {
-        return editor.destroy();
-      });
-      this.children.length = 0;
-      this.$items.innerHTML = ""; // recreate child editors
-
-      data.forEach(function (item, index) {
-        var childPointer = "".concat(_this3.pointer, "/").concat(index);
-        var childEditor = new ArrayItemEditor(childPointer, _this3.controller, _this3.viewModel.controls);
-
-        _this3.$items.appendChild(childEditor.toElement());
-
-        _this3.children.push(childEditor);
-      });
-    }
-  }, {
-    key: "updateControls",
-    value: function updateControls() {
-      this.viewModel.length = this.children.length;
-      this.viewModel.onadd = this.viewModel.maxItems > this.children.length ? this.onAdd : false;
-      this.$element.classList.toggle("has-add-disabled", this.viewModel.maxItems <= this.children.length);
-      this.$element.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "setErrors",
-    value: function setErrors(errors) {
-      this.viewModel.errors = errors;
-      this.render();
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel));
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this);
-        this.viewModel = null;
-        m.render(this.$element, m("i"));
-        this.controller.data().removeObserver(this.pointer, this.updateView);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.children.forEach(function (editor) {
-          return editor.destroy();
-        });
-      }
-    }
-  }]);
-
-  return ArrayEditor;
-}();
-
-module.exports = ArrayEditor;
-
-/***/ }),
-
-/***/ "./editors/index.js":
-/*!**************************!*\
-  !*** ./editors/index.js ***!
-  \**************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  AbstractEditor: __webpack_require__(/*! ./AbstractEditor */ "./editors/AbstractEditor.js"),
-  AbstractValueEditor: __webpack_require__(/*! ./AbstractValueEditor */ "./editors/AbstractValueEditor.js"),
-  ArrayEditor: __webpack_require__(/*! ./arrayeditor */ "./editors/arrayeditor/index.js"),
-  ObjectEditor: __webpack_require__(/*! ./objecteditor */ "./editors/objecteditor/index.js"),
-  OneOfEditor: __webpack_require__(/*! ./oneofeditor */ "./editors/oneofeditor/index.js"),
-  ValueEditor: __webpack_require__(/*! ./valueeditor */ "./editors/valueeditor/index.js")
-};
-
-/***/ }),
-
-/***/ "./editors/objecteditor/index.js":
-/*!***************************************!*\
-  !*** ./editors/objecteditor/index.js ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var TextareaForm = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
-
-var OverlayService = __webpack_require__(/*! ../../services/OverlayService */ "./services/OverlayService.js");
-
-var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
-
-function showJSON(controller, data, title) {
-  var element = controller.createElement(".overlay__item.overlay__item--json");
-  OverlayService.open(element, {
-    ok: true,
-    save: false
-  }); // render textarea after it is injected into dom, to correctly update textarea size
-
-  m.render(element, m(TextareaForm, {
-    title: title,
-    value: JSON.stringify(data, null, 4)
-  }));
-}
-
-var ObjectEditor = /*#__PURE__*/function () {
-  _createClass(ObjectEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type === "object";
-    }
-  }]);
-
-  function ObjectEditor(pointer, controller) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ObjectEditor);
-
-    // add id to element, since no other input-form is associated with this editor
-    options.attrs = _extends({
-      id: options.id
-    }, options.attrs);
-    this.$element = controller.createElement(".editron-container.editron-container--object", options.attrs);
-    this.pointer = pointer;
-    this.options = options;
-    this.controller = controller;
-    this.childEditors = [];
-    this.viewModel = _extends({
-      pointer: pointer,
-      icon: options.icon,
-      errors: [],
-      attrs: {},
-      hideTitle: options.hideTitle,
-      title: options.title,
-      description: options.description
-    }, options);
-
-    if (options.addDelete) {
-      this.viewModel.ondelete = function () {
-        return controller.data()["delete"](pointer);
-      };
-    }
-
-    this.rebuildChildren = controller.data().observe(pointer, this.rebuildChildren.bind(this));
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-    this.setErrors(controller.validator().getErrorsAndWarnings(pointer));
-    this.render();
-    this.$children = this.$element.querySelector(View.childContainerSelector);
-    this.rebuildChildren();
-  }
-
-  _createClass(ObjectEditor, [{
-    key: "updatePointer",
-    value: function updatePointer(pointer) {
-      var _this = this;
-
-      if (this.pointer === pointer || this.viewModel == null) {
-        return;
-      }
-
-      this.controller.changePointer(pointer, this);
-      var oldPointer = this.pointer;
-      this.$element.id = pointer;
-      var controller = this.controller;
-      this.options.attrs.id = pointer;
-      this.pointer = pointer;
-      this.viewModel.pointer = pointer;
-
-      if (this.options.addDelete) {
-        // console.log("Update ondelete", pointer);
-        this.viewModel.ondelete = function () {
-          return controller.data()["delete"](pointer);
-        };
-      }
-
-      controller.data().removeObserver(oldPointer, this.rebuildChildren);
-      controller.validator().removeObserver(oldPointer, this.setErrors);
-      controller.data().observe(pointer, this.rebuildChildren);
-      controller.validator().observe(pointer, this.setErrors);
-      this.childEditors.forEach(function (editor) {
-        editor.updatePointer("".concat(_this.pointer, "/").concat(editor._property));
-      });
-      this.render();
-    }
-  }, {
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      this.viewModel.disabled = active === false;
-      this.render();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      this.rebuildChildren();
-    }
-  }, {
-    key: "rebuildChildren",
-    value: function rebuildChildren() {
-      var _this2 = this;
-
-      if (this.viewModel == null) {
-        console.error("destroyed ObjectEditor receives an update event\n                - this may be invoked through oneOf-Editor", this);
-        return;
-      } // fetch latest data
-
-
-      var data = this.controller.data().get(this.pointer); // destroy child editor
-
-      this.childEditors.forEach(function (editor) {
-        return editor.destroy();
-      });
-      this.childEditors.length = 0; // clear html
-
-      this.$children.innerHTML = ""; // rebuild children
-
-      if (data) {
-        Object.keys(data).forEach(function (property) {
-          var editor = _this2.controller.createEditor("".concat(_this2.pointer, "/").concat(property), _this2.$children);
-
-          if (editor) {
-            editor._property = property;
-
-            _this2.childEditors.push(editor);
-          }
-        });
-      }
-
-      this.render();
-    }
-  }, {
-    key: "deleteProperty",
-    value: function deleteProperty(property) {
-      var data = this.controller.data().get(this.pointer);
-      delete data[property];
-      this.controller.data().set(this.pointer, data);
-    }
-  }, {
-    key: "showProperty",
-    value: function showProperty(property) {
-      var propertyData = this.controller.data().get("".concat(this.pointer, "/").concat(property));
-      showJSON(this.controller, propertyData, property);
-    }
-  }, {
-    key: "setErrors",
-    value: function setErrors() {
-      var _this3 = this;
-
-      var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
-      // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
-      // arrays this should come per default, as the may insert in add items...
-      this.viewModel.errors = errors.map(function (error) {
-        if (error.code === "no-additional-properties-error") {
-          var message = error.message;
-          var property = error.data.property;
-          return {
-            severity: error.type || "error",
-            message: m(".editron-error.editron-error--object-property", m("span", m.trust(message)), m("a.mmf-icon", {
-              onclick: function onclick() {
-                return _this3.showProperty(property);
-              }
-            }, "visibility"), m("a.mmf-icon", {
-              onclick: function onclick() {
-                return _this3.deleteProperty(property);
-              }
-            }, "clear"))
-          };
-        }
-
-        return error;
-      });
-      this.render();
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel));
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this);
-        m.render(this.$element, m("i"));
-        this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.childEditors.forEach(function (editor) {
-          return editor.destroy();
-        });
-        this.childEditors.length = 0;
-        this.$children.innerHTML = "";
-        this.viewModel = null;
-      }
-    }
-  }]);
-
-  return ObjectEditor;
-}();
-
-module.exports = ObjectEditor;
-
-/***/ }),
-
-/***/ "./editors/oneofeditor/index.js":
-/*!**************************************!*\
-  !*** ./editors/oneofeditor/index.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var Select = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.js");
-
-var getId = __webpack_require__(/*! ../../utils/getID */ "./utils/getID.js");
-
-var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
-
-var UI_PROPERTY = __webpack_require__(/*! ../../utils/UISchema */ "./utils/UISchema.js").UI_PROPERTY;
-
-var OneOfEditor = /*#__PURE__*/function () {
-  _createClass(OneOfEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller, options) {
-      var schema = controller.schema().get(pointer);
-      return schema.oneOfSchema && !schema.items && !options.renderOneOf;
-    }
-  }]);
-
-  function OneOfEditor(pointer, controller, options) {
-    var _this = this;
-
-    _classCallCheck(this, OneOfEditor);
-
-    var childSchema = controller.schema().get(pointer); // @special case. Our options lie in `schema.oneOfSchema`
-
-    var schema = childSchema.oneOfSchema;
-    var attrs = gp.get(schema, "#/".concat(UI_PROPERTY, "/attrs"));
-    this.schema = schema;
-    this.childSchema = childSchema; // ensure requried titles are set
-
-    schema.oneOf.forEach(function (oneOfSchema, index) {
-      return oneOfSchema.title = oneOfSchema.title || "".concat(index, ".");
-    });
-    this.$element = controller.createElement(".editron-container.editron-container--oneof", attrs);
-    this.controller = controller;
-    this.pointer = pointer;
-    this.viewModel = {
-      id: getId(pointer),
-      pointer: pointer,
-      options: schema.oneOf.map(function (oneOf, index) {
-        return {
-          title: oneOf.title,
-          value: index
-        };
-      }),
-      onchange: function onchange(oneOfIndex) {
-        _this.changeChild(schema.oneOf[oneOfIndex]);
-      },
-      value: this.getIndexOf(childSchema),
-      title: schema.title,
-      description: schema.description
-    }; // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
-
-    this.update = controller.data().observe(pointer, this.update.bind(this), true);
-    this.render();
-    this.$childContainer = this.$element.querySelector(View.childContainerSelector);
-    this.rebuild();
-  }
-
-  _createClass(OneOfEditor, [{
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      this.viewModel.disabled = active === false;
-      this.render();
-    }
-  }, {
-    key: "changeChild",
-    value: function changeChild(schema) {
-      this.childEditor && this.childEditor.destroy();
-      var data = this.controller.schema().getTemplate(schema);
-      this.controller.data().set(this.pointer, data);
-    }
-  }, {
-    key: "getIndexOf",
-    value: function getIndexOf(currentSchema) {
-      for (var i = 0, l = this.schema.oneOf.length; i < l; i += 1) {
-        if (this.schema.oneOf[i].title === currentSchema.title) {
-          return i;
-        }
-      }
-
-      return 0;
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      var oldPointer = this.getPointer();
-
-      if (oldPointer === newPointer) {
-        return;
-      }
-
-      this.controller.changePointer(newPointer, this);
-      this.pointer = newPointer;
-      this.viewModel.id = getId(newPointer);
-      this.viewModel.pointer = newPointer;
-      this.$element.id = newPointer;
-      this.controller.data().removeObserver(oldPointer, this.update);
-      this.controller.data().observe(newPointer, this.update, true);
-
-      if (this.childEditor) {
-        this.childEditor.updatePointer(newPointer);
-      }
-
-      this.render();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      var currentSchema = this.controller.schema().get(this.pointer);
-      delete currentSchema.oneOfSchema; // is recreated each time
-
-      if (currentSchema.title === this.childSchema.title) {
-        return;
-      }
-
-      this.viewModel.value = this.getIndexOf(currentSchema);
-      this.childSchema = currentSchema;
-      this.rebuild();
-    }
-  }, {
-    key: "rebuild",
-    value: function rebuild() {
-      this.childEditor && this.childEditor.destroy();
-      this.$childContainer.innerHTML = "";
-      this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
-        // @attention this is very important or else we create an infinite loop through selectEditor
-        renderOneOf: true
-      });
-      this.render();
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel, m(".editron-value", m(Select, this.viewModel))));
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this);
-        this.viewModel = null;
-        m.render(this.$element, "i");
-        this.controller.data().removeObserver(this.pointer, this.update);
-      }
-    }
-  }]);
-
-  return OneOfEditor;
-}();
-
-module.exports = OneOfEditor;
-
-/***/ }),
-
-/***/ "./editors/valueeditor/View.js":
-/*!*************************************!*\
-  !*** ./editors/valueeditor/View.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var CheckboxForm = __webpack_require__(/*! mithril-material-forms/components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js");
-
-var SelectForm = __webpack_require__(/*! mithril-material-forms/components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js");
-
-var TextareaForm = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
-
-var InputForm = __webpack_require__(/*! mithril-material-forms/components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js");
-
-var UISchema = __webpack_require__(/*! ../../utils/UISchema */ "./utils/UISchema.js");
-
-function chooseInput(attrs) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var schema = attrs.schema;
-
-  var config = _extends({
-    type: schema.type,
-    title: schema.title,
-    description: schema.description,
-    onblur: attrs.onblur || Function.prototype,
-    onfocus: attrs.onfocus || Function.prototype,
-    onchange: attrs.onchange || Function.prototype
-  }, attrs, options);
-
-  if (schema["enum"] && schema["enum"].length > 0) {
-    config.options = UISchema.enumOptions(schema);
-    return m(SelectForm, config);
-  }
-
-  if (schema.type === "boolean") {
-    return m(CheckboxForm, config);
-  }
-
-  if (schema.type === "string" && schema.format === "html") {
-    return m(TextareaForm, config);
-  }
-
-  if (schema.type === "string" && schema.format === "textarea") {
-    config.rows = options["textarea:rows"] || 1;
-    return m(TextareaForm, config);
-  }
-
-  return m(InputForm, config);
-}
-
-module.exports = {
-  view: function view(vnode) {
-    return chooseInput(vnode.attrs, vnode.attrs.options);
-  }
-};
-
-/***/ }),
-
-/***/ "./editors/valueeditor/index.js":
-/*!**************************************!*\
-  !*** ./editors/valueeditor/index.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var View = __webpack_require__(/*! ./View */ "./editors/valueeditor/View.js");
-
-var AbstractValueEditor = __webpack_require__(/*! ../AbstractValueEditor */ "./editors/AbstractValueEditor.js");
-
-var ValueEditor = /*#__PURE__*/function (_AbstractValueEditor) {
-  _inherits(ValueEditor, _AbstractValueEditor);
-
-  var _super = _createSuper(ValueEditor);
-
-  _createClass(ValueEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type !== "object" && schema.type !== "array";
-    }
-  }]);
-
-  function ValueEditor(pointer, controller) {
-    var _this;
-
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ValueEditor);
-
-    _this = _super.call(this, pointer, controller, options);
-
-    _this.render();
-
-    return _this;
-  }
-
-  _createClass(ValueEditor, [{
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel));
-    }
-  }]);
-
-  return ValueEditor;
-}(AbstractValueEditor);
-
-module.exports = ValueEditor;
-
-/***/ }),
-
 /***/ "./editron.scss":
 /*!**********************!*\
   !*** ./editron.scss ***!
@@ -1823,27 +103,24 @@ module.exports = __webpack_require__.p + "editron.css";
 /*!********************!*\
   !*** ./editron.ts ***!
   \********************/
-/*! exports provided: default */
+/*! exports provided: default, components, editors, services, utils, plugin */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_Controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/Controller */ "./src/Controller.ts");
-/* harmony import */ var _components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components */ "./components/index.js");
-/* harmony import */ var _components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_components__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _editors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./editors */ "./editors/index.js");
-/* harmony import */ var _editors__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_editors__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _services__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services */ "./services/index.js");
-/* harmony import */ var _services__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_services__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils */ "./utils/index.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _src_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/components */ "./src/components/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "components", function() { return _src_components__WEBPACK_IMPORTED_MODULE_1__; });
+/* harmony import */ var _src_editors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/editors */ "./src/editors/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "editors", function() { return _src_editors__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _src_services__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/services */ "./src/services/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "services", function() { return _src_services__WEBPACK_IMPORTED_MODULE_3__; });
+/* harmony import */ var _src_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/utils */ "./src/utils/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "utils", function() { return _src_utils__WEBPACK_IMPORTED_MODULE_4__; });
 /* harmony import */ var _src_plugin__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/plugin */ "./src/plugin/index.ts");
-
-
-
-
-
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plugin", function() { return _src_plugin__WEBPACK_IMPORTED_MODULE_5__["default"]; });
 
 /**
  * Editron-Core. Depending on your build setup, use
@@ -1864,14 +141,16 @@ __webpack_require__.r(__webpack_exports__);
  * @property utils             - utility functions, to generate ids, translate strings and resolve editors
  * @property plugin            - basic plugin implementation for editor registration
  */
-/* harmony default export */ __webpack_exports__["default"] = ({
-    Controller: _src_Controller__WEBPACK_IMPORTED_MODULE_0__["default"],
-    components: (_components__WEBPACK_IMPORTED_MODULE_1___default()),
-    editors: (_editors__WEBPACK_IMPORTED_MODULE_2___default()),
-    services: (_services__WEBPACK_IMPORTED_MODULE_3___default()),
-    utils: (_utils__WEBPACK_IMPORTED_MODULE_4___default()),
-    plugin: _src_plugin__WEBPACK_IMPORTED_MODULE_5__["default"]
-});
+
+/* harmony default export */ __webpack_exports__["default"] = (_src_Controller__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+
+
+
+
+
 
 
 /***/ }),
@@ -17710,2122 +15989,6 @@ module.exports = function (module) {
 
 /***/ }),
 
-/***/ "./services/DataService.js":
-/*!*********************************!*\
-  !*** ./services/DataService.js ***!
-  \*********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var diffpatch = __webpack_require__(/*! ./utils/diffpatch */ "./services/utils/diffpatch.js");
-
-var copy = __webpack_require__(/*! ./utils/copy */ "./services/utils/copy.js");
-
-var isRootPointer = __webpack_require__(/*! ./utils/isRootPointer */ "./services/utils/isRootPointer.js");
-
-var dataReducer = __webpack_require__(/*! ./reducers/dataReducer */ "./services/reducers/dataReducer.js");
-
-var ActionCreators = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionCreators;
-
-var ActionTypes = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionTypes;
-
-var getParentPointer = __webpack_require__(/*! ./utils/getParentPointer */ "./services/utils/getParentPointer.js");
-
-var getTypeOf = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
-
-var getPatchesPerPointer = __webpack_require__(/*! ./utils/getPatchesPerPointer */ "./services/utils/getPatchesPerPointer.js");
-
-var State = __webpack_require__(/*! ./State */ "./services/State.js");
-
-var DEBUG = false;
-/**
- * @name DataService.EVENTS
- * @type {Object}
- * @property {String} BEFORE_UPDATE    - called before starting data update
- * @property {String} AFTER_UPDATE     - called after data udpate was performed
- */
-
-var EVENTS = {
-  BEFORE_UPDATE: "beforeUpdate",
-  AFTER_UPDATE: "afterUpdate",
-  FINAL_UPDATE: "finalUpdate"
-};
-/**
- * Read and modify form data and notify observers
- *
- * @param {State} state     - current state/store of application
- * @param {Any} data        - current application data (form)
- */
-
-var DataService = /*#__PURE__*/function () {
-  function DataService(state, data) {
-    var _this = this;
-
-    _classCallCheck(this, DataService);
-
-    if (!(state instanceof State)) {
-      throw new Error("Given state in DataService must be of instance 'State'");
-    }
-
-    this.observers = {};
-    this.emitter = mitt();
-    this.EVENTS = EVENTS;
-    this.id = "data";
-    this.state = state;
-    this.state.register(this.id, dataReducer);
-    var lastUpdate = {}; // improved version - supporting multiple patches
-
-    this.onStateChanged = function () {
-      var current = _this.state.get(_this.id);
-
-      var patches = getPatchesPerPointer(lastUpdate, current.data.present);
-
-      if (patches.length === 0) {
-        DEBUG && console.info("DataService abort update event -- nothing changed");
-        return;
-      }
-
-      DEBUG && console.log("Patch locations", patches.map(function (delta) {
-        return delta.pointer;
-      }));
-
-      for (var i = 0, l = patches.length; i < l; i += 1) {
-        var eventLocation = patches[i].pointer;
-
-        var parentData = _this.getDataByReference(eventLocation);
-
-        var parentDataType = getTypeOf(parentData);
-
-        _this.emit(EVENTS.AFTER_UPDATE, eventLocation, {
-          type: parentDataType,
-          patch: patches[i].patch
-        });
-
-        _this.bubbleObservers(eventLocation, {
-          type: parentDataType,
-          patch: patches[i].patch
-        });
-      }
-
-      _this.emitter.emit(EVENTS.FINAL_UPDATE, patches);
-
-      lastUpdate = current.data.present;
-    };
-
-    this.state.subscribe(this.id, this.onStateChanged);
-
-    if (data !== undefined) {
-      this.set("#", data);
-      this.resetUndoRedo();
-    }
-  }
-
-  _createClass(DataService, [{
-    key: "resetUndoRedo",
-    value: function resetUndoRedo() {
-      this.state.get(this.id).data.past.length = 0;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.state.unsubscribe(this.id, this.onStateChanged);
-      this.state.unregister(this.id);
-    }
-    /**
-     * Get a copy of current data from the requested _json-pointer_
-     * @param {JsonPointer} [pointer="#"]  - data to fetch. Defaults to _root_
-     * @returns {Any} data, associated with _pointer_
-     */
-
-  }, {
-    key: "get",
-    value: function get() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-      var value = this.getDataByReference(pointer);
-      return copy(value);
-    }
-  }, {
-    key: "getDataByReference",
-    value: function getDataByReference() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-      // eslint-disable-next-line no-invalid-this
-      return gp.get(this.state.get(this.id).data.present, pointer);
-    }
-    /**
-     * Change data at the given _pointer_
-     * @param {JsonPointer}  pointer    - data location to modify
-     * @param {Any}  value              - new value at pointer
-     * @param {Boolean} [isSynched]
-     */
-
-  }, {
-    key: "set",
-    value: function set(pointer, value) {
-      var isSynched = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-      if (this.isValid(pointer) === false) {
-        throw new Error("Pointer ".concat(pointer, " does not exist in data"));
-      }
-
-      var currentValue = this.getDataByReference(pointer);
-
-      if (diffpatch.diff(currentValue, value) == null) {
-        DEBUG && console.info("DataService abort update -- value not changed");
-        return;
-      }
-
-      this.emit(EVENTS.BEFORE_UPDATE, pointer, {
-        action: ActionTypes.DATA_SET,
-        isSynched: isSynched
-      });
-      this.state.dispatch(ActionCreators.setData(pointer, value, currentValue, isSynched));
-
-      if (pointer === "#" && isSynched === false) {
-        // do not add root changes to undo
-        this.state.get(this.id).data.past.pop();
-      }
-    }
-    /**
-     * Delete data at the given _pointer_
-     * @param  {JsonPointer} pointer    - data location to delete
-     */
-
-  }, {
-    key: "delete",
-    value: function _delete(pointer) {
-      if (isRootPointer(pointer)) {
-        throw new Error("Can not remove root data via delete. Use set(\"#/\", {}) instead.");
-      }
-
-      var key = pointer.split("/").pop();
-      var parentPointer = getParentPointer(pointer);
-      var data = this.get(parentPointer);
-      gp["delete"](data, key);
-      this.set(parentPointer, data);
-    }
-  }, {
-    key: "undoCount",
-    value: function undoCount() {
-      return this.state.get(this.id).data.past.length;
-    }
-  }, {
-    key: "redoCount",
-    value: function redoCount() {
-      return this.state.get(this.id).data.future.length;
-    }
-  }, {
-    key: "undo",
-    value: function undo() {
-      this.emit(EVENTS.BEFORE_UPDATE, "#", {
-        action: ActionTypes.UNDO
-      });
-      this.state.dispatch(ActionCreators.undo());
-    }
-  }, {
-    key: "redo",
-    value: function redo() {
-      this.emit(EVENTS.BEFORE_UPDATE, "#", {
-        action: ActionTypes.REDO
-      });
-      this.state.dispatch(ActionCreators.redo());
-    }
-  }, {
-    key: "on",
-    value: function on(eventType, callback) {
-      if (eventType === undefined) {
-        throw new Error("Missing event type in DataService.on");
-      }
-
-      this.emitter.on(eventType, callback);
-      return callback;
-    }
-  }, {
-    key: "off",
-    value: function off() {
-      var _this$emitter;
-
-      (_this$emitter = this.emitter).off.apply(_this$emitter, arguments);
-    }
-  }, {
-    key: "emit",
-    value: function emit(eventType, pointer, data) {
-      this.emitter.emit(eventType, createEventObject(pointer, data));
-    }
-  }, {
-    key: "observe",
-    value: function observe(pointer, callback) {
-      var bubbleEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      callback.bubbleEvents = bubbleEvents;
-      this.observers[pointer] = this.observers[pointer] || [];
-      this.observers[pointer].push(callback);
-      return callback;
-    }
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(pointer, callback) {
-      if (this.observers[pointer] && this.observers[pointer].length > 0) {
-        this.observers[pointer] = this.observers[pointer].filter(function (cb) {
-          return cb !== callback;
-        });
-      }
-    }
-  }, {
-    key: "notify",
-    value: function notify(pointer, event) {
-      if (this.observers[pointer] == null || this.observers[pointer].length === 0) {
-        return;
-      }
-
-      var observers = this.observers[pointer];
-
-      for (var i = 0, l = observers.length; i < l; i += 1) {
-        if (observers[i].bubbleEvents === true || event.pointer === pointer) {
-          observers[i](event);
-        }
-      }
-    }
-  }, {
-    key: "bubbleObservers",
-    value: function bubbleObservers(pointer, data) {
-      var eventObject = createEventObject(pointer, data);
-      var frags = gp.split(pointer);
-
-      while (frags.length) {
-        this.notify(gp.join(frags, true), eventObject);
-        frags.length -= 1;
-      }
-
-      this.notify("#", eventObject);
-    }
-  }, {
-    key: "isValid",
-    value: function isValid(pointer) {
-      return isRootPointer(pointer) || gp.get(this.getDataByReference(), pointer) !== undefined;
-    }
-  }]);
-
-  return DataService;
-}();
-
-function createEventObject(pointer, data) {
-  var parentPointer = getParentPointer(pointer);
-  return _extends(data, {
-    pointer: pointer,
-    parentPointer: parentPointer
-  });
-}
-
-module.exports = DataService;
-module.exports.EVENTS = EVENTS;
-
-/***/ }),
-
-/***/ "./services/LocationService.js":
-/*!*************************************!*\
-  !*** ./services/LocationService.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var UIState = __webpack_require__(/*! ./uistate */ "./services/uistate/index.js");
-
-var getId = __webpack_require__(/*! ../utils/getID */ "./utils/getID.js");
-
-var DELAY = 25;
-var emitter = mitt();
-/**
- * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
- *
- * The LocationService manages global pointer states and scroll position:
- *  - the "current pointer" tracks the currently focused editor and
- *  - the "page pointer" corresponds to the first property of "current pointer", which may be used for main page loading
- *
- * ### Motivation
- *
- * Jumping to specific editors via the navigation requires a targeting system. A page reload may occur for a called
- * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
- * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
- * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
- *
- * @type {Object}
- */
-
-var LocationService = {
-  PAGE_EVENT: "page",
-  TARGET_EVENT: "target",
-  // update page and target pointer
-  "goto": function goto(targetPointer) {
-    var path = gp.split(targetPointer);
-
-    if (path.length === 0 || path.length === 1 && path[0] === "") {
-      return;
-    }
-
-    var nextPage = path[0];
-    var currentPage = UIState.getCurrentPage();
-
-    if (currentPage !== nextPage) {
-      UIState.setCurrentPage(gp.join(nextPage, true));
-    }
-
-    UIState.setCurrentPointer(gp.join(targetPointer, true));
-    this.focus();
-  },
-  // set target pointer
-  setCurrent: function setCurrent(pointer) {
-    if (pointer !== this.getCurrent()) {
-      UIState.setCurrentPointer(pointer);
-      emitter.emit("focus", pointer);
-    }
-  },
-  getCurrent: function getCurrent() {
-    return UIState.getCurrentPointer();
-  },
-  // focus target pointer
-  focus: function focus() {
-    clearTimeout(this.timeout);
-    var pointer = UIState.getCurrentPointer();
-    var id = getId(pointer);
-    var targetElement = document.getElementById(id); // console.log(`pointer ${pointer} - id ${id}`, targetElement);
-
-    if (targetElement == null) {
-      // console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
-      return;
-    } // const targetPosition = targetElement.getBoundingClientRect().top
-
-
-    this.timeout = setTimeout(function () {
-      // try scrolling to header-row in container (low height) to have a more robust scroll target position
-      var scrollTarget = targetElement.querySelector(".editron-container > .editron-container__header");
-      scrollTarget = scrollTarget == null || scrollTarget.offsetParent === null ? targetElement : scrollTarget;
-      scrollTarget.scrollIntoView(); // @todo only fire focus event?
-
-      targetElement.dispatchEvent(new Event("focus"));
-      targetElement.focus && targetElement.focus();
-    }, DELAY);
-  },
-  blur: function blur(pointer) {
-    if (UIState.getCurrentPointer() !== pointer) {
-      return;
-    }
-
-    UIState.setCurrentPointer("");
-    emitter.emit("blur", pointer);
-  },
-  on: function on() {
-    return emitter.on.apply(emitter, arguments);
-  },
-  off: function off() {
-    return emitter.off.apply(emitter, arguments);
-  }
-};
-UIState.on(UIState.EVENTS.CURRENT_PAGE_EVENT, function (pointer) {
-  return emitter.emit(LocationService.PAGE_EVENT, pointer);
-});
-UIState.on(UIState.EVENTS.CURRENT_POINTER_EVENT, function (pointer) {
-  return emitter.emit(LocationService.TARGET_EVENT, pointer);
-});
-module.exports = LocationService;
-
-/***/ }),
-
-/***/ "./services/OverlayService.js":
-/*!************************************!*\
-  !*** ./services/OverlayService.js ***!
-  \************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-/* eslint no-use-before-define: 0 */
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Overlay = __webpack_require__(/*! ../components/overlay */ "./components/overlay/index.js");
-
-var createElement = __webpack_require__(/*! ../utils/createElement */ "./utils/createElement.js");
-
-var UIState = __webpack_require__(/*! ./uistate */ "./services/uistate/index.js");
-
-UIState.on(UIState.EVENTS.OVERLAY_EVENT, function () {
-  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  return OverlayService.onChange(value.element, value.options);
-});
-/**
- * Opens an overlay with a DOM-Node as contents
- * @type {Object}
- */
-
-var OverlayService = {
-  /**
-   * Opens the overlay, showing the given `container` as conten
-   *
-   * Options
-   *  {Boolean} ok            - display `ok`, instead of `abort`
-   *  {Boolean} fullscreen    - fullscreen size of overlay, regardless of content
-   *  {Function} onAbort      - called when Overlay is closed via ok/abort
-   *  {Function} onSave       - called when Overlay is closed via save
-   *
-   * @param  {HTMLElement} container
-   * @param  {Obejct} options
-   */
-  open: function open(container, options) {
-    UIState.setOverlay({
-      element: container,
-      options: _extends({
-        ok: false,
-        save: true,
-        fullscreen: false,
-        onAbort: Function.prototype,
-        onSave: Function.prototype
-      }, options)
-    });
-  },
-  close: function close() {
-    UIState.setOverlay(); // must destroy component for reuse
-
-    m.render(this.getElement(), m("i"));
-  },
-  onChange: function onChange(container, options) {
-    var _this = this;
-
-    if (container == null) {
-      var _$el = this.getElement();
-
-      _$el.parentNode && _$el.parentNode.removeChild(_$el);
-      return;
-    }
-
-    var $el = this.getElement();
-    container.classList.add("overlay__item");
-    m.render($el, m(Overlay, {
-      container: container,
-      fullscreen: options.fullscreen,
-      showSave: options.save,
-      titleAbort: options.ok ? "OK" : "Abbrechen",
-      onSave: function onSave() {
-        options.onSave();
-
-        _this.close();
-      },
-      onAbort: function onAbort() {
-        return _this.close();
-      },
-      // calls onremove -> onAbort
-      onremove: function onremove() {
-        return options.onAbort();
-      }
-    }));
-    document.body.appendChild($el);
-  },
-  getElement: function getElement() {
-    var _this2 = this;
-
-    if (this.$element == null) {
-      this.$element = createElement(".ui-overlay");
-      this.$element.addEventListener("click", function (e) {
-        // close popup if clicked on "background"
-        if (e.target === _this2.$element) {
-          _this2.close();
-        }
-      });
-    }
-
-    return this.$element;
-  }
-};
-module.exports = OverlayService;
-
-/***/ }),
-
-/***/ "./services/SchemaService.js":
-/*!***********************************!*\
-  !*** ./services/SchemaService.js ***!
-  \***********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
-
-var copy = __webpack_require__(/*! ./utils/copy */ "./services/utils/copy.js");
-
-var jsl = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
-
-var _getChildSchemaSelection = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").getChildSchemaSelection;
-/**
- * Manages json-schema interactions and adds caching of reoccuring json-schema requests
- *
- * @param {Object} schema       - json-schema
- * @param {Object} [data={}]    - data corresponding to json-schema
- * @param {Core} [core={}]      - instance of json-schema-library Core
- */
-
-
-var SchemaService = /*#__PURE__*/function () {
-  function SchemaService() {
-    var schema = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var core = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Core();
-
-    _classCallCheck(this, SchemaService);
-
-    this.core = core;
-    this.setSchema(schema);
-    this.setData(data);
-  }
-  /**
-   * Update data by any missing (default) values specified in the json-schema
-   * @param {Object} [data=currentData]   - update given data or use the internal stored data (via `setData(data)`)
-   * @param {Object} [schema]             - specific json schema, or the internal store schema (via `setSchema(root)`)
-   * @return {Any} json data with valid default data values
-   */
-
-
-  _createClass(SchemaService, [{
-    key: "addDefaultData",
-    value: function addDefaultData() {
-      var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.data;
-      var schema = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.schema;
-      return this.core.getTemplate(data, schema);
-    }
-    /**
-     * Create the template data object based on the json-schema, which fullfills the schemas structure as much as
-     * possible
-     * @param  {Object} schema
-     * @return {Any} data corresponding to json-schema
-     */
-
-  }, {
-    key: "getTemplate",
-    value: function getTemplate(schema) {
-      return this.core.getTemplate(undefined, schema);
-    }
-    /**
-     * @param  {JsonPointer} pointer
-     * @param  {String|Number} property
-     * @return {Array} list of valid items to insert at the given position
-     */
-
-  }, {
-    key: "getChildSchemaSelection",
-    value: function getChildSchemaSelection(pointer, property) {
-      var parentSchema = this.get(pointer);
-      return _getChildSchemaSelection(this.core, property, parentSchema);
-    }
-    /**
-     * Sets the root data. This is optional and used within internal functions to support optional _data_-parameters.
-     * On every change in data, call this method with that latest state `schemaService.setData(latestData)`;
-     *
-     * @param {Any} data    - latest root data corresponding to stored json-schema
-     */
-
-  }, {
-    key: "setData",
-    value: function setData(data) {
-      this.data = this.addDefaultData(data);
-      this.resetCache();
-    }
-    /**
-     * Set or change the application schema
-     * @param {Object} schema
-     */
-
-  }, {
-    key: "setSchema",
-    value: function setSchema(schema) {
-      this.core.setSchema(schema);
-      this.schema = this.core.getSchema();
-      this.resetCache();
-    }
-  }, {
-    key: "resetCache",
-    value: function resetCache() {
-      this.cache = {};
-    }
-    /**
-     * Return the json-schema for the requested pointer. Resolved the pointer on the stored schema by the accompanied
-     * json-data, which is required to resolve optional json-schema values.
-     *
-     * @param  {JsonPointer} pointer    - pointer in data
-     * @param  {Any} [data]             - root data, corresponding to json-schema. This is optional, when the root-data
-     *                                       is up-to-date (via setData)
-     * @return {Object} json-schema for the requested pointer
-     */
-
-  }, {
-    key: "get",
-    value: function get(pointer, data) {
-      if (data) {
-        var result = jsl.getSchema(this.core, pointer, data, this.schema);
-        return copy(result);
-      }
-
-      if (this.cache[pointer] === undefined) {
-        var _result = jsl.getSchema(this.core, pointer, this.data, this.schema);
-
-        if (_result.variableSchema === true) {
-          // @special case: do not cache dynamic schema object (oneOf)
-          return _result;
-        }
-
-        this.cache[pointer] = copy(_result);
-      }
-
-      return this.cache[pointer];
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.setData(null);
-      this.setSchema(null);
-    }
-  }]);
-
-  return SchemaService;
-}();
-
-module.exports = SchemaService;
-
-/***/ }),
-
-/***/ "./services/SessionService.js":
-/*!************************************!*\
-  !*** ./services/SessionService.js ***!
-  \************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-/**
- * Simple session service to store and retrieve user-specific data
- * @type {Object}
- */
-module.exports = {
-  get: function get(key, defaultValue) {
-    if (window.localStorage == null) {
-      return defaultValue;
-    }
-
-    if (localStorage.getItem(key) == null) {
-      this.set(key, defaultValue);
-    }
-
-    try {
-      return JSON.parse(localStorage.getItem(key));
-    } catch (error) {
-      return defaultValue;
-    }
-  },
-  set: function set(key, value) {
-    if (window.localStorage) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-  },
-  toggle: function toggle(key) {
-    var value = !this.get(key, false);
-    this.set(key, value);
-    return value;
-  }
-};
-
-/***/ }),
-
-/***/ "./services/State.js":
-/*!***************************!*\
-  !*** ./services/State.js ***!
-  \***************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var FLAG_CHANGED = "hasChanged";
-
-var State = /*#__PURE__*/function () {
-  function State() {
-    var _this = this;
-
-    _classCallCheck(this, State);
-
-    this.FLAG_CHANGED = FLAG_CHANGED;
-    this.reducers = {
-      action: function action(state, _action) {
-        return _action;
-      }
-    };
-    this.emitter = mitt();
-    this.store = redux.createStore(function () {}); // eslint-disable-line @typescript-eslint/no-empty-function
-
-    this.store.subscribe(function () {
-      return _this.onChange(_this.store.getState());
-    });
-  }
-
-  _createClass(State, [{
-    key: "onChange",
-    value: function onChange(currentState) {
-      var _this2 = this;
-
-      Object.keys(currentState).forEach(function (id) {
-        var subState = currentState[id];
-
-        if (subState[FLAG_CHANGED] != null && subState[FLAG_CHANGED] !== false) {
-          _this2.emitter.emit(id, subState);
-        }
-      });
-    } // eslint-disable-next-line
-    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting-in-a-redux-application
-
-  }, {
-    key: "register",
-    value: function register(id, reducer) {
-      if (this.reducers[id]) {
-        throw new Error("A reducer with id ".concat(id, " is already registered"));
-      }
-
-      this.reducers[id] = reducer;
-      this.store.replaceReducer(redux.combineReducers(this.reducers));
-    }
-  }, {
-    key: "unregister",
-    value: function unregister(id) {
-      // @todo either remove reducers and data or make them reusable (per application id)
-      // delete this.reducers[id];
-      // this.store.replaceReducer(redux.combineReducers(this.reducers));
-      var currentState = this.store.getState();
-      delete currentState[id];
-    }
-  }, {
-    key: "get",
-    value: function get(id) {
-      var currentState = this.store.getState();
-      return id == null ? currentState : currentState[id];
-    }
-  }, {
-    key: "dispatch",
-    value: function dispatch() {
-      var _this$store;
-
-      return (_this$store = this.store).dispatch.apply(_this$store, arguments);
-    }
-    /**
-     * Subscribe to change (all) events
-     * @param  {[type]}   id       [description]
-     * @param  {Function} callback [description]
-     */
-
-  }, {
-    key: "subscribe",
-    value: function subscribe(id, callback) {
-      if (typeof id !== "string" || typeof callback !== "function") {
-        throw new Error("Invalid arguments for state.subscribe ".concat(arguments));
-      }
-
-      var state = this.store.getState();
-
-      if (state[id] && state[id][FLAG_CHANGED] != null) {
-        this.emitter.on(id, callback);
-      } else {
-        throw new Error("Could not subscribe to state ".concat(id, ". Property ").concat(FLAG_CHANGED, " not available"));
-      }
-    }
-  }, {
-    key: "unsubscribe",
-    value: function unsubscribe(id, callback) {
-      if (typeof id !== "string" || typeof callback !== "function") {
-        throw new Error("Invalid arguments for state.unsubscribe ".concat(arguments));
-      }
-
-      this.emitter.off(id, callback);
-    }
-  }]);
-
-  return State;
-}();
-
-State.FLAG_CHANGED = FLAG_CHANGED;
-module.exports = State;
-
-/***/ }),
-
-/***/ "./services/ValidationService.js":
-/*!***************************************!*\
-  !*** ./services/ValidationService.js ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
-
-var State = __webpack_require__(/*! ./State */ "./services/State.js");
-
-var ActionCreators = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionCreators;
-
-var errorReducer = __webpack_require__(/*! ./reducers/errorReducer */ "./services/reducers/errorReducer.js");
-
-var Validation = __webpack_require__(/*! ./utils/Validation */ "./services/utils/Validation.js");
-
-var BubblingCollectionObservable = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./services/utils/BubblingCollectionObservable.js");
-
-var EVENTS = {
-  BEFORE_VALIDATION: "beforeValidation",
-  AFTER_VALIDATION: "afterValidation",
-  ON_ERROR: "onError"
-};
-/**
- * @class  ValidationService
- */
-
-var ValidationService = /*#__PURE__*/function () {
-  function ValidationService(state) {
-    var schema = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var core = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Core();
-
-    _classCallCheck(this, ValidationService);
-
-    if (!(state instanceof State)) {
-      throw new Error("Given state in ValidationService must be of instance 'State'");
-    }
-
-    this.core = core;
-    this.set(schema);
-    this.observer = new BubblingCollectionObservable();
-    this.emitter = mitt();
-    this.id = "errors";
-    this.state = state;
-    this.state.register(this.id, errorReducer);
-    this.setErrorHandler(function (error) {
-      return error;
-    });
-    this.EVENTS = EVENTS;
-  }
-
-  _createClass(ValidationService, [{
-    key: "setErrorHandler",
-    value: function setErrorHandler(callback) {
-      this.errorHandler = callback;
-    }
-    /**
-     * Starts the validation, executing callback handlers and emitters on the go
-     *
-     * @param  {Any} data               - data to validate
-     * @param  {JsonPointer} [pointer]  - optional location. Per default all data is validated
-     * @return {Promise} promise, resolving with list of errors when all async validations are performed
-     */
-
-  }, {
-    key: "validate",
-    value: function validate(data) {
-      var _this = this;
-
-      var pointer = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "#";
-
-      if (this.currentValidation) {
-        this.currentValidation.cancel();
-      }
-
-      this.emit(EVENTS.BEFORE_VALIDATION); // @feature selective-validation
-
-      this.observer.clearEvents(pointer); // reset stored list of events
-
-      var remainingErrors = [];
-
-      if (pointer !== "#") {
-        // the following filtering is a duplicate from BubblingCollectionObservable.clearEvents
-        remainingErrors = this.state.get(this.id).filter(function (e) {
-          return e.data.pointer == null || e.data.pointer.startsWith(pointer) === false;
-        });
-      }
-
-      this.state.dispatch(ActionCreators.setErrors(remainingErrors));
-      this.currentValidation = new Validation(data, pointer, this.errorHandler);
-      return this.currentValidation.start(this.core, function (newError, currentErrors) {
-        // @feature selective-validation
-        var completeListOfErrors = remainingErrors.concat(currentErrors);
-
-        _this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
-
-        _this.observer.notify(newError.data.pointer, newError);
-
-        _this.emit(EVENTS.ON_ERROR, newError);
-      }, function (validationErrors) {
-        // @feature selective-validation
-        var completeListOfErrors = remainingErrors.concat(validationErrors);
-
-        _this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
-
-        _this.emit(EVENTS.AFTER_VALIDATION, completeListOfErrors);
-
-        _this.currentValidation = null;
-      });
-    }
-  }, {
-    key: "set",
-    value: function set(schema) {
-      this.core.setSchema(schema);
-      this.schema = this.core.getSchema();
-    }
-  }, {
-    key: "get",
-    value: function get() {
-      return this.schema;
-    }
-  }, {
-    key: "on",
-    value: function on(eventType, callback) {
-      if (eventType === undefined) {
-        throw new Error("Missing event type in ValidationService.on");
-      }
-
-      this.emitter.on(eventType, callback);
-      return callback;
-    }
-  }, {
-    key: "off",
-    value: function off() {
-      var _this$emitter;
-
-      this.emitter && (_this$emitter = this.emitter).off.apply(_this$emitter, arguments);
-    }
-  }, {
-    key: "emit",
-    value: function emit(eventType) {
-      var event = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.emitter.emit(eventType, event);
-    }
-  }, {
-    key: "observe",
-    value: function observe(pointer, callback) {
-      var bubbledEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      this.observer.observe(pointer, callback, bubbledEvents);
-      return callback;
-    }
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(pointer, callback) {
-      this.observer.removeObserver(pointer, callback);
-    }
-  }, {
-    key: "notify",
-    value: function notify(pointer) {
-      var event = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.observer.notify(pointer, event);
-    }
-  }, {
-    key: "getErrorsAndWarnings",
-    value: function getErrorsAndWarnings() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
-      var withChildErrors = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var errors = this.state.get(this.id) || [];
-
-      if (pointer == null) {
-        return errors;
-      } // filter by pointer
-
-
-      var selectError = new RegExp("^".concat(pointer).concat(withChildErrors ? "" : "$"));
-      return errors.filter(function (error) {
-        return selectError.test(error.data.pointer);
-      });
-    }
-  }, {
-    key: "getErrors",
-    value: function getErrors() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
-      var withChildErrors = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      return this.getErrorsAndWarnings(pointer, withChildErrors).filter(function (error) {
-        return error.severity !== "warning";
-      });
-    }
-  }, {
-    key: "getWarnings",
-    value: function getWarnings() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
-      var withChildWarnings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      return this.getErrorsAndWarnings(pointer, withChildWarnings).filter(function (error) {
-        return error.severity === "warning";
-      });
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.set(null);
-      this.emitter = null;
-      this.observer = null;
-      this.state.unregister(this.id, errorReducer);
-    }
-  }]);
-
-  return ValidationService;
-}();
-
-module.exports = ValidationService;
-module.exports.EVENTS = EVENTS;
-
-/***/ }),
-
-/***/ "./services/index.js":
-/*!***************************!*\
-  !*** ./services/index.js ***!
-  \***************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  LocationService: __webpack_require__(/*! ./LocationService */ "./services/LocationService.js"),
-  OverlayService: __webpack_require__(/*! ./OverlayService */ "./services/OverlayService.js"),
-  SessionService: __webpack_require__(/*! ./SessionService */ "./services/SessionService.js"),
-  UIState: __webpack_require__(/*! ./uistate */ "./services/uistate/index.js")
-};
-
-/***/ }),
-
-/***/ "./services/reducers/actions.js":
-/*!**************************************!*\
-  !*** ./services/reducers/actions.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint object-property-newline: 0 */
-var UndoActionCreators = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionCreators;
-
-var UndoActionTypes = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionTypes;
-
-var ActionTypes = {
-  // data
-  DATA_SET: "DATA_SET",
-  UNDO: UndoActionTypes.UNDO,
-  REDO: UndoActionTypes.REDO,
-  // validation
-  ERRORS_SET: "ERRORS_SET"
-};
-var ActionCreators = {
-  setData: function setData(pointer, newValue, prevValue) {
-    var isSynched = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    return {
-      type: ActionTypes.DATA_SET,
-      pointer: pointer,
-      value: newValue,
-      prevValue: prevValue,
-      isSynched: isSynched
-    };
-  },
-  undo: function undo() {
-    return UndoActionCreators.undo();
-  },
-  redo: function redo() {
-    return UndoActionCreators.redo();
-  },
-  setErrors: function setErrors() {
-    var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    return {
-      type: ActionTypes.ERRORS_SET,
-      errors: errors
-    };
-  }
-};
-module.exports = {
-  ActionTypes: ActionTypes,
-  ActionCreators: ActionCreators
-};
-
-/***/ }),
-
-/***/ "./services/reducers/dataReducer.js":
-/*!******************************************!*\
-  !*** ./services/reducers/dataReducer.js ***!
-  \******************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var undoable = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js")["default"];
-/* eslint no-case-declarations: 0 */
-
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var copy = __webpack_require__(/*! ../utils/copy */ "./services/utils/copy.js");
-
-var isRootPointer = __webpack_require__(/*! ../utils/isRootPointer */ "./services/utils/isRootPointer.js");
-
-var ActionTypes = __webpack_require__(/*! ./actions */ "./services/reducers/actions.js").ActionTypes;
-
-var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
-
-var ensureItemIDs = __webpack_require__(/*! ../utils/ensureItemIDs */ "./services/utils/ensureItemIDs.js");
-
-var actions = [ActionTypes.DATA_SET, ActionTypes.UNDO, ActionTypes.REDO];
-var defaultState = {
-  hasChanged: false,
-  action: null,
-  data: null
-};
-
-function dataReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case ActionTypes.DATA_SET:
-      if (isRootPointer(action.pointer)) {
-        return ensureItemIDs(copy(action.value));
-      }
-
-      var newState = copy(state);
-      gp.set(newState, action.pointer, copy(action.value));
-      return ensureItemIDs(newState);
-
-    default:
-      return state;
-  }
-}
-
-var config = {
-  debug: false,
-  filter: function filter(action) {
-    return actions.includes(action.type);
-  }
-};
-module.exports = redux.combineReducers({
-  hasChanged: function hasChanged(state, action) {
-    return actions.includes(action.type);
-  },
-  data: undoable(dataReducer, config)
-});
-
-/***/ }),
-
-/***/ "./services/reducers/errorReducer.js":
-/*!*******************************************!*\
-  !*** ./services/reducers/errorReducer.js ***!
-  \*******************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var ActionTypes = __webpack_require__(/*! ./actions */ "./services/reducers/actions.js").ActionTypes;
-
-module.exports = function () {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-  return action.type === ActionTypes.ERRORS_SET ? action.errors : state;
-};
-
-/***/ }),
-
-/***/ "./services/uistate/actions.js":
-/*!*************************************!*\
-  !*** ./services/uistate/actions.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-var ActionTypes = {
-  UI_PAGE_SET: "UI_PAGE_SET",
-  UI_OVERLAY_SET: "UI_OVERLAY_SET",
-  UI_CURRENT_SET: "UI_CURRENT_SET"
-};
-var ActionCreators = {
-  setCurrentPage: function setCurrentPage() {
-    var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-    return {
-      type: ActionTypes.UI_PAGE_SET,
-      value: pointer
-    };
-  },
-  setCurrentPointer: function setCurrentPointer() {
-    var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-    return {
-      type: ActionTypes.UI_CURRENT_SET,
-      value: pointer
-    };
-  },
-  setOverlay: function setOverlay() {
-    var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-    return {
-      type: ActionTypes.UI_OVERLAY_SET,
-      value: content
-    };
-  }
-};
-module.exports = {
-  ActionTypes: ActionTypes,
-  ActionCreators: ActionCreators
-};
-
-/***/ }),
-
-/***/ "./services/uistate/index.js":
-/*!***********************************!*\
-  !*** ./services/uistate/index.js ***!
-  \***********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var State = __webpack_require__(/*! ../State */ "./services/State.js");
-
-var ActionCreators = __webpack_require__(/*! ./actions */ "./services/uistate/actions.js").ActionCreators;
-
-var uiReducer = __webpack_require__(/*! ./uiReducer */ "./services/uistate/uiReducer.js");
-
-var EVENTS = {
-  OVERLAY_EVENT: "overlay",
-  CURRENT_POINTER_EVENT: "current",
-  CURRENT_PAGE_EVENT: "page"
-};
-
-var UIState = /*#__PURE__*/function () {
-  function UIState() {
-    _classCallCheck(this, UIState);
-
-    this.id = "ui";
-    this.state = new State();
-    this.emitter = mitt();
-    this.state.register(this.id, uiReducer); // @todo: subscribe to state-changes and diff current state?
-  }
-
-  _createClass(UIState, [{
-    key: "get",
-    value: function get(property) {
-      return this.state.get(this.id).ui[property];
-    }
-  }, {
-    key: "getCurrentPointer",
-    value: function getCurrentPointer() {
-      return this.get("currentPointer");
-    }
-  }, {
-    key: "getCurrentPage",
-    value: function getCurrentPage() {
-      return this.get("currentPage");
-    }
-  }, {
-    key: "setOverlay",
-    value: function setOverlay() {
-      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      var currentContent = this.get("overlay");
-
-      if (currentContent !== content) {
-        this.state.dispatch(ActionCreators.setOverlay(content));
-        this.emitter.emit(EVENTS.OVERLAY_EVENT, this.get("overlay"));
-      }
-    }
-  }, {
-    key: "on",
-    value: function on() {
-      var _this$emitter;
-
-      (_this$emitter = this.emitter).on.apply(_this$emitter, arguments);
-    }
-  }, {
-    key: "off",
-    value: function off() {
-      var _this$emitter2;
-
-      (_this$emitter2 = this.emitter).off.apply(_this$emitter2, arguments);
-    }
-  }, {
-    key: "setCurrentPage",
-    value: function setCurrentPage(pointer) {
-      var currentPage = this.get("currentPage");
-
-      if (currentPage !== pointer) {
-        this.state.dispatch(ActionCreators.setCurrentPage(pointer));
-        this.emitter.emit(EVENTS.CURRENT_PAGE_EVENT, this.get("currentPage"));
-      }
-    }
-  }, {
-    key: "setCurrentPointer",
-    value: function setCurrentPointer(pointer) {
-      var currentPointer = this.get("currentPointer");
-
-      if (currentPointer !== pointer) {
-        this.state.dispatch(ActionCreators.setCurrentPointer(pointer));
-        this.emitter.emit(EVENTS.CURRENT_POINTER_EVENT, this.get("currentPointer"));
-      }
-    }
-  }]);
-
-  return UIState;
-}();
-
-var Singleton = new UIState();
-Singleton.UIStateContructor = UIState;
-Singleton.EVENTS = EVENTS;
-module.exports = Singleton;
-
-/***/ }),
-
-/***/ "./services/uistate/uiReducer.js":
-/*!***************************************!*\
-  !*** ./services/uistate/uiReducer.js ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
-
-var ActionTypes = __webpack_require__(/*! ./actions */ "./services/uistate/actions.js").ActionTypes;
-
-var defaultState = {
-  hasChanged: false,
-  currentPage: "#",
-  currentPointer: "#",
-  overlay: false
-};
-
-function uiReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case ActionTypes.UI_PAGE_SET:
-      state = _extends({}, state);
-      state.currentPage = action.value;
-      return state;
-
-    case ActionTypes.UI_CURRENT_SET:
-      state = _extends({}, state);
-      state.currentPointer = action.value;
-      return state;
-
-    case ActionTypes.UI_OVERLAY_SET:
-      state = _extends({}, state);
-      state.overlay = action.value;
-      return state;
-
-    default:
-      return state;
-  }
-}
-
-function hasChanged() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-  // eslint-disable-line @typescript-eslint/no-unused-vars
-  return ActionTypes[action.type] == null ? false : action.type;
-}
-
-module.exports = redux.combineReducers({
-  hasChanged: hasChanged,
-  ui: uiReducer
-});
-
-/***/ }),
-
-/***/ "./services/utils/BubblingCollectionObservable.js":
-/*!********************************************************!*\
-  !*** ./services/utils/BubblingCollectionObservable.js ***!
-  \********************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-/* eslint arrow-parens: 0 */
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-/**
- * > Internal helper, mainly used in [ValidationService](#validationservice) to support the weird notification behaviour
- * of error-events.
- *
- *
- * ### Motivation
- *
- * Error-events in the validation process occur per error, because we want them to pass as quickly as
- * possible (Asynchronous errors may take a long time and available instant feedback are postponed). In the previous
- * version two events were required in every editor
- *
- * 1. observing "start validation"-events to reset the errors and
- * 2. observing "add error"-events to build up the asynchronous incoming error-list
- *
- * This is tedious and brings some overhead using the api. Thus, the observe "set error"-event, introduced hereby
- * will collect the errors and repeatedly call the observer with the current, complete list of errors
- *
- * 1. for the observable and
- * 2. any observable that includes listening to changes of child-editors
- *
- *
- * ### Usage as observer
- *
- * An observer will receive an up-to-date version of all events occuring at the location
- *
- * ```js
- *  // init
- *  observable.observe("#/pointer/to/my/location", (errors) => {
- *      // list of current errors, continously updated
- *      this.errors = errors;
- *      this.processErrors(); // or some such
- *  });
- *  ```
- *
- * or if you are interested in events occuring further down in data
- *
- * ```js
- *  // init
- *  observable.observe("#/pointer/to/my/location", (errors) => {
- *      // list of current errors at location from pointer and further down within the data structure e.g.
- *      // "#/pointer/to/my/location", "#/pointer/to/my/location/xy", "#/pointer/to/my/location/az/er", etc
- *      continously updated
- *      this.errors = errors;
- *      this.processErrors(); // or some such
- *  }, true); // <- bubble events
- *  ```
- * and remove the event listener with
- *
- * ```js
- *  observable.observe("#/pointer/to/my/location", myRegisteredCallbackFunction);
- * ```
- *
- * ### Usage as observable
- *
- * ```js
- *  // init
- *  this.observers = new BubblingCollectionObservable();
- *  // notify session
- *  this.observers.notify("#/pointer/to/location", { event });
- *  // another notification
- *  this.observers.notify("#/pointer/to/any-location", { event2 });
- *  // same target or if listening with the option `receiveChildEvents`, will receive
- *  [{ event }, { event2 }] // observable event
- *  // and reset session by
- *  this.observers.reset(); // any observers will be reset with an events receiving an empty list
- *  [] // observable event
- *  // sending another notification will notify the target with a new list of events
- *  this.observers.notify("#/pointer/to/any-location", { event3 });
- *  [{ event3 }] // observable event
- * ```
- *
- *
- */
-
-
-var BubblingCollectionObservable = /*#__PURE__*/function () {
-  function BubblingCollectionObservable() {
-    _classCallCheck(this, BubblingCollectionObservable);
-
-    this.observers = {};
-    this.eventCollection = {};
-    this.bubbleCollection = {};
-  }
-  /**
-   * Observe events on the _pointer_ (`#/observe/location`). May also observe
-   * events of _child-pointers_ (`#/observe/location/child/item`) with the
-   * option `receiveChildEvents` set to `true`
-   *
-   * @param  {JsonPointer} pointer        - location to observe
-   * @param  {Function} cb                - observer
-   * @param  {Boolean}  [receiveChildEvents=false]
-   * @return {Function} callback cb
-   */
-
-
-  _createClass(BubblingCollectionObservable, [{
-    key: "observe",
-    value: function observe(pointer, cb) {
-      var receiveChildEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      this.observers[pointer] = this.observers[pointer] || [];
-
-      if (this.observers[pointer].includes(cb) === false) {
-        cb.receiveChildEvents = receiveChildEvents;
-        this.observers[pointer].push(cb);
-      }
-
-      return cb;
-    }
-    /**
-     * Remove an observer
-     * @param  {JsonPointer} pointer
-     * @param  {Function} cb
-     */
-
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(pointer, cb) {
-      if (this.observers[pointer] == null) {
-        return;
-      }
-
-      var index = this.observers[pointer].indexOf(cb);
-
-      if (index !== -1) {
-        this.observers[pointer].splice(index, 1);
-      }
-    }
-    /**
-     * @todo this might become obsolete by clearEvents
-     *
-     * Reset all collections from the previous events, starting with a list of
-     * empty events. Any previously called observers will be called again with
-     * an empty event-list `[]`.
-     */
-
-  }, {
-    key: "reset",
-    value: function reset() {
-      var _this = this;
-
-      // notify observers of reset by sending an empty list of events
-      var map = {};
-      Object.keys(this.eventCollection).concat(Object.keys(this.bubbleCollection)) // .filter(pointer => pointer.includes(sourcePointer))
-      .forEach(function (p) {
-        map[p] = true;
-      });
-      this.eventCollection = {};
-      this.bubbleCollection = {};
-      Object.keys(map).forEach(function (pointer) {
-        return _this._notify(pointer, pointer, []);
-      });
-      this.eventCollection = {};
-      this.bubbleCollection = {};
-    }
-    /**
-     * Clears all events at a given pointer and notifies all listeners with
-     * their changed list of events
-     *
-     * @param  {JsonPointer} pointer
-     * @param  {boolean} [clearChildren=true]    if false, children of `pointer` will not be reset
-     */
-
-  }, {
-    key: "clearEvents",
-    value: function clearEvents(pointer) {
-      var _this2 = this;
-
-      var clearChildren = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      var changed = false;
-
-      if (clearChildren) {
-        Object.keys(this.eventCollection).forEach(function (target) {
-          if (!(target.startsWith(pointer) && target !== pointer)) {
-            return;
-          }
-
-          if (_this2.eventCollection[target].length > 0) {
-            changed = true;
-            _this2.eventCollection[target].length = 0;
-            _this2.bubbleCollection[target] = {}; // reset bubble collection
-
-            _this2._notify(target, target, _this2.eventCollection[target]);
-          }
-        });
-      }
-
-      var collection = this.eventCollection[pointer];
-
-      if (Array.isArray(collection) && collection.length > 0) {
-        changed = true;
-        collection.length = 0;
-        this.bubbleCollection[pointer] = {}; // reset bubble collection
-      }
-
-      if (changed) {
-        // clear target and notify parents
-        this._notifyAll(pointer, collection);
-      }
-    }
-    /**
-     * Notifies all listeners of `pointer` (bubble notification)
-     *
-     * @param  {JsonPointer} pointer
-     * @param  {Array} eventCollection    - array of events at target `pointer`
-     */
-
-  }, {
-    key: "_notifyAll",
-    value: function _notifyAll(pointer, eventCollection) {
-      var frags = gp.split(pointer);
-
-      while (frags.length > 0) {
-        var p = gp.join(frags, true);
-
-        this._notify(p, pointer, eventCollection);
-
-        frags.pop();
-      }
-
-      this._notify("#", pointer, eventCollection);
-    }
-    /**
-     * Notify observers at _pointer_. Note that the received event is a
-     * aggregated event-list []. For a first call the received event will look
-     * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
-     * etc, until `reset()` ist called by the observable.
-     *
-     * @param  {JsonPointer} pointer
-     * @param  {Any} event
-     */
-
-  }, {
-    key: "notify",
-    value: function notify(pointer, event) {
-      this.eventCollection[pointer] = this.eventCollection[pointer] || [];
-      this.eventCollection[pointer].push(event);
-
-      this._notifyAll(pointer, this.eventCollection[pointer]);
-    }
-  }, {
-    key: "_notify",
-    value: function _notify(observerPointer, sourcePointer, event) {
-      var _this3 = this;
-
-      if (this.observers[observerPointer] == null) {
-        return;
-      }
-
-      this.observers[observerPointer].forEach(function (cb) {
-        if (cb.receiveChildEvents === false && observerPointer === sourcePointer) {
-          cb(event);
-          return;
-        }
-
-        if (cb.receiveChildEvents === false && observerPointer !== sourcePointer) {
-          return;
-        }
-
-        _this3.bubbleCollection[observerPointer] = _this3.bubbleCollection[observerPointer] || {};
-        var map = _this3.bubbleCollection[observerPointer];
-        map[sourcePointer] = event;
-        var events = Object.keys(map).reduce(function (res, next) {
-          return res.concat(map[next]);
-        }, []);
-        cb(events);
-      });
-    }
-  }]);
-
-  return BubblingCollectionObservable;
-}();
-
-module.exports = BubblingCollectionObservable;
-
-/***/ }),
-
-/***/ "./services/utils/Validation.js":
-/*!**************************************!*\
-  !*** ./services/utils/Validation.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
-/**
- * @class  Validation
- *
- * @param {Object|Array} data       - application json data
- * @param {Object} schema           - json-schema describing data
- * @param {Function} [errorHandler] - optional callback to modify errors
- */
-
-
-var Validation = /*#__PURE__*/function () {
-  function Validation(data, pointer, errorHandler) {
-    _classCallCheck(this, Validation);
-
-    this.errors = [];
-    this.data = data;
-    this.pointer = pointer;
-    this.canceled = false;
-    this.errorHandler = errorHandler;
-  }
-
-  _createClass(Validation, [{
-    key: "start",
-    value: function start(core, onErrorCb, onDoneCb) {
-      var _this = this;
-
-      this.cbDone = onDoneCb;
-      this.cbError = onErrorCb; // @feature selective-validation
-
-      var pointer = this.pointer;
-      var data = this.data;
-      var schema = core.getSchema();
-
-      if (pointer !== "#") {
-        schema = core.getSchema(pointer, data);
-        data = gp.get(data, pointer);
-      } // console.log("validate", pointer, data, JSON.stringify(schema, null, 2));
-      // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
-
-
-      return validateAsync(core, data, {
-        schema: schema,
-        pointer: pointer,
-        onError: this.onError.bind(this)
-      }).then(function (errors) {
-        _this.onDone(errors);
-
-        return errors;
-      })["catch"](function (error) {
-        return _this.onFail(error);
-      });
-    }
-  }, {
-    key: "onError",
-    value: function onError(validationError) {
-      if (this.canceled) {
-        return;
-      }
-
-      validationError = this.errorHandler(validationError);
-      this.errors.push(validationError);
-      this.cbError(validationError, this.errors);
-    }
-  }, {
-    key: "onDone",
-    value: function onDone(validationErrors) {
-      if (this.canceled) {
-        return;
-      }
-
-      if (this.errors.length !== validationErrors.length) {
-        console.error("Inconsistent validation errors. Not all errors were emitted by validateAsync()");
-      }
-
-      this.cbDone(this.errors);
-    }
-  }, {
-    key: "onFail",
-    value: function onFail(error) {
-      if (this.canceled) {
-        return;
-      }
-
-      console.error("Validation failed", error);
-      this.cbDone(this.errors);
-    }
-  }, {
-    key: "cancel",
-    value: function cancel() {
-      this.canceled = true;
-    }
-  }]);
-
-  return Validation;
-}();
-
-module.exports = Validation;
-
-/***/ }),
-
-/***/ "./services/utils/copy.js":
-/*!********************************!*\
-  !*** ./services/utils/copy.js ***!
-  \********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-module.exports = function copy(data) {
-  if (data === undefined || Array.isArray(data) === false && _typeof(data) !== "object") {
-    return data;
-  }
-
-  return JSON.parse(JSON.stringify(data));
-};
-
-/***/ }),
-
-/***/ "./services/utils/diffpatch.js":
-/*!*************************************!*\
-  !*** ./services/utils/diffpatch.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DiffPatcher = __webpack_require__(/*! jsondiffpatch */ "./node_modules/jsondiffpatch/dist/jsondiffpatch.umd.js").DiffPatcher;
-
-var diffMatchPatch = __webpack_require__(/*! diff_match_patch */ "./node_modules/diff_match_patch/lib/diff_match_patch.js");
-
-var options = {
-  // used to match objects when diffing arrays, by default only === operator is used
-  // this function is used only to when objects are not equal by ref
-  objectHash: function objectHash(obj) {
-    return obj._id;
-  },
-  arrays: {
-    // default true, detect items moved inside the array (otherwise they will be registered as remove+add)
-    detectMove: true,
-    // default false, the value of items moved is not included in deltas
-    includeValueOnMove: false
-  }
-};
-
-try {
-  // required in browser environments
-  window["diff_match_patch"] = diffMatchPatch;
-} catch (e) {// loaded by default in nodejs
-}
-
-var diffpatch = new DiffPatcher(options); // jsondiffpatch.create(options);
-
-diffpatch.options = options;
-module.exports = diffpatch;
-
-/***/ }),
-
-/***/ "./services/utils/ensureItemIDs.js":
-/*!*****************************************!*\
-  !*** ./services/utils/ensureItemIDs.js ***!
-  \*****************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var getTypeOf = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
-
-var ID_PROPERTY = "_id";
-
-function generateId(index) {
-  return "".concat(index).concat(Math.random()).concat(Date.now());
-}
-
-function addMissingItemIDs(list) {
-  list.forEach(function (item, index) {
-    if (item[ID_PROPERTY] == null) {
-      var type = getTypeOf(item);
-
-      if (type === "object" || type === "array") {
-        item[ID_PROPERTY] = ensureItemIDs.config.generateId(index);
-      }
-    }
-  });
-}
-
-function ensureItemIDs(data) {
-  var dataType = getTypeOf(data);
-
-  if (dataType === "array") {
-    ensureItemIDs.config.addMissingItemIDs(data);
-    data.forEach(function (item) {
-      return ensureItemIDs(item);
-    });
-  } else if (dataType === "object") {
-    Object.keys(data).forEach(function (key) {
-      return ensureItemIDs(data[key]);
-    });
-  }
-
-  return data;
-}
-
-ensureItemIDs.config = {
-  ID_PROPERTY: ID_PROPERTY,
-  addMissingItemIDs: addMissingItemIDs,
-  generateId: generateId
-};
-module.exports = ensureItemIDs;
-
-/***/ }),
-
-/***/ "./services/utils/getParentPointer.js":
-/*!********************************************!*\
-  !*** ./services/utils/getParentPointer.js ***!
-  \********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-module.exports = function (pointer) {
-  var list = gp.split(pointer);
-  list.pop();
-  return gp.join(list, pointer[0] === "#");
-};
-
-/***/ }),
-
-/***/ "./services/utils/getPatchesPerPointer.js":
-/*!************************************************!*\
-  !*** ./services/utils/getPatchesPerPointer.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var diffpatch = __webpack_require__(/*! ./diffpatch */ "./services/utils/diffpatch.js");
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-function sortByPointer(a, b) {
-  if (a.pointer < b.pointer) {
-    return -1;
-  } else if (a.pointer > b.pointer) {
-    return 1;
-  }
-
-  return 0;
-}
-
-function findPatches(pointer, diff) {
-  var result = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  // for a diff: { a: { '0': [ 'modifiedString' ], _t: 'a', _0: [ 'string', 0, 0 ] } }
-  // return diff[a] as patch and ".../a" as pointer
-  Object.keys(diff).forEach(function (key) {
-    if (key === "_t") {
-      return;
-    }
-
-    if (Array.isArray(diff[key])) {
-      var entry = {
-        pointer: "".concat(pointer, "/").concat(key),
-        patch: diff[key]
-      };
-      var propertyAdded = diff[key].length === 1;
-      var propertyRemoved = diff[key][2] === 0;
-
-      if (diff._t === "a") {
-        entry.isArrayItem = true;
-      } else if (propertyAdded || propertyRemoved) {
-        entry.changedKey = true;
-      }
-
-      result.push(entry);
-    } else {
-      findPatches("".concat(pointer, "/").concat(key), diff[key], result);
-    }
-  });
-  return result;
-}
-/*
-    Between two objects, returns the json-pointer of the edit
-
-    - for now, returns common pointer of multiple changes (if any)
-    - returns parent pointer for any array-items or object-properties that are added or removed. this ensures a
-        container, array or object, receives a notification of changed children.
-*/
-
-
-module.exports = function getPatchesPerPointer(previousValue, newValue) {
-  var diff = diffpatch.diff(previousValue, newValue);
-
-  if (diff == null) {
-    return [];
-  }
-
-  var patches = findPatches("#", diff); // merge all item patches by their parent-pointer
-
-  var map = {}; // @todo this should be directly resolved in 'findPatches'
-
-  patches.forEach(function (entry) {
-    if (entry.isArrayItem) {
-      var parent = gp.join(entry.pointer, "..");
-      var key = entry.pointer.replace("".concat(parent, "/"), "");
-      map[parent] = map[parent] || {
-        _t: "a"
-      };
-      map[parent][key] = entry.patch;
-    } else if (entry.changedKey) {
-      var _parent = gp.join(entry.pointer, "..");
-
-      var _key = entry.pointer.replace("".concat(_parent, "/"), "");
-
-      map[_parent] = map[_parent] || {};
-      map[_parent][_key] = entry.patch;
-    } else {
-      map[entry.pointer] = entry.patch;
-    }
-  });
-  return Object.keys(map).map(function (pointer) {
-    return {
-      pointer: pointer,
-      patch: map[pointer]
-    };
-  }).sort(sortByPointer);
-};
-
-/***/ }),
-
-/***/ "./services/utils/isRootPointer.js":
-/*!*****************************************!*\
-  !*** ./services/utils/isRootPointer.js ***!
-  \*****************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(/*! gson-pointer/lib/isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
-
-/***/ }),
-
 /***/ "./src/Controller.ts":
 /*!***************************!*\
   !*** ./src/Controller.ts ***!
@@ -19843,39 +16006,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-schema-library/lib/addValidator */ "./node_modules/json-schema-library/lib/addValidator.js");
 /* harmony import */ var json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _services_DataService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/DataService */ "./services/DataService.js");
-/* harmony import */ var _services_DataService__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_services_DataService__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var _services_SchemaService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../services/SchemaService */ "./services/SchemaService.js");
-/* harmony import */ var _services_SchemaService__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_services_SchemaService__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../services/ValidationService */ "./services/ValidationService.js");
-/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_services_ValidationService__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../services/LocationService */ "./services/LocationService.js");
-/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_services_LocationService__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _services_State__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../services/State */ "./services/State.js");
-/* harmony import */ var _services_State__WEBPACK_IMPORTED_MODULE_7___default = /*#__PURE__*/__webpack_require__.n(_services_State__WEBPACK_IMPORTED_MODULE_7__);
-/* harmony import */ var _utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/selectEditor */ "./utils/selectEditor.js");
-/* harmony import */ var _utils_selectEditor__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(_utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../utils/createElement */ "./utils/createElement.js");
-/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(_utils_createElement__WEBPACK_IMPORTED_MODULE_9__);
-/* harmony import */ var _utils_addItem__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../utils/addItem */ "./utils/addItem.js");
-/* harmony import */ var _utils_addItem__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(_utils_addItem__WEBPACK_IMPORTED_MODULE_10__);
-/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ../utils/UISchema */ "./utils/UISchema.js");
-/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_11___default = /*#__PURE__*/__webpack_require__.n(_utils_UISchema__WEBPACK_IMPORTED_MODULE_11__);
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ../utils/getID */ "./utils/getID.js");
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_12___default = /*#__PURE__*/__webpack_require__.n(_utils_getID__WEBPACK_IMPORTED_MODULE_12__);
+/* harmony import */ var _services_DataService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/DataService */ "./src/services/DataService.ts");
+/* harmony import */ var _services_SchemaService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/SchemaService */ "./src/services/SchemaService.ts");
+/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./services/ValidationService */ "./src/services/ValidationService.ts");
+/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./services/LocationService */ "./src/services/LocationService.ts");
+/* harmony import */ var _services_State__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/State */ "./src/services/State.ts");
+/* harmony import */ var _utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/selectEditor */ "./src/utils/selectEditor.ts");
+/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/createElement */ "./src/utils/createElement.ts");
+/* harmony import */ var _utils_addItem__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./utils/addItem */ "./src/utils/addItem.ts");
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./utils/UISchema */ "./src/utils/UISchema.ts");
+/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./utils/getID */ "./src/utils/getID.ts");
 /* harmony import */ var _plugin__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./plugin */ "./src/plugin/index.ts");
-/* harmony import */ var _utils_i18n__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ../utils/i18n */ "./utils/i18n.js");
-/* harmony import */ var _utils_i18n__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(_utils_i18n__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var _utils_createProxy__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ../utils/createProxy */ "./utils/createProxy.js");
-/* harmony import */ var _utils_createProxy__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(_utils_createProxy__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ../editors/oneofeditor */ "./editors/oneofeditor/index.js");
-/* harmony import */ var _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(_editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ../editors/arrayeditor */ "./editors/arrayeditor/index.js");
-/* harmony import */ var _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(_editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__);
-/* harmony import */ var _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ../editors/objecteditor */ "./editors/objecteditor/index.js");
-/* harmony import */ var _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(_editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__);
-/* harmony import */ var _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ../editors/valueeditor */ "./editors/valueeditor/index.js");
-/* harmony import */ var _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19___default = /*#__PURE__*/__webpack_require__.n(_editors_valueeditor__WEBPACK_IMPORTED_MODULE_19__);
+/* harmony import */ var _utils_i18n__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./utils/i18n */ "./src/utils/i18n.ts");
+/* harmony import */ var _utils_createProxy__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./utils/createProxy */ "./src/utils/createProxy.ts");
+/* harmony import */ var _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./editors/oneofeditor */ "./src/editors/oneofeditor/index.ts");
+/* harmony import */ var _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./editors/arrayeditor */ "./src/editors/arrayeditor/index.ts");
+/* harmony import */ var _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./editors/objecteditor */ "./src/editors/objecteditor/index.ts");
+/* harmony import */ var _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./editors/valueeditor */ "./src/editors/valueeditor/index.ts");
 
 
 
@@ -19968,22 +16115,22 @@ class Controller {
     constructor(schema = { type: "object" }, data = {}, options = {}) {
         this.destroyed = false;
         this.disabled = false;
-        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11___default.a.extendSchema(schema);
+        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].extendSchema(schema);
         this.options = {
             editors: [
                 ..._plugin__WEBPACK_IMPORTED_MODULE_13__["default"].getEditors(),
-                _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16___default.a,
-                _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17___default.a,
-                _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18___default.a,
-                _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19___default.a
+                _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__["default"],
+                _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__["default"],
+                _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__["default"],
+                _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19__["default"]
             ],
             ...options,
         };
         this.editors = this.options.editors;
-        this.state = new _services_State__WEBPACK_IMPORTED_MODULE_7___default.a();
+        this.state = new _services_State__WEBPACK_IMPORTED_MODULE_7__["default"]();
         this.instances = {};
         this.core = new Core();
-        this._proxy = _utils_createProxy__WEBPACK_IMPORTED_MODULE_15___default()(this.options.proxy);
+        this._proxy = Object(_utils_createProxy__WEBPACK_IMPORTED_MODULE_15__["default"])(this.options.proxy);
         _plugin__WEBPACK_IMPORTED_MODULE_13__["default"].getValidators().forEach(([validationType, ...validator]) => {
             try {
                 if (validationType === "format") {
@@ -20001,16 +16148,16 @@ class Controller {
             }
             return false;
         });
-        this.schemaService = new _services_SchemaService__WEBPACK_IMPORTED_MODULE_4___default.a(schema, data, this.core);
-        this.validationService = new _services_ValidationService__WEBPACK_IMPORTED_MODULE_5___default.a(this.state, schema, this.core);
+        this.schemaService = new _services_SchemaService__WEBPACK_IMPORTED_MODULE_4__["default"](schema, data, this.core);
+        this.validationService = new _services_ValidationService__WEBPACK_IMPORTED_MODULE_5__["default"](this.state, schema, this.core);
         // enable i18n error-translations
-        this.validationService.setErrorHandler(error => _utils_i18n__WEBPACK_IMPORTED_MODULE_14___default.a.translateError(this, error));
+        this.validationService.setErrorHandler(error => _utils_i18n__WEBPACK_IMPORTED_MODULE_14__["default"].translateError(this, error));
         // merge given data with template data
         data = this.schemaService.addDefaultData(data, schema);
-        this.dataService = new _services_DataService__WEBPACK_IMPORTED_MODULE_3___default.a(this.state, data);
+        this.dataService = new _services_DataService__WEBPACK_IMPORTED_MODULE_3__["default"](this.state, data);
         // start validation after data has been updated
         this.onAfterDataUpdate = this.dataService
-            .on(_services_DataService__WEBPACK_IMPORTED_MODULE_3___default.a.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+            .on(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EVENTS"].AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
         // run initial validation
         this.validateAll();
     }
@@ -20044,7 +16191,7 @@ class Controller {
      * @return the resulting dom-element (not attached)
      */
     createElement(selector, attributes) {
-        return _utils_createElement__WEBPACK_IMPORTED_MODULE_9___default()(selector, attributes);
+        return Object(_utils_createElement__WEBPACK_IMPORTED_MODULE_9__["default"])(selector, attributes);
     }
     /**
      * @throws
@@ -20063,12 +16210,12 @@ class Controller {
         assertValidPointer(pointer);
         // merge schema["editron:ui"] object with options. options precede
         const instanceOptions = Object.assign({
-            id: _utils_getID__WEBPACK_IMPORTED_MODULE_12___default()(pointer),
+            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_12__["default"])(pointer),
             pointer,
             disabled: this.disabled
-        }, _utils_UISchema__WEBPACK_IMPORTED_MODULE_11___default.a.copyOptions(pointer, this), options);
+        }, _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].copyOptions(pointer, this), options);
         // find a matching editor
-        const Editor = _utils_selectEditor__WEBPACK_IMPORTED_MODULE_8___default()(this.getEditors(), pointer, this, instanceOptions);
+        const Editor = Object(_utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__["default"])(this.getEditors(), pointer, this, instanceOptions);
         if (Editor === false) {
             return undefined;
         }
@@ -20107,8 +16254,8 @@ class Controller {
      * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
      */
     addItemTo(pointer, index = 0) {
-        _utils_addItem__WEBPACK_IMPORTED_MODULE_10___default()(this.data(), this.schema(), pointer, index);
-        _services_LocationService__WEBPACK_IMPORTED_MODULE_6___default.a.goto(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, index, true));
+        Object(_utils_addItem__WEBPACK_IMPORTED_MODULE_10__["default"])(this.data(), this.schema(), pointer, index);
+        _services_LocationService__WEBPACK_IMPORTED_MODULE_6__["default"].goto(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, index, true));
     }
     /**
      * Get or update data from a pointer
@@ -20141,7 +16288,7 @@ class Controller {
      *
      * @return {Object} LocationService-Singleton
      */
-    location() { return _services_LocationService__WEBPACK_IMPORTED_MODULE_6___default.a; }
+    location() { return _services_LocationService__WEBPACK_IMPORTED_MODULE_6__["default"]; }
     /**
      * Set the application data
      * @param {Any} data    - json data matching registered json-schema
@@ -20189,7 +16336,7 @@ class Controller {
      * @param {Object} schema   - a valid json-schema
      */
     setSchema(schema) {
-        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11___default.a.extendSchema(schema);
+        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].extendSchema(schema);
         this.validationService.set(schema);
         this.schemaService.setSchema(schema);
     }
@@ -20216,7 +16363,7 @@ class Controller {
         this.schemaService.destroy();
         this.validationService.destroy();
         this.dataService.destroy();
-        this.dataService.off(_services_DataService__WEBPACK_IMPORTED_MODULE_3___default.a.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate);
+        this.dataService.off(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EVENTS"].AFTER_UPDATE, this.onAfterDataUpdate);
     }
     onAfterDataUpdate({ pointer }) {
         this.update();
@@ -20234,6 +16381,1398 @@ class Controller {
     changePointer(newPointer, editor) {
         removeEditorFrom(this.instances, editor);
         this.addInstance(newPointer, editor);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/components/container/index.ts":
+/*!*******************************************!*\
+  !*** ./src/components/container/index.ts ***!
+  \*******************************************/
+/*! exports provided: CHILD_CONTAINER_SELECTOR, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHILD_CONTAINER_SELECTOR", function() { return CHILD_CONTAINER_SELECTOR; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _containerheader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../containerheader */ "./src/components/containerheader/index.ts");
+/* harmony import */ var _containererrors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../containererrors */ "./src/components/containererrors/index.ts");
+/* harmony import */ var _containerdescription__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../containerdescription */ "./src/components/containerdescription/index.ts");
+
+
+
+
+const CHILD_CONTAINER_SELECTOR = ".editron-container__children";
+/**
+ * @view ContainerView
+ * A Container Component is used for any non-value like object or arrays. They hold other values. This group may expose
+ * a group-title and errors. Any childnodes must go to the container '.jed-container__children'.
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    getChildContainer($element) {
+        const $childContainer = $element.querySelector(CHILD_CONTAINER_SELECTOR);
+        if ($childContainer == null) {
+            throw new Error("Container-Component hast not yet been rendered");
+        }
+        return $childContainer;
+    },
+    view(vnode) {
+        return [
+            vnode.attrs.hideTitle === true ? null : mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containerheader__WEBPACK_IMPORTED_MODULE_1__["default"], vnode.attrs),
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containerdescription__WEBPACK_IMPORTED_MODULE_3__["default"], vnode.attrs),
+            vnode.children,
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containererrors__WEBPACK_IMPORTED_MODULE_2__["default"], vnode.attrs),
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(CHILD_CONTAINER_SELECTOR)
+        ];
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/containerdescription/index.ts":
+/*!******************************************************!*\
+  !*** ./src/components/containerdescription/index.ts ***!
+  \******************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/populated */ "./src/utils/populated.ts");
+
+
+/**
+ * Mithril Component to render a description
+ *
+ * # Usage
+ *
+ * render by
+ *
+ * ```js
+ *  m(ContainerDescription, { description: "description" }
+ * ```
+ *
+ * which will result in a html-node like
+ *
+ * ```html
+ *  <div class="editron-container__description mmf-meta">"description"</div>
+ * ```
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        return Object(_utils_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(vnode.attrs.description, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__description.mmf-meta", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(vnode.attrs.description)));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/containererrors/index.ts":
+/*!*************************************************!*\
+  !*** ./src/components/containererrors/index.ts ***!
+  \*************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        if (Array.isArray(vnode.attrs.errors) === false || vnode.attrs.errors.length === 0) {
+            return null;
+        }
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul.editron-container__errors", vnode.attrs.errors.map(error => mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { "class": `is-${error.severity || "error"}` }, error.message)));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/containerheader/index.ts":
+/*!*************************************************!*\
+  !*** ./src/components/containerheader/index.ts ***!
+  \*************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/getID */ "./src/utils/getID.ts");
+/* harmony import */ var _utils_populated__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/populated */ "./src/utils/populated.ts");
+
+
+
+function getClass(hasAction, { title, icon, disabled }) {
+    let classname = `${title ? "withTitle" : "noTitle"}`;
+    classname += ` ${hasAction ? "withActions" : "noActions"}`;
+    classname += ` ${icon ? "withIcon" : "noIcon"}`;
+    classname += disabled ? " is-disabled" : "";
+    return classname;
+}
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = {
+            icon: "",
+            title: "",
+            disabled: false,
+            ...vnode.attrs
+        };
+        const hasAction = (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown) != null;
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__header", {
+            "class": getClass(hasAction, attrs),
+            name: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.pointer)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__title", Object(_utils_populated__WEBPACK_IMPORTED_MODULE_2__["default"])(vnode.attrs.icon, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", attrs.icon)), (!attrs.hideTitle) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("h2", attrs.title)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__actions", attrs.onmoveup ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+            onclick: attrs.onmoveup
+        }, "arrow_upward") : "", attrs.onmovedown ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+            onclick: attrs.onmovedown
+        }, "arrow_downward") : "", attrs.onadd ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+            onclick: () => attrs.onadd()
+        }, "add") : "", attrs.ondelete ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--delete", {
+            onclick: attrs.ondelete
+        }, "delete") : ""));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/index.ts":
+/*!*********************************!*\
+  !*** ./src/components/index.ts ***!
+  \*********************************/
+/*! exports provided: Container, ContainerDescription, ContainerErrors, ContainerHeader, Overlay, OverlaySelectTiles */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _container__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./container */ "./src/components/container/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Container", function() { return _container__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _containerdescription__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./containerdescription */ "./src/components/containerdescription/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ContainerDescription", function() { return _containerdescription__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _containererrors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./containererrors */ "./src/components/containererrors/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ContainerErrors", function() { return _containererrors__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _containerheader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./containerheader */ "./src/components/containerheader/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ContainerHeader", function() { return _containerheader__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _overlay__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./overlay */ "./src/components/overlay/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Overlay", function() { return _overlay__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _overlayselecttiles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./overlayselecttiles */ "./src/components/overlayselecttiles/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "OverlaySelectTiles", function() { return _overlayselecttiles__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/components/overlay/index.ts":
+/*!*****************************************!*\
+  !*** ./src/components/overlay/index.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms */ "./node_modules/mithril-material-forms/index.js");
+/* harmony import */ var mithril_material_forms__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const { button: Button } = mithril_material_forms__WEBPACK_IMPORTED_MODULE_1___default.a;
+/**
+ * Content overlay
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("section.ui-overlay__card", {
+            "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
+        }, vnode.attrs.header ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__header", mithril__WEBPACK_IMPORTED_MODULE_0___default()("h1", vnode.attrs.header)) : "", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__content", {
+            oncreate: (contentNode) => contentNode.dom.appendChild(vnode.attrs.container)
+        }), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__footer", mithril__WEBPACK_IMPORTED_MODULE_0___default()(Button, {
+            onClick: vnode.attrs.onAbort
+        }, vnode.attrs.titleAbort), vnode.attrs.showSave ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(Button, {
+            onClick: vnode.attrs.onSave
+        }, "Speichern") : ""));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/overlayselecttiles/Tile.ts":
+/*!***************************************************!*\
+  !*** ./src/components/overlayselecttiles/Tile.ts ***!
+  \***************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box", {
+            "data-value": vnode.attrs.value,
+            "data-type": vnode.attrs.title.toLowerCase() // @uitest
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box__content", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box__title", [
+            vnode.attrs.icon ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-icon", vnode.attrs.icon) : "",
+            vnode.attrs.title
+        ]), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box__description", vnode.attrs.description)));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/overlayselecttiles/index.ts":
+/*!****************************************************!*\
+  !*** ./src/components/overlayselecttiles/index.ts ***!
+  \****************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Tile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tile */ "./src/components/overlayselecttiles/Tile.ts");
+
+
+function getDataValue(node) {
+    while (node.parentNode &&
+        node.getAttribute("data-value") == null &&
+        node.className.includes("editron-form-tiles") === false) {
+        node = node.parentNode;
+    }
+    return node.getAttribute("data-value");
+}
+/**
+ * @View mithril
+ * Overlay content to pick options. Displayed as tiles
+ * @type {Object}
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = {
+            value: 0,
+            options: [{ title: "Keine Optionen angegeben", value: -1 }],
+            onchange: Function.prototype,
+            ...vnode.attrs
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-tiles", {
+            onclick: (e) => {
+                const value = getDataValue(e.target);
+                if (value != null) {
+                    // @todo event-target being may be unexpected
+                    attrs.onchange(value);
+                }
+            }
+        }, attrs.options.map(tile => mithril__WEBPACK_IMPORTED_MODULE_0___default()(_Tile__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            active: attrs.value === tile.value,
+            title: tile.title,
+            icon: tile.icon,
+            description: mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(tile.description),
+            value: tile.value
+        })));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/editors/AbstractEditor.ts":
+/*!***************************************!*\
+  !*** ./src/editors/AbstractEditor.ts ***!
+  \***************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractEditor; });
+function getTypeClass(schema) {
+    return schema.type === "array" || schema.type === "object" ? schema.type : "value";
+}
+/**
+ * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
+ * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
+ * the tedious and redundant controller/serivce/pointer bootstraping.
+ *
+ * Still required is
+ *
+ *      1. a custom `static editorOf(p, c, o)`-method, to register on a schema
+ *      2. an `update(patch)`-method to respond to changes of the data at _pointer_
+ *      3. a custom `updatePointer(newPointer)`-method to respond to changes in the location of the editor. Most of
+ *          times, the pointer will be used in rendering and/or when creating child-editors. Dont forget to call
+ *          `super.updatePointer(newPointer)`
+ *
+ * and optionally an `updateErrors(errors)`-method to handle new (or removed) errors.
+ *
+ * Convenience methods are
+ *
+ *      - `getData()` to fetch the associated data of the current _pointer_
+ *      - `setData(newValue)` to update the associated data of the current _pointer_
+ *      - `getSchema()` returning the json-schema of the current _pointer_
+ *      - `getErrors()` returning a list of current errors
+ *      - `toElement()` gives you the root dom-node for this editor (aka render target)
+ *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
+ *
+ * @param {String} pointer          - pointer referencing the current data and schema
+ * @param {Controller} controller   - editron controller instance
+ * @param {Object} options          - resolved options object
+ */
+class AbstractEditor {
+    constructor(pointer, controller, options) {
+        this.pointer = pointer;
+        this.controller = controller;
+        this.options = options;
+        this.dom = this.controller
+            .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
+        this.update = controller.data()
+            .observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
+        this.setErrors = controller.validator()
+            .observe(pointer, this.setErrors.bind(this), options.notifyNestedErrors === true);
+        this.errors = this.controller.validator()
+            .getErrorsAndWarnings(pointer);
+    }
+    static editorOf(pointer, controller, options) {
+        throw new Error("Missing editorOf-method in custom editor");
+    }
+    update() {
+        throw new Error("Missing implemented of method 'update' in custom editor");
+    }
+    updatePointer(newPointer) {
+        const oldPointer = this.pointer;
+        this.controller.data().removeObserver(oldPointer, this.update);
+        this.controller.validator().removeObserver(oldPointer, this.setErrors);
+        this.pointer = newPointer;
+        this.controller.data().observe(newPointer, this.update, this.options.notifyNestedChanges === true);
+        this.setErrors = this.controller.validator().observe(newPointer, this.setErrors);
+        return [newPointer, oldPointer];
+    }
+    getData() {
+        return this.controller.data().get(this.pointer);
+    }
+    setData(data) {
+        return this.controller.data().set(this.pointer, data);
+    }
+    getErrors() {
+        return this.errors;
+    }
+    getSchema() {
+        return this.controller.schema().get(this.pointer);
+    }
+    getPointer() {
+        return this.pointer;
+    }
+    focus() {
+        this.controller.location().setCurrent(this.pointer);
+    }
+    blur() {
+        this.controller.location().blur(this.pointer);
+    }
+    toElement() {
+        return this.dom;
+    }
+    destroy() {
+        this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
+        this.controller.data().removeObserver(this.pointer, this.update);
+        this.controller.validator().removeObserver(this.pointer, this._addError);
+        this.controller.validator().off("beforeValidation", this._clearErrors);
+    }
+    setErrors(errors) {
+        this.errors = errors;
+        if (this.updateErrors) {
+            this.updateErrors(this.errors);
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/AbstractValueEditor.ts":
+/*!********************************************!*\
+  !*** ./src/editors/AbstractValueEditor.ts ***!
+  \********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractValueEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getID */ "./src/utils/getID.ts");
+
+
+const convert = {
+    boolean(value) {
+        if (value === "true") {
+            return true;
+        }
+        if (value === "false") {
+            return false;
+        }
+        return value;
+    },
+    integer(value) {
+        const converted = parseInt(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    },
+    number(value) {
+        const converted = parseFloat(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    }
+};
+/**
+ * Convenience class, which registers required events and base methods for value-editors (not object, array)
+ *
+ * Usage
+ * ```js
+ *      MyValueEditor extends AbstractValueEditor {
+ *          constructor(pointer, controller, options) {
+ *              super(pointer, controller, options);
+ *              this.render();
+ *          }
+ *          render() {
+ *              m.render(this.$element, m(MyView, this.viewModel));
+ *          }
+ *      }
+ * ```
+ */
+class AbstractValueEditor {
+    /**
+     * #options
+     *      - editorValueType:String - custom type of editor value (added as classname)
+     *      - editorElementProperties:Object - add custom properties to main DOM-element
+     *      - viewModel:Object - viewModel which extends base viewmodel
+     *
+     * @param  {String} pointer         - json pointer to value
+     * @param  {Controller} controller  - json editor controller
+     * @param  {Object} options
+     */
+    constructor(pointer, controller, options) {
+        this.pointer = pointer;
+        this.controller = controller;
+        const schema = controller.schema().get(pointer);
+        options = Object.assign({
+            viewModel: null,
+            title: null,
+            description: null,
+            editorValueType: schema.enum ? "select" : schema.type,
+            editorElementProperties: null
+        }, options);
+        // create main DOM-element for view-generation
+        this.$element = controller.createElement(`.editron-value.editron-value--${options.editorValueType}`, Object.assign({
+            name: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(pointer)
+        }, options.attrs));
+        // use this model to generate the view. may be customized with `options.viewModel`
+        this.viewModel = Object.assign({
+            pointer,
+            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(pointer),
+            title: options.title,
+            description: options.description,
+            value: controller.data().get(pointer),
+            instantUpdate: options.instantUpdate,
+            schema,
+            options,
+            errors: controller.validator().getErrorsAndWarnings(pointer),
+            onfocus: () => controller.location().setCurrent(pointer),
+            onblur: () => controller.location().blur(pointer),
+            onchange: value => {
+                if (convert[schema.type]) {
+                    value = convert[schema.type](value);
+                }
+                this.setValue(value);
+            }
+        }, options.viewModel);
+        // in order to deregister callbacks in destroy(), bind all callbacks to this class
+        this.update = controller.data().observe(pointer, this.update.bind(this));
+        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
+        // this.render();
+    }
+    static editorOf(pointer, controller) {
+        const schema = controller.schema().get(pointer);
+        return schema.type !== "object" && schema.type !== "array";
+    }
+    getPointer() {
+        return this.pointer;
+    }
+    updatePointer(pointer) {
+        if (pointer === this.pointer) {
+            return;
+        }
+        this.controller.changePointer(pointer, this);
+        const oldPointer = this.pointer;
+        this.$element.setAttribute("name", `editor-${pointer}`);
+        this.pointer = pointer;
+        this.viewModel.pointer = pointer;
+        this.viewModel.id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(pointer);
+        this.viewModel.onfocus = () => this.controller.location().setCurrent(pointer);
+        this.controller.data().removeObserver(oldPointer, this.update);
+        this.controller.validator().removeObserver(oldPointer, this.setErrors);
+        this.controller.data().observe(pointer, this.update);
+        this.controller.validator().observe(pointer, this.setErrors);
+        this.update();
+    }
+    setActive(active = true) {
+        this.viewModel.disabled = active === false;
+        if (this.viewModel.options) {
+            this.viewModel.options.disabled = this.viewModel.disabled;
+        }
+        this.render();
+    }
+    // update display value in view
+    update() {
+        this.viewModel.value = this.controller.data().get(this.pointer);
+        this.viewModel.disabled = !this.controller.isActive();
+        this.render();
+    }
+    // updates value in data-store
+    setValue(value) {
+        this.controller.data().set(this.pointer, value);
+        // do not trigger rendering here. data-observer will notify change event
+    }
+    // adds an error to view
+    setErrors(errors) {
+        this.viewModel.errors = errors;
+        this.render();
+    }
+    // update view
+    render() {
+        // this.$element.innerHTML = "<b>Overwrite AbstractValueEditor.render() to generate your view</b>";
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()("b", "Overwrite AbstractValueEditor.render() to generate view"));
+    }
+    // return main dom element
+    toElement() {
+        return this.$element;
+    }
+    // destroy this editor
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.controller.removeInstance(this);
+        // destroy this editor only once
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
+        this.viewModel = null;
+        this.controller.data().removeObserver(this.pointer, this.update);
+        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        this.$element = null;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/ArrayItemEditor.ts":
+/*!****************************************************!*\
+  !*** ./src/editors/arrayeditor/ArrayItemEditor.ts ***!
+  \****************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ArrayItemEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _ArrayItemView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ArrayItemView */ "./src/editors/arrayeditor/ArrayItemView.ts");
+/* harmony import */ var _utils_array__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/array */ "./src/utils/array.ts");
+
+
+
+
+class ArrayItemEditor {
+    constructor(pointer, controller, options) {
+        // eslint-disable-next-line max-len
+        this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
+        this.controller = controller;
+        const onadd = () => this.add();
+        const onremove = () => this.remove();
+        this.viewModel = {
+            disabled: false,
+            onadd,
+            onremove,
+            onmove: index => this.move(index),
+            ...options
+        };
+        this.render();
+        const $target = this.$element.querySelector(_ArrayItemView__WEBPACK_IMPORTED_MODULE_2__["EditorTarget"]);
+        this.editor = controller.createEditor(pointer, $target, {
+            ondelete: onremove
+        });
+        this.updatePointer(pointer);
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_ArrayItemView__WEBPACK_IMPORTED_MODULE_2__["default"], this.viewModel));
+    }
+    add() {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
+    }
+    remove() {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].removeItem(this.parentPointer, this.controller, this.viewModel.index);
+    }
+    move(to) {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].moveItem(this.parentPointer, this.controller, this.viewModel.index, to);
+    }
+    updatePointer(newPointer) {
+        this.parentPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(newPointer, "..", true);
+        this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
+        this.viewModel.pointer = newPointer;
+        this.viewModel.length = this.controller.data().get(this.parentPointer).length;
+        this.render();
+        this.editor && this.editor.updatePointer(newPointer);
+    }
+    toElement() {
+        return this.$element;
+    }
+    getPointer() {
+        return this.viewModel.pointer;
+    }
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.viewModel = null;
+        this.editor && this.editor.destroy();
+        this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
+    }
+    static getIndex(pointer) {
+        const parentPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(pointer, "..");
+        return parseInt(pointer.replace(`${parentPointer}/`, ""));
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/ArrayItemView.ts":
+/*!**************************************************!*\
+  !*** ./src/editors/arrayeditor/ArrayItemView.ts ***!
+  \**************************************************/
+/*! exports provided: EditorTarget, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditorTarget", function() { return EditorTarget; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+const EditorTarget = ".editron-item";
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view({ attrs }) {
+        const { disabled = false } = attrs;
+        const canRemove = attrs.minItems < attrs.length;
+        const canAdd = attrs.maxItems > attrs.length;
+        const showIndex = attrs.showIndex === true;
+        return [
+            // CONTROLS
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul.editron-container__controls.editron-container__controls--child", {
+                "class": disabled ? "is-disabled" : undefined
+            }, (attrs.move === false || attrs.index === 0) ? "" : mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onmove(attrs.index - 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_upward")), (attrs.move === false || attrs.index === attrs.length - 1) ? "" : mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onmove(attrs.index + 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_downward")), (attrs.remove && attrs.onremove && canRemove) ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onremove(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "delete")) : "", (attrs.add && attrs.onadd && canAdd) ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onadd(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add")) : ""),
+            // TARGET CONTAINER FOR EDITOR
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(EditorTarget, {
+                "data-index": `${attrs.index + 1} / ${attrs.length}`,
+                "class": [
+                    disabled ? "is-disabled" : "",
+                    canRemove ? "has-remove-enabled" : "has-remove-disabled",
+                    canAdd ? "has-add-enabled" : "has-add-disabled",
+                    showIndex ? "with-index" : ""
+                ].join(" ").trim()
+            }),
+            // ADD BUTTON
+            (attrs.insert && canAdd) ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__separator.mmf-row", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__button--add", {
+                "class": disabled ? "is-disabled" : undefined,
+                onclick: e => {
+                    console.log("add", disabled);
+                    if (!disabled) {
+                        e.preventDefault();
+                        attrs.onadd && attrs.onadd(attrs.index);
+                    }
+                }
+            }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add_circle"))) : ""
+        ];
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/index.ts":
+/*!******************************************!*\
+  !*** ./src/editors/arrayeditor/index.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ArrayEditor; });
+/* harmony import */ var _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ArrayItemEditor */ "./src/editors/arrayeditor/ArrayItemEditor.ts");
+/* harmony import */ var _services_utils_diffpatch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/utils/diffpatch */ "./src/services/utils/diffpatch.ts");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+
+
+
+
+class ArrayEditor {
+    constructor(pointer, controller, options) {
+        // add id to element, since no other input-form is associated with this editor
+        options.attrs = Object.assign({ id: options.id }, options.attrs);
+        const schema = controller.schema().get(pointer);
+        const data = controller.data().get(pointer);
+        this.onAdd = (index = 0) => {
+            if (!this.viewModel.disabled) {
+                controller.addItemTo(this.pointer, index);
+            }
+        };
+        const arrayHTMLElement = ".editron-container.editron-container--array.withAddButton";
+        this.$element = controller.createElement(arrayHTMLElement, options.attrs);
+        this.controller = controller;
+        this.pointer = pointer;
+        this.children = [];
+        this.viewModel = {
+            pointer,
+            attrs: {},
+            errors: controller.validator().getErrorsAndWarnings(pointer),
+            onadd: this.onAdd,
+            length: data.length,
+            maxItems: schema.maxItems || Infinity,
+            minItems: schema.minItems || 0,
+            ...options,
+            controls: {
+                add: false,
+                remove: true,
+                move: true,
+                insert: true,
+                showIndex: options["array:index"] === true,
+                maxItems: schema.maxItems || Infinity,
+                minItems: schema.minItems || 0,
+                ...options.controls
+            }
+        };
+        this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
+        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
+        this.render();
+        this.$items = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
+        this.rebuildChildren();
+        this.updateControls();
+    }
+    static editorOf(pointer, controller) {
+        const schema = controller.schema().get(pointer);
+        return schema.type === "array";
+    }
+    setActive(active = true) {
+        const disabled = active === false;
+        this.viewModel.disabled = disabled;
+        this.viewModel.controls.disabled = disabled;
+        this.rebuildChildren();
+        this.render();
+    }
+    update() {
+        this.rebuildChildren();
+        this.updateControls();
+    }
+    updatePointer(newPointer) {
+        if (this.pointer === newPointer) {
+            return;
+        }
+        this.controller.changePointer(newPointer, this);
+        const previousPointer = this.pointer;
+        this.pointer = newPointer;
+        this.viewModel.pointer = newPointer;
+        this.viewModel.attrs.id = newPointer;
+        this.controller.data().removeObserver(previousPointer, this.updateView);
+        this.controller.validator().removeObserver(previousPointer, this.setErrors);
+        this.controller.data().observe(newPointer, this.updateView);
+        this.controller.validator().observe(newPointer, this.setErrors);
+        this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
+        this.render();
+    }
+    updateView(changeEvent) {
+        if (changeEvent && changeEvent.patch) {
+            this.applyPatches(changeEvent.patch);
+        }
+        else {
+            this.rebuildChildren();
+        }
+        this.updateControls();
+    }
+    applyPatches(patch) {
+        // fetch a copy of the original list
+        const originalChildren = this.children.slice(0);
+        // and patch the current list
+        _services_utils_diffpatch__WEBPACK_IMPORTED_MODULE_1__["default"].patch(this.children, patch);
+        // search for inserted children
+        this.children.forEach((child, index) => {
+            if (child instanceof _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__["default"] === false) {
+                const pointer = `${this.pointer}/${index}`;
+                const newChild = new _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__["default"](pointer, this.controller, this.viewModel.controls);
+                // @insert?
+                this.children[index] = newChild;
+            }
+        });
+        // search for removed children
+        originalChildren.forEach(child => {
+            if (this.children.indexOf(child) === -1) {
+                child.destroy();
+            }
+        });
+        // update view: move and inserts nodes
+        const currentLocation = this.controller.location().getCurrent();
+        for (let i = 0, l = this.children.length; i < l; i += 1) {
+            const previousPointer = this.children[i].getPointer();
+            const currentPointer = `${this.pointer}/${i}`;
+            // update current location
+            if (currentLocation.indexOf(previousPointer) === 0) {
+                const editorLocation = currentLocation.replace(previousPointer, currentPointer);
+                this.controller.location().setCurrent(editorLocation);
+            }
+            // update child views to match patched list
+            this.children[i].updatePointer(currentPointer);
+            if (this.$items.children[i] === this.children[i].toElement()) {
+                // skip moving node, already in place
+                continue;
+            }
+            else if (i + 1 < this.$items.children.length) {
+                // move node to correct position
+                this.$items.insertBefore(this.children[i].toElement(), this.$items.children[i + 1]);
+            }
+            else {
+                // remaining nodes may be simply appended
+                this.$items.appendChild(this.children[i].toElement());
+            }
+        }
+    }
+    rebuildChildren() {
+        const data = this.controller.data().get(this.pointer);
+        // delete all child editors
+        this.children.forEach(editor => editor.destroy());
+        this.children.length = 0;
+        this.$items.innerHTML = "";
+        // recreate child editors
+        data.forEach((item, index) => {
+            const childPointer = `${this.pointer}/${index}`;
+            const childEditor = new _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__["default"](childPointer, this.controller, this.viewModel.controls);
+            this.$items.appendChild(childEditor.toElement());
+            this.children.push(childEditor);
+        });
+    }
+    updateControls() {
+        this.viewModel.length = this.children.length;
+        this.viewModel.onadd = this.viewModel.maxItems > this.children.length ? this.onAdd : false;
+        this.$element.classList.toggle("has-add-disabled", this.viewModel.maxItems <= this.children.length);
+        this.$element.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
+    }
+    getPointer() {
+        return this.pointer;
+    }
+    setErrors(errors) {
+        this.viewModel.errors = errors;
+        this.render();
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_2___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
+    }
+    toElement() {
+        return this.$element;
+    }
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.controller.removeInstance(this);
+        this.viewModel = null;
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_2___default()("i"));
+        this.controller.data().removeObserver(this.pointer, this.updateView);
+        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        this.children.forEach(editor => editor.destroy());
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/index.ts":
+/*!******************************!*\
+  !*** ./src/editors/index.ts ***!
+  \******************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractEditor */ "./src/editors/AbstractEditor.ts");
+/* harmony import */ var _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AbstractValueEditor */ "./src/editors/AbstractValueEditor.ts");
+/* harmony import */ var _arrayeditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./arrayeditor */ "./src/editors/arrayeditor/index.ts");
+/* harmony import */ var _objecteditor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./objecteditor */ "./src/editors/objecteditor/index.ts");
+/* harmony import */ var _oneofeditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./oneofeditor */ "./src/editors/oneofeditor/index.ts");
+/* harmony import */ var _valueeditor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./valueeditor */ "./src/editors/valueeditor/index.ts");
+
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    AbstractEditor: _AbstractEditor__WEBPACK_IMPORTED_MODULE_0__["default"],
+    AbstractValueEditor: _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_1__["default"],
+    ArrayEditor: _arrayeditor__WEBPACK_IMPORTED_MODULE_2__["default"],
+    ObjectEditor: _objecteditor__WEBPACK_IMPORTED_MODULE_3__["default"],
+    OneOfEditor: _oneofeditor__WEBPACK_IMPORTED_MODULE_4__["default"],
+    ValueEditor: _valueeditor__WEBPACK_IMPORTED_MODULE_5__["default"],
+});
+
+
+/***/ }),
+
+/***/ "./src/editors/objecteditor/index.ts":
+/*!*******************************************!*\
+  !*** ./src/editors/objecteditor/index.ts ***!
+  \*******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ObjectEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/OverlayService */ "./src/services/OverlayService.ts");
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+
+
+
+
+function showJSON(controller, data, title) {
+    const element = controller.createElement(".overlay__item.overlay__item--json");
+    _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__["default"].open(element, { ok: true, save: false });
+    // render textarea after it is injected into dom, to correctly update textarea size
+    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1___default.a, { title, value: JSON.stringify(data, null, 4) }));
+}
+class ObjectEditor {
+    constructor(pointer, controller, options = {}) {
+        // add id to element, since no other input-form is associated with this editor...
+        // @todo ...except another editron-instance
+        options.attrs = Object.assign({ id: options.id }, options.attrs);
+        this.$element = controller.createElement(".editron-container.editron-container--object", options.attrs);
+        this.pointer = pointer;
+        this.options = options;
+        this.controller = controller;
+        this.childEditors = [];
+        this.viewModel = {
+            pointer,
+            icon: options.icon,
+            errors: [],
+            attrs: {},
+            hideTitle: options.hideTitle,
+            title: options.title,
+            description: options.description,
+            ...options
+        };
+        if (options.addDelete) {
+            this.viewModel.ondelete = () => controller.data().delete(pointer);
+        }
+        this.rebuildChildren = controller.data().observe(pointer, this.rebuildChildren.bind(this));
+        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
+        this.setErrors(controller.validator().getErrorsAndWarnings(pointer));
+        this.render();
+        this.$children = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
+        this.rebuildChildren();
+    }
+    static editorOf(pointer, controller) {
+        const schema = controller.schema().get(pointer);
+        return schema.type === "object";
+    }
+    updatePointer(pointer) {
+        if (this.pointer === pointer || this.viewModel == null) {
+            return;
+        }
+        this.controller.changePointer(pointer, this);
+        const oldPointer = this.pointer;
+        this.$element.id = pointer;
+        const controller = this.controller;
+        this.options.attrs.id = pointer;
+        this.pointer = pointer;
+        this.viewModel.pointer = pointer;
+        if (this.options.addDelete) {
+            this.viewModel.ondelete = () => controller.data().delete(pointer);
+        }
+        controller.data().removeObserver(oldPointer, this.rebuildChildren);
+        controller.validator().removeObserver(oldPointer, this.setErrors);
+        controller.data().observe(pointer, this.rebuildChildren);
+        controller.validator().observe(pointer, this.setErrors);
+        this.childEditors.forEach(editor => editor.updatePointer(`${this.pointer}/${editor._property}`));
+        this.render();
+    }
+    /** de/activate this editors user-interaction */
+    setActive(active = true) {
+        this.viewModel.disabled = active === false;
+        this.render();
+    }
+    update() {
+        this.rebuildChildren();
+    }
+    rebuildChildren() {
+        if (this.viewModel == null) {
+            console.error(`destroyed ObjectEditor receives an update event
+                - this may be invoked through oneOf-Editor`, this);
+            return;
+        }
+        // fetch latest data
+        const data = this.controller.data().get(this.pointer);
+        // destroy child editor
+        this.childEditors.forEach(editor => editor.destroy());
+        this.childEditors.length = 0;
+        // clear html
+        this.$children.innerHTML = "";
+        // rebuild children
+        if (data) {
+            Object.keys(data).forEach(property => {
+                const editor = this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
+                if (editor) {
+                    editor._property = property;
+                    this.childEditors.push(editor);
+                }
+            });
+        }
+        this.render();
+    }
+    deleteProperty(property) {
+        const data = this.controller.data().get(this.pointer);
+        delete data[property];
+        this.controller.data().set(this.pointer, data);
+    }
+    showProperty(property) {
+        const propertyData = this.controller.data().get(`${this.pointer}/${property}`);
+        showJSON(this.controller, propertyData, property);
+    }
+    setErrors(errors = []) {
+        // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
+        // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
+        // arrays this should come per default, as the may insert in add items...
+        this.viewModel.errors = errors.map(error => {
+            if (error.code === "no-additional-properties-error") {
+                const message = error.message;
+                const property = error.data.property;
+                return {
+                    severity: error.type || "error",
+                    message: mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-error.editron-error--object-property", mithril__WEBPACK_IMPORTED_MODULE_0___default()("span", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(message)), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear"))
+                };
+            }
+            return error;
+        });
+        this.render();
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
+    }
+    toElement() {
+        return this.$element;
+    }
+    getPointer() {
+        return this.pointer;
+    }
+    /** destroy editor, view and event-listeners */
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.controller.removeInstance(this);
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
+        this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
+        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        this.childEditors.forEach(editor => editor.destroy());
+        this.childEditors.length = 0;
+        this.$children.innerHTML = "";
+        this.viewModel = null;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/oneofeditor/index.ts":
+/*!******************************************!*\
+  !*** ./src/editors/oneofeditor/index.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return OneOfEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.js");
+/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/getID */ "./src/utils/getID.ts");
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/UISchema */ "./src/utils/UISchema.ts");
+
+
+
+
+
+
+const { UI_PROPERTY } = _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__["default"];
+class OneOfEditor {
+    constructor(pointer, controller, options) {
+        const childSchema = controller.schema().get(pointer);
+        // @special case. Our options lie in `schema.oneOfSchema`
+        const schema = childSchema.oneOfSchema;
+        const attrs = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.get(schema, `#/${UI_PROPERTY}/attrs`);
+        this.schema = schema;
+        this.childSchema = childSchema;
+        // ensure requried titles are set
+        schema.oneOf.forEach((oneOfSchema, index) => (oneOfSchema.title = oneOfSchema.title || `${index}.`));
+        this.$element = controller.createElement(".editron-container.editron-container--oneof", attrs);
+        this.controller = controller;
+        this.pointer = pointer;
+        this.viewModel = {
+            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer),
+            pointer,
+            options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
+            onchange: (oneOfIndex) => this.changeChild(schema.oneOf[oneOfIndex]),
+            value: this.getIndexOf(childSchema),
+            title: schema.title,
+            description: schema.description
+        };
+        // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
+        this.update = controller.data().observe(pointer, this.update.bind(this), true);
+        this.render();
+        this.$childContainer = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_4__["CHILD_CONTAINER_SELECTOR"]);
+        this.rebuild();
+    }
+    static editorOf(pointer, controller, options) {
+        const schema = controller.schema().get(pointer);
+        return schema.oneOfSchema && !schema.items && !options.renderOneOf;
+    }
+    setActive(active = true) {
+        this.viewModel.disabled = active === false;
+        this.render();
+    }
+    changeChild(schema) {
+        this.childEditor && this.childEditor.destroy();
+        const data = this.controller.schema().getTemplate(schema);
+        this.controller.data().set(this.pointer, data);
+    }
+    getIndexOf(currentSchema) {
+        for (let i = 0, l = this.schema.oneOf.length; i < l; i += 1) {
+            if (this.schema.oneOf[i].title === currentSchema.title) {
+                return i;
+            }
+        }
+        return 0;
+    }
+    updatePointer(newPointer) {
+        const oldPointer = this.getPointer();
+        if (oldPointer === newPointer) {
+            return;
+        }
+        this.controller.changePointer(newPointer, this);
+        this.pointer = newPointer;
+        this.viewModel.id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_3__["default"])(newPointer);
+        this.viewModel.pointer = newPointer;
+        this.$element.id = newPointer;
+        this.controller.data().removeObserver(oldPointer, this.update);
+        this.controller.data().observe(newPointer, this.update, true);
+        if (this.childEditor) {
+            this.childEditor.updatePointer(newPointer);
+        }
+        this.render();
+    }
+    update() {
+        const currentSchema = this.controller.schema().get(this.pointer);
+        delete currentSchema.oneOfSchema; // is recreated each time
+        if (currentSchema.title === this.childSchema.title) {
+            return;
+        }
+        this.viewModel.value = this.getIndexOf(currentSchema);
+        this.childSchema = currentSchema;
+        this.rebuild();
+    }
+    rebuild() {
+        this.childEditor && this.childEditor.destroy();
+        this.$childContainer.innerHTML = "";
+        this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
+            // @attention this is very important or else we create an infinite loop through selectEditor
+            renderOneOf: true
+        });
+        this.render();
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_4__["default"], this.viewModel, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-value", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2___default.a, this.viewModel))));
+    }
+    toElement() {
+        return this.$element;
+    }
+    getPointer() {
+        return this.pointer;
+    }
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.controller.removeInstance(this);
+        this.viewModel = null;
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, "i");
+        this.controller.data().removeObserver(this.pointer, this.update);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/valueeditor/View.ts":
+/*!*****************************************!*\
+  !*** ./src/editors/valueeditor/View.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js");
+/* harmony import */ var mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js");
+/* harmony import */ var mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mithril-material-forms/components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js");
+/* harmony import */ var mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/UISchema */ "./src/utils/UISchema.ts");
+
+
+
+
+
+
+const Component = {
+    view({ attrs }) {
+        const { schema } = attrs;
+        const { options = {} } = attrs.options;
+        const config = {
+            type: schema.type,
+            title: schema.title,
+            description: schema.description,
+            onblur: attrs.onblur || Function.prototype,
+            onfocus: attrs.onfocus || Function.prototype,
+            onchange: attrs.onchange || Function.prototype,
+            ...attrs,
+            ...options
+        };
+        if (schema.enum && schema.enum.length > 0) {
+            config.options = _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].enumOptions(schema);
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2___default.a, config);
+        }
+        if (schema.type === "boolean") {
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1___default.a, config);
+        }
+        if (schema.type === "string" && schema.format === "html") {
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3___default.a, config);
+        }
+        if (schema.type === "string" && schema.format === "textarea") {
+            config.rows = options["textarea:rows"] || 1;
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3___default.a, config);
+        }
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4___default.a, config);
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (Component);
+
+
+/***/ }),
+
+/***/ "./src/editors/valueeditor/index.ts":
+/*!******************************************!*\
+  !*** ./src/editors/valueeditor/index.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ValueEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _View__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./View */ "./src/editors/valueeditor/View.ts");
+/* harmony import */ var _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AbstractValueEditor */ "./src/editors/AbstractValueEditor.ts");
+
+
+
+class ValueEditor extends _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_2__["default"] {
+    static editorOf(pointer, controller) {
+        const schema = controller.schema().get(pointer);
+        return schema.type !== "object" && schema.type !== "array";
+    }
+    constructor(pointer, controller, options = {}) {
+        super(pointer, controller, options);
+        this.render();
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_View__WEBPACK_IMPORTED_MODULE_1__["default"], this.viewModel));
     }
 }
 
@@ -20275,67 +17814,1728 @@ const validators = [];
 
 /***/ }),
 
-/***/ "./utils/UISchema.js":
-/*!***************************!*\
-  !*** ./utils/UISchema.js ***!
-  \***************************/
-/*! no static exports found */
+/***/ "./src/services/DataService.ts":
+/*!*************************************!*\
+  !*** ./src/services/DataService.ts ***!
+  \*************************************/
+/*! exports provided: EVENTS, default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENTS", function() { return EVENTS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DataService; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/diffpatch */ "./src/services/utils/diffpatch.ts");
+/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/copy */ "./src/services/utils/copy.ts");
+/* harmony import */ var _utils_isRootPointer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/isRootPointer */ "./src/services/utils/isRootPointer.ts");
+/* harmony import */ var _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./reducers/dataReducer */ "./src/services/reducers/dataReducer.ts");
+/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
+/* harmony import */ var _utils_getParentPointer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/getParentPointer */ "./src/services/utils/getParentPointer.ts");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/getPatchesPerPointer */ "./src/services/utils/getPatchesPerPointer.ts");
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
 
-var _require = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js"),
-    eachSchema = _require.eachSchema;
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var UI_PROPERTY = "editron:ui";
-
-var populated = __webpack_require__(/*! ./populated */ "./utils/populated.js");
-
-function isPointer(string) {
-  return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
-} // returns a list of {title, pointer} from root-node to pointer, excluding root node
 
 
-function getBreadcrumps(pointer, controller) {
-  var breadcrumps = [];
 
-  while (pointer !== "#") {
-    breadcrumps.unshift({
-      title: getOption(pointer, controller, "title"),
-      pointer: pointer
+
+
+
+
+
+
+
+const DEBUG = false;
+const EVENTS = {
+    /** called before starting data update */
+    BEFORE_UPDATE: "beforeUpdate",
+    /** called after data udpate was performed */
+    AFTER_UPDATE: "afterUpdate",
+    FINAL_UPDATE: "finalUpdate"
+};
+/**
+ * Read and modify form data and notify observers
+ *
+ * @param {State} state     - current state/store of application
+ * @param {Any} data        - current application data (form)
+ */
+class DataService {
+    constructor(state, data) {
+        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_10__["default"])) {
+            throw new Error("Given state in DataService must be of instance 'State'");
+        }
+        this.observers = {};
+        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_1___default()();
+        this.EVENTS = EVENTS;
+        this.id = "data";
+        this.state = state;
+        this.state.register(this.id, _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_5__["default"]);
+        let lastUpdate = {};
+        // improved version - supporting multiple patches
+        this.onStateChanged = () => {
+            const current = this.state.get(this.id);
+            const patches = Object(_utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_9__["default"])(lastUpdate, current.data.present);
+            if (patches.length === 0) {
+                DEBUG && console.info("DataService abort update event -- nothing changed");
+                return;
+            }
+            DEBUG && console.log("Patch locations", patches.map(delta => delta.pointer));
+            for (let i = 0, l = patches.length; i < l; i += 1) {
+                const eventLocation = patches[i].pointer;
+                const parentData = this.getDataByReference(eventLocation);
+                const parentDataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8___default()(parentData);
+                this.emit(EVENTS.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
+                this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
+            }
+            this.emitter.emit(EVENTS.FINAL_UPDATE, patches);
+            lastUpdate = current.data.present;
+        };
+        this.state.subscribe(this.id, this.onStateChanged);
+        if (data !== undefined) {
+            this.set("#", data);
+            this.resetUndoRedo();
+        }
+    }
+    resetUndoRedo() {
+        this.state.get(this.id).data.past.length = 0;
+    }
+    destroy() {
+        this.state.unsubscribe(this.id, this.onStateChanged);
+        this.state.unregister(this.id);
+    }
+    /**
+     * Get a copy of current data from the requested _json-pointer_
+     * @param {JsonPointer} [pointer="#"]  - data to fetch. Defaults to _root_
+     * @returns {Any} data, associated with _pointer_
+     */
+    get(pointer = "#") {
+        const value = this.getDataByReference(pointer);
+        return Object(_utils_copy__WEBPACK_IMPORTED_MODULE_3__["default"])(value);
+    }
+    getDataByReference(pointer = "#") {
+        // eslint-disable-next-line no-invalid-this
+        return gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.state.get(this.id).data.present, pointer);
+    }
+    /**
+     * Change data at the given _pointer_
+     * @param {JsonPointer}  pointer    - data location to modify
+     * @param {Any}  value              - new value at pointer
+     * @param {Boolean} [isSynched]
+     */
+    set(pointer, value, isSynched = false) {
+        if (this.isValid(pointer) === false) {
+            throw new Error(`Pointer ${pointer} does not exist in data`);
+        }
+        const currentValue = this.getDataByReference(pointer);
+        if (_utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__["default"].diff(currentValue, value) == null) {
+            DEBUG && console.info("DataService abort update -- value not changed");
+            return;
+        }
+        this.emit(EVENTS.BEFORE_UPDATE, pointer, { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionTypes"].DATA_SET, isSynched });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionCreators"].setData(pointer, value, currentValue, isSynched));
+        if (pointer === "#" && isSynched === false) {
+            // do not add root changes to undo
+            this.state.get(this.id).data.past.pop();
+        }
+    }
+    /**
+     * Delete data at the given _pointer_
+     * @param  {JsonPointer} pointer    - data location to delete
+     */
+    delete(pointer) {
+        if (Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_4__["default"])(pointer)) {
+            throw new Error("Can not remove root data via delete. Use set(\"#/\", {}) instead.");
+        }
+        const key = pointer.split("/").pop();
+        const parentPointer = Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer);
+        const data = this.get(parentPointer);
+        gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.delete(data, key);
+        this.set(parentPointer, data);
+    }
+    undoCount() {
+        return this.state.get(this.id).data.past.length;
+    }
+    redoCount() {
+        return this.state.get(this.id).data.future.length;
+    }
+    undo() {
+        this.emit(EVENTS.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionTypes"].UNDO });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionCreators"].undo());
+    }
+    redo() {
+        this.emit(EVENTS.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionTypes"].REDO });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionCreators"].redo());
+    }
+    on(eventType, callback) {
+        if (eventType === undefined) {
+            throw new Error("Missing event type in DataService.on");
+        }
+        this.emitter.on(eventType, callback);
+        return callback;
+    }
+    off(...args) {
+        this.emitter.off(...args);
+    }
+    emit(eventType, pointer, data) {
+        this.emitter.emit(eventType, createEventObject(pointer, data));
+    }
+    observe(pointer, callback, bubbleEvents = false) {
+        callback.bubbleEvents = bubbleEvents;
+        this.observers[pointer] = this.observers[pointer] || [];
+        this.observers[pointer].push(callback);
+        return callback;
+    }
+    removeObserver(pointer, callback) {
+        if (this.observers[pointer] && this.observers[pointer].length > 0) {
+            this.observers[pointer] = this.observers[pointer].filter(cb => cb !== callback);
+        }
+    }
+    notify(pointer, event) {
+        if (this.observers[pointer] == null || this.observers[pointer].length === 0) {
+            return;
+        }
+        const observers = this.observers[pointer];
+        for (let i = 0, l = observers.length; i < l; i += 1) {
+            if (observers[i].bubbleEvents === true || event.pointer === pointer) {
+                observers[i](event);
+            }
+        }
+    }
+    bubbleObservers(pointer, data) {
+        const eventObject = createEventObject(pointer, data);
+        const frags = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.split(pointer);
+        while (frags.length) {
+            this.notify(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(frags, true), eventObject);
+            frags.length -= 1;
+        }
+        this.notify("#", eventObject);
+    }
+    isValid(pointer) {
+        return Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_4__["default"])(pointer) || gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.getDataByReference(), pointer) !== undefined;
+    }
+}
+function createEventObject(pointer, data) {
+    const parentPointer = Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer);
+    return Object.assign(data, {
+        pointer,
+        parentPointer
     });
-    pointer = gp.join(pointer, "..");
-  }
-
-  return breadcrumps;
 }
 
+
+/***/ }),
+
+/***/ "./src/services/LocationService.ts":
+/*!*****************************************!*\
+  !*** ./src/services/LocationService.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
+/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/getID */ "./src/utils/getID.ts");
+
+
+
+
+const DELAY = 25;
+const emitter = mitt__WEBPACK_IMPORTED_MODULE_0___default()();
+/**
+ * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
+ *
+ * The LocationService manages global pointer states and scroll position:
+ *  - the "current pointer" tracks the currently focused editor and
+ *  - the "page pointer" corresponds to the first property of "current pointer", which may be used for main page loading
+ *
+ * ### Motivation
+ *
+ * Jumping to specific editors via the navigation requires a targeting system. A page reload may occur for a called
+ * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
+ * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
+ * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
+ *
+ * @type {Object}
+ */
+const LocationService = {
+    PAGE_EVENT: "page",
+    TARGET_EVENT: "target",
+    // update page and target pointer
+    goto(targetPointer) {
+        const path = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.split(targetPointer);
+        if (path.length === 0 || (path.length === 1 && path[0] === "")) {
+            return;
+        }
+        const nextPage = path[0];
+        const currentPage = _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPage();
+        if (currentPage !== nextPage) {
+            _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPage(gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(nextPage, true));
+        }
+        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer(gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(targetPointer, true));
+        this.focus();
+    },
+    // set target pointer
+    setCurrent(pointer) {
+        if (pointer !== this.getCurrent()) {
+            _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer(pointer);
+            emitter.emit("focus", pointer);
+        }
+    },
+    getCurrent() {
+        return _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer();
+    },
+    // focus target pointer
+    focus() {
+        clearTimeout(this.timeout);
+        const pointer = _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer();
+        const id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer);
+        const targetElement = document.getElementById(id);
+        // console.log(`pointer ${pointer} - id ${id}`, targetElement);
+        if (targetElement == null) {
+            // console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
+            return;
+        }
+        // const targetPosition = targetElement.getBoundingClientRect().top
+        this.timeout = setTimeout(() => {
+            // try scrolling to header-row in container (low height) to have a more robust scroll target position
+            let scrollTarget = targetElement.querySelector(".editron-container > .editron-container__header");
+            scrollTarget = (scrollTarget == null || scrollTarget.offsetParent === null) ? targetElement : scrollTarget;
+            scrollTarget.scrollIntoView();
+            // @todo only fire focus event?
+            targetElement.dispatchEvent(new Event("focus"));
+            targetElement.focus && targetElement.focus();
+        }, DELAY);
+    },
+    blur(pointer) {
+        if (_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer() !== pointer) {
+            return;
+        }
+        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer("");
+        emitter.emit("blur", pointer);
+    },
+    // @ts-ignore
+    on: (...args) => emitter.on(...args),
+    // @ts-ignore
+    off: (...args) => emitter.off(...args)
+};
+// @ts-ignore
+_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.CURRENT_PAGE_EVENT, pointer => emitter.emit(LocationService.PAGE_EVENT, pointer));
+// @ts-ignore
+_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.CURRENT_POINTER_EVENT, pointer => emitter.emit(LocationService.TARGET_EVENT, pointer));
+/* harmony default export */ __webpack_exports__["default"] = (LocationService);
+
+
+/***/ }),
+
+/***/ "./src/services/OverlayService.ts":
+/*!****************************************!*\
+  !*** ./src/services/OverlayService.ts ***!
+  \****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_overlay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/overlay */ "./src/components/overlay/index.ts");
+/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/createElement */ "./src/utils/createElement.ts");
+/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
+/* eslint no-use-before-define: 0 */
+
+
+
+
+// @ts-ignore
+_uistate__WEBPACK_IMPORTED_MODULE_3__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_3__["default"].EVENTS.OVERLAY_EVENT, (value = {}) => OverlayService.onChange(value.element, value.options));
+/**
+ * Opens an overlay with a DOM-Node as contents
+ * @type {Object}
+ */
+const OverlayService = {
+    /**
+     * Opens the overlay, showing the given `container` as conten
+     *
+     * Options
+     *  {Boolean} ok            - display `ok`, instead of `abort`
+     *  {Boolean} fullscreen    - fullscreen size of overlay, regardless of content
+     *  {Function} onAbort      - called when Overlay is closed via ok/abort
+     *  {Function} onSave       - called when Overlay is closed via save
+     *
+     * @param  {HTMLElement} container
+     * @param  {Obejct} options
+     */
+    open(container, options) {
+        // @ts-ignore
+        _uistate__WEBPACK_IMPORTED_MODULE_3__["default"].setOverlay({
+            element: container,
+            options: Object.assign({
+                ok: false,
+                save: true,
+                fullscreen: false,
+                onAbort: Function.prototype,
+                onSave: Function.prototype
+            }, options)
+        });
+    },
+    close() {
+        _uistate__WEBPACK_IMPORTED_MODULE_3__["default"].setOverlay();
+        // must destroy component for reuse
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.getElement(), mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
+    },
+    onChange(container, options) {
+        if (container == null) {
+            const $el = this.getElement();
+            $el.parentNode && $el.parentNode.removeChild($el);
+            return;
+        }
+        const $el = this.getElement();
+        container.classList.add("overlay__item");
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render($el, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_overlay__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            container,
+            fullscreen: options.fullscreen,
+            showSave: options.save,
+            titleAbort: options.ok ? "OK" : "Abbrechen",
+            onSave: () => {
+                options.onSave();
+                this.close();
+            },
+            onAbort: () => this.close(),
+            onremove: () => options.onAbort()
+        }));
+        document.body.appendChild($el);
+    },
+    getElement() {
+        if (this.$element == null) {
+            this.$element = Object(_utils_createElement__WEBPACK_IMPORTED_MODULE_2__["default"])(".ui-overlay");
+            this.$element.addEventListener("click", (e) => {
+                // close popup if clicked on "background"
+                if (e.target === this.$element) {
+                    this.close();
+                }
+            });
+        }
+        return this.$element;
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (OverlayService);
+
+
+/***/ }),
+
+/***/ "./src/services/SchemaService.ts":
+/*!***************************************!*\
+  !*** ./src/services/SchemaService.ts ***!
+  \***************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SchemaService; });
+/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/copy */ "./src/services/utils/copy.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_1__);
+
+
+
+const { getChildSchemaSelection } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a;
+const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.cores;
+/**
+ * Manages json-schema interactions and adds caching of reoccuring json-schema requests
+ *
+ * @param schema       - json-schema
+ * @param [data={}]    - data corresponding to json-schema
+ * @param [core={}]      - instance of json-schema-library Core
+ */
+class SchemaService {
+    constructor(schema = { type: "object" }, data = {}, core = new Core()) {
+        this.core = core;
+        this.setSchema(schema);
+        this.setData(data);
+    }
+    /**
+     * Update data by any missing (default) values specified in the json-schema
+     * @param [data=currentData]   - update given data or use the internal stored data (via `setData(data)`)
+     * @param [schema]             - specific json schema, or the internal store schema (via `setSchema(root)`)
+     * @return json data with valid default data values
+     */
+    addDefaultData(data = this.data, schema = this.schema) {
+        return this.core.getTemplate(data, schema);
+    }
+    /**
+     * Create the template data object based on the json-schema, which fullfills the schemas structure as much as
+     * possible
+     * @param  schema
+     * @return data corresponding to json-schema
+     */
+    getTemplate(schema) {
+        return this.core.getTemplate(undefined, schema);
+    }
+    /**
+     * @return list of valid items to insert at the given position
+     */
+    getChildSchemaSelection(pointer, property) {
+        const parentSchema = this.get(pointer);
+        return getChildSchemaSelection(this.core, property, parentSchema);
+    }
+    /**
+     * Sets the root data. This is optional and used within internal functions to support optional _data_-parameters.
+     * On every change in data, call this method with that latest state `schemaService.setData(latestData)`;
+     *
+     * @param {Any} data    - latest root data corresponding to stored json-schema
+     */
+    setData(data) {
+        this.data = this.addDefaultData(data);
+        this.resetCache();
+    }
+    /**
+     * Set or change the application schema
+     * @param {Object} schema
+     */
+    setSchema(schema) {
+        this.core.setSchema(schema);
+        this.schema = this.core.getSchema();
+        this.resetCache();
+    }
+    resetCache() {
+        this.cache = {};
+    }
+    /**
+     * Return the json-schema for the requested pointer. Resolved the pointer on the stored schema by the accompanied
+     * json-data, which is required to resolve optional json-schema values.
+     *
+     * @param pointer - pointer in data
+     * @param [data] - root data, corresponding to json-schema.
+     *     This is optional, when the root-data is up-to-date (via setData)
+     * @return json-schema for the requested pointer
+     */
+    get(pointer, data) {
+        if (data) {
+            const result = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.getSchema(this.core, pointer, data, this.schema);
+            return Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(result);
+        }
+        if (this.cache[pointer] === undefined) {
+            const result = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.getSchema(this.core, pointer, this.data, this.schema);
+            if (result.variableSchema === true) {
+                // @special case: do not cache dynamic schema object (oneOf)
+                return result;
+            }
+            this.cache[pointer] = Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(result);
+        }
+        return this.cache[pointer];
+    }
+    destroy() {
+        this.setData(null);
+        this.setSchema(null);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/services/SessionService.ts":
+/*!****************************************!*\
+  !*** ./src/services/SessionService.ts ***!
+  \****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/**
+ * Simple session service to store and retrieve user-specific data
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    get(key, defaultValue) {
+        if (window.localStorage == null) {
+            return defaultValue;
+        }
+        if (localStorage.getItem(key) == null) {
+            this.set(key, defaultValue);
+        }
+        try {
+            return JSON.parse(localStorage.getItem(key));
+        }
+        catch (error) {
+            return defaultValue;
+        }
+    },
+    set(key, value) {
+        if (window.localStorage) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+    },
+    toggle(key) {
+        const value = !this.get(key, false);
+        this.set(key, value);
+        return value;
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/services/State.ts":
+/*!*******************************!*\
+  !*** ./src/services/State.ts ***!
+  \*******************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const FLAG_CHANGED = "hasChanged";
+class State {
+    constructor() {
+        this.FLAG_CHANGED = FLAG_CHANGED;
+        this.FLAG_CHANGED = FLAG_CHANGED;
+        this.reducers = {
+            action: (state, action) => action
+        };
+        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_1___default()();
+        this.store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(() => { }); // eslint-disable-line @typescript-eslint/no-empty-function
+        this.store.subscribe(() => this.onChange(this.store.getState()));
+    }
+    onChange(currentState) {
+        Object
+            .keys(currentState)
+            .forEach(id => {
+            const subState = currentState[id];
+            if (subState[FLAG_CHANGED] != null && subState[FLAG_CHANGED] !== false) {
+                this.emitter.emit(id, subState);
+            }
+        });
+    }
+    // eslint-disable-next-line
+    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting-in-a-redux-application
+    register(id, reducer) {
+        if (this.reducers[id]) {
+            throw new Error(`A reducer with id ${id} is already registered`);
+        }
+        this.reducers[id] = reducer;
+        this.store.replaceReducer(Object(redux__WEBPACK_IMPORTED_MODULE_0__["combineReducers"])(this.reducers));
+    }
+    unregister(id) {
+        // @todo either remove reducers and data or make them reusable (per application id)
+        // delete this.reducers[id];
+        // this.store.replaceReducer(redux.combineReducers(this.reducers));
+        const currentState = this.store.getState();
+        delete currentState[id];
+    }
+    get(id) {
+        const currentState = this.store.getState();
+        return id == null ? currentState : currentState[id];
+    }
+    dispatch(...args) {
+        return this.store.dispatch(...args);
+    }
+    /**
+     * Subscribe to change (all) events
+     * @param  {[type]}   id       [description]
+     * @param  {Function} callback [description]
+     */
+    subscribe(id, callback) {
+        if (typeof id !== "string" || typeof callback !== "function") {
+            throw new Error(`Invalid arguments for state.subscribe ${arguments}`);
+        }
+        const state = this.store.getState();
+        if (state[id] && state[id][FLAG_CHANGED] != null) {
+            this.emitter.on(id, callback);
+        }
+        else {
+            throw new Error(`Could not subscribe to state ${id}. Property ${FLAG_CHANGED} not available`);
+        }
+    }
+    unsubscribe(id, callback) {
+        if (typeof id !== "string" || typeof callback !== "function") {
+            throw new Error(`Invalid arguments for state.unsubscribe ${arguments}`);
+        }
+        this.emitter.off(id, callback);
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (State);
+
+
+/***/ }),
+
+/***/ "./src/services/ValidationService.ts":
+/*!*******************************************!*\
+  !*** ./src/services/ValidationService.ts ***!
+  \*******************************************/
+/*! exports provided: EVENTS, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENTS", function() { return EVENTS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ValidationService; });
+/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
+/* harmony import */ var _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./src/services/utils/BubblingCollectionObservable.ts");
+/* harmony import */ var _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./reducers/errorReducer */ "./src/services/reducers/errorReducer.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
+/* harmony import */ var _utils_Validation__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/Validation */ "./src/services/utils/Validation.ts");
+
+
+
+
+
+
+
+const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_3___default.a.cores;
+const EVENTS = {
+    BEFORE_VALIDATION: "beforeValidation",
+    AFTER_VALIDATION: "afterValidation",
+    ON_ERROR: "onError"
+};
+/**
+ * @class  ValidationService
+ */
+class ValidationService {
+    constructor(state, schema = { type: "object" }, core = new Core()) {
+        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_5__["default"])) {
+            throw new Error("Given state in ValidationService must be of instance 'State'");
+        }
+        this.core = core;
+        this.set(schema);
+        this.observer = new _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_4___default()();
+        this.id = "errors";
+        this.state = state;
+        this.state.register(this.id, _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_2__["default"]);
+        this.setErrorHandler(error => error);
+        this.EVENTS = EVENTS;
+    }
+    setErrorHandler(callback) {
+        this.errorHandler = callback;
+    }
+    /**
+     * Starts the validation, executing callback handlers and emitters on the go
+     *
+     * @param  {Any} data               - data to validate
+     * @param  {JsonPointer} [pointer]  - optional location. Per default all data is validated
+     * @return {Promise} promise, resolving with list of errors when all async validations are performed
+     */
+    validate(data, pointer = "#") {
+        if (this.currentValidation) {
+            this.currentValidation.cancel();
+        }
+        this.emit(EVENTS.BEFORE_VALIDATION);
+        // @feature selective-validation
+        this.observer.clearEvents(pointer);
+        // reset stored list of events
+        let remainingErrors = [];
+        if (pointer !== "#") {
+            // the following filtering is a duplicate from BubblingCollectionObservable.clearEvents
+            remainingErrors = this.state.get(this.id)
+                .filter(e => e.data.pointer == null || e.data.pointer.startsWith(pointer) === false);
+        }
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].setErrors(remainingErrors));
+        this.currentValidation = new _utils_Validation__WEBPACK_IMPORTED_MODULE_6__["default"](data, pointer, this.errorHandler);
+        return this.currentValidation.start(this.core, (newError, currentErrors) => {
+            // @feature selective-validation
+            const completeListOfErrors = remainingErrors.concat(currentErrors);
+            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].setErrors(completeListOfErrors));
+            this.observer.notify(newError.data.pointer, newError);
+            this.emit(EVENTS.ON_ERROR, newError);
+        }, validationErrors => {
+            // @feature selective-validation
+            const completeListOfErrors = remainingErrors.concat(validationErrors);
+            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].setErrors(completeListOfErrors));
+            this.emit(EVENTS.AFTER_VALIDATION, completeListOfErrors);
+            this.currentValidation = null;
+        });
+    }
+    set(schema) {
+        this.core.setSchema(schema);
+        this.schema = this.core.getSchema();
+    }
+    get() {
+        return this.schema;
+    }
+    on(eventType, callback) {
+        if (eventType === undefined) {
+            throw new Error("Missing event type in ValidationService.on");
+        }
+        this.emitter.on(eventType, callback);
+        return callback;
+    }
+    off(...args) {
+        this.emitter && this.emitter.off(...args);
+    }
+    emit(eventType, event = {}) {
+        this.emitter.emit(eventType, event);
+    }
+    observe(pointer, callback, bubbledEvents = false) {
+        this.observer.observe(pointer, callback, bubbledEvents);
+        return callback;
+    }
+    removeObserver(pointer, callback) {
+        this.observer.removeObserver(pointer, callback);
+    }
+    notify(pointer, event = {}) {
+        this.observer.notify(pointer, event);
+    }
+    getErrorsAndWarnings(pointer, withChildErrors = false) {
+        const errors = this.state.get(this.id) || [];
+        if (pointer == null) {
+            return errors;
+        }
+        // filter by pointer
+        const selectError = new RegExp(`^${pointer}${withChildErrors ? "" : "$"}`);
+        return errors.filter(error => selectError.test(error.data.pointer));
+    }
+    getErrors(pointer, withChildErrors = false) {
+        return this.getErrorsAndWarnings(pointer, withChildErrors).filter(error => error.severity !== "warning");
+    }
+    getWarnings(pointer, withChildWarnings = false) {
+        return this.getErrorsAndWarnings(pointer, withChildWarnings).filter(error => error.severity === "warning");
+    }
+    destroy() {
+        this.set(null);
+        this.emitter = null;
+        this.observer = null;
+        this.state.unregister(this.id, _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_2__["default"]);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/services/index.ts":
+/*!*******************************!*\
+  !*** ./src/services/index.ts ***!
+  \*******************************/
+/*! exports provided: LocationService, OverlayService, SessionService, UIState */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _LocationService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LocationService */ "./src/services/LocationService.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LocationService", function() { return _LocationService__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _OverlayService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./OverlayService */ "./src/services/OverlayService.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "OverlayService", function() { return _OverlayService__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _SessionService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SessionService */ "./src/services/SessionService.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SessionService", function() { return _SessionService__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "UIState", function() { return _uistate__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/services/reducers/actions.ts":
+/*!******************************************!*\
+  !*** ./src/services/reducers/actions.ts ***!
+  \******************************************/
+/*! exports provided: ActionTypes, ActionCreators */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionTypes", function() { return ActionTypes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionCreators", function() { return ActionCreators; });
+/* eslint object-property-newline: 0 */
+const UndoActionCreators = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionCreators;
+const UndoActionTypes = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionTypes;
+const ActionTypes = {
+    // data
+    DATA_SET: "DATA_SET",
+    UNDO: UndoActionTypes.UNDO,
+    REDO: UndoActionTypes.REDO,
+    // validation
+    ERRORS_SET: "ERRORS_SET"
+};
+const ActionCreators = {
+    setData(pointer, newValue, prevValue, isSynched = false) {
+        return { type: ActionTypes.DATA_SET, pointer, value: newValue, prevValue, isSynched };
+    },
+    undo() {
+        return UndoActionCreators.undo();
+    },
+    redo() {
+        return UndoActionCreators.redo();
+    },
+    setErrors(errors = []) {
+        return { type: ActionTypes.ERRORS_SET, errors };
+    }
+};
+
+
+/***/ }),
+
+/***/ "./src/services/reducers/dataReducer.ts":
+/*!**********************************************!*\
+  !*** ./src/services/reducers/dataReducer.ts ***!
+  \**********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/copy */ "./src/services/utils/copy.ts");
+/* harmony import */ var _utils_ensureItemIDs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/ensureItemIDs */ "./src/services/utils/ensureItemIDs.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utils_isRootPointer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/isRootPointer */ "./src/services/utils/isRootPointer.ts");
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./actions */ "./src/services/reducers/actions.ts");
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js");
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(redux_undo__WEBPACK_IMPORTED_MODULE_6__);
+/* eslint no-case-declarations: 0 */
+
+
+
+
+
+
+
+const actions = [_actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].DATA_SET, _actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].UNDO, _actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].REDO];
+const defaultState = {
+    hasChanged: false,
+    action: null,
+    data: null
+};
+function dataReducer(state = defaultState, action) {
+    switch (action.type) {
+        case _actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].DATA_SET:
+            if (Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_3__["default"])(action.pointer)) {
+                return Object(_utils_ensureItemIDs__WEBPACK_IMPORTED_MODULE_1__["default"])(Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(action.value));
+            }
+            const newState = Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(state);
+            gson_pointer__WEBPACK_IMPORTED_MODULE_2___default.a.set(newState, action.pointer, Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(action.value));
+            return Object(_utils_ensureItemIDs__WEBPACK_IMPORTED_MODULE_1__["default"])(newState);
+        default:
+            return state;
+    }
+}
+const config = {
+    debug: false,
+    filter: (action) => actions.includes(action.type)
+};
+/* harmony default export */ __webpack_exports__["default"] = (Object(redux__WEBPACK_IMPORTED_MODULE_4__["combineReducers"])({
+    hasChanged: (state, action) => actions.includes(action.type),
+    data: redux_undo__WEBPACK_IMPORTED_MODULE_6___default()(dataReducer, config)
+}));
+
+
+/***/ }),
+
+/***/ "./src/services/reducers/errorReducer.ts":
+/*!***********************************************!*\
+  !*** ./src/services/reducers/errorReducer.ts ***!
+  \***********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const ActionTypes = __webpack_require__(/*! ./actions */ "./src/services/reducers/actions.ts").ActionTypes;
+/* harmony default export */ __webpack_exports__["default"] = ((state = [], action) => {
+    return action.type === ActionTypes.ERRORS_SET ? action.errors : state;
+});
+
+
+/***/ }),
+
+/***/ "./src/services/uistate/actions.ts":
+/*!*****************************************!*\
+  !*** ./src/services/uistate/actions.ts ***!
+  \*****************************************/
+/*! exports provided: ActionTypes, ActionCreators */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionTypes", function() { return ActionTypes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionCreators", function() { return ActionCreators; });
+const ActionTypes = {
+    UI_PAGE_SET: "UI_PAGE_SET",
+    UI_OVERLAY_SET: "UI_OVERLAY_SET",
+    UI_CURRENT_SET: "UI_CURRENT_SET"
+};
+const ActionCreators = {
+    setCurrentPage(pointer = "#") {
+        return {
+            type: ActionTypes.UI_PAGE_SET,
+            value: pointer
+        };
+    },
+    setCurrentPointer(pointer = "#") {
+        return {
+            type: ActionTypes.UI_CURRENT_SET,
+            value: pointer
+        };
+    },
+    setOverlay(content = false) {
+        return {
+            type: ActionTypes.UI_OVERLAY_SET,
+            value: content
+        };
+    }
+};
+
+
+/***/ }),
+
+/***/ "./src/services/uistate/index.ts":
+/*!***************************************!*\
+  !*** ./src/services/uistate/index.ts ***!
+  \***************************************/
+/*! exports provided: EVENTS, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENTS", function() { return EVENTS; });
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../State */ "./src/services/State.ts");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions */ "./src/services/uistate/actions.ts");
+/* harmony import */ var _uiReducer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uiReducer */ "./src/services/uistate/uiReducer.ts");
+
+
+
+
+const EVENTS = {
+    OVERLAY_EVENT: "overlay",
+    CURRENT_POINTER_EVENT: "current",
+    CURRENT_PAGE_EVENT: "page"
+};
+class UIState {
+    constructor() {
+        this.id = "ui";
+        this.state = new _State__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_0___default()();
+        this.state.register(this.id, _uiReducer__WEBPACK_IMPORTED_MODULE_3__["default"]);
+        // @todo: subscribe to state-changes and diff current state?
+    }
+    get(property) {
+        return this.state.get(this.id).ui[property];
+    }
+    getCurrentPointer() {
+        return this.get("currentPointer");
+    }
+    getCurrentPage() {
+        return this.get("currentPage");
+    }
+    setOverlay(content = false) {
+        const currentContent = this.get("overlay");
+        if (currentContent !== content) {
+            this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setOverlay(content));
+            this.emitter.emit(EVENTS.OVERLAY_EVENT, this.get("overlay"));
+        }
+    }
+    on(...args) { this.emitter.on(...args); }
+    off(...args) { this.emitter.off(...args); }
+    setCurrentPage(pointer) {
+        const currentPage = this.get("currentPage");
+        if (currentPage !== pointer) {
+            this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setCurrentPage(pointer));
+            this.emitter.emit(EVENTS.CURRENT_PAGE_EVENT, this.get("currentPage"));
+        }
+    }
+    setCurrentPointer(pointer) {
+        const currentPointer = this.get("currentPointer");
+        if (currentPointer !== pointer) {
+            this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setCurrentPointer(pointer));
+            this.emitter.emit(EVENTS.CURRENT_POINTER_EVENT, this.get("currentPointer"));
+        }
+    }
+}
+const Singleton = new UIState();
+Singleton.UIStateContructor = UIState;
+Singleton.EVENTS = EVENTS;
+/* harmony default export */ __webpack_exports__["default"] = (Singleton);
+
+
+/***/ }),
+
+/***/ "./src/services/uistate/uiReducer.ts":
+/*!*******************************************!*\
+  !*** ./src/services/uistate/uiReducer.ts ***!
+  \*******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+const ActionTypes = __webpack_require__(/*! ./actions */ "./src/services/uistate/actions.ts").ActionTypes;
+const defaultState = {
+    hasChanged: false,
+    currentPage: "#",
+    currentPointer: "#",
+    overlay: false
+};
+function uiReducer(state = defaultState, action) {
+    switch (action.type) {
+        case ActionTypes.UI_PAGE_SET:
+            state = Object.assign({}, state);
+            state.currentPage = action.value;
+            return state;
+        case ActionTypes.UI_CURRENT_SET:
+            state = Object.assign({}, state);
+            state.currentPointer = action.value;
+            return state;
+        case ActionTypes.UI_OVERLAY_SET:
+            state = Object.assign({}, state);
+            state.overlay = action.value;
+            return state;
+        default:
+            return state;
+    }
+}
+function hasChanged(state = false, action) {
+    return ActionTypes[action.type] == null ? false : action.type;
+}
+/* harmony default export */ __webpack_exports__["default"] = (redux.combineReducers({
+    hasChanged,
+    ui: uiReducer
+}));
+
+
+/***/ }),
+
+/***/ "./src/services/utils/BubblingCollectionObservable.ts":
+/*!************************************************************!*\
+  !*** ./src/services/utils/BubblingCollectionObservable.ts ***!
+  \************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* eslint arrow-parens: 0 */
+const gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/**
+ * > Internal helper, mainly used in [ValidationService](#validationservice) to support the weird notification behaviour
+ * of error-events.
+ *
+ *
+ * ### Motivation
+ *
+ * Error-events in the validation process occur per error, because we want them to pass as quickly as
+ * possible (Asynchronous errors may take a long time and available instant feedback are postponed). In the previous
+ * version two events were required in every editor
+ *
+ * 1. observing "start validation"-events to reset the errors and
+ * 2. observing "add error"-events to build up the asynchronous incoming error-list
+ *
+ * This is tedious and brings some overhead using the api. Thus, the observe "set error"-event, introduced hereby
+ * will collect the errors and repeatedly call the observer with the current, complete list of errors
+ *
+ * 1. for the observable and
+ * 2. any observable that includes listening to changes of child-editors
+ *
+ *
+ * ### Usage as observer
+ *
+ * An observer will receive an up-to-date version of all events occuring at the location
+ *
+ * ```js
+ *  // init
+ *  observable.observe("#/pointer/to/my/location", (errors) => {
+ *      // list of current errors, continously updated
+ *      this.errors = errors;
+ *      this.processErrors(); // or some such
+ *  });
+ *  ```
+ *
+ * or if you are interested in events occuring further down in data
+ *
+ * ```js
+ *  // init
+ *  observable.observe("#/pointer/to/my/location", (errors) => {
+ *      // list of current errors at location from pointer and further down within the data structure e.g.
+ *      // "#/pointer/to/my/location", "#/pointer/to/my/location/xy", "#/pointer/to/my/location/az/er", etc
+ *      continously updated
+ *      this.errors = errors;
+ *      this.processErrors(); // or some such
+ *  }, true); // <- bubble events
+ *  ```
+ * and remove the event listener with
+ *
+ * ```js
+ *  observable.observe("#/pointer/to/my/location", myRegisteredCallbackFunction);
+ * ```
+ *
+ * ### Usage as observable
+ *
+ * ```js
+ *  // init
+ *  this.observers = new BubblingCollectionObservable();
+ *  // notify session
+ *  this.observers.notify("#/pointer/to/location", { event });
+ *  // another notification
+ *  this.observers.notify("#/pointer/to/any-location", { event2 });
+ *  // same target or if listening with the option `receiveChildEvents`, will receive
+ *  [{ event }, { event2 }] // observable event
+ *  // and reset session by
+ *  this.observers.reset(); // any observers will be reset with an events receiving an empty list
+ *  [] // observable event
+ *  // sending another notification will notify the target with a new list of events
+ *  this.observers.notify("#/pointer/to/any-location", { event3 });
+ *  [{ event3 }] // observable event
+ * ```
+ *
+ *
+ */
+class BubblingCollectionObservable {
+    constructor() {
+        this.observers = {};
+        this.eventCollection = {};
+        this.bubbleCollection = {};
+    }
+    /**
+     * Observe events on the _pointer_ (`#/observe/location`). May also observe
+     * events of _child-pointers_ (`#/observe/location/child/item`) with the
+     * option `receiveChildEvents` set to `true`
+     *
+     * @param pointer - location to observe
+     * @param cb - observer
+     * @param [receiveChildEvents=false]
+     */
+    observe(pointer, cb, receiveChildEvents = false) {
+        this.observers[pointer] = this.observers[pointer] || [];
+        if (this.observers[pointer].includes(cb) === false) {
+            cb.receiveChildEvents = receiveChildEvents;
+            this.observers[pointer].push(cb);
+        }
+        return cb;
+    }
+    /**
+     * Remove an observer
+     * @param  {JsonPointer} pointer
+     * @param  {Function} cb
+     */
+    removeObserver(pointer, cb) {
+        if (this.observers[pointer] == null) {
+            return;
+        }
+        const index = this.observers[pointer].indexOf(cb);
+        if (index !== -1) {
+            this.observers[pointer].splice(index, 1);
+        }
+    }
+    /**
+     * @todo this might become obsolete by clearEvents
+     *
+     * Reset all collections from the previous events, starting with a list of
+     * empty events. Any previously called observers will be called again with
+     * an empty event-list `[]`.
+     */
+    reset() {
+        // notify observers of reset by sending an empty list of events
+        const map = {};
+        Object.keys(this.eventCollection).concat(Object.keys(this.bubbleCollection))
+            // .filter(pointer => pointer.includes(sourcePointer))
+            .forEach(p => { map[p] = true; });
+        this.eventCollection = {};
+        this.bubbleCollection = {};
+        Object.keys(map).forEach(pointer => this._notify(pointer, pointer, []));
+        this.eventCollection = {};
+        this.bubbleCollection = {};
+    }
+    /**
+     * Clears all events at a given pointer and notifies all listeners with
+     * their changed list of events
+     *
+     * @param  {JsonPointer} pointer
+     * @param  {boolean} [clearChildren=true]    if false, children of `pointer` will not be reset
+     */
+    clearEvents(pointer, clearChildren = true) {
+        let changed = false;
+        if (clearChildren) {
+            Object.keys(this.eventCollection).forEach(target => {
+                if (!(target.startsWith(pointer) && target !== pointer)) {
+                    return;
+                }
+                if (this.eventCollection[target].length > 0) {
+                    changed = true;
+                    this.eventCollection[target].length = 0;
+                    this.bubbleCollection[target] = {}; // reset bubble collection
+                    this._notify(target, target, this.eventCollection[target]);
+                }
+            });
+        }
+        const collection = this.eventCollection[pointer];
+        if ((Array.isArray(collection) && collection.length > 0)) {
+            changed = true;
+            collection.length = 0;
+            this.bubbleCollection[pointer] = {}; // reset bubble collection
+        }
+        if (changed) {
+            // clear target and notify parents
+            this._notifyAll(pointer, collection);
+        }
+    }
+    /**
+     * Notifies all listeners of `pointer` (bubble notification)
+     *
+     * @param pointer
+     * @param eventCollection    - array of events at target `pointer`
+     */
+    _notifyAll(pointer, eventCollection) {
+        const frags = gp.split(pointer);
+        while (frags.length > 0) {
+            const p = gp.join(frags, true);
+            this._notify(p, pointer, eventCollection);
+            frags.pop();
+        }
+        this._notify("#", pointer, eventCollection);
+    }
+    /**
+     * Notify observers at _pointer_. Note that the received event is a
+     * aggregated event-list []. For a first call the received event will look
+     * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
+     * etc, until `reset()` ist called by the observable.
+     *
+     * @param  {JsonPointer} pointer
+     * @param  {Any} event
+     */
+    notify(pointer, event) {
+        this.eventCollection[pointer] = this.eventCollection[pointer] || [];
+        this.eventCollection[pointer].push(event);
+        this._notifyAll(pointer, this.eventCollection[pointer]);
+    }
+    _notify(observerPointer, sourcePointer, event) {
+        if (this.observers[observerPointer] == null) {
+            return;
+        }
+        this.observers[observerPointer].forEach(cb => {
+            if (cb.receiveChildEvents === false && observerPointer === sourcePointer) {
+                cb(event);
+                return;
+            }
+            if (cb.receiveChildEvents === false && observerPointer !== sourcePointer) {
+                return;
+            }
+            this.bubbleCollection[observerPointer] = this.bubbleCollection[observerPointer] || {};
+            const map = this.bubbleCollection[observerPointer];
+            map[sourcePointer] = event;
+            const events = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
+            cb(events);
+        });
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (BubblingCollectionObservable);
+
+
+/***/ }),
+
+/***/ "./src/services/utils/Validation.ts":
+/*!******************************************!*\
+  !*** ./src/services/utils/Validation.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+const validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
+/**
+ * @class  Validation
+ *
+ * @param {Object|Array} data       - application json data
+ * @param {Object} schema           - json-schema describing data
+ * @param {Function} [errorHandler] - optional callback to modify errors
+ */
+class Validation {
+    constructor(data, pointer, errorHandler) {
+        this.errors = [];
+        this.data = data;
+        this.pointer = pointer;
+        this.canceled = false;
+        this.errorHandler = errorHandler;
+    }
+    start(core, onErrorCb, onDoneCb) {
+        this.cbDone = onDoneCb;
+        this.cbError = onErrorCb;
+        // @feature selective-validation
+        const pointer = this.pointer;
+        let data = this.data;
+        let schema = core.getSchema();
+        if (pointer !== "#") {
+            schema = core.getSchema(pointer, data);
+            data = gp.get(data, pointer);
+        }
+        // console.log("validate", pointer, data, JSON.stringify(schema, null, 2));
+        // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
+        return validateAsync(core, data, { schema, pointer, onError: this.onError.bind(this) })
+            .then(errors => {
+            this.onDone(errors);
+            return errors;
+        })
+            .catch(error => this.onFail(error));
+    }
+    onError(validationError) {
+        if (this.canceled) {
+            return;
+        }
+        validationError = this.errorHandler(validationError);
+        this.errors.push(validationError);
+        this.cbError(validationError, this.errors);
+    }
+    onDone(validationErrors) {
+        if (this.canceled) {
+            return;
+        }
+        if (this.errors.length !== validationErrors.length) {
+            console.error("Inconsistent validation errors. Not all errors were emitted by validateAsync()");
+        }
+        this.cbDone(this.errors);
+    }
+    onFail(error) {
+        if (this.canceled) {
+            return;
+        }
+        console.error("Validation failed", error);
+        this.cbDone(this.errors);
+    }
+    cancel() {
+        this.canceled = true;
+    }
+}
+/* harmony default export */ __webpack_exports__["default"] = (Validation);
+
+
+/***/ }),
+
+/***/ "./src/services/utils/copy.ts":
+/*!************************************!*\
+  !*** ./src/services/utils/copy.ts ***!
+  \************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return copy; });
+function copy(data) {
+    if (data === undefined || (Array.isArray(data) === false && typeof data !== "object")) {
+        return data;
+    }
+    return JSON.parse(JSON.stringify(data));
+}
+
+
+/***/ }),
+
+/***/ "./src/services/utils/diffpatch.ts":
+/*!*****************************************!*\
+  !*** ./src/services/utils/diffpatch.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const DiffPatcher = __webpack_require__(/*! jsondiffpatch */ "./node_modules/jsondiffpatch/dist/jsondiffpatch.umd.js").DiffPatcher;
+const diffMatchPatch = __webpack_require__(/*! diff_match_patch */ "./node_modules/diff_match_patch/lib/diff_match_patch.js");
+const options = {
+    // used to match objects when diffing arrays, by default only === operator is used
+    // this function is used only to when objects are not equal by ref
+    objectHash: obj => obj._id,
+    arrays: {
+        // default true, detect items moved inside the array (otherwise they will be registered as remove+add)
+        detectMove: true,
+        // default false, the value of items moved is not included in deltas
+        includeValueOnMove: false
+    }
+};
+try {
+    // required in browser environments
+    window["diff_match_patch"] = diffMatchPatch;
+}
+catch (e) {
+    // loaded by default in nodejs
+}
+const diffpatch = new DiffPatcher(options); // jsondiffpatch.create(options);
+diffpatch.options = options;
+/* harmony default export */ __webpack_exports__["default"] = (diffpatch);
+
+
+/***/ }),
+
+/***/ "./src/services/utils/ensureItemIDs.ts":
+/*!*********************************************!*\
+  !*** ./src/services/utils/ensureItemIDs.ts ***!
+  \*********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0__);
+
+const ID_PROPERTY = "_id";
+function generateId(index) {
+    return `${index}${Math.random()}${Date.now()}`;
+}
+function addMissingItemIDs(list) {
+    list.forEach((item, index) => {
+        if (item[ID_PROPERTY] == null) {
+            const type = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default()(item);
+            if (type === "object" || type === "array") {
+                item[ID_PROPERTY] = ensureItemIDs.config.generateId(index);
+            }
+        }
+    });
+}
+function ensureItemIDs(data) {
+    const dataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default()(data);
+    if (dataType === "array") {
+        ensureItemIDs.config.addMissingItemIDs(data);
+        data.forEach((item) => ensureItemIDs(item));
+    }
+    else if (dataType === "object") {
+        Object.keys(data).forEach((key) => ensureItemIDs(data[key]));
+    }
+    return data;
+}
+ensureItemIDs.config = {
+    ID_PROPERTY,
+    addMissingItemIDs,
+    generateId
+};
+/* harmony default export */ __webpack_exports__["default"] = (ensureItemIDs);
+
+
+/***/ }),
+
+/***/ "./src/services/utils/getParentPointer.ts":
+/*!************************************************!*\
+  !*** ./src/services/utils/getParentPointer.ts ***!
+  \************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ((pointer) => {
+    const list = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.split(pointer);
+    list.pop();
+    return gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(list, pointer[0] === "#");
+});
+
+
+/***/ }),
+
+/***/ "./src/services/utils/getPatchesPerPointer.ts":
+/*!****************************************************!*\
+  !*** ./src/services/utils/getPatchesPerPointer.ts ***!
+  \****************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getPatchesPerPointer; });
+/* harmony import */ var _diffpatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diffpatch */ "./src/services/utils/diffpatch.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+
+
+function sortByPointer(a, b) {
+    if (a.pointer < b.pointer) {
+        return -1;
+    }
+    else if (a.pointer > b.pointer) {
+        return 1;
+    }
+    return 0;
+}
+function findPatches(pointer, diff, result = []) {
+    // for a diff: { a: { '0': [ 'modifiedString' ], _t: 'a', _0: [ 'string', 0, 0 ] } }
+    // return diff[a] as patch and ".../a" as pointer
+    Object.keys(diff).forEach((key) => {
+        if (key === "_t") {
+            return;
+        }
+        if (Array.isArray(diff[key])) {
+            const entry = {
+                pointer: `${pointer}/${key}`,
+                patch: diff[key],
+                isArrayItem: false,
+                changedKey: false
+            };
+            const propertyAdded = diff[key].length === 1;
+            const propertyRemoved = diff[key][2] === 0;
+            if (diff._t === "a") {
+                entry.isArrayItem = true;
+            }
+            else if (propertyAdded || propertyRemoved) {
+                entry.changedKey = true;
+            }
+            result.push(entry);
+        }
+        else {
+            findPatches(`${pointer}/${key}`, diff[key], result);
+        }
+    });
+    return result;
+}
+/*
+    Between two objects, returns the json-pointer of the edit
+
+    - for now, returns common pointer of multiple changes (if any)
+    - returns parent pointer for any array-items or object-properties that are added or removed. this ensures a
+        container, array or object, receives a notification of changed children.
+*/
+function getPatchesPerPointer(previousValue, newValue) {
+    const diff = _diffpatch__WEBPACK_IMPORTED_MODULE_0__["default"].diff(previousValue, newValue);
+    if (diff == null) {
+        return [];
+    }
+    const patches = findPatches("#", diff);
+    // merge all item patches by their parent-pointer
+    const map = {};
+    // @todo this should be directly resolved in 'findPatches'
+    patches.forEach((entry) => {
+        if (entry.isArrayItem) {
+            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(entry.pointer, "..");
+            const key = entry.pointer.replace(`${parent}/`, "");
+            map[parent] = map[parent] || { _t: "a" };
+            map[parent][key] = entry.patch;
+        }
+        else if (entry.changedKey) {
+            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(entry.pointer, "..");
+            const key = entry.pointer.replace(`${parent}/`, "");
+            map[parent] = map[parent] || {};
+            map[parent][key] = entry.patch;
+        }
+        else {
+            map[entry.pointer] = entry.patch;
+        }
+    });
+    return Object.keys(map)
+        .map((pointer) => ({ pointer, patch: map[pointer] }))
+        .sort(sortByPointer);
+}
+;
+
+
+/***/ }),
+
+/***/ "./src/services/utils/isRootPointer.ts":
+/*!*********************************************!*\
+  !*** ./src/services/utils/isRootPointer.ts ***!
+  \*********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer/lib/isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
+/* harmony import */ var gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = (gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0___default.a);
+
+
+/***/ }),
+
+/***/ "./src/utils/UISchema.ts":
+/*!*******************************!*\
+  !*** ./src/utils/UISchema.ts ***!
+  \*******************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const { eachSchema } = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+const gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+const UI_PROPERTY = "editron:ui";
+const populated = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
+function isPointer(string) {
+    return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
+}
+// returns a list of {title, pointer} from root-node to pointer, excluding root node
+function getBreadcrumps(pointer, controller) {
+    const breadcrumps = [];
+    while (pointer !== "#") {
+        breadcrumps.unshift({
+            title: getOption(pointer, controller, "title"),
+            pointer
+        });
+        pointer = gp.join(pointer, "..");
+    }
+    return breadcrumps;
+}
 function enumOptions(schema) {
-  var options;
-
-  if (schema[UI_PROPERTY]["enum"]) {
-    options = schema["enum"].map(function (value, index) {
-      return {
-        title: schema[UI_PROPERTY]["enum"][index] || schema["enum"][index],
-        value: schema["enum"][index]
-      };
-    });
-  } else if (schema.options && schema.options.enum_titles) {
-    // @legacy support jdorn/json-editor
-    options = schema["enum"].map(function (value, index) {
-      return {
-        title: schema.options.enum_titles[index] || schema["enum"][index],
-        value: schema["enum"][index]
-      };
-    });
-  } else {
-    options = schema["enum"];
-  }
-
-  return options;
+    let options;
+    if (schema[UI_PROPERTY].enum) {
+        options = schema.enum.map((value, index) => ({
+            title: schema[UI_PROPERTY].enum[index] || schema.enum[index],
+            value: schema.enum[index]
+        }));
+    }
+    else if (schema.options && schema.options.enum_titles) {
+        // @legacy support jdorn/json-editor
+        options = schema.enum.map((value, index) => ({
+            title: schema.options.enum_titles[index] || schema.enum[index],
+            value: schema.enum[index]
+        }));
+    }
+    else {
+        options = schema.enum;
+    }
+    return options;
 }
 /**
  * Resolves the given pointer absolute or relative in data
@@ -20345,21 +19545,16 @@ function enumOptions(schema) {
  * @param  {String} pointerToResolve    - relative or absolute pointer (must start with `/` or `../`)
  * @return {Mixed} target value of at #/pointer/pointerToResolve or false
  */
-
-
 function resolveReference(pointer, controller, pointerToResolve) {
-  if (populated(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
-    return null;
-  }
-
-  var targetPointer = pointerToResolve;
-
-  if (targetPointer[0] !== "#") {
-    targetPointer = gp.join(pointer, targetPointer);
-  }
-
-  var result = controller.data().get(targetPointer);
-  return populated(result, result, null);
+    if (populated(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
+        return null;
+    }
+    let targetPointer = pointerToResolve;
+    if (targetPointer[0] !== "#") {
+        targetPointer = gp.join(pointer, targetPointer);
+    }
+    const result = controller.data().get(targetPointer);
+    return populated(result, result, null);
 }
 /**
  * Returns the resolved copy of an options object. This method is used by the controller to help setup the
@@ -20370,42 +19565,36 @@ function resolveReference(pointer, controller, pointerToResolve) {
  * @param {Controller} controller
  * @return {Object} a resolved copy of the editron:ui settings
  */
-
-
 function copyOptions(pointer, controller) {
-  var schema = controller.schema().get(pointer);
-
-  var settings = _extends({
-    hidden: false,
-    description: schema.description
-  }, schema.options, schema[UI_PROPERTY]); // @legacy options
-
-
-  settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
-
-  Object.keys(settings).forEach(function (option) {
-    settings[option] = resolveOption(pointer, controller, settings[option]);
-  });
-  return settings;
+    const schema = controller.schema().get(pointer);
+    const settings = Object.assign({
+        hidden: false,
+        description: schema.description
+    }, schema.options, schema[UI_PROPERTY]); // @legacy options
+    settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
+    Object
+        .keys(settings)
+        .forEach(option => {
+        settings[option] = resolveOption(pointer, controller, settings[option]);
+    });
+    return settings;
 }
 /**
  * Ensures each schema contains a valid schema[UI_PROPERTY] object
  * @param  {Object} rootSchema
  * @return {Object} extended clone of json-schema
  */
-
-
 function extendSchema(rootSchema) {
-  rootSchema = JSON.parse(JSON.stringify(rootSchema));
-  eachSchema(rootSchema, function (childSchema) {
-    childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
-    childSchema[UI_PROPERTY] = _extends({
-      hidden: false,
-      title: childSchema.title || "",
-      description: childSchema.description || ""
-    }, childSchema.options, childSchema[UI_PROPERTY]); // @legacy options
-  });
-  return rootSchema;
+    rootSchema = JSON.parse(JSON.stringify(rootSchema));
+    eachSchema(rootSchema, childSchema => {
+        childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
+        childSchema[UI_PROPERTY] = Object.assign({
+            hidden: false,
+            title: childSchema.title || "",
+            description: childSchema.description || ""
+        }, childSchema.options, childSchema[UI_PROPERTY]); // @legacy options
+    });
+    return rootSchema;
 }
 /**
  * Resolves a list of pointers, where the first found value is returned. Supports simple strings as fallback.
@@ -20416,26 +19605,22 @@ function extendSchema(rootSchema) {
  * @param  {String|Array} optionValue [description]
  * @return {Mixed} the option value
  */
-
-
 function resolveOption(pointer, controller, optionValue) {
-  if (Array.isArray(optionValue)) {
-    for (var i = 0; i < optionValue.length; i += 1) {
-      var option = optionValue[i];
-
-      if (isPointer(option)) {
-        var value = resolveReference(pointer, controller, option);
-
-        if (populated(value)) {
-          return value;
+    if (Array.isArray(optionValue)) {
+        for (let i = 0; i < optionValue.length; i += 1) {
+            const option = optionValue[i];
+            if (isPointer(option)) {
+                const value = resolveReference(pointer, controller, option);
+                if (populated(value)) {
+                    return value;
+                }
+            }
+            else if (populated(option)) {
+                return option;
+            }
         }
-      } else if (populated(option)) {
-        return option;
-      }
     }
-  }
-
-  return optionValue;
+    return optionValue;
 }
 /**
  * Returns the first defined option set in schema. Supports relative and absolute pointers in data
@@ -20445,77 +19630,71 @@ function resolveOption(pointer, controller, optionValue) {
  * @param  {...[String]} options    - a list of option properties. The first non-empty option will be returned
  * @return {Mixed} the first non-empty option
  */
-
-
-function getOption(pointer, controller) {
-  var schema = controller.schema().get(pointer);
-  var editronOptions = schema[UI_PROPERTY] || {};
-
-  for (var _len = arguments.length, options = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-    options[_key - 2] = arguments[_key];
-  }
-
-  if (options.length === 0) {
-    throw new Error("Expected at least one options property to be given in getOption");
-  }
-
-  for (var i = 0; i < options.length; i += 1) {
-    var option = editronOptions[options[i]];
-    var resolver = isPointer(option) ? resolveReference : resolveOption;
-    var value = resolver(pointer, controller, option);
-
-    if (populated(value)) {
-      return value;
-    } else if (populated(schema[options[i]])) {
-      return schema[options[i]];
+function getOption(pointer, controller, ...options) {
+    const schema = controller.schema().get(pointer);
+    const editronOptions = schema[UI_PROPERTY] || {};
+    if (options.length === 0) {
+        throw new Error("Expected at least one options property to be given in getOption");
     }
-  }
-
-  return null;
+    for (let i = 0; i < options.length; i += 1) {
+        const option = editronOptions[options[i]];
+        const resolver = isPointer(option) ? resolveReference : resolveOption;
+        const value = resolver(pointer, controller, option);
+        if (populated(value)) {
+            return value;
+        }
+        else if (populated(schema[options[i]])) {
+            return schema[options[i]];
+        }
+    }
+    return null;
 }
-
 function getTitle(pointer, controller) {
-  var schema = controller.schema().get(pointer);
-  var title = getOption(pointer, controller, "title") || "";
-  return schema.minLength ? "".concat(title.replace(/\s*\*\s*$/, ""), " *") : title;
+    const schema = controller.schema().get(pointer);
+    const title = getOption(pointer, controller, "title") || "";
+    return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
-
 function getDefaultOption(schema, option) {
-  return schema[UI_PROPERTY] ? schema[UI_PROPERTY][option] || "" : "";
+    return schema[UI_PROPERTY] ? (schema[UI_PROPERTY][option] || "") : "";
 }
+/* harmony default export */ __webpack_exports__["default"] = ({
+    UI_PROPERTY,
+    getOption,
+    copyOptions,
+    extendSchema,
+    getBreadcrumps,
+    getTitle,
+    enumOptions,
+    getDefaultOption
+});
 
-module.exports = {
-  UI_PROPERTY: UI_PROPERTY,
-  getOption: getOption,
-  copyOptions: copyOptions,
-  extendSchema: extendSchema,
-  getBreadcrumps: getBreadcrumps,
-  getTitle: getTitle,
-  enumOptions: enumOptions,
-  getDefaultOption: getDefaultOption
-};
 
 /***/ }),
 
-/***/ "./utils/addItem.js":
-/*!**************************!*\
-  !*** ./utils/addItem.js ***!
-  \**************************/
-/*! no static exports found */
+/***/ "./src/utils/addItem.ts":
+/*!******************************!*\
+  !*** ./src/utils/addItem.ts ***!
+  \******************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var m = __webpack_require__(/*! mithril */ "mithril");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return addItem; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _createElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createElement */ "./src/utils/createElement.ts");
+/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/LocationService */ "./src/services/LocationService.ts");
+/* harmony import */ var _services_OverlayService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/OverlayService */ "./src/services/OverlayService.ts");
+/* harmony import */ var _components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/overlayselecttiles */ "./src/components/overlayselecttiles/index.ts");
+/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
 
-var createElement = __webpack_require__(/*! ./createElement */ "./utils/createElement.js");
 
-var LocationService = __webpack_require__(/*! ../services/LocationService */ "./services/LocationService.js");
 
-var OverlayService = __webpack_require__(/*! ../services/OverlayService */ "./services/OverlayService.js");
 
-var SelectTileComponent = __webpack_require__(/*! ../components/overlayselecttiles */ "./components/overlayselecttiles/index.js");
 
-var UISchema = __webpack_require__(/*! ./UISchema */ "./utils/UISchema.js");
+
 /**
  * Request to insert an array child item at the given pointer. If multiple options are present, a dialogue is opened to
  * let the user select the appropriate type of child (oneof).
@@ -20525,329 +19704,351 @@ var UISchema = __webpack_require__(/*! ./UISchema */ "./utils/UISchema.js");
  * @param {String} pointer  - to array on which to insert the child
  * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
  */
-
-
-module.exports = function addItem(dataService, schemaService, pointer) {
-  var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-  var list = dataService.get(pointer);
-  var schema = schemaService.get(pointer);
-
-  if (schema.type !== "array") {
-    throw new Error("Can not add item to a non-array (".concat(pointer, ")"));
-  }
-
-  var selectOptions = schemaService.getChildSchemaSelection(pointer, index); // single option, immediately create template data and add item to list
-
-  if (selectOptions.length === 1) {
-    addSelection(0, schemaService, dataService);
-    return;
-  } // multiple options, ask user
-
-
-  var element = createElement(".overlay__item");
-  var selection = selectOptions.map(function (item, oneOfIndex) {
-    return {
-      icon: UISchema.getDefaultOption(item, "icon"),
-      title: UISchema.getDefaultOption(item, "title"),
-      description: UISchema.getDefaultOption(item, "description"),
-      value: oneOfIndex
-    };
-  }); // create user-selection
-
-  m.render(element, m(SelectTileComponent, {
-    description: "Modulauswahl - Bitte wählen",
-    value: "0",
-    options: selection,
-    onchange: function onchange(value) {
-      var selectedIndex = parseInt(value, 10);
-      addSelection(selectedIndex, schemaService, dataService);
-      OverlayService.close();
-      LocationService["goto"]("".concat(pointer, "/").concat(index));
+function addItem(dataService, schemaService, pointer, index = 0) {
+    const list = dataService.get(pointer);
+    const schema = schemaService.get(pointer);
+    if (schema.type !== "array") {
+        throw new Error(`Can not add item to a non-array (${pointer})`);
     }
-  })); // add data of selection
+    const selectOptions = schemaService.getChildSchemaSelection(pointer, index);
+    // single option, immediately create template data and add item to list
+    if (selectOptions.length === 1) {
+        addSelection(0, schemaService, dataService);
+        return;
+    }
+    // multiple options, ask user
+    const element = Object(_createElement__WEBPACK_IMPORTED_MODULE_1__["default"])(".overlay__item");
+    const selection = selectOptions.map((item, oneOfIndex) => ({
+        icon: _UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].getDefaultOption(item, "icon"),
+        title: _UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].getDefaultOption(item, "title"),
+        description: _UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].getDefaultOption(item, "description"),
+        value: oneOfIndex
+    }));
+    // create user-selection
+    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_4__["default"], {
+        // description: "Modulauswahl - Bitte wählen",
+        value: 0,
+        options: selection,
+        onchange: (value) => {
+            const selectedIndex = parseInt(value, 10);
+            addSelection(selectedIndex, schemaService, dataService);
+            _services_OverlayService__WEBPACK_IMPORTED_MODULE_3__["default"].close();
+            _services_LocationService__WEBPACK_IMPORTED_MODULE_2__["default"].goto(`${pointer}/${index}`);
+        }
+    }));
+    // add data of selection
+    function addSelection(selectedIndex, schemaService, dataService) {
+        const itemSchema = selectOptions[selectedIndex];
+        const itemData = schemaService.getTemplate(itemSchema);
+        list.splice(index, 0, itemData);
+        dataService.set(pointer, list);
+    }
+    // and ask question
+    _services_OverlayService__WEBPACK_IMPORTED_MODULE_3__["default"].open(element, { save: false });
+}
 
-  function addSelection(selectedIndex) {
-    var itemSchema = selectOptions[selectedIndex];
-    var itemData = schemaService.getTemplate(itemSchema);
-    list.splice(index, 0, itemData);
-    dataService.set(pointer, list);
-  } // and ask question
-
-
-  OverlayService.open(element, {
-    save: false
-  });
-};
 
 /***/ }),
 
-/***/ "./utils/array.js":
-/*!************************!*\
-  !*** ./utils/array.js ***!
-  \************************/
-/*! no static exports found */
+/***/ "./src/utils/array.ts":
+/*!****************************!*\
+  !*** ./src/utils/array.ts ***!
+  \****************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = {
-  addItem: function addItem(pointer, controller, index) {
-    controller.addItemTo(pointer, index);
-  },
-  removeItem: function removeItem(pointer, controller, index) {
-    var nextList = controller.data().get(pointer);
-    nextList.splice(index, 1);
-    controller.data().set(pointer, nextList);
-  },
-  moveItem: function moveItem(pointer, controller, index, destinationIndex) {
-    if (destinationIndex < 0) {
-      return;
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+    addItem(pointer, controller, index) {
+        controller.addItemTo(pointer, index);
+    },
+    removeItem(pointer, controller, index) {
+        const nextList = controller.data().get(pointer);
+        nextList.splice(index, 1);
+        controller.data().set(pointer, nextList);
+    },
+    moveItem(pointer, controller, index, destinationIndex) {
+        if (destinationIndex < 0) {
+            return;
+        }
+        const list = controller.data().get(pointer);
+        if (list[index] == null || list[destinationIndex] == null) {
+            return;
+        }
+        list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
+        controller.data().set(pointer, list);
+    },
+    moveElement(list, index, destinationIndex) {
+        list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
     }
+});
 
-    var list = controller.data().get(pointer);
-
-    if (list[index] == null || list[destinationIndex] == null) {
-      return;
-    }
-
-    list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
-    controller.data().set(pointer, list);
-  },
-  moveElement: function moveElement(list, index, destinationIndex) {
-    list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
-  }
-};
 
 /***/ }),
 
-/***/ "./utils/createElement.js":
-/*!********************************!*\
-  !*** ./utils/createElement.js ***!
-  \********************************/
-/*! no static exports found */
+/***/ "./src/utils/createElement.ts":
+/*!************************************!*\
+  !*** ./src/utils/createElement.ts ***!
+  \************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var m = __webpack_require__(/*! mithril */ "mithril");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createElement; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 
-module.exports = function createElement(selector, attributes) {
-  var vnode = m(selector, attributes);
-  var element = document.createElement(vnode.tag);
-  Object.keys(vnode.attrs).forEach(function (key) {
-    if (key === "className") {
-      vnode.attrs[key].split(" ").forEach(function (className) {
-        return element.classList.add(className);
-      });
-    } else if (vnode.attrs[key] != null) {
-      element.setAttribute(key, vnode.attrs[key]);
+function createElement(selector, attributes) {
+    const vnode = mithril__WEBPACK_IMPORTED_MODULE_0___default()(selector, attributes);
+    const element = document.createElement(vnode.tag);
+    Object.keys(vnode.attrs).forEach((key) => {
+        if (key === "className") {
+            vnode.attrs[key].split(" ").forEach((className) => element.classList.add(className));
+        }
+        else if (vnode.attrs[key] != null) {
+            element.setAttribute(key, vnode.attrs[key]);
+        }
+    });
+    return element;
+}
+;
+
+
+/***/ }),
+
+/***/ "./src/utils/createProxy.ts":
+/*!**********************************!*\
+  !*** ./src/utils/createProxy.ts ***!
+  \**********************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createProxy; });
+const { Foxy, handler } = __webpack_require__(/*! @technik-sde/foxy */ "./node_modules/@technik-sde/foxy/dist/foxy.js");
+const defaultOptions = {
+    handlers: [
+        handler.unsplash,
+        handler.image,
+        handler.video
+    ]
+};
+function createProxy(options = {}) {
+    if (options.constructor.name === "Foxy") {
+        return options;
     }
-  });
-  return element;
-};
+    const o = { ...defaultOptions, ...options };
+    if (Array.isArray(o.handlers)) {
+        return new Foxy(o);
+    }
+    throw new Error(`Failed initializing proxy from: ${JSON.stringify(options)}`);
+}
+
 
 /***/ }),
 
-/***/ "./utils/createProxy.js":
-/*!******************************!*\
-  !*** ./utils/createProxy.js ***!
-  \******************************/
-/*! no static exports found */
+/***/ "./src/utils/getID.ts":
+/*!****************************!*\
+  !*** ./src/utils/getID.ts ***!
+  \****************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var _require = __webpack_require__(/*! @technik-sde/foxy */ "./node_modules/@technik-sde/foxy/dist/foxy.js"),
-    Foxy = _require.Foxy,
-    handler = _require.handler;
-
-var defaultOptions = {
-  handlers: [handler.unsplash, handler.image, handler.video]
-};
-
-module.exports = function createProxy() {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-  if (options.constructor.name === "Foxy") {
-    return options;
-  }
-
-  var o = _objectSpread(_objectSpread({}, defaultOptions), options);
-
-  if (Array.isArray(o.handlers)) {
-    return new Foxy(o);
-  }
-
-  throw new Error("Failed initializing proxy from: ".concat(JSON.stringify(options)));
-};
-
-/***/ }),
-
-/***/ "./utils/getID.js":
-/*!************************!*\
-  !*** ./utils/getID.js ***!
-  \************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getID; });
 /**
  * Converts a json-pointer to a valid dom-id (url selection)
  * https://stackoverflow.com/questions/70579/what-are-valid-values-for-the-id-attribute-in-html
- *
- * @param  {String} pointer
- * @return {String} unique id
  */
-module.exports = function getID(pointer) {
-  return "".concat(pointer.replace(/(^[#/]*|\/+$)/, "")).replace(/\/+/g, ".");
-};
+function getID(pointer) {
+    return `${pointer.replace(/(^[#/]*|\/+$)/, "")}`.replace(/\/+/g, ".");
+}
+;
+
 
 /***/ }),
 
-/***/ "./utils/i18n.js":
-/*!***********************!*\
-  !*** ./utils/i18n.js ***!
-  \***********************/
-/*! no static exports found */
+/***/ "./src/utils/i18n.ts":
+/*!***************************!*\
+  !*** ./src/utils/i18n.ts ***!
+  \***************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var render = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
-
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const render = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
 translate.strings = {};
 translateError.strings = {};
-
 function translate(key, data) {
-  if (typeof translate.strings[key] === "string") {
-    return render(translate.strings[key], data);
-  } else if (typeof translate.strings[key] === "function") {
-    return translate.strings[key](data);
-  }
-
-  return key;
-}
-
-function translateError(controller, error) {
-  if (typeof translateError.strings[error.code] === "string") {
-    error.message = render(translateError.strings[error.code], error.data);
-  } else if (typeof translateError.strings[error.code] === "function") {
-    error.message = translateError.strings[error.code](controller, error);
-  }
-
-  return error;
-}
-
-function addLanguage(lang, keys) {
-  var _keys = keys == null && Object.prototype.toString.call(lang) === "[object Object]" ? lang : keys;
-
-  _extends(translateError.strings, _keys.errors);
-
-  _extends(translate.strings, _keys.strings);
-}
-
-var i18n = {
-  translate: translate,
-  translateError: translateError,
-  addLanguage: addLanguage
-};
-module.exports = i18n;
-
-/***/ }),
-
-/***/ "./utils/index.js":
-/*!************************!*\
-  !*** ./utils/index.js ***!
-  \************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  addItem: __webpack_require__(/*! ./addItem */ "./utils/addItem.js"),
-  array: __webpack_require__(/*! ./array */ "./utils/array.js"),
-  createElement: __webpack_require__(/*! ./createElement */ "./utils/createElement.js"),
-  getID: __webpack_require__(/*! ./getID */ "./utils/getID.js"),
-  i18n: __webpack_require__(/*! ./i18n */ "./utils/i18n.js"),
-  isNodeContext: __webpack_require__(/*! ./isNodeContext */ "./utils/isNodeContext.js"),
-  populated: __webpack_require__(/*! ./populated */ "./utils/populated.js"),
-  selection: __webpack_require__(/*! ./selection */ "./utils/selection.js"),
-  selectEditor: __webpack_require__(/*! ./selectEditor */ "./utils/selectEditor.js"),
-  UISchem: __webpack_require__(/*! ./UISchema */ "./utils/UISchema.js")
-};
-
-/***/ }),
-
-/***/ "./utils/isNodeContext.js":
-/*!********************************!*\
-  !*** ./utils/isNodeContext.js ***!
-  \********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process) {function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-/* global process */
-module.exports = function isNodeContext() {
-  if ((typeof process === "undefined" ? "undefined" : _typeof(process)) === "object") {
-    if (_typeof(process.versions) === "object") {
-      if (typeof process.versions.node !== "undefined") {
-        return true;
-      }
+    if (typeof translate.strings[key] === "string") {
+        return render(translate.strings[key], data);
     }
-  }
-
-  return false;
+    else if (typeof translate.strings[key] === "function") {
+        return translate.strings[key](data);
+    }
+    return key;
+}
+function translateError(controller, error) {
+    if (typeof translateError.strings[error.code] === "string") {
+        error.message = render(translateError.strings[error.code], error.data);
+    }
+    else if (typeof translateError.strings[error.code] === "function") {
+        error.message = translateError.strings[error.code](controller, error);
+    }
+    return error;
+}
+function addLanguage(lang, keys) {
+    const _keys = (keys == null && Object.prototype.toString.call(lang) === "[object Object]") ? lang : keys;
+    Object.assign(translateError.strings, _keys.errors);
+    Object.assign(translate.strings, _keys.strings);
+}
+const i18n = {
+    translate,
+    translateError,
+    addLanguage
 };
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
+/* harmony default export */ __webpack_exports__["default"] = (i18n);
+
 
 /***/ }),
 
-/***/ "./utils/populated.js":
+/***/ "./src/utils/index.ts":
 /*!****************************!*\
-  !*** ./utils/populated.js ***!
+  !*** ./src/utils/index.ts ***!
   \****************************/
-/*! no static exports found */
+/*! exports provided: addItem, array, createElement, getID, i18n, isNodeContext, populated, selection, selectEditor, UISchem */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// returns true if the value is valid, that is: it has content
-module.exports = function populated(value, returnIf) {
-  var returnElse = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-  var isPopulated = true;
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _addItem__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./addItem */ "./src/utils/addItem.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "addItem", function() { return _addItem__WEBPACK_IMPORTED_MODULE_0__["default"]; });
 
-  if (value == null || value === "" || value === "#") {
-    isPopulated = false;
-  } else if (typeof value === "string") {
-    isPopulated = value.replace(/<[^>]+>/g, "").replace(/[^A-Za-z0-9]/g, "").length > 0;
-  } else if (Array.isArray(value)) {
-    isPopulated = value.length > 0;
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    isPopulated = Object.keys(value).length > 0;
-  }
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./src/utils/array.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "array", function() { return _array__WEBPACK_IMPORTED_MODULE_1__["default"]; });
 
-  if (returnIf === undefined && returnElse === "") {
-    return isPopulated;
-  }
+/* harmony import */ var _createElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./createElement */ "./src/utils/createElement.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return _createElement__WEBPACK_IMPORTED_MODULE_2__["default"]; });
 
-  return isPopulated ? returnIf : returnElse;
-};
+/* harmony import */ var _getID__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getID */ "./src/utils/getID.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getID", function() { return _getID__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./i18n */ "./src/utils/i18n.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "i18n", function() { return _i18n__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _isNodeContext__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./isNodeContext */ "./src/utils/isNodeContext.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNodeContext", function() { return _isNodeContext__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _populated__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "populated", function() { return _populated__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./selection */ "./src/utils/selection.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selection", function() { return _selection__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _selectEditor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./selectEditor */ "./src/utils/selectEditor.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selectEditor", function() { return _selectEditor__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "UISchem", function() { return _UISchema__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+
 
 /***/ }),
 
-/***/ "./utils/selectEditor.js":
-/*!*******************************!*\
-  !*** ./utils/selectEditor.js ***!
-  \*******************************/
-/*! no static exports found */
+/***/ "./src/utils/isNodeContext.ts":
+/*!************************************!*\
+  !*** ./src/utils/isNodeContext.ts ***!
+  \************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isNodeContext; });
+/* global process */
+function isNodeContext() {
+    if (typeof process === "object") {
+        if (typeof process.versions === "object") {
+            if (typeof process.versions.node !== "undefined") {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
+/***/ "./src/utils/populated.ts":
+/*!********************************!*\
+  !*** ./src/utils/populated.ts ***!
+  \********************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return populated; });
+// returns true if the value is valid, that is: it has content
+function populated(value, returnIf, returnElse = "") {
+    let isPopulated = true;
+    if (value == null || value === "" || value === "#") {
+        isPopulated = false;
+    }
+    else if (typeof value === "string") {
+        isPopulated = value.replace(/<[^>]+>/g, "").replace(/[^A-Za-z0-9]/g, "").length > 0;
+    }
+    else if (Array.isArray(value)) {
+        isPopulated = value.length > 0;
+    }
+    else if (Object.prototype.toString.call(value) === "[object Object]") {
+        isPopulated = Object.keys(value).length > 0;
+    }
+    if (returnIf === undefined && returnElse === "") {
+        return isPopulated;
+    }
+    return isPopulated ? returnIf : returnElse;
+}
+
+
+/***/ }),
+
+/***/ "./src/utils/selectEditor.ts":
+/*!***********************************!*\
+  !*** ./src/utils/selectEditor.ts ***!
+  \***********************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return select; });
 /**
  * Selects an editor based on the given schema
  *
@@ -20859,151 +20060,113 @@ module.exports = function populated(value, returnIf) {
  *  or is denied
  */
 function select(editorViews, pointer, controller, options) {
-  // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
-  if (/_id$/.test(pointer)) {
-    return false; // abort if it is an internal value
-  }
-
-  var schema = controller.schema().get(pointer);
-
-  if (schema.type === "error") {
-    // data-pointer could not be found in schema
-    // @todo find a better solution for additional data: maybe an 'additional data'-editor
-    return false;
-  } // @ui-option hidden
-
-
-  if (options.hidden === true) {
-    return false;
-  }
-
-  for (var i = 0, l = editorViews.length; i < l; i += 1) {
-    if (editorViews[i].editorOf(pointer, controller, options)) {
-      return editorViews[i];
+    // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
+    if (/_id$/.test(pointer)) {
+        return false; // abort if it is an internal value
     }
-  }
-
-  return undefined;
+    const schema = controller.schema().get(pointer);
+    if (schema.type === "error") {
+        // data-pointer could not be found in schema
+        // @todo find a better solution for additional data: maybe an 'additional data'-editor
+        return false;
+    }
+    // @ui-option hidden
+    if (options.hidden === true) {
+        return false;
+    }
+    for (let i = 0, l = editorViews.length; i < l; i += 1) {
+        if (editorViews[i].editorOf(pointer, controller, options)) {
+            return editorViews[i];
+        }
+    }
+    return undefined;
 }
 
-module.exports = select;
 
 /***/ }),
 
-/***/ "./utils/selection.js":
-/*!****************************!*\
-  !*** ./utils/selection.js ***!
-  \****************************/
-/*! no static exports found */
+/***/ "./src/utils/selection.ts":
+/*!********************************!*\
+  !*** ./src/utils/selection.ts ***!
+  \********************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _getID__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getID */ "./src/utils/getID.ts");
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-var getID = __webpack_require__(/*! ./getID */ "./utils/getID.js");
+const isBlurable = (element) => (typeof element.mayBlur === "function");
 /**
  * Return true, if the given element may blur in the requested direction
- * @param  {HTMLElement} element
- * @param  {"up"|"down"|"left"|"right"} direction
- * @return {Boolean} may blur
  */
-
-
 function mayBlur(element, direction) {
-  var dir = direction === "down" || direction === "right" ? 1 : -1;
-
-  if (element.mayBlur) {
-    return element.mayBlur(direction);
-  }
-
-  if (element.tagName === "INPUT" && element.type === "number") {
-    // there is no selection-indicator for numbers, so we cannot determine
-    // if the motion is within the input-field. Must use input.type=text
-    // for this to work
-    return false;
-  }
-
-  if (element.tagName === "INPUT" && element.type === "checkbox") {
+    const dir = (direction === "down" || direction === "right") ? 1 : -1;
+    if (isBlurable(element)) {
+        return element.mayBlur(direction);
+    }
+    if (element.tagName === "INPUT" && element.type === "number") {
+        // there is no selection-indicator for numbers, so we cannot determine
+        // if the motion is within the input-field. Must use input.type=text
+        // for this to work
+        return false;
+    }
+    if (element.tagName === "INPUT" && element.type === "checkbox") {
+        return true;
+    }
+    if (element.tagName === "SELECT") {
+        return false;
+    }
+    if (element.tagName === "INPUT") {
+        const input = element;
+        if (direction === "up" || direction === "down") {
+            return true;
+        }
+        if (direction === "left" && input.selectionStart === 0) {
+            return true;
+        }
+        if (direction === "right" && input.value.length === input.selectionEnd) {
+            return true;
+        }
+        return false;
+    }
+    if (element.tagName === "TEXTAREA") {
+        const input = element;
+        if (element.value === "") {
+            return true;
+        }
+        else if (dir === -1 && input.selectionStart === 0) {
+            return true;
+        }
+        else if (dir === 1 && input.value.length === input.selectionEnd) {
+            return true;
+        }
+        return false;
+    }
     return true;
-  }
-
-  if (element.tagName === "SELECT") {
-    return false;
-  }
-
-  if (element.tagName === "INPUT") {
-    if (direction === "up" || direction === "down") {
-      return true;
-    }
-
-    if (direction === "left" && element.selectionStart === 0) {
-      return true;
-    }
-
-    if (direction === "right" && element.value.length === element.selectionEnd) {
-      return true;
-    }
-
-    return false;
-  }
-
-  if (element.tagName === "TEXTAREA") {
-    if (element.value === "") {
-      return true;
-    } else if (dir === -1 && element.selectionStart === 0) {
-      return true;
-    } else if (dir === 1 && element.value.length === element.selectionEnd) {
-      return true;
-    }
-
-    return false;
-  }
-
-  return true;
 }
 /**
  * Return the current active element or false
- * @param  {Controller} controller
- * @param  {HTMLElement} parent
- * @return {HTMLElement|false}
  */
-
-
-function getActiveInput(controller) {
-  var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-  var currentPointer = controller.location().getCurrent();
-  var currentId = "#".concat(getID(currentPointer));
-
-  if (currentId === "#") {
-    console.log("abort empty selection", currentPointer, "active element", document.activeElement);
-    return false;
-  }
-
-  var activeInput = parent.querySelector(currentId);
-
-  if (activeInput == null) {
-    return false;
-  }
-
-  if (activeInput !== document.activeElement) {
-    console.log("selection: active input is not the same as current editor", activeInput, document.activeElement);
-  }
-
-  return activeInput;
+function getActiveInput(controller, parent = document.body) {
+    const currentPointer = controller.location().getCurrent();
+    const currentId = `#${Object(_getID__WEBPACK_IMPORTED_MODULE_0__["default"])(currentPointer)}`;
+    if (currentId === "#") {
+        console.log("abort empty selection", currentPointer, "active element", document.activeElement);
+        return false;
+    }
+    const activeInput = parent.querySelector(currentId);
+    if (activeInput == null) {
+        return false;
+    }
+    if (activeInput !== document.activeElement) {
+        console.log("selection: active input is not the same as current editor", activeInput, document.activeElement);
+    }
+    return activeInput;
 }
-
 function getAvailableInputs(parent) {
-  return _toConsumableArray(parent.querySelectorAll("input,textarea,select"));
+    return Array.from(parent.querySelectorAll("input,textarea,select"));
 }
 /**
  * Return the next input-element or false
@@ -21012,31 +20175,22 @@ function getAvailableInputs(parent) {
  * @param  {HTMLElement} options.parent
  * @return {HTMLElement|false}
  */
-
-
-function getNextInput(controller) {
-  var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "down";
-
-  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref$parent = _ref.parent,
-      parent = _ref$parent === void 0 ? document : _ref$parent;
-
-  var activeElement = getActiveInput(controller, parent);
-  var allElements = getAvailableInputs(parent);
-  var dir = direction === "down" || direction === "right" ? 1 : -1;
-  var currentIndex = allElements.indexOf(activeElement);
-
-  if (currentIndex === -1) {
+function getNextInput(controller, direction = "down", { parent = document.body } = {}) {
+    const activeElement = getActiveInput(controller, parent);
+    if (activeElement === false) {
+        return false;
+    }
+    const allElements = getAvailableInputs(parent);
+    const dir = (direction === "down" || direction === "right") ? 1 : -1;
+    const currentIndex = allElements.indexOf(activeElement);
+    if (currentIndex === -1) {
+        return false;
+    }
+    const nextElement = allElements[currentIndex + dir];
+    if (nextElement && nextElement.focus) {
+        return nextElement;
+    }
     return false;
-  }
-
-  var nextElement = allElements[currentIndex + dir];
-
-  if (nextElement && nextElement.focus) {
-    return nextElement;
-  }
-
-  return false;
 }
 /**
  * move the focus from current element to next visible input-element
@@ -21049,39 +20203,31 @@ function getNextInput(controller) {
  * @param  {HTMLElement} options.parent    scan only in given parentNode
  * @returns {Boolean} true - if there was a new target was found or the move prevented
  */
-
-
-function focusNextInput(controller) {
-  var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "down";
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var _options$force = options.force,
-      force = _options$force === void 0 ? false : _options$force,
-      _options$parent = options.parent,
-      parent = _options$parent === void 0 ? document : _options$parent;
-  var activeElement = getActiveInput(controller, parent);
-
-  if (force === false && mayBlur(activeElement, direction) === false) {
-    // console.log("prevent blur of", activeElement);
-    return true;
-  }
-
-  var nextElement = getNextInput(controller, direction, options);
-
-  if (nextElement) {
-    nextElement.focus();
-    return true;
-  }
-
-  return false;
+function focusNextInput(controller, direction = "down", options = {}) {
+    const { force = false, parent = document.body } = options;
+    const activeElement = getActiveInput(controller, parent);
+    if (activeElement === false) {
+        return false;
+    }
+    if (force === false && mayBlur(activeElement, direction) === false) {
+        // console.log("prevent blur of", activeElement);
+        return true;
+    }
+    const nextElement = getNextInput(controller, direction, options);
+    if (nextElement) {
+        nextElement.focus();
+        return true;
+    }
+    return false;
 }
+/* harmony default export */ __webpack_exports__["default"] = ({
+    focusNextInput,
+    getNextInput,
+    getAvailableInputs,
+    getActiveInput,
+    mayBlur
+});
 
-module.exports = {
-  focusNextInput: focusNextInput,
-  getNextInput: getNextInput,
-  getAvailableInputs: getAvailableInputs,
-  getActiveInput: getActiveInput,
-  mayBlur: mayBlur
-};
 
 /***/ }),
 

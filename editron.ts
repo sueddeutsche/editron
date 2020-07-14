@@ -20,8 +20,8 @@
 import Controller from "./src/Controller";
 
 export default Controller;
-export { default as components } from "./components";
-export { default as editors } from "./editors";
-export { default as services } from "./services";
-export { default as utils } from "./utils";
+export * as components from "./src/components";
+export { default as editors } from "./src/editors";
+export * as services from "./src/services";
+export * as utils from "./src/utils";
 export { default as plugin } from "./src/plugin";

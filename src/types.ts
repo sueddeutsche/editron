@@ -12,3 +12,13 @@ export type EditronConfigAttrs = {
     class?: string;
     [p: string]: any;
 }
+
+export type ValidationError = {
+    type: "error";
+    severity: "error"|"warning";
+    message: string;
+    data: {
+        pointer: JSONPointer;
+        [p:string]: any;
+    }
+}
