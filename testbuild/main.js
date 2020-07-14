@@ -54975,6 +54975,415 @@ testEditorIntegration_1.default(valueeditor_1.default, "#/modules/1", __webpack_
 
 /***/ }),
 
+/***/ "./test/services/DataService/delete.test.ts":
+/*!**************************************************!*\
+  !*** ./test/services/DataService/delete.test.ts ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const DataService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/DataService */ "./src/services/DataService.ts"));
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+describe("DataService delete", () => {
+    let state;
+    let service;
+    let data;
+    beforeEach(() => {
+        state = new State_1.default();
+        service = new DataService_1.default(state);
+        data = { item: { id: "original" }, root: true };
+        service.set("#", data);
+    });
+    it("should remove value at given pointer", () => {
+        service.delete("#/item/id");
+        const result = service.get("#");
+        assert_1.strict.deepEqual(result, { item: {}, root: true });
+    });
+    it("should remove item at given pointer", () => {
+        service.set("#/item", { list: [0, 1, 2, 3] });
+        service.delete("#/item/list/2");
+        const result = service.get("#/item/list");
+        assert_1.strict.deepEqual(result, [0, 1, 3]);
+    });
+    it("should throw when deleting root node", () => {
+        assert_1.strict.throws(() => service.delete("#"), Error);
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/DataService/events.test.ts":
+/*!**************************************************!*\
+  !*** ./test/services/DataService/events.test.ts ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const DataService_1 = __importStar(__webpack_require__(/*! ../../../src/services/DataService */ "./src/services/DataService.ts"));
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+const isObject_1 = __importDefault(__webpack_require__(/*! ../../utils/isObject */ "./test/utils/isObject.ts"));
+describe("DataService events", () => {
+    let state;
+    let service;
+    beforeEach(() => {
+        state = new State_1.default();
+        service = new DataService_1.default(state);
+    });
+    it("should export events", () => {
+        assert_1.strict.ok(isObject_1.default(DataService_1.EVENTS));
+        assert_1.strict.ok(typeof DataService_1.EVENTS.BEFORE_UPDATE === "string");
+    });
+    it("should emit 'beforeUpdate' event before applying data changes", () => {
+        let event;
+        service.on("beforeUpdate", e => {
+            e.idValue = service.get("#/id");
+            event = e;
+        });
+        service.set("#", { id: "update" });
+        assert_1.strict.ok(isObject_1.default(event));
+        assert_1.strict.equal(event.idValue, undefined);
+    });
+    it("should emit 'beforeUpdate' event before removing data", () => {
+        let event;
+        service.set("#", { id: "original" });
+        service.on("beforeUpdate", e => {
+            e.idValue = service.get("#/id");
+            event = e;
+        });
+        service.delete("#/id");
+        assert_1.strict.ok(isObject_1.default(event));
+        assert_1.strict.equal(event.idValue, "original");
+    });
+    it("should emit 'afterUpdate' event after applying data changes", () => {
+        let event;
+        service.on("afterUpdate", e => {
+            e.idValue = service.get("#/id");
+            event = e;
+        });
+        service.set("#", { id: "update" });
+        assert_1.strict.ok(isObject_1.default(event));
+        assert_1.strict.equal(event.idValue, "update");
+    });
+    it("should emit 'afterUpdate' event after removing data", () => {
+        let event;
+        service.set("#", { id: "original" });
+        service.on("afterUpdate", e => {
+            e.idValue = service.get("#/id");
+            event = e;
+        });
+        service.delete("#/id");
+        assert_1.strict.ok(isObject_1.default(event));
+        assert_1.strict.equal(event.idValue, undefined);
+    });
+    it("should emit an event object like { pointer, parentPointer, action }", () => {
+        let event;
+        service.set("#", { id: "original" });
+        service.on("beforeUpdate", e => {
+            event = e;
+        });
+        service.set("#/id", { id: "update" });
+        assert_1.strict.ok(isObject_1.default(event));
+        assert_1.strict.equal(event.pointer, "#/id");
+        assert_1.strict.equal(event.parentPointer, "#");
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/DataService/observe.test.ts":
+/*!***************************************************!*\
+  !*** ./test/services/DataService/observe.test.ts ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const DataService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/DataService */ "./src/services/DataService.ts"));
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+const BUBBLE_EVENTS = true;
+describe("ValidationService observe", () => {
+    let state;
+    let service;
+    let data;
+    beforeEach(() => {
+        state = new State_1.default();
+        service = new DataService_1.default(state);
+        data = { item: { id: "original" }, other: { id: "other-item" } };
+        service.set("#", data);
+    });
+    it("should notify of change at pointer", () => {
+        let called = false;
+        service.observe("#/item/id", () => (called = true));
+        service.set("#/item/id", "modified");
+        assert_1.strict.equal(called, true);
+    });
+    it("should not notify parents", () => {
+        let called = false;
+        service.observe("#/item", () => (called = true));
+        service.set("#/item/id", "modified");
+        assert_1.strict.equal(called, false);
+    });
+    it("should also pass type of modified data", () => {
+        let event;
+        service.observe("#/item/id", e => (event = e));
+        service.set("#/item/id", "modified");
+        assert_1.strict.equal(event.type, "string");
+    });
+    it("should notify all parents of change", () => {
+        let called = false;
+        service.observe("#/item", () => (called = true), BUBBLE_EVENTS);
+        service.set("#/item/id", "modified");
+        assert_1.strict.equal(called, true);
+    });
+    it("should notify root of change", () => {
+        let called = false;
+        service.observe("#", () => (called = true), BUBBLE_EVENTS);
+        service.set("#/item/id", "modified");
+        assert_1.strict.equal(called, true);
+    });
+    it("should not notify observers on different trees", () => {
+        let called = false;
+        service.observe("#/item", () => (called = true), BUBBLE_EVENTS);
+        service.set("#/other/id", "modified");
+        assert_1.strict.equal(called, false);
+    });
+    it("should remove observer", () => {
+        let called = false;
+        const cb = () => (called = true);
+        service.observe("#/item", cb, BUBBLE_EVENTS);
+        service.removeObserver("#/item", cb);
+        service.set("#/item/id", "modified");
+        assert_1.strict.equal(called, false);
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/DataService/setget.test.ts":
+/*!**************************************************!*\
+  !*** ./test/services/DataService/setget.test.ts ***!
+  \**************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const DataService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/DataService */ "./src/services/DataService.ts"));
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+describe("DataService set/get", () => {
+    let state;
+    let service;
+    beforeEach(() => {
+        state = new State_1.default();
+        service = new DataService_1.default(state);
+    });
+    it("should store given data", () => {
+        service.set("#", { id: "storeme" });
+        const data = service.get("#");
+        assert_1.strict.deepEqual(data, { id: "storeme" });
+    });
+    it("should return root object by default", () => {
+        service.set("#", { id: "storeme" });
+        const data = service.get();
+        assert_1.strict.deepEqual(data, { id: "storeme" });
+    });
+    it("should store copy of data", () => {
+        const data = { item: { id: "original" } };
+        service.set("#", data);
+        data.item.id = "modified";
+        assert_1.strict.deepEqual(service.get("#"), { item: { id: "original" } });
+    });
+    it("should return copy of data", () => {
+        service.set("#", { item: { id: "original" } });
+        const data = service.get("#");
+        data.item.id = "modified";
+        assert_1.strict.deepEqual(service.get("#"), { item: { id: "original" } });
+    });
+    it("should update nested value", () => {
+        const data = { item: { id: "original", label: "" } };
+        service.set("#", data);
+        service.set("#/item/label", "modified");
+        assert_1.strict.deepEqual(service.get("#"), { item: { id: "original", label: "modified" } });
+    });
+    it("should return nested data", () => {
+        const data = { item: { id: "original" } };
+        service.set("#", data);
+        const result = service.get("#/item/id");
+        assert_1.strict.equal(result, "original");
+    });
+    it("should throw if pointer has no parent value", () => {
+        service.set("#", {});
+        assert_1.strict.throws(() => service.set("#/invalid/path", "will not be set"), Error);
+    });
+    it("should throw if pointer is undefined", () => {
+        service.set("#", {});
+        assert_1.strict.throws(() => service.set("#/invalid", "will not be set"), Error);
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/DataService/undoredo.test.ts":
+/*!****************************************************!*\
+  !*** ./test/services/DataService/undoredo.test.ts ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const DataService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/DataService */ "./src/services/DataService.ts"));
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+describe("DataService undo/redo", () => {
+    let data;
+    let state;
+    let service;
+    beforeEach(() => {
+        data = { item: { id: "original" } };
+        state = new State_1.default();
+        service = new DataService_1.default(state);
+        service.set("#", data);
+    });
+    it("should restore last state of data", () => {
+        service.set("#/item/id", "modified");
+        assert_1.strict.equal(service.get("#/item/id"), "modified");
+        service.undo();
+        const result = service.get("#/item/id");
+        assert_1.strict.equal(result, "original");
+    });
+    it("should restore deleted value", () => {
+        service.delete("#/item/id");
+        assert_1.strict.equal(service.get("#/item/id"), undefined);
+        service.undo();
+        const result = service.get("#/item/id");
+        assert_1.strict.equal(result, "original");
+    });
+    it("should redo previous undo step", () => {
+        service.set("#/item/id", "modified");
+        service.undo();
+        assert_1.strict.equal(service.get("#/item/id"), "original");
+        service.redo();
+        const result = service.get("#/item/id");
+        assert_1.strict.equal(result, "modified");
+    });
+    it("should prevent redo if a change has been made", () => {
+        service.set("#/item/id", "modified");
+        service.undo();
+        service.set("#/item/id", "latest");
+        assert_1.strict.equal(service.get("#/item/id"), "latest");
+        service.redo();
+        const result = service.get("#/item/id");
+        assert_1.strict.equal(result, "latest");
+    });
+    it("should not update states from unknown actions", () => {
+        const undoStepsBefore = state.get(service.id).data.past.length;
+        state.dispatch({ type: "TEST_ACTION", value: 14 });
+        const undoStepsAfter = state.get(service.id).data.past.length;
+        assert_1.strict.equal(undoStepsBefore, undoStepsAfter);
+    });
+    it("should not update parent pointer for a single changed value", () => {
+        let updatedRoot = false;
+        let updatedParent = false;
+        let updatedValue = false;
+        service.set("#/item/id", "modified");
+        service.observe("#", () => (updatedRoot = true));
+        service.observe("#/item", () => (updatedParent = true));
+        service.observe("#/item/id", () => (updatedValue = true));
+        service.undo();
+        assert_1.strict.equal(updatedRoot, false);
+        assert_1.strict.equal(updatedParent, false, "parent pointer should not have been notified");
+        assert_1.strict.equal(updatedValue, true, "should have updated pointer at value");
+    });
+    it("should update parent pointer if data has been added", () => {
+        let updatedRoot = false;
+        let updatedParent = false;
+        let updatedValue = false;
+        service.set("#/item", [1, 2, 3, 4, 5]);
+        service.set("#/item", [1, 2, 3, 4, 5, 6]);
+        service.observe("#", () => (updatedRoot = true));
+        service.observe("#/item", () => (updatedParent = true));
+        service.observe("#/item/2", () => (updatedValue = true));
+        service.undo();
+        assert_1.strict.equal(updatedRoot, false, "root pointer should not have been notified");
+        assert_1.strict.equal(updatedParent, true, "parent pointer should have been notified");
+        assert_1.strict.equal(updatedValue, false);
+    });
+    it("should update parent pointer if data has been removed", () => {
+        let updatedRoot = false;
+        let updatedParent = false;
+        let updatedValue = false;
+        service.set("#/item", [1, 2, 3, 4, 5]);
+        service.set("#/item", [1, 2, 3, 5]);
+        service.observe("#", () => (updatedRoot = true));
+        service.observe("#/item", () => (updatedParent = true));
+        service.observe("#/item/2", () => (updatedValue = true));
+        service.undo();
+        assert_1.strict.equal(updatedRoot, false, "root pointer should not have been notified");
+        assert_1.strict.equal(updatedParent, true, "parent pointer should have been notified");
+        assert_1.strict.equal(updatedValue, false);
+    });
+});
+
+
+/***/ }),
+
 /***/ "./test/services/State.test.ts":
 /*!*************************************!*\
   !*** ./test/services/State.test.ts ***!
@@ -55039,6 +55448,365 @@ describe("State", () => {
         const stateA = state.get("A");
         assert_1.strict.deepEqual(stateA, { id: "A" });
     });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/ValidationService/emit.test.ts":
+/*!******************************************************!*\
+  !*** ./test/services/ValidationService/emit.test.ts ***!
+  \******************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+const ValidationService_1 = __importStar(__webpack_require__(/*! ../../../src/services/ValidationService */ "./src/services/ValidationService.ts"));
+const isObject_1 = __importDefault(__webpack_require__(/*! ../../utils/isObject */ "./test/utils/isObject.ts"));
+describe("ValidationService/emit", () => {
+    let state;
+    let schema;
+    let service;
+    beforeEach(() => {
+        state = new State_1.default();
+        schema = {
+            type: "object",
+            properties: {
+                title: { type: "string" },
+                chapter: { type: "number", minimum: 1 },
+                modules: {
+                    type: "array",
+                    items: { type: "string" }
+                }
+            }
+        };
+        service = new ValidationService_1.default(state, schema);
+    });
+    it("events should export events", () => {
+        assert_1.strict.ok(isObject_1.default(ValidationService_1.EVENTS));
+        assert_1.strict.ok(typeof ValidationService_1.EVENTS.BEFORE_VALIDATION === "string");
+    });
+    it("events should emit 'beforeValidation' event before starting validation", () => {
+        let called = false;
+        service.on("beforeValidation", () => (called = true));
+        service.validate({ title: "test", chapter: 1, modules: [] });
+        assert_1.strict.equal(called, true);
+    });
+    it("events should emit 'afterValidation' event after notifying observers", () => {
+        let called = false;
+        service.observe("#/chapter", () => (called = true));
+        service.on("afterValidation", () => assert_1.strict.equal(called, true));
+        return service.validate({ title: "test", chapter: 0, modules: [] });
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/ValidationService/getErrors.test.ts":
+/*!***********************************************************!*\
+  !*** ./test/services/ValidationService/getErrors.test.ts ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+const ValidationService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/ValidationService */ "./src/services/ValidationService.ts"));
+const actions_1 = __webpack_require__(/*! ../../../src/services/reducers/actions */ "./src/services/reducers/actions.ts");
+describe("ValidationService/getErrors", () => {
+    let state;
+    let schema;
+    let service;
+    beforeEach(() => {
+        state = new State_1.default();
+        schema = {
+            type: "object",
+            properties: {}
+        };
+        service = new ValidationService_1.default(state, schema);
+        state.dispatch(actions_1.ActionCreators.setErrors([
+            {
+                type: "error",
+                message: "error 1",
+                data: { id: "1", pointer: "#" }
+            },
+            {
+                type: "error",
+                message: "error 2",
+                data: { id: "2", pointer: "#/image" }
+            },
+            {
+                type: "error",
+                message: "error 2'",
+                data: { id: "2'", pointer: "#/image" }
+            },
+            {
+                type: "error",
+                message: "error 2a",
+                data: { id: "2a", pointer: "#/image/url" }
+            },
+            {
+                type: "error",
+                message: "error 2b",
+                data: { id: "2b", pointer: "#/image/caption" }
+            },
+            {
+                type: "error",
+                message: "error 3",
+                data: { id: "3", pointer: "#/video" }
+            },
+            {
+                type: "error",
+                message: "error 3a",
+                data: { id: "3a", pointer: "#/video/url" }
+            }
+        ]));
+    });
+    it("should return all errors", () => {
+        const errors = service.getErrors();
+        assert_1.strict.equal(errors.length, 7);
+    });
+    it("should only return errors on root pointer", () => {
+        const errors = service.getErrors("#");
+        assert_1.strict.equal(errors.length, 1);
+        assert_1.strict.equal(errors[0].data.pointer, "#");
+    });
+    it("should return empty list if no errors are set", () => {
+        const errors = service.getErrors("#/story");
+        assert_1.strict.equal(errors.length, 0);
+    });
+    it("should only return errors on 'image' pointer", () => {
+        const errors = service.getErrors("#/image");
+        assert_1.strict.equal(errors.length, 2);
+        assert_1.strict.equal(errors[0].data.pointer, "#/image");
+        assert_1.strict.equal(errors[0].data.pointer, "#/image");
+    });
+    it("should return all errors from '#/image'", () => {
+        const errors = service.getErrors("#/image", true);
+        assert_1.strict.equal(errors.length, 4);
+        assert_1.strict.equal(errors[0].data.pointer, "#/image");
+        assert_1.strict.equal(errors[1].data.pointer, "#/image");
+        assert_1.strict.equal(errors[2].data.pointer, "#/image/url");
+        assert_1.strict.equal(errors[3].data.pointer, "#/image/caption");
+    });
+    it("should return all errors from '#/video'", () => {
+        const errors = service.getErrors("#/video", true);
+        assert_1.strict.equal(errors.length, 2);
+        assert_1.strict.equal(errors[0].data.pointer, "#/video");
+        assert_1.strict.equal(errors[1].data.pointer, "#/video/url");
+    });
+    it("should return remaining errors after validation at `pointer`", () => {
+        // errors are now validated per pointer only. a simple reset to an empty
+        // list will not suffice, the errors must be filtered from validation-target
+        const validator = new ValidationService_1.default(new State_1.default(), { type: "object", properties: {
+                url: { type: "string", minLength: 1 },
+                title: { type: "string", minLength: 1 }
+            } });
+        // pretest
+        validator.validate({ url: "", title: "" });
+        assert_1.strict.equal(validator.getErrors().length, 2);
+        validator.validate({ url: "", title: "mimi" }, "#/title");
+        assert_1.strict.equal(validator.getErrors().length, 1, "should modify error-collection by validation result");
+        assert_1.strict.equal(validator.getErrors()[0].data.pointer, "#/url", "should have removed correct error");
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/ValidationService/instances.test.ts":
+/*!***********************************************************!*\
+  !*** ./test/services/ValidationService/instances.test.ts ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const DataService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/DataService */ "./src/services/DataService.ts"));
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+describe("DataService/instances", () => {
+    let state;
+    let service;
+    beforeEach(() => {
+        state = new State_1.default();
+        service = new DataService_1.default(state);
+    });
+    it("should not set data on other DataServices", () => {
+        service.set("#", { title: "service1" });
+        const service2 = new DataService_1.default(new State_1.default());
+        service2.set("#", { title: "service2" });
+        assert_1.strict.equal(service.get("#/title"), "service1");
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/ValidationService/observe.test.ts":
+/*!*********************************************************!*\
+  !*** ./test/services/ValidationService/observe.test.ts ***!
+  \*********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+const ValidationService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/ValidationService */ "./src/services/ValidationService.ts"));
+describe("ValidationService/observe", () => {
+    let state;
+    let schema;
+    let service;
+    beforeEach(() => {
+        state = new State_1.default();
+        schema = {
+            type: "object",
+            properties: {
+                title: { type: "string" },
+                chapter: { type: "number", minimum: 1 },
+                modules: {
+                    type: "array",
+                    items: { type: "string" }
+                }
+            }
+        };
+        service = new ValidationService_1.default(state, schema);
+    });
+    it("observe should notify error at pointer", () => {
+        let called = false;
+        service.observe("#/modules/0", () => (called = true));
+        return service.validate({ title: "test", chapter: 1, modules: [1, "two"] })
+            .then(() => assert_1.strict.equal(called, true));
+    });
+    it("observe should not notify parents", () => {
+        let called = false;
+        service.observe("#/modules", () => (called = true));
+        return service.validate({ title: "test", chapter: 1, modules: [1, "two"] })
+            .then(() => assert_1.strict.equal(called, false));
+    });
+    const BUBBLE_EVENTS = true;
+    it("observe bubble events should notify error at pointer", () => {
+        let called = false;
+        service.observe("#/modules/0", () => (called = true), BUBBLE_EVENTS);
+        return service.validate({ title: "test", chapter: 1, modules: [1, "two"] })
+            .then(() => assert_1.strict.equal(called, true));
+    });
+    it("observe bubble events should notify all parents of error", () => {
+        let called = false;
+        service.observe("#/modules", () => (called = true), BUBBLE_EVENTS);
+        return service.validate({ title: "test", chapter: 1, modules: [1, "two"] })
+            .then(() => assert_1.strict.equal(called, true));
+    });
+    it("observe bubble events should notify root of error", () => {
+        let called = false;
+        service.observe("#", () => (called = true), BUBBLE_EVENTS);
+        return service.validate({ title: "test", chapter: 1, modules: [1, "two"] })
+            .then(() => assert_1.strict.equal(called, true));
+    });
+    it("observe bubble events should not notify observers on different tree", () => {
+        let called = false;
+        service.observe("#/test", () => (called = true), BUBBLE_EVENTS);
+        return service.validate({ title: "test", chapter: 1, modules: [1, "two"] })
+            .then(() => assert_1.strict.equal(called, false));
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/ValidationService/validate.test.ts":
+/*!**********************************************************!*\
+  !*** ./test/services/ValidationService/validate.test.ts ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const State_1 = __importDefault(__webpack_require__(/*! ../../../src/services/State */ "./src/services/State.ts"));
+const ValidationService_1 = __importDefault(__webpack_require__(/*! ../../../src/services/ValidationService */ "./src/services/ValidationService.ts"));
+describe("ValidationService/validate", () => {
+    let state;
+    let schema;
+    let service;
+    beforeEach(() => {
+        state = new State_1.default();
+        schema = {
+            type: "object",
+            properties: {
+                title: { type: "string" },
+                chapter: { type: "number", minimum: 1 },
+                modules: {
+                    type: "array",
+                    items: { type: "string" }
+                }
+            }
+        };
+        service = new ValidationService_1.default(state, schema);
+    });
+    it("should store json schema", () => {
+        const result = service.get();
+        assert_1.strict.deepEqual(result, schema);
+    });
+    it("should validate data by json schema", () => service
+        .validate({ title: "test", chapter: 1, modules: [] })
+        .then(errors => assert_1.strict.equal(errors.length, 0)));
+    it("should pass errors for invalid data", () => service
+        .validate({ title: "test", chapter: 0, modules: [] })
+        .then(errors => assert_1.strict.equal(errors.length, 1)));
 });
 
 
@@ -55426,10 +56194,278 @@ exports.default = testEditorIntegration;
 
 /***/ }),
 
+/***/ "./test/utils/ensureItemIDs.test.ts":
+/*!******************************************!*\
+  !*** ./test/utils/ensureItemIDs.test.ts ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const ensureItemIDs_1 = __importDefault(__webpack_require__(/*! ../../src/services/utils/ensureItemIDs */ "./src/services/utils/ensureItemIDs.ts"));
+const ID = ensureItemIDs_1.default.config.ID_PROPERTY;
+describe("utils/ensureItemIDs", () => {
+    it("should return the passed data", () => {
+        const data = {};
+        const returnValue = ensureItemIDs_1.default(data);
+        assert_1.strict.equal(returnValue, data);
+    });
+    it("should add unique ids to each array item", () => {
+        const data = ensureItemIDs_1.default([{ title: "oh" }, { title: "my" }]);
+        assert_1.strict.ok(data[0][ID] != null); // eslint-disable-line no-unused-expressions
+        assert_1.strict.ok(data[1][ID] != null); // eslint-disable-line no-unused-expressions
+        assert_1.strict.notEqual(data[0][ID], data[1][ID]);
+    });
+    it("should not modify existing ids", () => {
+        const data = [{ title: "oh" }, { title: "my" }];
+        data[0][ID] = "manualId";
+        ensureItemIDs_1.default(data);
+        assert_1.strict.equal(data[0][ID], "manualId");
+        assert_1.strict.ok(data[1][ID] != null); // eslint-disable-line no-unused-expressions
+        assert_1.strict.notEqual(data[0][ID], data[1][ID]);
+    });
+    it("should not add ids to non-array items", () => {
+        const data = { first: { title: "oh" }, second: { title: "my" } };
+        ensureItemIDs_1.default(data);
+        assert_1.strict.ok(data.first[ID] == null); // eslint-disable-line no-unused-expressions
+        assert_1.strict.ok(data.first.title[ID] == null); // eslint-disable-line no-unused-expressions
+    });
+    it("should add ids to nested arrays", () => {
+        const data = [{ title: "oh", list: [{ title: "stilloh" }] }, { title: "my", list: [{ title: "stillmy" }] }];
+        ensureItemIDs_1.default(data);
+        assert_1.strict.ok(data[0].list[0][ID] != null); // eslint-disable-line no-unused-expressions
+        assert_1.strict.ok(data[1].list[0][ID] != null); // eslint-disable-line no-unused-expressions
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/utils/getPatchesPerPointer.test.ts":
+/*!*************************************************!*\
+  !*** ./test/utils/getPatchesPerPointer.test.ts ***!
+  \*************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const gson_pointer_1 = __importDefault(__webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js"));
+const diffpatch_1 = __importDefault(__webpack_require__(/*! ../../src/services/utils/diffpatch */ "./src/services/utils/diffpatch.ts"));
+const getPatchesPerPointer_1 = __importDefault(__webpack_require__(/*! ../../src/services/utils/getPatchesPerPointer */ "./src/services/utils/getPatchesPerPointer.ts"));
+describe("utils/getPatchesPerPointer", () => {
+    it("should return empty array if data is the same", () => {
+        const result = getPatchesPerPointer_1.default({ a: "prop" }, { a: "prop" });
+        assert_1.strict.equal(result.length, 0);
+    });
+    it("should return patches with pointer of change and its patch", () => {
+        const result = getPatchesPerPointer_1.default({ a: "prop" }, { a: "properly" });
+        assert_1.strict.equal(result.length, 1);
+        assert_1.strict.deepEqual(result[0], { pointer: "#/a", patch: ["prop", "properly"] });
+    });
+    it("should return nested patches with pointer of change and its patch", () => {
+        const result = getPatchesPerPointer_1.default({ a: { changedHere: "prop" } }, { a: { changedHere: "properly" } });
+        assert_1.strict.equal(result.length, 1);
+        assert_1.strict.deepEqual(result[0], { pointer: "#/a/changedHere", patch: ["prop", "properly"] });
+    });
+    it("should return all patches with pointer of change and its patch", () => {
+        const result = getPatchesPerPointer_1.default({ a: { changedHere: "prop" }, andHere: "boo" }, { a: { changedHere: "properly" }, andHere: "foo" });
+        assert_1.strict.equal(result.length, 2);
+        assert_1.strict.deepEqual(result[0], { pointer: "#/a/changedHere", patch: ["prop", "properly"] });
+        assert_1.strict.deepEqual(result[1], { pointer: "#/andHere", patch: ["boo", "foo"] });
+    });
+    it("should return pointer of object for key changes", () => {
+        const result = getPatchesPerPointer_1.default({ a: { b: "key" } }, { a: { c: "key" } });
+        assert_1.strict.equal(result.length, 1);
+        assert_1.strict.deepEqual(result[0], {
+            pointer: "#/a",
+            patch: { b: ["key", 0, 0], c: ["key"] }
+        });
+    });
+    it("should return pointer of array for item changes", () => {
+        const result = getPatchesPerPointer_1.default({ a: ["string"] }, { a: ["modifiedString"] });
+        assert_1.strict.equal(result.length, 1);
+        assert_1.strict.deepEqual(result[0], {
+            pointer: "#/a",
+            patch: { "0": ["modifiedString"], _0: ["string", 0, 0], _t: "a" }
+        });
+    });
+    it("should return movement of arrays", () => {
+        const result = getPatchesPerPointer_1.default({ a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] }, { a: [{ _id: 2, title: "third" }, { _id: 1, title: "second" }, { _id: 0, title: "first" }] });
+        assert_1.strict.equal(result.length, 1);
+    });
+    it("should return patches in correct order", () => {
+        const result = getPatchesPerPointer_1.default({ a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] }, { a: [{ _id: 2, title: "third" }, { _id: 1, title: "zwei" }, { _id: 0, title: "eins" }] });
+        assert_1.strict.equal(result.length, 3);
+        // movement (changing indices) should come first
+        assert_1.strict.deepEqual(result[0], {
+            pointer: "#/a",
+            patch: { _t: "a", _1: ["", 1, 3], _2: ["", 0, 3] }
+        });
+        // other changes should refer to updated index
+        assert_1.strict.equal(result[1].pointer, "#/a/1/title");
+        assert_1.strict.equal(result[2].pointer, "#/a/2/title");
+    });
+    function applyPatches(input, patches) {
+        const orig = JSON.parse(JSON.stringify(input));
+        patches.forEach(delta => {
+            const val = gson_pointer_1.default.get(orig, delta.pointer);
+            const updated = diffpatch_1.default.patch(val, delta.patch);
+            gson_pointer_1.default.set(orig, delta.pointer, updated);
+        });
+        return orig;
+    }
+    it("patch should correctly patch array movement", () => {
+        const input = { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] };
+        const update = { a: [{ _id: 2, title: "third" }, { _id: 1, title: "zwei" }, { _id: 0, title: "eins" }] };
+        const patches = getPatchesPerPointer_1.default(input, update);
+        const result = applyPatches(input, patches);
+        assert_1.strict.deepEqual(update, result);
+    });
+    it("patch should correctly patch array insertion", () => {
+        const input = { a: [{ _id: 0, title: "first" }, { _id: 2, title: "third" }] };
+        const update = { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] };
+        const patches = getPatchesPerPointer_1.default(input, update);
+        const result = applyPatches(input, patches);
+        assert_1.strict.deepEqual(update, result);
+    });
+    it("patch should also patch different input arrays", () => {
+        const input = { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] };
+        const update = { a: [{ _id: 2, title: "third" }, { _id: 1, title: "second" }, { _id: 0, title: "first" }] };
+        const patches = getPatchesPerPointer_1.default(input, update);
+        const result = applyPatches({ a: [1, 2, 3] }, patches);
+        assert_1.strict.deepEqual(result, { a: [3, 2, 1] });
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/utils/isObject.ts":
+/*!********************************!*\
+  !*** ./test/utils/isObject.ts ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+// eslint-disable-next-line arrow-parens
+function isObject(data) {
+    return Object.prototype.toString.call(data) === "[object Object]";
+}
+exports.default = isObject;
+
+
+/***/ }),
+
+/***/ "./test/utils/uischema/getOption.test.ts":
+/*!***********************************************!*\
+  !*** ./test/utils/uischema/getOption.test.ts ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const Controller_1 = __importDefault(__webpack_require__(/*! ../../../src/Controller */ "./src/Controller.ts"));
+const UISchema_1 = __importDefault(__webpack_require__(/*! ../../../src/utils/UISchema */ "./src/utils/UISchema.ts"));
+describe("UISchema.getOption", () => {
+    let controller;
+    let schema;
+    beforeEach(() => {
+        schema = {
+            type: "object",
+            title: "title of object",
+            description: "description of object",
+            "editron:ui": {}
+        };
+        controller = new Controller_1.default(schema, {}, {});
+    });
+    // it("should return the options object if no option is given", () => {
+    //     const result = UISchema.getOption("#", controller);
+    //     // the schema is cloned and extended, thus retrieve the options via the schema service
+    //     assert.ok(result === controller.schema().get("#")["editron:ui"]);
+    // });
+    it("should return 'null' for a invalid option", () => {
+        const result = UISchema_1.default.getOption("#", controller, "mimimi");
+        assert_1.strict.ok(result === null);
+    });
+    it("should have option 'hidden' defined per default", () => {
+        const result = UISchema_1.default.getOption("#", controller, "hidden");
+        assert_1.strict.ok(result === false);
+    });
+    it("should return value of option", () => {
+        schema["editron:ui"].title = "title in options";
+        controller.setSchema(schema);
+        const result = UISchema_1.default.getOption("#", controller, "title");
+        assert_1.strict.ok(result === "title in options");
+    });
+    it("should return title schema property if option is undefined", () => {
+        const result = UISchema_1.default.getOption("#", controller, "title");
+        assert_1.strict.ok(result === "title of object");
+    });
+    it("should return description schema property if option is undefined", () => {
+        const result = UISchema_1.default.getOption("#", controller, "description");
+        assert_1.strict.ok(result === "description of object");
+    });
+    it("should return first matching option in list of possible properties", () => {
+        const result = UISchema_1.default.getOption("#", controller, "invalid", "description", "title");
+        assert_1.strict.ok(result === "description of object");
+    });
+    it("should return value at pointer", () => {
+        schema["editron:ui"].icon = "/icon";
+        controller.setSchema(schema);
+        controller.setData({ icon: "icon-value" });
+        const result = UISchema_1.default.getOption("#", controller, "icon");
+        assert_1.strict.ok(result === "icon-value");
+    });
+    it("should return first matching option from options list", () => {
+        schema["editron:ui"].icon = [undefined, "my-icon"];
+        controller.setSchema(schema);
+        const result = UISchema_1.default.getOption("#", controller, "invalid", "icon");
+        assert_1.strict.ok(result === "my-icon");
+    });
+    it("should return resolved pointer from options list", () => {
+        schema["editron:ui"].icon = ["/icon", "my-icon"];
+        controller.setSchema(schema);
+        controller.setData({ icon: "icon-value" });
+        const result = UISchema_1.default.getOption("#", controller, "icon");
+        assert_1.strict.ok(result === "icon-value");
+    });
+    it("should return fallback value if pointer does not match a value", () => {
+        schema["editron:ui"].icon = ["/icon", "my-icon"];
+        controller.setSchema(schema);
+        const result = UISchema_1.default.getOption("#", controller, "icon");
+        assert_1.strict.ok(result === "my-icon");
+    });
+});
+
+
+/***/ }),
+
 /***/ 0:
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** multi ./test/controller/addValidator.test.ts ./test/controller/Controller.test.ts ./test/editors/arrayeditor/ArrayEditor.applyPatches.test.ts ./test/editors/arrayeditor/ArrayEditor.integration.test.ts ./test/editors/objecteditor/ObjectEditor.integration.test.ts ./test/editors/oneofeditor/OneOfEditor.integration.test.ts ./test/editors/valueeditor/ValueEditor.integration.test.ts ./test/services/State.test.ts ./test/services/utils/BubblingCollectionObservable.test.ts ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** multi ./test/controller/addValidator.test.ts ./test/controller/Controller.test.ts ./test/editors/arrayeditor/ArrayEditor.applyPatches.test.ts ./test/editors/arrayeditor/ArrayEditor.integration.test.ts ./test/editors/objecteditor/ObjectEditor.integration.test.ts ./test/editors/oneofeditor/OneOfEditor.integration.test.ts ./test/editors/valueeditor/ValueEditor.integration.test.ts ./test/services/DataService/delete.test.ts ./test/services/DataService/events.test.ts ./test/services/DataService/observe.test.ts ./test/services/DataService/setget.test.ts ./test/services/DataService/undoredo.test.ts ./test/services/State.test.ts ./test/services/utils/BubblingCollectionObservable.test.ts ./test/services/ValidationService/emit.test.ts ./test/services/ValidationService/getErrors.test.ts ./test/services/ValidationService/instances.test.ts ./test/services/ValidationService/observe.test.ts ./test/services/ValidationService/validate.test.ts ./test/utils/ensureItemIDs.test.ts ./test/utils/getPatchesPerPointer.test.ts ./test/utils/uischema/getOption.test.ts ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -55440,8 +56476,21 @@ __webpack_require__(/*! ./test/editors/arrayeditor/ArrayEditor.integration.test.
 __webpack_require__(/*! ./test/editors/objecteditor/ObjectEditor.integration.test.ts */"./test/editors/objecteditor/ObjectEditor.integration.test.ts");
 __webpack_require__(/*! ./test/editors/oneofeditor/OneOfEditor.integration.test.ts */"./test/editors/oneofeditor/OneOfEditor.integration.test.ts");
 __webpack_require__(/*! ./test/editors/valueeditor/ValueEditor.integration.test.ts */"./test/editors/valueeditor/ValueEditor.integration.test.ts");
+__webpack_require__(/*! ./test/services/DataService/delete.test.ts */"./test/services/DataService/delete.test.ts");
+__webpack_require__(/*! ./test/services/DataService/events.test.ts */"./test/services/DataService/events.test.ts");
+__webpack_require__(/*! ./test/services/DataService/observe.test.ts */"./test/services/DataService/observe.test.ts");
+__webpack_require__(/*! ./test/services/DataService/setget.test.ts */"./test/services/DataService/setget.test.ts");
+__webpack_require__(/*! ./test/services/DataService/undoredo.test.ts */"./test/services/DataService/undoredo.test.ts");
 __webpack_require__(/*! ./test/services/State.test.ts */"./test/services/State.test.ts");
-module.exports = __webpack_require__(/*! ./test/services/utils/BubblingCollectionObservable.test.ts */"./test/services/utils/BubblingCollectionObservable.test.ts");
+__webpack_require__(/*! ./test/services/utils/BubblingCollectionObservable.test.ts */"./test/services/utils/BubblingCollectionObservable.test.ts");
+__webpack_require__(/*! ./test/services/ValidationService/emit.test.ts */"./test/services/ValidationService/emit.test.ts");
+__webpack_require__(/*! ./test/services/ValidationService/getErrors.test.ts */"./test/services/ValidationService/getErrors.test.ts");
+__webpack_require__(/*! ./test/services/ValidationService/instances.test.ts */"./test/services/ValidationService/instances.test.ts");
+__webpack_require__(/*! ./test/services/ValidationService/observe.test.ts */"./test/services/ValidationService/observe.test.ts");
+__webpack_require__(/*! ./test/services/ValidationService/validate.test.ts */"./test/services/ValidationService/validate.test.ts");
+__webpack_require__(/*! ./test/utils/ensureItemIDs.test.ts */"./test/utils/ensureItemIDs.test.ts");
+__webpack_require__(/*! ./test/utils/getPatchesPerPointer.test.ts */"./test/utils/getPatchesPerPointer.test.ts");
+module.exports = __webpack_require__(/*! ./test/utils/uischema/getOption.test.ts */"./test/utils/uischema/getOption.test.ts");
 
 
 /***/ })
