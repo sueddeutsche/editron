@@ -22047,10 +22047,10 @@ exports.default = select;
 
 /***/ }),
 
-/***/ "./test/mocha.test.ts":
-/*!****************************!*\
-  !*** ./test/mocha.test.ts ***!
-  \****************************/
+/***/ "./test/controller/Controller.test.ts":
+/*!********************************************!*\
+  !*** ./test/controller/Controller.test.ts ***!
+  \********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -22061,8 +22061,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
-const Controller_1 = __importDefault(__webpack_require__(/*! ../src/Controller */ "./src/Controller.ts"));
-describe("Editron", () => {
+const Controller_1 = __importDefault(__webpack_require__(/*! ../../src/Controller */ "./src/Controller.ts"));
+describe("Controller", () => {
     it("should be able to instantiate editron", () => {
         const editron = new Controller_1.default({
             type: "object",
@@ -22075,19 +22075,184 @@ describe("Editron", () => {
         });
         assert_1.strict.ok(editron.data().get("#/title") === "default-title");
     });
+    describe("dataService", () => {
+        let controller;
+        beforeEach(() => {
+            const schema = {
+                type: "object",
+                properties: {
+                    list: {
+                        type: "array",
+                        items: {
+                            type: "object", properties: { title: { type: "string" } }
+                        }
+                    }
+                }
+            };
+            const data = { list: [{ title: "first" }, { title: "second" }, { title: "third" }] };
+            controller = new Controller_1.default(schema, data);
+        });
+        it("should have independent data services", () => {
+            const controller2 = new Controller_1.default(controller.schema().get(), controller.data().get());
+            controller2.data().set("#/list/0", { title: "new" });
+            assert_1.strict.equal(controller.data().get("#/list/0/title"), "first", "controllers should not share same data");
+            assert_1.strict.equal(controller2.data().get("#/list/0/title"), "new", "controllers should not share same data");
+        });
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/controller/addValidator.test.ts":
+/*!**********************************************!*\
+  !*** ./test/controller/addValidator.test.ts ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint max-len: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const Controller_1 = __importDefault(__webpack_require__(/*! ../../src/Controller */ "./src/Controller.ts"));
+describe("Controller", () => {
+    let controller;
+    beforeEach(() => {
+        const schema = {
+            type: "object",
+            properties: {
+                customFormat: {
+                    format: "custom-format",
+                    type: "string"
+                },
+                customAttribute: {
+                    custom: "custom-attribute",
+                    type: "string"
+                }
+            }
+        };
+        const data = { customFormat: "custom-fornat-value" };
+        controller = new Controller_1.default(schema, data);
+    });
+    it("should register validator for format", () => {
+        controller.addFormatValidator("custom-format", (core, schema, value, pointer) => {
+            if (value === "custom-format-error") {
+                return { type: "error", code: "custom-format-error", data: { pointer } };
+            }
+            return undefined;
+        });
+        return controller.validator()
+            .validate({ customFormat: "custom-format-error" })
+            .then(result => {
+            assert_1.strict.equal(result.length, 1);
+            assert_1.strict.equal(result[0].type, "error");
+            assert_1.strict.equal(result[0].code, "custom-format-error");
+        });
+    });
+    it("should register validator for attribute", () => {
+        controller.addKeywordValidator("string", "custom", (core, schema, value, pointer) => {
+            if (value === "custom-attribute-error") {
+                return { type: "error", code: "custom-attribute-error", data: { pointer } };
+            }
+            return undefined;
+        });
+        return controller.validator()
+            .validate({ customAttribute: "custom-attribute-error" })
+            .then(result => {
+            assert_1.strict.equal(result.length, 1);
+            assert_1.strict.equal(result[0].type, "error");
+            assert_1.strict.equal(result[0].code, "custom-attribute-error");
+        });
+    });
+});
+
+
+/***/ }),
+
+/***/ "./test/services/State.test.ts":
+/*!*************************************!*\
+  !*** ./test/services/State.test.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint object-property-newline: 0, max-nested-callbacks: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const State_1 = __importDefault(__webpack_require__(/*! ../../src/services/State */ "./src/services/State.ts"));
+describe("State", () => {
+    let state;
+    beforeEach(() => (state = new State_1.default()));
+    it("should dispatch action", () => {
+        let calledAction;
+        function reducer(_state = {}, action) {
+            calledAction = action;
+            return _state;
+        }
+        state.register("data", reducer);
+        state.dispatch({ type: "DUMMY_ACTION", value: 14 });
+        assert_1.strict.deepEqual(calledAction, { type: "DUMMY_ACTION", value: 14 });
+    });
+    it("should register multiple reducers", () => {
+        const calledActions = [];
+        const action = { type: "DUMMY_ACTION", value: 14 };
+        state.register("A", (_state = {}, _action) => {
+            _action.type === "DUMMY_ACTION" && calledActions.push(_action);
+            return _state;
+        });
+        state.register("B", (_state = {}, _action) => {
+            _action.type === "DUMMY_ACTION" && calledActions.push(_action);
+            return _state;
+        });
+        state.dispatch(action);
+        assert_1.strict.deepEqual(calledActions, [action, action]);
+    });
+    it("should register reducers on separate entry points", () => {
+        const calledActions = [];
+        const action = { type: "DUMMY_ACTION", value: 14 };
+        state.register("A", (_, _action) => {
+            action.type === "DUMMY_ACTION" && calledActions.push(_action);
+            return { id: "A" };
+        });
+        state.register("B", (_, _action) => {
+            action.type === "DUMMY_ACTION" && calledActions.push(_action);
+            return { id: "B" };
+        });
+        state.dispatch(action);
+        const currentState = state.get();
+        assert_1.strict.deepEqual(currentState.A, { id: "A" });
+        assert_1.strict.deepEqual(currentState.B, { id: "B" });
+    });
+    it("should return state of given reducer", () => {
+        state.register("A", () => ({ id: "A" }));
+        const stateA = state.get("A");
+        assert_1.strict.deepEqual(stateA, { id: "A" });
+    });
 });
 
 
 /***/ }),
 
 /***/ 0:
-/*!**********************************!*\
-  !*** multi ./test/mocha.test.ts ***!
-  \**********************************/
+/*!***********************************************************************************************************************!*\
+  !*** multi ./test/controller/addValidator.test.ts ./test/controller/Controller.test.ts ./test/services/State.test.ts ***!
+  \***********************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! ./test/mocha.test.ts */"./test/mocha.test.ts");
+__webpack_require__(/*! ./test/controller/addValidator.test.ts */"./test/controller/addValidator.test.ts");
+__webpack_require__(/*! ./test/controller/Controller.test.ts */"./test/controller/Controller.test.ts");
+module.exports = __webpack_require__(/*! ./test/services/State.test.ts */"./test/services/State.test.ts");
 
 
 /***/ })

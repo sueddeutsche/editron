@@ -1,7 +1,7 @@
 export type JSONPointer = string;
 
 export type JSONSchema = {
-    type: "object"|"array"|"string"|"boolean"|"number"|"integer"|"null";
+    type: string;
     [p:string]: any;
 };
 
