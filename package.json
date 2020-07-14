@@ -19,9 +19,8 @@
     "prepublishOnly": "npm run release",
     "release": "npm run build; npm run dist",
     "serve": "webpack-dev-server --config webpack.serve.js",
-    "test": "ava",
-    "test:new": "webpack --config webpack.mocha.js --display errors-only",
-    "test:new:watch": "webpack --watch --config webpack.mocha.js --display minimal",
+    "test": "webpack --config webpack.mocha.js --display errors-only",
+    "test:watch": "webpack --watch --config webpack.mocha.js --display minimal",
     "watch": "watch 'npm run dist' editors components sass services utils"
   },
   "pre-push": [
@@ -44,7 +43,6 @@
     "@babel/preset-env": "^7.7.1",
     "@types/mithril": "2.0.3",
     "@types/mocha": "8.0.0",
-    "ava": "^2.4.0",
     "babel-loader": "^8.0.0",
     "chalk": "^3.0.0",
     "css-loader": "^3.2.0",
@@ -101,14 +99,5 @@
     "redux": "^3.6.0",
     "redux-undo": "^0.6.1",
     "with-observable": "^1.2.0"
-  },
-  "ava": {
-    "files": [
-      "test/**/*.test.js"
-    ],
-    "require": [
-      "./test/support/setupBrowserEnv.js"
-    ],
-    "verbose": true
   }
 }
