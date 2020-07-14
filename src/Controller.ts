@@ -57,7 +57,8 @@ function eachInstance(instances, cb) {
 
 
 export type Options = {
-    editors?: Array<object>;
+    log?: boolean;
+    editors?: Array<any>;
     proxy?: any;
 };
 
@@ -242,7 +243,7 @@ export default class Controller {
         }
 
         if (Editor === undefined) {
-            console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
+            this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
             return undefined;
         }
 

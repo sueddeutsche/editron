@@ -1,5 +1,5 @@
-const ObjectEditor = require("../../../editors/objecteditor");
-const testEditorIntegration = require("../../support/testEditorIntegration");
+import ObjectEditor from "../../../src/editors/objecteditor"
+import testEditorIntegration from "../../support/testEditorIntegration";
 
 
 testEditorIntegration(

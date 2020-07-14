@@ -1,5 +1,5 @@
-const ArrayEditor = require("../../../editors/arrayeditor");
-const testEditorIntegration = require("../../support/testEditorIntegration");
+import ArrayEditor from "../../../src/editors/arrayeditor";
+import testEditorIntegration from "../../support/testEditorIntegration";
 
 
 testEditorIntegration(

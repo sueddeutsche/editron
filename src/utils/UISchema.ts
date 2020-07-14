@@ -1,7 +1,8 @@
-const { eachSchema } = require("json-schema-library");
-const gp = require("gson-pointer");
+import gp from "gson-pointer";
+import populated from "./populated";
+import jlib from "json-schema-library";
+const { eachSchema } = jlib;
 const UI_PROPERTY = "editron:ui";
-const populated = require("./populated");
 
 
 function isPointer(string) {

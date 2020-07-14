@@ -27,7 +27,7 @@ export type ViewModel = {
 }
 
 export type Options = {
-    id: string;
+    id?: string;
     attrs?: object;
     controls?: Controls;
 }
@@ -47,9 +47,9 @@ export default class ArrayEditor {
         return schema.type === "array";
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
+    constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
         // add id to element, since no other input-form is associated with this editor
-        options.attrs = Object.assign({ id: options.id }, options.attrs);
+        options.attrs = { id: options.id, ...options.attrs };
         const schema = controller.schema().get(pointer);
         const data = controller.data().get(pointer);
 

@@ -1,5 +1,5 @@
-const ValueEditor = require("../../../editors/valueeditor");
-const testEditorIntegration = require("../../support/testEditorIntegration");
+import ValueEditor from "../../../src/editors/valueeditor"
+import testEditorIntegration from "../../support/testEditorIntegration";
 
 
 testEditorIntegration(

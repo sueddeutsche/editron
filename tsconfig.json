@@ -15,11 +15,8 @@
     },
     "include": [
         "*",
-        "editors/**/*",
-        "plugin/**/*",
-        "services/**/*",
-        "utils/**/*",
         "src/**/*",
+        "test/**/*",
         "@technik-sde/foxy/**/*"
     ],
     "exclude": [

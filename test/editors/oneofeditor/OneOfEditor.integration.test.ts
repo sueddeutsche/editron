@@ -1,5 +1,5 @@
-const OneOfEditor = require("../../../editors/oneofeditor");
-const testEditorIntegration = require("../../support/testEditorIntegration");
+import OneOfEditor from "../../../src/editors/oneofeditor"
+import testEditorIntegration from "../../support/testEditorIntegration";
 
 
 testEditorIntegration(

@@ -1,5 +1,5 @@
 // returns true if the value is valid, that is: it has content
-export default function populated(value, returnIf, returnElse = "") {
+export default function populated<T extends any, K extends any>(value: any, returnIf?: K, returnElse?: T): boolean|T|K {
     let isPopulated = true;
 
     if (value == null || value === "" || value === "#") {
@@ -12,7 +12,7 @@ export default function populated(value, returnIf, returnElse = "") {
         isPopulated = Object.keys(value).length > 0;
     }
 
-    if (returnIf === undefined && returnElse === "") {
+    if (returnIf === undefined && returnElse === undefined) {
         return isPopulated;
     }
 
