@@ -4,6 +4,7 @@ import sinon from "sinon";
 
 import Controller from "../../../src/Controller";
 import ArrayEditor from "../../../src/editors/arrayeditor";
+import { Editor } from "../../../src/editors/Editor";
 
 
 describe("ArrayEditor.applyPatches", () => {
@@ -24,7 +25,8 @@ describe("ArrayEditor.applyPatches", () => {
         };
 
         const data = { list: [{ title: "first" }, { title: "second" }, { title: "third" }] };
-        controller = new Controller(schema, data, { editors: [ArrayEditor] });
+        const editors: Array<Editor> = [ArrayEditor];
+        controller = new Controller(schema, data, { editors });
         editor = new ArrayEditor("#/list", controller, { id: "list" });
     });
 

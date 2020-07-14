@@ -15,6 +15,7 @@ import plugin from "./plugin";
 import i18n from "./utils/i18n";
 import createProxy from "./utils/createProxy";
 import { JSONPointer, JSONSchema, JSONData } from "./types";
+import { Editor } from "./editors/Editor";
 
 import oneOfEditor from "./editors/oneofeditor";
 import arrayEditor from "./editors/arrayeditor";
@@ -22,8 +23,6 @@ import objectEditor from "./editors/objecteditor";
 import valueEditor from "./editors/valueeditor";
 
 const { JsonEditor: Core } = jsonSchemaLibrary.cores;
-
-export interface Editor {}
 
 
 function isValidPointer(pointer: JSONPointer): boolean {
@@ -58,7 +57,7 @@ function eachInstance(instances, cb) {
 
 export type Options = {
     log?: boolean;
-    editors?: Array<any>;
+    editors?: Array<Editor>;
     proxy?: any;
 };
 

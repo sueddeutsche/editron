@@ -4,6 +4,7 @@ import diffpatch from "../../services/utils/diffpatch";
 import m from "mithril";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONSchema } from "../../types";
+import { Editor } from "../Editor";
 
 
 export type Controls = {
@@ -33,7 +34,7 @@ export type Options = {
 }
 
 
-export default class ArrayEditor {
+export default class ArrayEditor implements Editor {
     viewModel;
     $element: HTMLElement;
     controller: Controller;

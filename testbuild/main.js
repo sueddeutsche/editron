@@ -54838,7 +54838,8 @@ describe("ArrayEditor.applyPatches", () => {
             }
         };
         const data = { list: [{ title: "first" }, { title: "second" }, { title: "third" }] };
-        controller = new Controller_1.default(schema, data, { editors: [arrayeditor_1.default] });
+        const editors = [arrayeditor_1.default];
+        controller = new Controller_1.default(schema, data, { editors });
         editor = new arrayeditor_1.default("#/list", controller, { id: "list" });
     });
     it("should not rebuild editors for changed item order", () => {
@@ -55043,6 +55044,173 @@ describe("State", () => {
 
 /***/ }),
 
+/***/ "./test/services/utils/BubblingCollectionObservable.test.ts":
+/*!******************************************************************!*\
+  !*** ./test/services/utils/BubblingCollectionObservable.test.ts ***!
+  \******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint arrow-parens: 0, func-style: 0, callback-return: 0 */
+const assert_1 = __webpack_require__(/*! assert */ "./node_modules/assert/assert.js");
+const BubblingCollectionObservable_1 = __importDefault(__webpack_require__(/*! ../../../src/services/utils/BubblingCollectionObservable */ "./src/services/utils/BubblingCollectionObservable.ts"));
+const cp = (v) => JSON.parse(JSON.stringify(v));
+describe("BubblingCollectionObservable", () => {
+    // Bubbable
+    it("should notify observers", () => {
+        let called = false;
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#", () => (called = true));
+        b.notify("#", []);
+        assert_1.strict.equal(called, true);
+    });
+    it("should remove observer", () => {
+        let called = false;
+        const b = new BubblingCollectionObservable_1.default();
+        const cb = () => (called = true);
+        b.observe("#", cb);
+        b.removeObserver("#", cb);
+        b.notify("#", []);
+        assert_1.strict.equal(called, false);
+    });
+    it("should notify observers along pointer", () => {
+        const called = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#", () => called.push("#"), true);
+        b.observe("#/child", () => called.push("#/child"), true);
+        b.observe("#/child/item", () => called.push("#/child/item"), true);
+        b.notify("#/child/item", []);
+        assert_1.strict.deepEqual(called, ["#/child/item", "#/child", "#"]);
+    });
+    it("should not notify observers along pointer that listen to their location only", () => {
+        const called = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#", () => called.push("#"), true);
+        b.observe("#/child", () => called.push("#/child"), false);
+        b.observe("#/child/item", () => called.push("#/child/item"), false);
+        b.notify("#/child/item", []);
+        assert_1.strict.deepEqual(called, ["#/child/item", "#"]);
+    });
+    it("should collect events occuring on the same pointer", () => {
+        const events = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#/child/item", (event) => events.push(cp(event)), false);
+        b.notify("#/child/item", { id: 1 });
+        b.notify("#/child/item", { id: 2 });
+        assert_1.strict.equal(events.length, 2);
+        assert_1.strict.equal(events[0].length, 1);
+        assert_1.strict.equal(events[1].length, 2);
+    });
+    it("should collect events occuring within parent-pointer", () => {
+        const events = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#", (event) => events.push(cp(event)), true);
+        b.notify("#/child/item", { id: 1 });
+        b.notify("#/child/item", { id: 2 });
+        b.notify("#/child", { id: 3 });
+        assert_1.strict.equal(events.length, 3);
+        assert_1.strict.equal(events[0].length, 1);
+        assert_1.strict.equal(events[1].length, 2);
+        assert_1.strict.equal(events[2].length, 3, "should have collected events from all children");
+    });
+    it("should collect events occuring within parent-pointer and itself", () => {
+        const events = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#/child", (event) => events.push(cp(event)), true);
+        b.notify("#/child/item", { id: 1 });
+        b.notify("#/child/item", { id: 2 });
+        b.notify("#/child", { id: 3 });
+        assert_1.strict.equal(events.length, 3);
+        assert_1.strict.equal(events[0].length, 1);
+        assert_1.strict.equal(events[1].length, 2);
+        assert_1.strict.equal(events[2].length, 3, "should have collected events from all children and itself");
+    });
+    // CLEAR pointer
+    it("should clear events on pointer", () => {
+        const targetEvents = [];
+        const parentEvents = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#/parent/target", e => targetEvents.push(e));
+        b.observe("#/parent", e => parentEvents.push(e), true);
+        b.notify("#/parent/target", { id: 1 });
+        b.notify("#/parent", { id: 2 });
+        assert_1.strict.deepEqual(targetEvents, [[{ id: 1 }]]);
+        assert_1.strict.deepEqual(parentEvents, [[{ id: 1 }], [{ id: 1 }, { id: 2 }]]);
+        targetEvents.length = 0;
+        parentEvents.length = 0;
+        b.clearEvents("#/parent/target");
+        assert_1.strict.deepEqual(parentEvents, [[{ id: 2 }]], "should have notified parent with removed event");
+        assert_1.strict.deepEqual(targetEvents, [[]], "should have notified target with empty event-list");
+    });
+    it("should clear events of children", () => {
+        const targetEvents = [];
+        const parentEvents = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#/parent/target", e => targetEvents.push(e));
+        b.observe("#/parent", e => parentEvents.push(e), true);
+        b.notify("#/parent/target", { id: 1 });
+        b.notify("#/parent", { id: 2 });
+        targetEvents.length = 0;
+        parentEvents.length = 0;
+        b.clearEvents("#/parent");
+        assert_1.strict.deepEqual(parentEvents, [[]], "should have cleared target-events");
+        assert_1.strict.deepEqual(targetEvents, [[]], "should have cleared child-events");
+    });
+    // RESET
+    it("should reset any collection", () => {
+        const events = [];
+        const b = new BubblingCollectionObservable_1.default();
+        // ignore reset event (empty array)
+        b.observe("#/child", (event) => event.length !== 0 && events.push(cp(event)), true);
+        b.notify("#/child/item", { id: 1 });
+        b.notify("#/child/item", { id: 2 });
+        b.reset();
+        b.notify("#/child", { id: 3 });
+        assert_1.strict.equal(events[0].length, 1);
+        assert_1.strict.equal(events[1].length, 2);
+        assert_1.strict.equal(events[2].length, 1);
+        assert_1.strict.deepEqual(events[2][0], { id: 3 });
+    });
+    it("should notify observers on reset", () => {
+        const events = [];
+        const b = new BubblingCollectionObservable_1.default();
+        b.observe("#/child", (event) => events.push(cp(event)), true);
+        b.notify("#/child/item", { id: 1 });
+        b.reset();
+        assert_1.strict.equal(events.length, 2);
+        assert_1.strict.equal(events[0].length, 1);
+        assert_1.strict.equal(events[1].length, 0);
+    });
+    // test.only("should reset observers only within given pointer", () => {
+    //     const first = [];
+    //     const firstChild = [];
+    //     const firstChildItem = [];
+    //     const second = [];
+    //     const b = new Bubbles();
+    //     b.observe("#/first", (event) => first.push(cp(event)), true);
+    //     b.observe("#/first/child", (event) => firstChild.push(cp(event)), true);
+    //     b.observe("#/first/child/item", (event) => firstChildItem.push(cp(event)));
+    //     b.observe("#/second", (event) => second.push(cp(event)), true);
+    //     b.notify("#/first/child/item", { id: 1 });
+    //     b.reset();
+    //     console.log(JSON.stringify([first, firstChild, firstChildItem, second], null, 2));
+    //     console.log(firstChildItem);
+    //     assert.equal(first.length, 2);
+    //     assert.equal(firstChild.length, 2);
+    //     assert.equal(firstChildItem.length, 2);
+    //     assert.equal(second.length, 0);
+    // });
+});
+
+
+/***/ }),
+
 /***/ "./test/support/data/data.json":
 /*!*************************************!*\
   !*** ./test/support/data/data.json ***!
@@ -55139,7 +55307,7 @@ function testEditorIntegration(Constructor, pointer, schema, data, options = { i
         });
         it("should expose api methods", () => {
             const editorInstance = new Constructor(pointer, controller);
-            assert_1.strict.ok(typeof editorInstance.toElement === "!function", "should have a method 'toElement'");
+            assert_1.strict.ok(typeof editorInstance.toElement === "function", "should have a method 'toElement'");
             assert_1.strict.ok(editorInstance.toElement() instanceof window.HTMLElement, "'toElement()' should return a HTML Node");
             assert_1.strict.ok(typeof editorInstance.getPointer === "function", "should have a method 'getPointer'");
             assert_1.strict.ok(typeof editorInstance.getPointer() === "string", "'getPointer()' should return the editors pointer");
@@ -55259,9 +55427,9 @@ exports.default = testEditorIntegration;
 /***/ }),
 
 /***/ 0:
-/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** multi ./test/controller/addValidator.test.ts ./test/controller/Controller.test.ts ./test/editors/arrayeditor/ArrayEditor.applyPatches.test.ts ./test/editors/arrayeditor/ArrayEditor.integration.test.ts ./test/editors/objecteditor/ObjectEditor.integration.test.ts ./test/editors/oneofeditor/OneOfEditor.integration.test.ts ./test/editors/valueeditor/ValueEditor.integration.test.ts ./test/services/State.test.ts ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** multi ./test/controller/addValidator.test.ts ./test/controller/Controller.test.ts ./test/editors/arrayeditor/ArrayEditor.applyPatches.test.ts ./test/editors/arrayeditor/ArrayEditor.integration.test.ts ./test/editors/objecteditor/ObjectEditor.integration.test.ts ./test/editors/oneofeditor/OneOfEditor.integration.test.ts ./test/editors/valueeditor/ValueEditor.integration.test.ts ./test/services/State.test.ts ./test/services/utils/BubblingCollectionObservable.test.ts ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -55272,7 +55440,8 @@ __webpack_require__(/*! ./test/editors/arrayeditor/ArrayEditor.integration.test.
 __webpack_require__(/*! ./test/editors/objecteditor/ObjectEditor.integration.test.ts */"./test/editors/objecteditor/ObjectEditor.integration.test.ts");
 __webpack_require__(/*! ./test/editors/oneofeditor/OneOfEditor.integration.test.ts */"./test/editors/oneofeditor/OneOfEditor.integration.test.ts");
 __webpack_require__(/*! ./test/editors/valueeditor/ValueEditor.integration.test.ts */"./test/editors/valueeditor/ValueEditor.integration.test.ts");
-module.exports = __webpack_require__(/*! ./test/services/State.test.ts */"./test/services/State.test.ts");
+__webpack_require__(/*! ./test/services/State.test.ts */"./test/services/State.test.ts");
+module.exports = __webpack_require__(/*! ./test/services/utils/BubblingCollectionObservable.test.ts */"./test/services/utils/BubblingCollectionObservable.test.ts");
 
 
 /***/ })
