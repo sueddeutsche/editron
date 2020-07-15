@@ -1,11 +1,12 @@
-import m from "mithril";
-import gp from "gson-pointer";
-import Select from "mithril-material-forms/components/select";
-import getId from "../../utils/getID";
-import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
-import UISchema from "../../utils/UISchema";
-import { JSONSchema, JSONPointer } from "../../types";
 import Controller from "../../Controller";
+import getId from "../../utils/getID";
+import gp from "gson-pointer";
+import m from "mithril";
+import Select from "mithril-material-forms/components/select";
+import UISchema from "../../utils/UISchema";
+import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
+import { Editor } from "../Editor";
+import { JSONSchema, JSONPointer } from "../../types";
 
 const { UI_PROPERTY } = UISchema;
 
@@ -26,7 +27,7 @@ export type Options = {
 };
 
 
-export default class OneOfEditor {
+export default class OneOfEditor implements Editor {
     $childContainer: HTMLElement;
     $element: HTMLElement;
     childEditor: any;

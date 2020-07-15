@@ -4,6 +4,7 @@ import OverlayService from "../../services/OverlayService";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
+import { Editor } from "../Editor";
 
 
 function showJSON(controller: Controller, data: JSONData, title: string) {
@@ -37,7 +38,7 @@ export type ViewModel = {
 }
 
 
-export default class ObjectEditor {
+export default class ObjectEditor implements Editor {
     viewModel: ViewModel;
     private $element: HTMLElement;
     pointer: JSONPointer;

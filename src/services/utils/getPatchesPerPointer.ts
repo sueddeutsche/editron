@@ -1,6 +1,7 @@
-import diffpatch from "./diffpatch";
+import diffpatch, { Delta } from "./diffpatch";
 import gp from "gson-pointer";
 import getParentPointer from "./getParentPointer";
+import { JSONPointer } from "../../types";
 
 
 function sortByPointer(a, b) {
@@ -12,11 +13,20 @@ function sortByPointer(a, b) {
     return 0;
 }
 
+export { Delta };
 
-function findPatches(pointer, diff, result = []) {
+export type SearchResult = {
+    pointer: JSONPointer;
+    patch: Delta;
+    /** if patch is a patch on array */
+    isArrayItem: boolean;
+    /** true, if element-property was added or removed */
+    changedKey: boolean;
+};
+
+function findPatches(pointer, diff, result = []): Array<SearchResult> {
     // for a diff: { a: { '0': [ 'modifiedString' ], _t: 'a', _0: [ 'string', 0, 0 ] } }
     // return diff[a] as patch and ".../a" as pointer
-
     Object.keys(diff).forEach((key) => {
         if (key === "_t") {
             return;
@@ -50,6 +60,14 @@ function findPatches(pointer, diff, result = []) {
 }
 
 
+export type Patch = {
+    pointer: JSONPointer;
+    parentPointer: JSONPointer;
+    patch: {
+        [property: string]: Delta;
+    }
+}
+
 /*
     Between two objects, returns the json-pointer of the edit
 
@@ -57,7 +75,7 @@ function findPatches(pointer, diff, result = []) {
     - returns parent pointer for any array-items or object-properties that are added or removed. this ensures a
         container, array or object, receives a notification of changed children.
 */
-export default function getPatchesPerPointer(previousValue: any, newValue: any) {
+export default function getPatchesPerPointer<T extends any>(previousValue: T, newValue: T): Array<Patch> {
     const diff = diffpatch.diff(previousValue, newValue);
     if (diff == null) {
         return [];

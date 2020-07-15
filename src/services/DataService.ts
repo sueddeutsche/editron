@@ -2,7 +2,7 @@ import copy from "./utils/copy";
 import dataReducer from "./reducers/dataReducer";
 import diffpatch from "./utils/diffpatch";
 import getParentPointer from "./utils/getParentPointer";
-import getPatchesPerPointer from "./utils/getPatchesPerPointer";
+import getPatchesPerPointer, { Delta } from "./utils/getPatchesPerPointer";
 import getTypeOf from "json-schema-library/lib/getTypeOf";
 import gp from "gson-pointer";
 import isRootPointer from "./utils/isRootPointer";
@@ -241,7 +241,7 @@ export default class DataService {
         }
     }
 
-    bubbleObservers(pointer: JSONPointer, data: { type: string, patch: Array<any> }) {
+    bubbleObservers(pointer: JSONPointer, data: { type: string, patch: { [p: string]: Delta }}) {
         const eventObject = createEventObject(pointer, data);
         const frags = gp.split(pointer);
         while (frags.length) {

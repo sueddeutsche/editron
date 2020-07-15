@@ -8,16 +8,16 @@ const { JsonEditor: Core } = jlib.cores;
 
 /**
  * Manages json-schema interactions and adds caching of reoccuring json-schema requests
- *
- * @param schema       - json-schema
- * @param [data={}]    - data corresponding to json-schema
- * @param [core={}]      - instance of json-schema-library Core
+ * @param schema - json-schema
+ * @param [data={}] - data corresponding to json-schema
+ * @param [core={}] - instance of json-schema-library Core
  */
 export default class SchemaService {
-    core;
+    core: typeof Core;
     data: JSONData;
     schema: JSONSchema;
-    cache;
+    /** cache for resolved json-pointer */
+    cache: { [p: string]: any } = {};
 
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, core = new Core()) {
         this.core = core;
@@ -46,9 +46,9 @@ export default class SchemaService {
     }
 
     /**
-     * @return list of valid items to insert at the given position
+     * @returns list of valid items to insert at the given position
      */
-    getChildSchemaSelection(pointer: JSONPointer, property: number|string): Array<any> {
+    getChildSchemaSelection(pointer: JSONPointer, property: number|string): Array<JSONSchema> {
         const parentSchema = this.get(pointer);
         return getChildSchemaSelection(this.core, property, parentSchema);
     }
@@ -56,10 +56,9 @@ export default class SchemaService {
     /**
      * Sets the root data. This is optional and used within internal functions to support optional _data_-parameters.
      * On every change in data, call this method with that latest state `schemaService.setData(latestData)`;
-     *
-     * @param {Any} data    - latest root data corresponding to stored json-schema
+     * @param data - latest root data corresponding to stored json-schema
      */
-    setData(data: JSONData) {
+    setData(data: JSONData): void {
         this.data = this.addDefaultData(data);
         this.resetCache();
     }
@@ -68,13 +67,13 @@ export default class SchemaService {
      * Set or change the application schema
      * @param {Object} schema
      */
-    setSchema(schema: JSONSchema) {
+    setSchema(schema: JSONSchema): void {
         this.core.setSchema(schema);
         this.schema = this.core.getSchema();
         this.resetCache();
     }
 
-    resetCache() {
+    resetCache(): void {
         this.cache = {};
     }
 
@@ -87,7 +86,7 @@ export default class SchemaService {
      *     This is optional, when the root-data is up-to-date (via setData)
      * @return json-schema for the requested pointer
      */
-    get(pointer: JSONPointer, data?: JSONData) {
+    get(pointer: JSONPointer, data?: JSONData): JSONData {
         if (data) {
             const result = jsl.getSchema(this.core, pointer, data, this.schema);
             return copy(result);
@@ -105,7 +104,7 @@ export default class SchemaService {
         return this.cache[pointer];
     }
 
-    destroy() {
+    destroy(): void {
         this.setData(null);
         this.setSchema(null);
     }

@@ -1,4 +1,5 @@
 import gp from "gson-pointer";
+import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
 import jsonSchemaLibrary from "json-schema-library";
 import addValidator from "json-schema-library/lib/addValidator";
 import DataService, { EventType as DataServiceEvent } from "./services/DataService";
@@ -14,7 +15,7 @@ import getID from "./utils/getID";
 import plugin from "./plugin";
 import i18n from "./utils/i18n";
 import createProxy from "./utils/createProxy";
-import { JSONPointer, JSONSchema, JSONData } from "./types";
+import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
 import { Editor } from "./editors/Editor";
 
 import oneOfEditor from "./editors/oneofeditor";
@@ -25,20 +26,15 @@ import valueEditor from "./editors/valueeditor";
 const { JsonEditor: Core } = jsonSchemaLibrary.cores;
 
 
-function isValidPointer(pointer: JSONPointer): boolean {
-    return pointer[0] === "#";
-}
-
 /** throws an error, when given pointer is not a valid jons-pointer */
 function assertValidPointer(pointer: JSONPointer): void {
-    if (isValidPointer(pointer) === false) {
+    if (pointer[0] !== "#") {
         throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
     }
 }
 
-
-// removes the editor from the instances-inventory of active editors
-function removeEditorFrom(instances, editor) {
+/** removes the editor from the instances-inventory of active editors */
+function removeEditorFrom(instances: { [p: string]: Array<Editor> }, editor): void {
     const pointer = editor.getPointer();
     if (instances[pointer]) {
         instances[pointer] = instances[pointer].filter(instance => editor !== instance);
@@ -48,7 +44,8 @@ function removeEditorFrom(instances, editor) {
     }
 }
 
-function eachInstance(instances, cb) {
+/** callback on each editor-instance */
+function eachInstance(instances: { [p: string]: Array<Editor> }, cb: (pointer: JSONPointer, editor) => void) {
     Object.keys(instances).forEach(pointer => {
         instances[pointer].forEach(editor => cb(pointer, editor));
     });
@@ -58,8 +55,13 @@ function eachInstance(instances, cb) {
 export type Options = {
     log?: boolean;
     editors?: Array<Editor>;
-    proxy?: any;
+    proxy?: ProxyOptions|Foxy;
 };
+
+
+interface EditorInstance {
+    toElement(): HTMLElement;
+}
 
 
 /**
@@ -106,8 +108,7 @@ export type Options = {
  *      (based on editorOf-method)
  */
 export default class Controller {
-
-    _proxy;
+    #proxy: Foxy;
     core;
     dataService: DataService;
     destroyed = false;
@@ -139,7 +140,7 @@ export default class Controller {
         this.state = new State();
         this.instances = {};
         this.core = new Core();
-        this._proxy = createProxy(this.options.proxy);
+        this.#proxy = createProxy(this.options.proxy);
 
         plugin.getValidators().forEach(([validationType, ...validator]) => {
             try {
@@ -201,7 +202,7 @@ export default class Controller {
      *
      * @param  {String} selector    - a css selector describing the desired element
      * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
-     * @return the resulting dom-element (not attached)
+     * @returns the resulting dom-element (not attached)
      */
     createElement(selector: string, attributes?: object): HTMLElement { // eslint-disable-line class-methods-use-this
         return _createElement(selector, attributes);
@@ -215,7 +216,7 @@ export default class Controller {
      * @param  pointer - data pointer to editor in current state
      * @param  element - parent element of create editor. Will be appended automatically
      * @param  [options] - individual editor options
-     * @return created editor-instance or undefined;
+     * @returns created editor-instance or undefined;
      */
     createEditor(pointer: JSONPointer, element: HTMLElement, options): Editor|undefined {
         if (pointer == null || element == null) {
@@ -258,7 +259,7 @@ export default class Controller {
 
     /**
      * Call this method, when your editor is destroyed, deregistering its instance on editron
-     * @param  {Instance} editor    - editor instance to remove
+     * @param editor - editor instance to remove
      */
     removeInstance(editor) {
         // controller inserted child and removes it here again
@@ -288,40 +289,39 @@ export default class Controller {
 
     /**
      * Get or update data from a pointer
-     * @return {DataService} DataService instance
+     * @returns DataService instance
      */
-    data() { return this.dataService; }
+    data(): DataService { return this.dataService; }
 
     /**
      * Get the json schema from a pointer or replace the schema
-     * @return {SchemaService} SchemaService instance
+     * @returns SchemaService instance
      */
-    schema() { return this.schemaService; }
+    schema(): SchemaService { return this.schemaService; }
 
     /**
-     * @return {Foxy} proxy instance
+     * @returns proxy instance
      */
-    proxy() { return this._proxy; }
+    proxy(): Foxy { return this.#proxy; }
 
     /**
      * Validate data based on a json-schema and register to generated error events
      *
      * - start validation
-     * - get your current errors at _pointer_
-     * - hook into validation to receive your errors at _pointer_
+     * - get your current errors at `pointer`
+     * - hook into validation to receive your errors at `pointer`
      *
-     * @return {ValidationService} ValidationService instance
+     * @returns ValidationService instance
      */
-    validator() { return this.validationService; }
+    validator(): ValidationService { return this.validationService; }
 
     /**
      * ## Usage
      *  goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
      *  setCurrent(pointer) - Update current pointer, but do not jump to target
-     *
-     * @return {Object} LocationService-Singleton
+     * @returns LocationService-Singleton
      */
-    location() { return LocationService; }
+    location(): typeof LocationService { return LocationService; }
 
     /**
      * Set the application data
@@ -334,71 +334,69 @@ export default class Controller {
 
     /**
      * @param {JsonPointer} [pointer="#"] - location of data to fetch. Defaults to root (all) data
-     * @return {Any} data at the given location
+     * @returns data at the given location
      */
-    getData(pointer: JSONPointer = "#") {
+    getData(pointer: JSONPointer = "#"): JSONData {
         return this.data().get(pointer);
     }
 
     /**
-     * @return {Array} registered editor-widgets used to edit the json-data
+     * @returns registered editor-widgets used to edit the json-data
      */
     getEditors() { return this.editors; }
 
     /**
-     * @return {Object} currently active editor/widget instances
+     * @returns currently active editor/widget instances
      */
     getInstances() { return this.instances; }
 
     /**
-     * @param {String} format       - value of _format_
-     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     * @param format - value of _format_
+     * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
      *      als return a promise
      */
-    addFormatValidator(format, validator) {
+    addFormatValidator(format: string, validator: FormatValidator): void {
         addValidator.format(this.core, format, validator);
     }
 
     /**
-     * @param {String} datatype     - JSON-Schema datatype to register attribute, e.g. "string" or "object"
-     * @param {String} keyword      - custom keyword
-     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     * @param datatype - JSON-Schema datatype to register attribute, e.g. "string" or "object"
+     * @param keyword - custom keyword
+     * @param validator - validator function receiving (core, schema, value, pointer). Return `undefined`
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
      *      als return a promise
      */
-    addKeywordValidator(datatype, keyword, validator) {
+    addKeywordValidator(datatype: string, keyword: string, validator: KeywordValidator): void {
         addValidator.keyword(this.core, datatype, keyword, validator);
     }
 
     /**
      * Change the new schema for the current data
-     * @param {Object} schema   - a valid json-schema
+     * @param schema   - a valid json-schema
      */
-    setSchema(schema: JSONSchema) {
+    setSchema(schema: JSONSchema): void {
         schema = UISchema.extendSchema(schema);
         this.validationService.set(schema);
         this.schemaService.setSchema(schema);
     }
 
     // update data in schema service
-    update() {
+    update(): void {
         this.schemaService.setData(this.dataService.get());
     }
 
     /**
      * Starts validation of current data
      */
-    validateAll() {
+    validateAll(): void {
         setTimeout(() =>
             this.destroyed !== true && this.validationService.validate(this.dataService.getDataByReference())
         );
     }
 
-    /**
-     * Destroy the editor, its widgets and services
-     */
-    destroy() {
+    /** Destroy the editor, its widgets and services */
+    destroy(): void {
         // delete all editors
         Object.keys(this.instances).forEach(pointer => {
             this.instances[pointer] && this.instances[pointer].forEach(instance => instance.destroy());
@@ -412,7 +410,7 @@ export default class Controller {
         this.dataService.off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 
-    onAfterDataUpdate({ pointer }) {
+    onAfterDataUpdate({ pointer }): void {
         this.update();
 
         // @feature selective-validation
@@ -428,7 +426,7 @@ export default class Controller {
         });
     }
 
-    changePointer(newPointer: JSONPointer, editor) {
+    changePointer(newPointer: JSONPointer, editor: Editor): void {
         removeEditorFrom(this.instances, editor);
         this.addInstance(newPointer, editor);
     }

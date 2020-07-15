@@ -1,5 +1,7 @@
 import { JSONData, JSONPointer, JSONSchema } from "../types";
 import Controller from "../Controller";
+import { Editor } from "./Editor";
+import { Observer } from "../services/ValidationService";
 
 
 function getTypeClass(schema: JSONSchema): string {
@@ -35,14 +37,14 @@ function getTypeClass(schema: JSONSchema): string {
  * @param {Controller} controller   - editron controller instance
  * @param {Object} options          - resolved options object
  */
-export default class AbstractEditor {
+export default class AbstractEditor implements Editor {
     pointer: JSONPointer;
     controller: Controller;
     options: any;
     errors: Array<any>;
     dom: HTMLElement;
     updateErrors: Function;
-    _addError: Function;
+    _addError: Observer;
     _clearErrors: Function;
 
     static editorOf(pointer: JSONPointer, controller: Controller, options) { // eslint-disable-line

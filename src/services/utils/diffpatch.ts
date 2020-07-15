@@ -1,5 +1,8 @@
-const DiffPatcher = require("jsondiffpatch").DiffPatcher;
-const diffMatchPatch = require("diff_match_patch");
+import { DiffPatcher, Delta } from "jsondiffpatch";
+import diffMatchPatch from "diff_match_patch";
+
+export { Delta };
+
 const options = {
     // used to match objects when diffing arrays, by default only === operator is used
     // this function is used only to when objects are not equal by ref
@@ -20,6 +23,7 @@ try {
 }
 
 const diffpatch = new DiffPatcher(options); // jsondiffpatch.create(options);
+// @ts-ignore
 diffpatch.options = options;
 
 

@@ -134,16 +134,10 @@ export declare class DataService {
     /** send a notification to event-listeners */
     emit(eventType: string, pointer: JSONPointer, data: JSONData): void;
 
-    /**
-     * observes changes in data at the specified json-pointer
-     * @param pointer   json-pointer to watch
-     * @param callback  called on a change
-     * @param bubbleEvents set to true to receive notifications changes in children of pointer
-     */
     observe(pointer: JSONPointer, callback: DataServiceObserveCallback, bubbleEvents?: boolean): void;
     removeObserver(pointer: JSONPointer, callback: DataServiceObserveCallback): void;
     bubbleObservers(pointer: JSONPointer, data: JSONData): void;
-    /** send an event to all json-pointer observers */
+
     notify(pointer: JSONPointer, event: DataServiceEvent): void;
 
     /** destory service */

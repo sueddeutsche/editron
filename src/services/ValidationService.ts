@@ -1,64 +1,62 @@
 import { ActionCreators } from "./reducers/actions";
-import BubblingCollectionObservable from "./utils/BubblingCollectionObservable";
+import BubblingCollectionObservable, { Observer } from "./utils/BubblingCollectionObservable";
 import errorReducer from "./reducers/errorReducer";
 import jlib from "json-schema-library";
 import mitt from "mitt";
 import State from "./State";
-import Validation from "./utils/Validation";
-import { JSONSchema, JSONData, JSONPointer } from "../types";
+import Validation, { ValidationErrorMapper } from "./utils/Validation";
+import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
 
 const { JsonEditor: Core} = jlib.cores;
 
 
-export const EVENTS = {
-    BEFORE_VALIDATION: "beforeValidation",
-    AFTER_VALIDATION: "afterValidation",
-    ON_ERROR: "onError"
+export { Observer };
+
+export enum EVENTS {
+    BEFORE_VALIDATION = "beforeValidation",
+    AFTER_VALIDATION = "afterValidation",
+    ON_ERROR = "onError"
 };
 
 
-/**
- * @class  ValidationService
- */
 export default class ValidationService {
-    core;
+    /** state store-id of service */
+    id = "errors";
+    core: typeof Core;
     currentValidation: Validation;
     emitter;
-    errorHandler: Function;
+    errorHandler: ValidationErrorMapper;
     EVENTS;
-    id: string;
-    observer;
+    observer = new BubblingCollectionObservable();
     schema: JSONSchema;
-    state;
+    state: State;
 
-    constructor(state, schema: JSONSchema = { type: "object" }, core = new Core()) {
+    constructor(state: State, schema: JSONSchema = { type: "object" }, core = new Core()) {
         if (!(state instanceof State)) {
             throw new Error("Given state in ValidationService must be of instance 'State'");
         }
 
         this.core = core;
         this.set(schema);
-        this.observer = new BubblingCollectionObservable();
         this.emitter = mitt();
-        this.id = "errors";
         this.state = state;
         this.state.register(this.id, errorReducer);
         this.setErrorHandler(error => error);
         this.EVENTS = EVENTS;
     }
 
-    setErrorHandler(callback) {
+    /** sets a custom error handler to map errors */
+    setErrorHandler(callback: ValidationErrorMapper): void {
         this.errorHandler = callback;
     }
 
     /**
      * Starts the validation, executing callback handlers and emitters on the go
-     *
-     * @param  {Any} data               - data to validate
-     * @param  {JsonPointer} [pointer]  - optional location. Per default all data is validated
-     * @return {Promise} promise, resolving with list of errors when all async validations are performed
+     * @param data               - data to validate
+     * @param [pointer]  - optional location. Per default all data is validated
+     * @return promise, resolving with list of errors when all async validations are performed
      */
-    validate(data: JSONData, pointer = "#") {
+    validate(data: JSONData, pointer: JSONPointer = "#"): Promise<Array<ValidationError>> {
         if (this.currentValidation) {
             this.currentValidation.cancel();
         }
@@ -98,12 +96,14 @@ export default class ValidationService {
         );
     }
 
-    set(schema: JSONSchema) {
+    /** set or change the json-schema for data validation */
+    set(schema: JSONSchema): void {
         this.core.setSchema(schema);
         this.schema = this.core.getSchema();
     }
 
-    get() {
+    /** returns the current json-schema */
+    get(): JSONSchema {
         return this.schema;
     }
 
@@ -123,20 +123,21 @@ export default class ValidationService {
         this.emitter.emit(eventType, event);
     }
 
-    observe(pointer: JSONPointer, callback, bubbledEvents = false) {
-        this.observer.observe(pointer, callback, bubbledEvents);
-        return callback;
+    observe<T extends Observer>(pointer: JSONPointer, observer: T, bubbledEvents = false): T {
+        this.observer.observe(pointer, observer, bubbledEvents);
+        return observer;
     }
 
-    removeObserver(pointer: JSONPointer, callback) {
-        this.observer.removeObserver(pointer, callback);
+    removeObserver(pointer: JSONPointer, observer: Observer) {
+        this.observer.removeObserver(pointer, observer);
     }
 
     notify(pointer: JSONPointer, event = {}) {
         this.observer.notify(pointer, event);
     }
 
-    getErrorsAndWarnings(pointer?: JSONPointer, withChildErrors = false) {
+    /** returns all validation errors and warnings */
+    getErrorsAndWarnings(pointer?: JSONPointer, withChildErrors = false): Array<ValidationError> {
         const errors = this.state.get(this.id) || [];
         if (pointer == null) {
             return errors;
@@ -146,11 +147,13 @@ export default class ValidationService {
         return errors.filter(error => selectError.test(error.data.pointer));
     }
 
-    getErrors(pointer?: JSONPointer, withChildErrors = false) {
+    /** returns all validation errors only */
+    getErrors(pointer?: JSONPointer, withChildErrors = false): Array<ValidationError> {
         return this.getErrorsAndWarnings(pointer, withChildErrors).filter(error => error.severity !== "warning");
     }
 
-    getWarnings(pointer?: JSONPointer, withChildWarnings = false) {
+    /** returns all validation warnings only */
+    getWarnings(pointer?: JSONPointer, withChildWarnings = false): Array<ValidationError> {
         return this.getErrorsAndWarnings(pointer, withChildWarnings).filter(error => error.severity === "warning");
     }
 
@@ -158,6 +161,7 @@ export default class ValidationService {
         this.set(null);
         this.emitter = null;
         this.observer = null;
-        this.state.unregister(this.id, errorReducer);
+        this.state.unregister(this.id);
+        // this.state.unregister(this.id, errorReducer);
     }
 }

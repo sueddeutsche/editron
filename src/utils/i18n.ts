@@ -1,5 +1,5 @@
 import render from "json-schema-library/lib/utils/render";
-import { JSONData } from "../types";
+import { JSONData, ValidationError } from "../types";
 import Controller from "../Controller";
 
 translate.strings = {};
@@ -16,7 +16,7 @@ function translate(key: string, data?: JSONData) {
 }
 
 
-function translateError(controller: Controller, error: { code: string, message?: string, data?: object }) {
+function translateError(controller: Controller, error: ValidationError): ValidationError {
     if (typeof translateError.strings[error.code] === "string") {
         error.message = render(translateError.strings[error.code], error.data);
     } else if (typeof translateError.strings[error.code] === "function") {

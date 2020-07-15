@@ -2,6 +2,7 @@ import mitt from "mitt";
 import gp from "gson-pointer";
 import UIState from "./uistate";
 import getId from "../utils/getID";
+import { JSONPointer } from "../types";
 const DELAY = 25;
 
 const emitter = mitt();
@@ -20,8 +21,6 @@ const emitter = mitt();
  * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
  * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
  * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
- *
- * @type {Object}
  */
 const LocationService = {
 
@@ -29,7 +28,7 @@ const LocationService = {
     TARGET_EVENT: "target",
 
     // update page and target pointer
-    goto(targetPointer) {
+    goto(targetPointer: JSONPointer) {
         const path = gp.split(targetPointer);
 
         if (path.length === 0 || (path.length === 1 && path[0] === "")) {
@@ -45,8 +44,8 @@ const LocationService = {
         this.focus();
     },
 
-    // set target pointer
-    setCurrent(pointer) {
+    /** set target pointer */
+    setCurrent(pointer: JSONPointer) {
         if (pointer !== this.getCurrent()) {
             UIState.setCurrentPointer(pointer);
             emitter.emit("focus", pointer);
@@ -57,7 +56,7 @@ const LocationService = {
         return UIState.getCurrentPointer();
     },
 
-    // focus target pointer
+    /** focus target pointer */
     focus() {
         clearTimeout(this.timeout);
         const pointer = UIState.getCurrentPointer();
@@ -82,7 +81,7 @@ const LocationService = {
         }, DELAY);
     },
 
-    blur(pointer) {
+    blur(pointer: JSONPointer) {
         if (UIState.getCurrentPointer() !== pointer) {
             return;
         }

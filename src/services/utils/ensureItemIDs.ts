@@ -2,12 +2,12 @@ import getTypeOf from "json-schema-library/lib/getTypeOf";
 const ID_PROPERTY = "_id";
 
 
-function generateId(index) {
+function generateId(index: string|number): string {
     return `${index}${Math.random()}${Date.now()}`;
 }
 
 
-function addMissingItemIDs(list) {
+function addMissingItemIDs(list: Array<any>): void {
     list.forEach((item, index) => {
         if (item[ID_PROPERTY] == null) {
             const type = getTypeOf(item);
@@ -19,13 +19,12 @@ function addMissingItemIDs(list) {
 }
 
 
-function ensureItemIDs(data) {
-    const dataType = getTypeOf(data);
-    if (dataType === "array") {
+function ensureItemIDs<T extends any>(data: T): T {
+    if (Array.isArray(data)) {
         ensureItemIDs.config.addMissingItemIDs(data);
-        data.forEach((item) => ensureItemIDs(item));
+        data.forEach(item => ensureItemIDs(item));
 
-    } else if (dataType === "object") {
+    } else if (getTypeOf(data) === "object") {
         Object.keys(data).forEach((key) => ensureItemIDs(data[key]));
     }
 

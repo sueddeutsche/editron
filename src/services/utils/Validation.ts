@@ -1,32 +1,46 @@
-const gp = require("gson-pointer");
-const validateAsync = require("json-schema-library/lib/validateAsync");
+import gp from "gson-pointer";
+import validateAsync from "json-schema-library/lib/validateAsync";
+import { JSONData, JSONPointer, ValidationError } from "../../types";
+
+
+/** error mapper to convert error types and messages (e.g. to add language-translations) */
+export type ValidationErrorMapper = (error: ValidationError) => ValidationError;
+/** called, with a list of all errors, when validation has been finished */
+export type OnDone = (errors: Array<ValidationError>) => void;
+/** called immediately, with with each error, occuring on validation */
+export type OnError = (error: ValidationError, currentErrors: Array<ValidationError>) => void;
 
 
 /**
- * @class  Validation
- *
- * @param {Object|Array} data       - application json data
- * @param {Object} schema           - json-schema describing data
- * @param {Function} [errorHandler] - optional callback to modify errors
+ * @param data - application json data
+ * @param schema - json-schema describing data
+ * @param [errorHandler] - optional callback to modify errors
  */
-class Validation {
-    errors;
-    data;
-    pointer;
-    canceled;
-    errorHandler;
-    cbDone;
-    cbError;
+export default class Validation {
+    /** if validation has been canceled and thus, is obsolete */
+    canceled = false;
+    cbDone: OnDone;
+    cbError: OnError;
+    data: JSONData;
+    errorHandler: ValidationErrorMapper;
+    errors: Array<ValidationError>;
+    /** entry point of validation */
+    pointer: JSONPointer;
 
-    constructor(data, pointer, errorHandler) {
+    constructor(data: JSONData, pointer: JSONPointer, errorHandler: ValidationErrorMapper) {
         this.errors = [];
         this.data = data;
         this.pointer = pointer;
-        this.canceled = false;
         this.errorHandler = errorHandler;
     }
 
-    start(core, onErrorCb, onDoneCb) {
+    /**
+     * start validation of data
+     * @param core - json-schema-library core, containing json-schema
+     * @param onErrorCb - called for error notification while validation is running
+     * @param onDoneCb - called on a finished validation with a list of validation errors
+     */
+    start(core, onErrorCb: OnError, onDoneCb: OnDone): Promise<Array<ValidationError>> {
         this.cbDone = onDoneCb;
         this.cbError = onErrorCb;
 
@@ -39,9 +53,6 @@ class Validation {
             data = gp.get(data, pointer);
         }
 
-        // console.log("validate", pointer, data, JSON.stringify(schema, null, 2));
-
-        // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
         return validateAsync(core, data, { schema, pointer, onError: this.onError.bind(this) })
             .then(errors => {
                 this.onDone(errors);
@@ -50,7 +61,7 @@ class Validation {
             .catch(error => this.onFail(error));
     }
 
-    onError(validationError) {
+    onError(validationError: ValidationError): void {
         if (this.canceled) {
             return;
         }
@@ -59,7 +70,7 @@ class Validation {
         this.cbError(validationError, this.errors);
     }
 
-    onDone(validationErrors) {
+    onDone(validationErrors: Array<ValidationError>): void {
         if (this.canceled) {
             return;
         }
@@ -69,7 +80,7 @@ class Validation {
         this.cbDone(this.errors);
     }
 
-    onFail(error) {
+    onFail(error: Error): void {
         if (this.canceled) {
             return;
         }
@@ -78,10 +89,8 @@ class Validation {
         this.cbDone(this.errors);
     }
 
-    cancel() {
+    /** cancel validation - preventing notification of running validation results */
+    cancel(): void {
         this.canceled = true;
     }
 }
-
-
-export default Validation;

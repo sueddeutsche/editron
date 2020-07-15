@@ -3,6 +3,12 @@ const gp = require("gson-pointer");
 import { JSONPointer, JSONData, JSONSchema } from "../../types";
 
 
+export type Observer = {
+    <T>(event: Array<T>): void;
+    receiveChildEvents?: boolean;
+}
+
+
 /**
  * > Internal helper, mainly used in [ValidationService](#validationservice) to support the weird notification behaviour
  * of error-events.
@@ -77,15 +83,11 @@ import { JSONPointer, JSONData, JSONSchema } from "../../types";
  *
  */
 class BubblingCollectionObservable {
-    observers;
-    eventCollection;
-    bubbleCollection;
+    observers = {};
+    eventCollection = {};
+    bubbleCollection = {};
 
-    constructor() {
-        this.observers = {};
-        this.eventCollection = {};
-        this.bubbleCollection = {};
-    }
+    constructor() {}
 
     /**
      * Observe events on the _pointer_ (`#/observe/location`). May also observe
@@ -93,28 +95,28 @@ class BubblingCollectionObservable {
      * option `receiveChildEvents` set to `true`
      *
      * @param pointer - location to observe
-     * @param cb - observer
+     * @param observer - observer
      * @param [receiveChildEvents=false]
      */
-    observe(pointer: JSONPointer, cb, receiveChildEvents = false) {
+    observe(pointer: JSONPointer, observer: Observer, receiveChildEvents = false) {
         this.observers[pointer] = this.observers[pointer] || [];
-        if (this.observers[pointer].includes(cb) === false) {
-            cb.receiveChildEvents = receiveChildEvents;
-            this.observers[pointer].push(cb);
+        if (this.observers[pointer].includes(observer) === false) {
+            observer.receiveChildEvents = receiveChildEvents;
+            this.observers[pointer].push(observer);
         }
-        return cb;
+        return observer;
     }
 
     /**
      * Remove an observer
      * @param  {JsonPointer} pointer
-     * @param  {Function} cb
+     * @param  {Function} observer
      */
-    removeObserver(pointer: JSONPointer, cb) {
+    removeObserver(pointer: JSONPointer, observer) {
         if (this.observers[pointer] == null) {
             return;
         }
-        const index = this.observers[pointer].indexOf(cb);
+        const index = this.observers[pointer].indexOf(observer);
         if (index !== -1) {
             this.observers[pointer].splice(index, 1);
         }
@@ -202,23 +204,23 @@ class BubblingCollectionObservable {
      * @param  {JsonPointer} pointer
      * @param  {Any} event
      */
-    notify(pointer: JSONPointer, event) {
+    notify<T>(pointer: JSONPointer, event: T) {
         this.eventCollection[pointer] = this.eventCollection[pointer] || [];
         this.eventCollection[pointer].push(event);
 
         this._notifyAll(pointer, this.eventCollection[pointer]);
     }
 
-    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, event) {
+    _notify<T>(observerPointer: JSONPointer, sourcePointer: JSONPointer, event: Array<T>) {
         if (this.observers[observerPointer] == null) {
             return;
         }
-        this.observers[observerPointer].forEach(cb => {
-            if (cb.receiveChildEvents === false && observerPointer === sourcePointer) {
-                cb(event);
+        this.observers[observerPointer].forEach(observer => {
+            if (observer.receiveChildEvents === false && observerPointer === sourcePointer) {
+                observer(event);
                 return;
             }
-            if (cb.receiveChildEvents === false && observerPointer !== sourcePointer) {
+            if (observer.receiveChildEvents === false && observerPointer !== sourcePointer) {
                 return;
             }
 
@@ -226,7 +228,7 @@ class BubblingCollectionObservable {
             const map = this.bubbleCollection[observerPointer];
             map[sourcePointer] = event;
             const events = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
-            cb(events);
+            observer(events);
         });
     }
 }
