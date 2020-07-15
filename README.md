@@ -788,6 +788,17 @@ class, but you must follow the some basic rules, that are further described in [
 
 ## Breaking Changes
 
+`07/2020` with `v8` editron is written using typescript. Due to module-syntax, some exports have changed, mainly:
+
+- The EVENTS-object in services is now exported separately and not on its object `import { EVENTS } from "./DataService` 
+- The `main`-module now exports all helpers separately and the controller is exported as default.
+- All components are exported individually, having no default in `src/components/index.ts`
+- dependency _mitt_ has been replaced by _nanoevents_
+- test-runner _ava_ has been replaced by _mocha_
+
+Additionally all source files have been moved to `src`-folder, which must be adjusted in the imports
+
+
 `11/2019` with `v7` editron has been updated to mithril@2, json-schema-library@4, mithril-material-forms@3. and all editors have new required method `setActive(boolean)` to enable or disabled editor input-interaction. Please refer to each library version for Breaking Changes. In short:
 
 - _mithril-material-forms_ has a consistent api for forms. Any callbacks have changes to lowercase mithril-style e.g. `onclick` or `onchange` (button, checkbox, input are affected)
