@@ -1,13 +1,15 @@
+import { Editor } from "../editors/Editor";
 import { FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
 
-const editors = [];
+const editors: Array<Editor> = [];
 const validators = [];
 
 
 export default {
 
     /** register an editor (widget) to use in editron-controller */
-    editor(constructor): void {
+    editor(constructor: Editor): void {
+        // @ts-ignore
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);
     },

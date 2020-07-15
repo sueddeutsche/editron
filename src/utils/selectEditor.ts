@@ -18,7 +18,7 @@ interface EditorConstructor {
  * @return The constructor of the chosen editor od false if no editor could be resolved
  *  or is denied
  */
-function select<T>(editors: Array<T>, pointer: JSONPointer, controller: Controller, options): T|false|undefined {
+function select(editors: Array<Editor>, pointer: JSONPointer, controller: Controller, options): Editor|false|undefined {
     // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
     if (/_id$/.test(pointer)) {
         return false; // abort if it is an internal value

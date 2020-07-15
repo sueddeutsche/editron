@@ -1,4 +1,4 @@
-import { JSONData, JSONPointer, JSONSchema } from "../types";
+import { JSONData, JSONPointer, JSONSchema, ValidationError } from "../types";
 import Controller from "../Controller";
 import { Editor } from "./Editor";
 import { Observer } from "../services/ValidationService";
@@ -43,7 +43,6 @@ export default class AbstractEditor implements Editor {
     options: any;
     errors: Array<any>;
     dom: HTMLElement;
-    updateErrors: Function;
     _addError: Observer;
     _clearErrors: Function;
 
@@ -128,7 +127,9 @@ export default class AbstractEditor implements Editor {
 
     setErrors(errors): void {
         this.errors = errors;
+        // @ts-ignore
         if (this.updateErrors) {
+            // @ts-ignore
             this.updateErrors(this.errors);
         }
     }

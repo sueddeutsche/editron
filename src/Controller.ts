@@ -261,7 +261,7 @@ export default class Controller {
      * Call this method, when your editor is destroyed, deregistering its instance on editron
      * @param editor - editor instance to remove
      */
-    removeInstance(editor) {
+    removeInstance(editor: Editor) {
         // controller inserted child and removes it here again
         const $element = editor.toElement();
         if ($element.parentNode) {
@@ -271,7 +271,7 @@ export default class Controller {
         removeEditorFrom(this.instances, editor);
     }
 
-    addInstance(pointer: JSONPointer, editor) {
+    addInstance(pointer: JSONPointer, editor: Editor) {
         this.instances[pointer] = this.instances[pointer] || [];
         this.instances[pointer].push(editor);
     }
