@@ -95,10 +95,6 @@ function getAvailableInputs(parent: HTMLElement): Array<FocusableElement> {
 
 /**
  * Return the next input-element or false
- * @param  {Controller} controller
- * @param  {"up"|"down"|"left"|"right"} direction
- * @param  {HTMLElement} options.parent
- * @return {HTMLElement|false}
  */
 function getNextInput(controller: Controller, direction: Direction = "down", { parent = document.body } = {}) {
     const activeElement = getActiveInput(controller, parent);
@@ -122,20 +118,17 @@ function getNextInput(controller: Controller, direction: Direction = "down", { p
 
 
 type Options = {
+    /** ignores movement restrictions (e.g. navigation in textarea) */
     force?: boolean;
+    /** scan only in given parentNode */
     parent?: HTMLElement;
 };
+
 
 /**
  * move the focus from current element to next visible input-element
  * inputs being (textarea, input and select with an id-attribute containing a json-pointer-id)
- *
- * @param  {Controller}  controller
- * @param  {"up"|"down"|"left"|"right"} direction
- * @param  {Object} options
- * @param  {Boolean} options.force    ignores movement restrictions (e.g. navigation in textarea)
- * @param  {HTMLElement} options.parent    scan only in given parentNode
- * @returns {Boolean} true - if there was a new target was found or the move prevented
+ * @returns true - if there was a new target was found or the move prevented
  */
 function focusNextInput(controller: Controller, direction: Direction = "down", options: Options = {}) {
     const { force = false, parent = document.body } = options;

@@ -236,19 +236,19 @@ export default class Controller {
         );
 
         // find a matching editor
-        const Editor = selectEditor(this.getEditors(), pointer, this, instanceOptions);
-        if (Editor === false) {
+        const EditorConstructor = <any>selectEditor(this.getEditors(), pointer, this, instanceOptions);
+        if (EditorConstructor === false) {
             return undefined;
         }
 
-        if (Editor === undefined) {
+        if (EditorConstructor === undefined) {
             this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
             return undefined;
         }
 
         // iniitialize editor and save editor in list
         // @TODO loose reference to destroyed editors
-        const editor = new Editor(pointer, this, instanceOptions);
+        const editor = new EditorConstructor(pointer, this, instanceOptions);
         element.appendChild(editor.toElement());
         editor.setActive(!this.disabled);
         this.addInstance(pointer, editor);

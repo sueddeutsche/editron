@@ -4,17 +4,17 @@ import { JSONPointer } from "../types";
 
 export default {
 
-    addItem(pointer: JSONPointer, controller: Controller, index: number) {
+    addItem(pointer: JSONPointer, controller: Controller, index: number): void {
         controller.addItemTo(pointer, index);
     },
 
-    removeItem(pointer: JSONPointer, controller: Controller, index: number) {
+    removeItem(pointer: JSONPointer, controller: Controller, index: number): void {
         const nextList = controller.data().get(pointer);
         nextList.splice(index, 1);
         controller.data().set(pointer, nextList);
     },
 
-    moveItem(pointer: JSONPointer, controller: Controller, index: number, destinationIndex: number) {
+    moveItem(pointer: JSONPointer, controller: Controller, index: number, destinationIndex: number): void {
         if (destinationIndex < 0) {
             return;
         }
@@ -28,7 +28,7 @@ export default {
         controller.data().set(pointer, list);
     },
 
-    moveElement(list: Array<any>, index: number, destinationIndex: number) {
+    moveElement(list: Array<any>, index: number, destinationIndex: number): void {
         list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
     }
 }

@@ -48,7 +48,7 @@ export default class SchemaService {
     /**
      * @return list of valid items to insert at the given position
      */
-    getChildSchemaSelection(pointer: JSONPointer, property: string): Array<any> {
+    getChildSchemaSelection(pointer: JSONPointer, property: number|string): Array<any> {
         const parentSchema = this.get(pointer);
         return getChildSchemaSelection(this.core, property, parentSchema);
     }

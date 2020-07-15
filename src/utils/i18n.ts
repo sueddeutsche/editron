@@ -1,10 +1,12 @@
-const render = require("json-schema-library/lib/utils/render");
+import render from "json-schema-library/lib/utils/render";
+import { JSONData } from "../types";
+import Controller from "../Controller";
 
 translate.strings = {};
 translateError.strings = {};
 
 
-function translate(key, data) {
+function translate(key: string, data?: JSONData) {
     if (typeof translate.strings[key] === "string") {
         return render(translate.strings[key], data);
     } else if (typeof translate.strings[key] === "function") {
@@ -14,7 +16,7 @@ function translate(key, data) {
 }
 
 
-function translateError(controller, error) {
+function translateError(controller: Controller, error: { code: string, message?: string, data?: object }) {
     if (typeof translateError.strings[error.code] === "string") {
         error.message = render(translateError.strings[error.code], error.data);
     } else if (typeof translateError.strings[error.code] === "function") {

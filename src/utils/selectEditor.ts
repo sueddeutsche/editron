@@ -1,14 +1,24 @@
+import { JSONPointer } from "../types";
+import Controller from "../Controller";
+import { Editor } from "../editors/Editor";
+
+
+interface EditorConstructor {
+    editorOf(pointer, controller, options): boolean;
+}
+
+
 /**
  * Selects an editor based on the given schema
  *
- * @param  {Array} editorViews  - List of editors with a static function 'editorOf'
- * @param  {String} pointer     - current pointer in data
- * @param  {Controller} controller
- * @param  {Object} options     - the complete and resolved (UISchema) options object (editron:ui + additions)
- * @return {Boolean|Constructor} The constructor of the chosen editor od false if no editor could be resolved
+ * @param editorViews - List of editors with a static function 'editorOf'
+ * @param pointer - current pointer in data
+ * @param controller
+ * @param options - the complete and resolved (UISchema) options object (editron:ui + additions)
+ * @return The constructor of the chosen editor od false if no editor could be resolved
  *  or is denied
  */
-export default function select(editorViews, pointer, controller, options) {
+function select<T>(editors: Array<T>, pointer: JSONPointer, controller: Controller, options): T|false|undefined {
     // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
     if (/_id$/.test(pointer)) {
         return false; // abort if it is an internal value
@@ -26,11 +36,15 @@ export default function select(editorViews, pointer, controller, options) {
         return false;
     }
 
-    for (let i = 0, l = editorViews.length; i < l; i += 1) {
-        if (editorViews[i].editorOf(pointer, controller, options)) {
-            return editorViews[i];
+    for (let i = 0, l = editors.length; i < l; i += 1) {
+        // @ts-ignore
+        if (editors[i].editorOf(pointer, controller, options)) {
+            return editors[i];
         }
     }
 
     return undefined;
 }
+
+
+export default select;

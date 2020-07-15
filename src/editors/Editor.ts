@@ -1,11 +1,7 @@
 import Controller from "../Controller";
 import { JSONPointer } from "../types";
+import AbstractEditor from "./AbstractEditor";
 
 
 export interface Editor {
-    // constructor(pointer: JSONPointer, controller: Controller, options: any);
-    // destroy(): void;
-    // toElement(): HTMLElement;
-    // getPointer(): JSONPointer;
-    // updatePointer(newPointer: JSONPointer): void;
 }

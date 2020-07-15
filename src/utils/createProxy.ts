@@ -1,4 +1,4 @@
-const { Foxy, handler } = require("@technik-sde/foxy");
+import { Foxy, Options, handler } from "@technik-sde/foxy";
 
 
 const defaultOptions = {
@@ -10,9 +10,9 @@ const defaultOptions = {
 };
 
 
-export default function createProxy(options = {}): typeof Foxy {
+export default function createProxy(options: Options|Foxy = {}): Foxy {
     if (options.constructor.name === "Foxy") {
-        return options;
+        return options as Foxy;
     }
 
     const o = { ...defaultOptions, ...options };

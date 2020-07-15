@@ -3,15 +3,17 @@ import populated from "./populated";
 import jlib from "json-schema-library";
 const { eachSchema } = jlib;
 const UI_PROPERTY = "editron:ui";
+import { JSONPointer, JSONSchema } from "../types";
+import Controller from "../Controller";
 
 
-function isPointer(string) {
+function isPointer(string: JSONPointer): boolean {
     return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
 }
 
 
 // returns a list of {title, pointer} from root-node to pointer, excluding root node
-function getBreadcrumps(pointer, controller) {
+function getBreadcrumps(pointer: JSONPointer, controller: Controller): Array<string> {
     const breadcrumps = [];
     while (pointer !== "#") {
         breadcrumps.unshift({
@@ -24,7 +26,7 @@ function getBreadcrumps(pointer, controller) {
 }
 
 
-function enumOptions(schema) {
+function enumOptions(schema: JSONSchema): Array<any> {
     let options;
     if (schema[UI_PROPERTY].enum) {
         options = schema.enum.map((value, index) => ({
@@ -46,13 +48,12 @@ function enumOptions(schema) {
 
 /**
  * Resolves the given pointer absolute or relative in data
- *
- * @param  {String} pointer             - current base pointer for relative targets
- * @param  {Controller} controller
- * @param  {String} pointerToResolve    - relative or absolute pointer (must start with `/` or `../`)
- * @return {Mixed} target value of at #/pointer/pointerToResolve or false
+ * @param pointer - current base pointer for relative targets
+ * @param controller
+ * @param pointerToResolve - relative or absolute pointer (must start with `/` or `../`)
+ * @return target value of at #/pointer/pointerToResolve or false
  */
-function resolveReference(pointer, controller, pointerToResolve) {
+function resolveReference(pointer: JSONPointer, controller: Controller, pointerToResolve: JSONPointer): any {
     if (populated(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
         return null;
     }
@@ -67,16 +68,20 @@ function resolveReference(pointer, controller, pointerToResolve) {
 }
 
 
+export type EditorSettings = {
+    hidden: boolean;
+    description?: string;
+    title?: string;
+    [p: string]: any;
+}
+
 /**
  * Returns the resolved copy of an options object. This method is used by the controller to help setup the
  * main options object of an editor instance. It is simplified, in that it currently does  not resolve any reference
  * on the current data
- *
- * @param {String} pointer
- * @param {Controller} controller
- * @return {Object} a resolved copy of the editron:ui settings
+ * @return a resolved copy of the editron:ui settings
  */
-function copyOptions(pointer, controller) {
+function copyOptions(pointer: JSONPointer, controller: Controller): EditorSettings {
     const schema = controller.schema().get(pointer);
 
     const settings = Object.assign({
@@ -98,10 +103,10 @@ function copyOptions(pointer, controller) {
 
 /**
  * Ensures each schema contains a valid schema[UI_PROPERTY] object
- * @param  {Object} rootSchema
- * @return {Object} extended clone of json-schema
+ * @param rootSchema
+ * @return extended clone of json-schema
  */
-function extendSchema(rootSchema) {
+function extendSchema<T extends JSONSchema>(rootSchema: T): T {
     rootSchema = JSON.parse(JSON.stringify(rootSchema));
     eachSchema(rootSchema, childSchema => {
         childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
@@ -120,12 +125,9 @@ function extendSchema(rootSchema) {
  * Resolves a list of pointers, where the first found value is returned. Supports simple strings as fallback.
  *  e.g. `["/data/local/title", "/data/local/subtitle", "Title"]`
  *
- * @param  {String} pointer     [description]
- * @param  {Controller} controller  [description]
- * @param  {String|Array} optionValue [description]
- * @return {Mixed} the option value
+ * @return the option value
  */
-function resolveOption(pointer, controller, optionValue) {
+function resolveOption<T>(pointer: JSONPointer, controller: Controller, optionValue: T): T {
     if (Array.isArray(optionValue)) {
         for (let i = 0; i < optionValue.length; i += 1) {
             const option = optionValue[i];
@@ -146,18 +148,18 @@ function resolveOption(pointer, controller, optionValue) {
 /**
  * Returns the first defined option set in schema. Supports relative and absolute pointers in data
  *
- * @param  {String} pointer
- * @param  {Controller} controller
- * @param  {...[String]} options    - a list of option properties. The first non-empty option will be returned
- * @return {Mixed} the first non-empty option
+ * @param pointer
+ * @param controller
+ * @param options - a list of option properties. The first non-empty option will be returned
+ * @return the first non-empty option
  */
-function getOption(pointer, controller, ...options) {
-    const schema = controller.schema().get(pointer);
-    const editronOptions = schema[UI_PROPERTY] || {};
-
+function getOption(pointer, controller, ...options: Array<string>): any {
     if (options.length === 0) {
         throw new Error("Expected at least one options property to be given in getOption");
     }
+
+    const schema = controller.schema().get(pointer);
+    const editronOptions = schema[UI_PROPERTY] || {};
 
     for (let i = 0; i < options.length; i += 1) {
         const option = editronOptions[options[i]];
@@ -175,14 +177,14 @@ function getOption(pointer, controller, ...options) {
 }
 
 
-function getTitle(pointer, controller) {
+function getTitle(pointer: JSONPointer, controller: Controller) {
     const schema = controller.schema().get(pointer);
     const title = getOption(pointer, controller, "title") || "";
     return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
 
 
-function getDefaultOption(schema, option) {
+function getDefaultOption(schema: JSONSchema, option: string): ""|any {
     return schema[UI_PROPERTY] ? (schema[UI_PROPERTY][option] || "") : "";
 }
 

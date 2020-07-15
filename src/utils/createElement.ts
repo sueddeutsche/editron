@@ -1,7 +1,14 @@
 import m from "mithril";
 
 
-export default function createElement(selector: string, attributes?: object): HTMLElement {
+export type HTMLAttributes = {
+    /** whitespace separated list of classNames, added to class (workaround) */
+    className?: string;
+    [p: string]: any;
+}
+
+
+export default function createElement(selector: string, attributes?: HTMLAttributes): HTMLElement {
     const vnode = m(selector, attributes);
     const element = document.createElement(vnode.tag as string);
     Object.keys(vnode.attrs).forEach((key) => {
