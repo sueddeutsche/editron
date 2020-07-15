@@ -34,7 +34,7 @@ function createConfig(jsFilename, scssFilename, projectRoot = process.cwd()) {
                 "mithril-material-forms": "editron/node_modules/mithril-material-forms",
                 "json-schema-library": "editron/node_modules/json-schema-library",
                 "gson-pointer": "editron/node_modules/gson-pointer",
-                mitt: "editron/node_modules/mitt"
+                nanoevents: "editron/node_modules/nanoevents"
             }
         },
 

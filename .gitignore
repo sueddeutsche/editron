@@ -9,7 +9,7 @@
 Thumbs.db
 
 node_modules/
-bower_components/
+testbuild/
 npm-debug.log
 
 .cache/
@@ -22,18 +22,11 @@ atlassian-ide-plugin.xml
 *.sublime-project
 *.sublime-workspace
 
-.yo-rc.json
-
 doc-build/
-/channels/
 
-/test/visual/**/diff.png
 *-test-results.xml
 /xunit.xml
 /checkstyle.xml
 /checkstyle-jshint.xml
 /checkstyle-jscs.xml
-app/assets/videos
-assetdata
-debug.html
-/yarn.lock
+/package.lock

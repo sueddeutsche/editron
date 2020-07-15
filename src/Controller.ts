@@ -1,7 +1,7 @@
 import gp from "gson-pointer";
 import jsonSchemaLibrary from "json-schema-library";
 import addValidator from "json-schema-library/lib/addValidator";
-import DataService, { EVENTS as DataServiceEvents } from "./services/DataService";
+import DataService, { EventType as DataServiceEvent } from "./services/DataService";
 import SchemaService from "./services/SchemaService";
 import ValidationService from "./services/ValidationService";
 import LocationService from "./services/LocationService";
@@ -166,7 +166,7 @@ export default class Controller {
         this.dataService = new DataService(this.state, data);
         // start validation after data has been updated
         this.onAfterDataUpdate = this.dataService
-            .on(DataServiceEvents.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+            .on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
         // run initial validation
         this.validateAll();
     }
@@ -409,7 +409,7 @@ export default class Controller {
         this.schemaService.destroy();
         this.validationService.destroy();
         this.dataService.destroy();
-        this.dataService.off(DataServiceEvents.AFTER_UPDATE, this.onAfterDataUpdate);
+        this.dataService.off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 
     onAfterDataUpdate({ pointer }) {

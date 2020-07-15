@@ -1,5 +1,6 @@
 import diffpatch from "./diffpatch";
 import gp from "gson-pointer";
+import getParentPointer from "./getParentPointer";
 
 
 function sortByPointer(a, b) {
@@ -56,7 +57,7 @@ function findPatches(pointer, diff, result = []) {
     - returns parent pointer for any array-items or object-properties that are added or removed. this ensures a
         container, array or object, receives a notification of changed children.
 */
-export default function getPatchesPerPointer(previousValue, newValue) {
+export default function getPatchesPerPointer(previousValue: any, newValue: any) {
     const diff = diffpatch.diff(previousValue, newValue);
     if (diff == null) {
         return [];
@@ -83,6 +84,6 @@ export default function getPatchesPerPointer(previousValue, newValue) {
     });
 
     return Object.keys(map)
-        .map((pointer) => ({ pointer, patch: map[pointer] }))
+        .map(pointer => ({ pointer, parentPointer: getParentPointer(pointer), patch: map[pointer] }))
         .sort(sortByPointer);
 };

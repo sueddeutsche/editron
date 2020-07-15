@@ -95,6 +95,7 @@
     "mithril": "2.x",
     "mithril-material-forms": "^3.2.2",
     "mitt": "^1.2.0",
+    "nanoevents": "5.1.8",
     "ospec": "^4.0.1",
     "redux": "^3.6.0",
     "redux-undo": "^0.6.1",

@@ -16,7 +16,11 @@ describe("utils/getPatchesPerPointer", () => {
         const result = getPatchesPerPointer({ a: "prop" }, { a: "properly" });
 
         assert.equal(result.length, 1);
-        assert.deepEqual(result[0], { pointer: "#/a", patch: ["prop", "properly"] });
+        assert.deepEqual(result[0], {
+            parentPointer: "#",
+            pointer: "#/a",
+            patch: ["prop", "properly"]
+        });
     });
 
     it("should return nested patches with pointer of change and its patch", () => {
@@ -26,7 +30,11 @@ describe("utils/getPatchesPerPointer", () => {
         );
 
         assert.equal(result.length, 1);
-        assert.deepEqual(result[0], { pointer: "#/a/changedHere", patch: ["prop", "properly"] });
+        assert.deepEqual(result[0], {
+            parentPointer: "#/a",
+            pointer: "#/a/changedHere",
+            patch: ["prop", "properly"]
+        });
     });
 
     it("should return all patches with pointer of change and its patch", () => {
@@ -36,8 +44,16 @@ describe("utils/getPatchesPerPointer", () => {
         );
 
         assert.equal(result.length, 2);
-        assert.deepEqual(result[0], { pointer: "#/a/changedHere", patch: ["prop", "properly"] });
-        assert.deepEqual(result[1], { pointer: "#/andHere", patch: ["boo", "foo"] });
+        assert.deepEqual(result[0], {
+            parentPointer: "#/a",
+            pointer: "#/a/changedHere",
+            patch: ["prop", "properly"]
+        });
+        assert.deepEqual(result[1], {
+            parentPointer: "#",
+            pointer: "#/andHere",
+            patch: ["boo", "foo"]
+        });
     });
 
     it("should return pointer of object for key changes", () => {
@@ -48,6 +64,7 @@ describe("utils/getPatchesPerPointer", () => {
 
         assert.equal(result.length, 1);
         assert.deepEqual(result[0], {
+            parentPointer: "#",
             pointer: "#/a",
             patch: { b: ["key", 0, 0], c: ["key"] }
         });
@@ -61,6 +78,7 @@ describe("utils/getPatchesPerPointer", () => {
 
         assert.equal(result.length, 1);
         assert.deepEqual(result[0], {
+            parentPointer: "#",
             pointer: "#/a",
             patch: { "0": ["modifiedString"], _0: ["string", 0, 0], _t: "a" }
         });
@@ -84,6 +102,7 @@ describe("utils/getPatchesPerPointer", () => {
         assert.equal(result.length, 3);
         // movement (changing indices) should come first
         assert.deepEqual(result[0], {
+            parentPointer: "#",
             pointer: "#/a",
             patch: { _t: "a", _1: ["", 1, 3], _2: ["", 0, 3] }
         });
