@@ -13,9 +13,7 @@ export type FocusableElement = HTMLInputElement|HTMLSelectElement|HTMLTextAreaEl
 const isBlurable = (element): element is Blurable => (typeof element.mayBlur === "function");
 
 
-/**
- * Return true, if the given element may blur in the requested direction
- */
+/** returns true if one may trigger blur on the element via cursor movement **/
 function mayBlur(element: FocusableElement|Blurable, direction: Direction): boolean {
     const dir = (direction === "down" || direction === "right") ? 1 : -1;
 
@@ -67,9 +65,7 @@ function mayBlur(element: FocusableElement|Blurable, direction: Direction): bool
     return true;
 }
 
-/**
- * Return the current active element or false
- */
+/** returns the current active (editron) input element or false */
 function getActiveInput(controller: Controller, parent: HTMLElement = document.body): FocusableElement|false {
     const currentPointer = controller.location().getCurrent();
     const currentId = `#${getID(currentPointer)}`;
@@ -87,15 +83,12 @@ function getActiveInput(controller: Controller, parent: HTMLElement = document.b
     return activeInput;
 }
 
-
+/** returns a list of available editron input-elements (including textaras, select) */
 function getAvailableInputs(parent: HTMLElement): Array<FocusableElement> {
     return Array.from(parent.querySelectorAll("input,textarea,select"));
 }
 
-
-/**
- * Return the next input-element or false
- */
+/** returns the next input element in direction or false if it is last/first */
 function getNextInput(controller: Controller, direction: Direction = "down", { parent = document.body } = {}) {
     const activeElement = getActiveInput(controller, parent);
     if (activeElement === false) {
@@ -123,7 +116,6 @@ type Options = {
     /** scan only in given parentNode */
     parent?: HTMLElement;
 };
-
 
 /**
  * move the focus from current element to next visible input-element
