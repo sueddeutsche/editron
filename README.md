@@ -111,7 +111,7 @@ There are three basic concepts that you should be familiar, when working with a 
 <div class="editor"></div>
 
 <script type="text/javascript">
-    const { Controller } = window.editron;
+    const Controller = window.editron;
     const controller = new Controller(window.jsonSchema);
     controller.createEditor("#", document.querySelector(".editor"));
 
