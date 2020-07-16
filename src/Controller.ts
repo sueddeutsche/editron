@@ -73,7 +73,7 @@ interface EditorInstance {
  * Instantiate the controller
  *
  * ```js
- * import { Controller } from "editron";
+ * import Controller from "editron";
  * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  * const editron = new Controller(jsonSchema);
  * ```
@@ -81,7 +81,7 @@ interface EditorInstance {
  * or, using all parameters
  *
  * ```js
- *  import { Controller } from "editron";
+ *  import Controller from "editron";
  *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  *  // data = { title: "Hello" } - or simply use {}
  *  // options = { editors: [ complete list of custom editors ] }

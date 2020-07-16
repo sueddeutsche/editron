@@ -1,5 +1,5 @@
 import { DiffPatcher, Delta } from "jsondiffpatch";
-import diffMatchPatch from "diff_match_patch";
+// import diffMatchPatch from "diff_match_patch";
 
 export { Delta };
 
@@ -17,7 +17,7 @@ const options = {
 
 try {
     // required in browser environments
-    window["diff_match_patch"] = diffMatchPatch;
+    // window["diff_match_patch"] = diffMatchPatch;
 } catch (e) {
     // loaded by default in nodejs
 }

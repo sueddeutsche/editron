@@ -1,7 +1,7 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
 import State from "../../../src/services/State";
-import ValidationService, { EVENTS } from "../../../src/services/ValidationService";
+import ValidationService, { EventType } from "../../../src/services/ValidationService";
 import isObject from "../../utils/isObject";
 
 
@@ -28,8 +28,8 @@ describe("ValidationService/emit", () => {
 
 
     it("events should export events", () => {
-        assert.ok(isObject(EVENTS));
-        assert.ok(typeof EVENTS.BEFORE_VALIDATION === "string");
+        assert.ok(isObject(EventType));
+        assert.ok(typeof EventType.BEFORE_VALIDATION === "string");
     });
 
     it("events should emit 'beforeValidation' event before starting validation", () => {

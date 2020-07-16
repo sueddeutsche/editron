@@ -2,10 +2,10 @@
 import m from "mithril";
 import Overlay from "../components/overlay";
 import createElement from "../utils/createElement";
-import UIState from "./uistate";
+import UIState, { EventType as UIEvent } from "./uistate";
 
-// @ts-ignore
-UIState.on(UIState.EVENTS.OVERLAY_EVENT, (value = {}) => OverlayService.onChange(value.element, value.options));
+
+UIState.on(UIEvent.OVERLAY, value => OverlayService.onChange(value?.element, value?.options));
 
 
 /**

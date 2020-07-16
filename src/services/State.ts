@@ -1,13 +1,18 @@
 import { createStore, combineReducers } from "redux";
-import mitt from "mitt";
+import { createNanoEvents, Unsubscribe } from "nanoevents";
 
 const FLAG_CHANGED = "hasChanged";
 
 
-class State {
+interface Events {
+    [pointer: string]: (subState) => void;
+}
+
+
+export default class State {
     FLAG_CHANGED = FLAG_CHANGED;
+    emitter = createNanoEvents<Events>();
     reducers;
-    emitter;
     store;
 
     constructor() {
@@ -17,7 +22,6 @@ class State {
             action: (state, action) => action
         };
 
-        this.emitter = mitt();
         this.store = createStore(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
         this.store.subscribe(() => this.onChange(this.store.getState()));
     }
@@ -33,9 +37,8 @@ class State {
             });
     }
 
-    // eslint-disable-next-line
-    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting-in-a-redux-application
-    register(id, reducer) {
+    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting
+    register(id: string, reducer) {
         if (this.reducers[id]) {
             throw new Error(`A reducer with id ${id} is already registered`);
         }
@@ -43,7 +46,7 @@ class State {
         this.store.replaceReducer(combineReducers(this.reducers));
     }
 
-    unregister(id) {
+    unregister(id: string) {
         // @todo either remove reducers and data or make them reusable (per application id)
         // delete this.reducers[id];
         // this.store.replaceReducer(redux.combineReducers(this.reducers));
@@ -51,7 +54,7 @@ class State {
         delete currentState[id];
     }
 
-    get(id) {
+    get(id: string) {
         const currentState = this.store.getState();
         return id == null ? currentState : currentState[id];
     }
@@ -65,7 +68,7 @@ class State {
      * @param  {[type]}   id       [description]
      * @param  {Function} callback [description]
      */
-    subscribe(id, callback) {
+    subscribe(id: string, callback) {
         if (typeof id !== "string" || typeof callback !== "function") {
             throw new Error(`Invalid arguments for state.subscribe ${arguments}`);
         }
@@ -78,14 +81,10 @@ class State {
         }
     }
 
-    unsubscribe(id, callback) {
+    unsubscribe(id: string, callback) {
         if (typeof id !== "string" || typeof callback !== "function") {
             throw new Error(`Invalid arguments for state.unsubscribe ${arguments}`);
         }
-
-        this.emitter.off(id, callback);
+        this.emitter.events[id] = this.emitter.events[id]?.filter(func => func !== callback);
     }
 }
-
-
-export default State;

@@ -14,7 +14,7 @@ const editronModulesConfig = {
         path.resolve("./node_modules/mithril-material-forms"),
         path.resolve("./node_modules/json-schema-library"),
         path.resolve("./node_modules/gson-pointer"),
-        path.resolve("./node_modules/mitt"),
+        path.resolve("./node_modules/nanoevents"),
         path.resolve("./node_modules/jsondiffpatch"),
         path.resolve("./node_modules/diff_match_patch")
     ],
@@ -38,7 +38,7 @@ const editronModulesConfig = {
         modules: [".", "node_modules"],
         alias: {
             editron: path.resolve("./node_modules/editron"),
-            mitt: path.resolve("./node_modules/mitt/dist/mitt.js"),
+            nanoevents: path.resolve("./node_modules/nanoevents/index.js"),
             "medium-editor-styles": path.resolve("./node_modules/medium-editor/dist/css/medium-editor.min.css"),
             "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css"),
             // ensure dependencies are unique (not bundled multiple times)

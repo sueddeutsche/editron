@@ -1,7 +1,7 @@
 import { JSONData, JSONPointer, JSONSchema, ValidationError } from "../types";
 import Controller from "../Controller";
 import { Editor } from "./Editor";
-import { Observer } from "../services/ValidationService";
+import { Observer, EventType as ValidationEvent } from "../services/ValidationService";
 
 
 function getTypeClass(schema: JSONSchema): string {
@@ -122,7 +122,8 @@ export default class AbstractEditor implements Editor {
         this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
         this.controller.data().removeObserver(this.pointer, this.update);
         this.controller.validator().removeObserver(this.pointer, this._addError);
-        this.controller.validator().off("beforeValidation", this._clearErrors);
+        // @todo this event is not registered in this class
+        this.controller.validator().off(ValidationEvent.BEFORE_VALIDATION, this._clearErrors);
     }
 
     setErrors(errors): void {

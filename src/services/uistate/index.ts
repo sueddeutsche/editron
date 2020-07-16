@@ -1,28 +1,33 @@
-import mitt from "mitt";
+import { createNanoEvents, Unsubscribe } from "nanoevents";
 import State from "../State";
 import { ActionCreators } from "./actions";
 import uiReducer from "./uiReducer";
-import { JSONPointer } from "../../types";
+import { JSONPointer, JSONData } from "../../types";
 
 
-export const EVENTS = {
-    OVERLAY_EVENT: "overlay",
-    CURRENT_POINTER_EVENT: "current",
-    CURRENT_PAGE_EVENT: "page"
+export enum EventType {
+    OVERLAY ="overlay",
+    CURRENT_POINTER ="current",
+    CURRENT_PAGE ="page"
 };
+
+export interface Events {
+    [EventType.OVERLAY]: (overlay: { element: HTMLElement, options: object }) => void;
+    [EventType.CURRENT_POINTER]: (currentPointer: JSONPointer) => void;
+    [EventType.CURRENT_PAGE]: (currentPage: JSONPointer) => void;
+}
 
 
 class UIState {
-    id: string;
-    state;
-    emitter;
+    id = "ui";
+    state: State;
+    emitter = createNanoEvents<Events>();
     UIStateContructor;
     EVENTS;
 
     constructor() {
         this.id = "ui";
         this.state = new State();
-        this.emitter = mitt();
         this.state.register(this.id, uiReducer);
         // @todo: subscribe to state-changes and diff current state?
     }
@@ -43,18 +48,26 @@ class UIState {
         const currentContent = this.get("overlay");
         if (currentContent !== content) {
             this.state.dispatch(ActionCreators.setOverlay(content));
-            this.emitter.emit(EVENTS.OVERLAY_EVENT, this.get("overlay"));
+            this.emitter.emit(EventType.OVERLAY, this.get("overlay"));
         }
     }
 
-    on(...args) { this.emitter.on(...args); }
-    off(...args) { this.emitter.off(...args); }
+    /** add an event listener to update events */
+    on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe {
+        return this.emitter.on(eventType, callback);
+    }
+
+    /** remove an event listener from update events */
+    off<T extends keyof Events>(eventType: T, callback: Function): void {
+        // @ts-ignore
+        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+    }
 
     setCurrentPage(pointer) {
         const currentPage = this.get("currentPage");
         if (currentPage !== pointer) {
             this.state.dispatch(ActionCreators.setCurrentPage(pointer));
-            this.emitter.emit(EVENTS.CURRENT_PAGE_EVENT, this.get("currentPage"));
+            this.emitter.emit(EventType.CURRENT_PAGE, this.get("currentPage"));
         }
     }
 
@@ -62,13 +75,12 @@ class UIState {
         const currentPointer = this.get("currentPointer");
         if (currentPointer !== pointer) {
             this.state.dispatch(ActionCreators.setCurrentPointer(pointer));
-            this.emitter.emit(EVENTS.CURRENT_POINTER_EVENT, this.get("currentPointer"));
+            this.emitter.emit(EventType.CURRENT_POINTER, this.get("currentPointer"));
         }
     }
 }
 
 const Singleton = new UIState();
 Singleton.UIStateContructor = UIState;
-Singleton.EVENTS = EVENTS;
 
 export default Singleton;

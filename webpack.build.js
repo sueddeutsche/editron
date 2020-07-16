@@ -29,7 +29,7 @@ const config = {
         extensions: [".tsx", ".ts", ".js"],
         modules: [".", "node_modules"],
         alias: {
-            mitt: path.resolve("./node_modules/mitt/dist/mitt.js"),
+            nanoevents: path.resolve("./node_modules/nanoevents/index.js"),
             "medium-editor-styles": path.resolve("./node_modules/medium-editor/dist/css/medium-editor.min.css"),
             "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css")
         }

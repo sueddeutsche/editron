@@ -1,11 +1,35 @@
-import mitt from "mitt";
+import { createNanoEvents, Unsubscribe } from "nanoevents";
 import gp from "gson-pointer";
-import UIState from "./uistate";
+import UIState, { EventType as UIEvent } from "./uistate";
 import getId from "../utils/getID";
 import { JSONPointer } from "../types";
 const DELAY = 25;
 
-const emitter = mitt();
+
+export enum EventType {
+    /** called for a focused editor */
+    FOCUS = "focus",
+    /** called for a blurred editor */
+    BLUR = "blur",
+    /** called, when a new page is focused (page = first property on root data) */
+    PAGE = "page",
+    /** called, when the current selected json-pointer has changed */
+    TARGET = "target",
+}
+
+export interface Events {
+    /** called for a focused editor */
+    [EventType.FOCUS]: (pointer: JSONPointer) => void;
+    /** called for a blurred editor */
+    [EventType.BLUR]: (pointer: JSONPointer) => void;
+    /** called, when a new page is focused (page = first property on root data) */
+    [EventType.PAGE]: (pointer: JSONPointer) => void;
+    /** called, when the current selected json-pointer has changed */
+    [EventType.TARGET]: (pointer: JSONPointer) => void;
+}
+
+
+const emitter = createNanoEvents<Events>();
 
 
 /**
@@ -48,7 +72,7 @@ const LocationService = {
     setCurrent(pointer: JSONPointer) {
         if (pointer !== this.getCurrent()) {
             UIState.setCurrentPointer(pointer);
-            emitter.emit("focus", pointer);
+            emitter.emit(EventType.FOCUS, pointer);
         }
     },
 
@@ -86,19 +110,23 @@ const LocationService = {
             return;
         }
         UIState.setCurrentPointer("");
-        emitter.emit("blur", pointer);
+        emitter.emit(EventType.BLUR, pointer);
     },
 
-    // @ts-ignore
-    on: (...args) => emitter.on(...args),
-    // @ts-ignore
-    off: (...args) => emitter.off(...args)
+    /** add an event listener to update events */
+    on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe {
+        return emitter.on(eventType, callback);
+    },
+
+    /** remove an event listener from update events */
+    off<T extends keyof Events>(eventType: T, callback: Function): void {
+        emitter.events[eventType] = emitter.events[eventType].filter(func => func !== callback);
+    }
 };
 
-// @ts-ignore
-UIState.on(UIState.EVENTS.CURRENT_PAGE_EVENT, pointer => emitter.emit(LocationService.PAGE_EVENT, pointer));
-// @ts-ignore
-UIState.on(UIState.EVENTS.CURRENT_POINTER_EVENT, pointer => emitter.emit(LocationService.TARGET_EVENT, pointer));
+
+UIState.on(UIEvent.CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
+UIState.on(UIEvent.CURRENT_POINTER, pointer => emitter.emit(EventType.TARGET, pointer));
 
 
 export default LocationService;

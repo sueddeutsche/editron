@@ -1,10 +1,10 @@
-import { ActionCreators } from "./reducers/actions";
 import BubblingCollectionObservable, { Observer } from "./utils/BubblingCollectionObservable";
 import errorReducer from "./reducers/errorReducer";
 import jlib from "json-schema-library";
-import mitt from "mitt";
 import State from "./State";
 import Validation, { ValidationErrorMapper } from "./utils/Validation";
+import { ActionCreators } from "./reducers/actions";
+import { createNanoEvents, Unsubscribe } from "nanoevents";
 import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
 
 const { JsonEditor: Core} = jlib.cores;
@@ -12,11 +12,20 @@ const { JsonEditor: Core} = jlib.cores;
 
 export { Observer };
 
-export enum EVENTS {
+export enum EventType {
     BEFORE_VALIDATION = "beforeValidation",
     AFTER_VALIDATION = "afterValidation",
     ON_ERROR = "onError"
 };
+
+export interface Events {
+    /** called right before a new validation is starting */
+    [EventType.BEFORE_VALIDATION]: () => void;
+    /** called for each validation error occuring durint validation */
+    [EventType.ON_ERROR]: (error: ValidationError) => void;
+    /** called after finished validation, passing all occured validation-errors */
+    [EventType.AFTER_VALIDATION]: (errors: Array<ValidationError>) => void;
+}
 
 
 export default class ValidationService {
@@ -24,9 +33,8 @@ export default class ValidationService {
     id = "errors";
     core: typeof Core;
     currentValidation: Validation;
-    emitter;
+    emitter = createNanoEvents<Events>();
     errorHandler: ValidationErrorMapper;
-    EVENTS;
     observer = new BubblingCollectionObservable();
     schema: JSONSchema;
     state: State;
@@ -38,11 +46,9 @@ export default class ValidationService {
 
         this.core = core;
         this.set(schema);
-        this.emitter = mitt();
         this.state = state;
         this.state.register(this.id, errorReducer);
         this.setErrorHandler(error => error);
-        this.EVENTS = EVENTS;
     }
 
     /** sets a custom error handler to map errors */
@@ -61,7 +67,7 @@ export default class ValidationService {
             this.currentValidation.cancel();
         }
 
-        this.emit(EVENTS.BEFORE_VALIDATION);
+        this.emit(EventType.BEFORE_VALIDATION);
 
         // @feature selective-validation
         this.observer.clearEvents(pointer);
@@ -83,14 +89,14 @@ export default class ValidationService {
 
                 this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
                 this.observer.notify(newError.data.pointer, newError);
-                this.emit(EVENTS.ON_ERROR, newError);
+                this.emit(EventType.ON_ERROR, newError);
             },
             validationErrors => {
                 // @feature selective-validation
                 const completeListOfErrors = remainingErrors.concat(validationErrors);
 
                 this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
-                this.emit(EVENTS.AFTER_VALIDATION, completeListOfErrors);
+                this.emit(EventType.AFTER_VALIDATION, completeListOfErrors);
                 this.currentValidation = null;
             }
         );
@@ -107,16 +113,22 @@ export default class ValidationService {
         return this.schema;
     }
 
-    on(eventType, callback) {
+    /**
+     * add an event listener to update events
+     * @returns the callback
+     */
+    on<T extends keyof Events>(eventType: T, callback: Events[T]): Events[T] {
         if (eventType === undefined) {
-            throw new Error("Missing event type in ValidationService.on");
+            throw new Error("Missing `eventType` in ValidationService.on");
         }
         this.emitter.on(eventType, callback);
         return callback;
     }
 
-    off(...args) {
-        this.emitter && this.emitter.off(...args);
+    /** remove an event listener from update events */
+    off<T extends keyof Events>(eventType: T, callback: Function): void {
+        // @ts-ignore
+        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
     }
 
     emit(eventType, event = {}) {
