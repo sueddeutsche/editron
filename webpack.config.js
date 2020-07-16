@@ -57,7 +57,8 @@ const editronModulesConfig = {
                     options: {
                         configFile: path.resolve(__dirname, "tsconfig.json"),
                         compilerOptions: {
-                            sourceMap: !PRODUCTION
+                            sourceMap: !PRODUCTION,
+                            declaration: PRODUCTION
                         }
                     }
                 }
