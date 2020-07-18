@@ -95,19 +95,23 @@ var editronModules =
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toArray(arr) { return _arrayWithHoles(arr) || _iterableToArray(arr) || _nonIterableRest(); }
+function _toArray(arr) { return _arrayWithHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableRest(); }
 
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
@@ -226,9 +230,7 @@ function eachInstance(instances, cb) {
  */
 
 
-var Controller =
-/*#__PURE__*/
-function () {
+var Controller = /*#__PURE__*/function () {
   function Controller() {
     var _this = this;
 
@@ -961,9 +963,7 @@ function getTypeClass(schema) {
  */
 
 
-var AbstractEditor =
-/*#__PURE__*/
-function () {
+var AbstractEditor = /*#__PURE__*/function () {
   _createClass(AbstractEditor, null, [{
     key: "editorOf",
     value: function editorOf(pointer, controller, options) {
@@ -1135,9 +1135,7 @@ var convert = {
  * ```
  */
 
-var AbstractValueEditor =
-/*#__PURE__*/
-function () {
+var AbstractValueEditor = /*#__PURE__*/function () {
   _createClass(AbstractValueEditor, null, [{
     key: "editorOf",
     value: function editorOf(pointer, controller) {
@@ -1330,9 +1328,7 @@ var ArrayItemView = __webpack_require__(/*! ./ArrayItemView */ "./editors/arraye
 
 var arrayUtils = __webpack_require__(/*! ../../utils/array */ "./utils/array.js");
 
-var ArrayItemEditor =
-/*#__PURE__*/
-function () {
+var ArrayItemEditor = /*#__PURE__*/function () {
   function ArrayItemEditor(pointer, controller) {
     var _this = this;
 
@@ -1516,9 +1512,7 @@ var diffpatch = __webpack_require__(/*! ../../services/utils/diffpatch */ "./ser
 
 var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
 
-var ArrayEditor =
-/*#__PURE__*/
-function () {
+var ArrayEditor = /*#__PURE__*/function () {
   _createClass(ArrayEditor, null, [{
     key: "editorOf",
     value: function editorOf(pointer, controller) {
@@ -1809,9 +1803,7 @@ function showJSON(controller, data, title) {
   }));
 }
 
-var ObjectEditor =
-/*#__PURE__*/
-function () {
+var ObjectEditor = /*#__PURE__*/function () {
   _createClass(ObjectEditor, null, [{
     key: "editorOf",
     value: function editorOf(pointer, controller) {
@@ -2047,9 +2039,7 @@ var View = __webpack_require__(/*! ../../components/container */ "./components/c
 
 var UI_PROPERTY = __webpack_require__(/*! ../../utils/UISchema */ "./utils/UISchema.js").UI_PROPERTY;
 
-var OneOfEditor =
-/*#__PURE__*/
-function () {
+var OneOfEditor = /*#__PURE__*/function () {
   _createClass(OneOfEditor, null, [{
     key: "editorOf",
     value: function editorOf(pointer, controller, options) {
@@ -2282,12 +2272,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
@@ -2296,16 +2280,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
 var m = __webpack_require__(/*! mithril */ "mithril");
 
 var View = __webpack_require__(/*! ./View */ "./editors/valueeditor/View.js");
 
 var AbstractValueEditor = __webpack_require__(/*! ../AbstractValueEditor */ "./editors/AbstractValueEditor.js");
 
-var ValueEditor =
-/*#__PURE__*/
-function (_AbstractValueEditor) {
+var ValueEditor = /*#__PURE__*/function (_AbstractValueEditor) {
   _inherits(ValueEditor, _AbstractValueEditor);
+
+  var _super = _createSuper(ValueEditor);
 
   _createClass(ValueEditor, null, [{
     key: "editorOf",
@@ -2322,7 +2316,7 @@ function (_AbstractValueEditor) {
 
     _classCallCheck(this, ValueEditor);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ValueEditor).call(this, pointer, controller, options));
+    _this = _super.call(this, pointer, controller, options);
 
     _this.render();
 
@@ -2475,9 +2469,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return o;
     });
 
-    var r =
-    /*#__PURE__*/
-    function () {
+    var r = /*#__PURE__*/function () {
       function r() {
         var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -6472,9 +6464,7 @@ function copy(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-var SchemaService =
-/*#__PURE__*/
-function () {
+var SchemaService = /*#__PURE__*/function () {
   function SchemaService(schema, data) {
     _classCallCheck(this, SchemaService);
 
@@ -7040,9 +7030,7 @@ var _resolveAllOf = __webpack_require__(/*! ../resolveAllOf */ "./node_modules/j
 /* eslint no-unused-vars: 0 no-empty-function: 0 */
 
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function CoreInterface(schema) {
     _classCallCheck(this, CoreInterface);
 
@@ -7153,15 +7141,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var CoreInterface = __webpack_require__(/*! ./CoreInterface */ "./node_modules/json-schema-library/lib/cores/CoreInterface.js");
 
@@ -7185,17 +7177,17 @@ var remotes = __webpack_require__(/*! ../../remotes */ "./node_modules/json-sche
 
 remotes["http://json-schema.org/draft-04/schema"] = compileSchema(__webpack_require__(/*! ../../remotes/draft04.json */ "./node_modules/json-schema-library/remotes/draft04.json"));
 
-var Draft04Core =
-/*#__PURE__*/
-function (_CoreInterface) {
+var Draft04Core = /*#__PURE__*/function (_CoreInterface) {
   _inherits(Draft04Core, _CoreInterface);
+
+  var _super = _createSuper(Draft04Core);
 
   function Draft04Core(schema) {
     var _this;
 
     _classCallCheck(this, Draft04Core);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Draft04Core).call(this, schema));
+    _this = _super.call(this, schema);
     _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__(/*! ../validation/typeKeywordMapping */ "./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
     _this.validateKeyword = _extends({}, __webpack_require__(/*! ../validation/keyword */ "./node_modules/json-schema-library/lib/validation/keyword.js"));
     _this.validateType = _extends({}, __webpack_require__(/*! ../validation/type */ "./node_modules/json-schema-library/lib/validation/type.js"));
@@ -7281,15 +7273,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var CoreInterface = __webpack_require__(/*! ./CoreInterface */ "./node_modules/json-schema-library/lib/cores/CoreInterface.js");
 
@@ -7307,17 +7303,17 @@ var _getSchema = __webpack_require__(/*! ../getSchema */ "./node_modules/json-sc
 
 var _each = __webpack_require__(/*! ../each */ "./node_modules/json-schema-library/lib/each.js");
 
-var JsonEditorCore =
-/*#__PURE__*/
-function (_CoreInterface) {
+var JsonEditorCore = /*#__PURE__*/function (_CoreInterface) {
   _inherits(JsonEditorCore, _CoreInterface);
+
+  var _super = _createSuper(JsonEditorCore);
 
   function JsonEditorCore(schema) {
     var _this;
 
     _classCallCheck(this, JsonEditorCore);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(JsonEditorCore).call(this, schema));
+    _this = _super.call(this, schema);
     _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__(/*! ../validation/typeKeywordMapping */ "./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
     _this.validateKeyword = _extends({}, __webpack_require__(/*! ../validation/keyword */ "./node_modules/json-schema-library/lib/validation/keyword.js")); // set properties required per default and prevent no duplicate errors.
     // This is required for fuzzy resolveOneOf
@@ -8089,13 +8085,17 @@ module.exports = function resolveAnyOf(core, data) {
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
 
@@ -8260,13 +8260,17 @@ module.exports = function resolveOneOf(core, data) {
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
 
@@ -9330,13 +9334,17 @@ module.exports = FormatValidation;
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -16328,13 +16336,13 @@ module.exports = {
       rows: attrs.rows,
       disabled: disabled,
       placeholder: attrs.placeholder,
-      onblur: function onblur() {
+      onblur: function onblur(e) {
         _this.focus = false;
-        attrs.onblur && attrs.onblur();
+        attrs.onblur && attrs.onblur(e);
       },
-      onfocus: function onfocus() {
+      onfocus: function onfocus(e) {
         _this.focus = true;
-        attrs.onfocus && attrs.onfocus();
+        attrs.onfocus && attrs.onfocus(e);
       },
       onupdate: function onupdate(node) {
         return autosize.update(node.dom);
@@ -18305,9 +18313,7 @@ var EVENTS = {
  * @param {Any} data        - current application data (form)
  */
 
-var DataService =
-/*#__PURE__*/
-function () {
+var DataService = /*#__PURE__*/function () {
   function DataService(state, data) {
     var _this = this;
 
@@ -18824,9 +18830,7 @@ var _getChildSchemaSelection = __webpack_require__(/*! json-schema-library */ ".
  */
 
 
-var SchemaService =
-/*#__PURE__*/
-function () {
+var SchemaService = /*#__PURE__*/function () {
   function SchemaService() {
     var schema = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -19015,9 +19019,7 @@ var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
 
 var FLAG_CHANGED = "hasChanged";
 
-var State =
-/*#__PURE__*/
-function () {
+var State = /*#__PURE__*/function () {
   function State() {
     var _this = this;
 
@@ -19161,9 +19163,7 @@ var EVENTS = {
  * @class  ValidationService
  */
 
-var ValidationService =
-/*#__PURE__*/
-function () {
+var ValidationService = /*#__PURE__*/function () {
   function ValidationService(state) {
     var schema = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var core = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Core();
@@ -19575,9 +19575,7 @@ var EVENTS = {
   CURRENT_PAGE_EVENT: "page"
 };
 
-var UIState =
-/*#__PURE__*/
-function () {
+var UIState = /*#__PURE__*/function () {
   function UIState() {
     _classCallCheck(this, UIState);
 
@@ -19810,9 +19808,7 @@ var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/in
  */
 
 
-var BubblingCollectionObservable =
-/*#__PURE__*/
-function () {
+var BubblingCollectionObservable = /*#__PURE__*/function () {
   function BubblingCollectionObservable() {
     _classCallCheck(this, BubblingCollectionObservable);
 
@@ -20039,9 +20035,7 @@ var validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsyn
  */
 
 
-var Validation =
-/*#__PURE__*/
-function () {
+var Validation = /*#__PURE__*/function () {
   function Validation(data, pointer, errorHandler) {
     _classCallCheck(this, Validation);
 
@@ -20775,7 +20769,7 @@ module.exports = function createProxy() {
     return options;
   }
 
-  var o = _objectSpread({}, defaultOptions, {}, options);
+  var o = _objectSpread(_objectSpread({}, defaultOptions), options);
 
   if (Array.isArray(o.handlers)) {
     return new Foxy(o);
@@ -20998,13 +20992,17 @@ module.exports = select;
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var getID = __webpack_require__(/*! ./getID */ "./utils/getID.js");
 /**
