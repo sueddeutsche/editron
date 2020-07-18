@@ -68,12 +68,13 @@ const config = {
                 }
             },
             {
+                test: /.*.html$/,
                 loaders: [
                     "file-loader?name=index.html",
                     "extract-loader",
                     "html-loader"
                 ],
-                include: [path.join(__dirname, "test", "support", "local-setup.html")]
+                // include: [path.join(__dirname, "test", "support", "local-setup.html")]
             }
         ]
     },

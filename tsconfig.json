@@ -16,6 +16,7 @@
     },
     "include": [
         "*",
+        "app/**/*",
         "src/**/*",
         "@technik-sde/foxy/**/*"
     ],

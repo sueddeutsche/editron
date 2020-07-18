@@ -218,7 +218,7 @@ export default class Controller {
      * @param  [options] - individual editor options
      * @returns created editor-instance or undefined;
      */
-    createEditor(pointer: JSONPointer, element: HTMLElement, options): Editor|undefined {
+    createEditor(pointer: JSONPointer, element: HTMLElement, options?): Editor|undefined {
         if (pointer == null || element == null) {
             throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
         }
