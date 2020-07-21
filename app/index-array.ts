@@ -6,7 +6,7 @@ import "./index-array.scss";
 const schema = {
     type: "object",
     properties: {
-        content: {
+        groups: {
             title: "content",
             type: "array",
             minLength: 1,
@@ -79,16 +79,25 @@ const schema = {
 };
 
 const data = {
-    content: [
+    groups: [
         {
             title: "erste",
             content: [
-                { type: "embed", title:"first embed" }
+                {
+                    type: "embed", title:"first embed"
+                }
             ]
         },
         {
-            title: "",
-            content: []
+            title: "zweite",
+            content: [
+                {
+                    type: "embed", title:"MIMIMI"
+                },
+                {
+                    type: "teaser", title:"tease"
+                }
+            ]
         }
     ]
 };

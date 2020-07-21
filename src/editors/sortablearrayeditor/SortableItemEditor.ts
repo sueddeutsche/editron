@@ -36,6 +36,12 @@ export default class ArrayItemEditor {
         ]);
     }
 
+    updatePointer(newPointer: JSONPointer) {
+        this.pointer = newPointer;
+        // @ts-ignore
+        return this.editor.updatePointer(newPointer);
+    }
+
     destroy() {
 
     }
