@@ -128,7 +128,7 @@ export default class ValidationService {
     /** remove an event listener from update events */
     off<T extends keyof Events>(eventType: T, callback: Function): void {
         // @ts-ignore
-        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+        this.emitter.events[eventType] = this.emitter.events[eventType]?.filter(func => func !== callback) ?? [];
     }
 
     emit(eventType, event = {}) {
