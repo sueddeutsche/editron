@@ -16,7 +16,7 @@ import plugin from "./plugin";
 import i18n from "./utils/i18n";
 import createProxy from "./utils/createProxy";
 import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
-import { Editor } from "./editors/Editor";
+import { Editor, EditorPlugin } from "./editors/Editor";
 
 import oneOfEditor from "./editors/oneofeditor";
 import arrayEditor from "./editors/arrayeditor";
@@ -54,7 +54,7 @@ function eachInstance(instances: { [p: string]: Array<Editor> }, cb: (pointer: J
 
 export type Options = {
     log?: boolean;
-    editors?: Array<Editor>;
+    editors?: Array<EditorPlugin>;
     proxy?: ProxyOptions|Foxy;
 };
 
@@ -113,7 +113,7 @@ export default class Controller {
     dataService: DataService;
     destroyed = false;
     disabled = false;
-    editors: Array<Editor>;
+    editors: Array<EditorPlugin>;
     instances: { [p:string]: any };
     locationService;
     options: Options;

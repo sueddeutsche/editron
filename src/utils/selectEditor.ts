@@ -1,6 +1,6 @@
 import { JSONPointer } from "../types";
 import Controller from "../Controller";
-import { Editor } from "../editors/Editor";
+import { Editor, EditorPlugin } from "../editors/Editor";
 
 
 interface EditorConstructor {
@@ -18,7 +18,7 @@ interface EditorConstructor {
  * @return The constructor of the chosen editor od false if no editor could be resolved
  *  or is denied
  */
-function select(editors: Array<Editor>, pointer: JSONPointer, controller: Controller, options): Editor|false|undefined {
+function select(editors: Array<EditorPlugin>, pointer: JSONPointer, controller: Controller, options): EditorPlugin|false|undefined {
     // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
     if (/_id$/.test(pointer)) {
         return false; // abort if it is an internal value

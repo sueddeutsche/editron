@@ -1,7 +1,7 @@
 import m from "mithril";
 import ContainerComponent, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import AbstractEditor from "../AbstractEditor";
-import { Editor } from "../Editor";
+import { Editor, EditorPlugin } from "../Editor";
 import { JSONPointer, JSONData, ValidationError } from "../../types";
 import Sortable, { SortableEvent } from 'sortablejs';
 import SortableItemEditor from "./SortableItemEditor";
