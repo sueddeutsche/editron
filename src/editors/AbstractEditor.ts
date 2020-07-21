@@ -37,7 +37,7 @@ function getTypeClass(schema: JSONSchema): string {
  * @param {Controller} controller   - editron controller instance
  * @param {Object} options          - resolved options object
  */
-export default class AbstractEditor implements Editor {
+export default class AbstractEditor {
     pointer: JSONPointer;
     controller: Controller;
     options: any;
@@ -92,6 +92,10 @@ export default class AbstractEditor implements Editor {
 
     setData(data: JSONData) {
         return this.controller.data().set(this.pointer, data);
+    }
+
+    setActive(active = true) {
+        throw new Error(`Missing implementation of method 'setActive' in custom editor ${this}`);
     }
 
     getErrors() {

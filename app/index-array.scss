@@ -1,1 +1,31 @@
 @import "../editron";
+@import "../src/editors/sortablearrayeditor/sortable-array-editor";
+
+
+.editron-container--array .editron-container--array {
+
+}
+
+// [widget-type="group"] {
+//     border-left: 4px solid #000;
+// }
+
+[widget-type="module"],
+[widget-type="module"] .editron-value {
+    background-color: #ddd;
+}
+
+// insert button between elements
+.editron-container__separator .editron-container__button--add {
+    background: transparent;
+
+    i.mmf-icon {
+        text-shadow: none;
+        color: #666;
+    }
+
+    &:not(.is-disabled):hover i.mmf-icon {
+        text-shadow: none;
+        color: #999;
+    }
+}

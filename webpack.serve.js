@@ -33,8 +33,8 @@ config.module.rules.push(
     {
         test: /.*\.scss$/,
         use: [
-            "file-loader?name=[name].css",
-            "extract-loader",
+            "style-loader",
+            // "extract-loader",
             "css-loader",
             {
                 loader: "sass-loader",

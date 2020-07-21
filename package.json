@@ -43,6 +43,7 @@
     "@babel/preset-env": "^7.7.1",
     "@types/mithril": "2.0.3",
     "@types/mocha": "8.0.0",
+    "@types/sortablejs": "1.10.5",
     "@typescript-eslint/eslint-plugin": "3.6.0",
     "@typescript-eslint/parser": "3.6.0",
     "babel-loader": "^8.0.0",
@@ -97,6 +98,7 @@
     "nanoevents": "5.1.8",
     "redux": "^3.6.0",
     "redux-undo": "^0.6.1",
+    "sortablejs": "1.10.2",
     "with-observable": "^1.2.0"
   }
 }

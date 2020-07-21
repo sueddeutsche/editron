@@ -3,7 +3,7 @@ import { JSONPointer, JSONData, ValidationError } from "../types";
 import AbstractEditor from "./AbstractEditor";
 
 
-export declare class Editor {
+export interface Editor {
 
     /**
      * @note the static method is not available through typescript-interface, nor validated on implementing this class
@@ -14,24 +14,24 @@ export declare class Editor {
      * @param options
      * @returns true, if this editor should be instantiated for json-pointer
      */
-    static editorOf(pointer: JSONPointer, controller: Controller, options?): boolean;
+    // static editorOf(pointer: JSONPointer, controller: Controller, options?): boolean;
 
-    constructor(pointer: JSONPointer, controller: Controller, options);
+    // constructor(pointer: JSONPointer, controller: Controller, options);
 
-    // update is used as a convention, not enforced, nor required
-    // update(DataServiceEvent): void;
+    // // update is used as a convention, not enforced, nor required
+    // // update(DataServiceEvent): void;
 
-    /** change the pointer, this editor is associated with */
-    updatePointer(newPointer: JSONPointer): void;
+    // /** change the pointer, this editor is associated with */
+    // updatePointer(newPointer: JSONPointer): void;
 
-    /** if set, will receive a list of current validation-errors associated with json-pointer */
-    updateErrors?(errors: Array<ValidationError>): void;
+    // /** if set, will receive a list of current validation-errors associated with json-pointer */
+    // updateErrors?(errors: Array<ValidationError>): void;
 
     /** returns the editors root element */
-    toElement(): HTMLElement;
+    // toElement(): HTMLElement;
 
-    /** destroys the editor */
-    destroy(): void;
+    // /** destroys the editor */
+    // destroy(): void;
 
     // render is used as a convention, not enforced, nor required
     // render(): void;

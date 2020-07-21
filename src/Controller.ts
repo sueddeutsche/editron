@@ -263,6 +263,7 @@ export default class Controller {
      */
     removeInstance(editor: Editor) {
         // controller inserted child and removes it here again
+        // @ts-ignore
         const $element = editor.toElement();
         if ($element.parentNode) {
             $element.parentNode.removeChild($element);
