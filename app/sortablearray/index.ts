@@ -29,10 +29,10 @@ const schema = {
                         type: "array",
                         "editron:ui": {
                             sortableGroup: "group",
-                            sortable: true
+                            sortable: false
                         },
                         items: {
-                            onOfProperty: "type",
+                            oneOfProperty: "type",
                             oneOf: [
                                 {
                                     title: "embed",
@@ -60,7 +60,7 @@ const schema = {
             },
             properties: {
                 type: { type: "string", default: "embed", pattern: "^embed$", "editron:ui": { hidden: true } },
-                title: { type: "string" }
+                title: { type: "string", minLength: 0 }
             }
         },
         teaser: {
@@ -72,8 +72,8 @@ const schema = {
                 }
             },
             properties: {
-                type: { type: "string", default: "teaser", pattern: "^teaser", "editron:ui": { hidden: true } },
-                title: { type: "string" }
+                type: { type: "string", default: "teaser", pattern: "^teaser$", "editron:ui": { hidden: true } },
+                title: { type: "string", minLength: 1 }
             }
         }
     }
