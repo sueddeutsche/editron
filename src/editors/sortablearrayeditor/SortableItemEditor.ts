@@ -4,7 +4,7 @@ import { JSONPointer } from "../../types";
 import { Editor } from "../Editor";
 
 
-export default class ArrayItemEditor {
+export default class SortableItemEditor {
 
     index: number;
     pointer: JSONPointer;
@@ -15,6 +15,8 @@ export default class ArrayItemEditor {
 
     constructor(pointer: JSONPointer, controller: Controller, options?) {
         this.pointer = pointer;
+
+        console.log("array item options", options, controller.schema().get(pointer));
 
         // eslint-disable-next-line max-len
         const className = ".editron-container__child.editron-container--sortable.editron-container__child--array-item";
@@ -30,15 +32,12 @@ export default class ArrayItemEditor {
     render() {
         m.render(this.dom, [
             m(".editron-handle"),
-            m(".editron-item", {
-                onmouseup: () => console.log("click", this.pointer)
-            })
+            m(".editron-item")
         ]);
     }
 
     updatePointer(newPointer: JSONPointer) {
         this.pointer = newPointer;
-        // @ts-ignore
         return this.editor.updatePointer(newPointer);
     }
 
