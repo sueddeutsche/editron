@@ -23,9 +23,18 @@
             }
             .page {
                 color: #333;
-                max-width: 640px;
+                max-width: 960px;
                 margin: 0 auto;
-                /*background-color: #fff;*/
+                display: flex;
+                padding: 0 8px;
+            }
+
+            .editor {
+                flex-grow: 1;
+                margin-right: 48px; /* icons */
+            }
+            .sidebar {
+                min-width: 160px;
             }
             /* temp */
             .editor ul { padding: 0; }
@@ -36,6 +45,7 @@
         <h1>sortable array development</h1>
         <div class="page">
             <div class="editor"></div>
+            <div class="sidebar">sidebar</div>
         </div>
 
         <!-- served -->

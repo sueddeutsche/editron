@@ -6,9 +6,9 @@
 
 }
 
-// [widget-type="group"] {
-//     border-left: 4px solid #000;
-// }
+[widget-type="group"] {
+    border-left: 1px solid #ccc;
+}
 
 [widget-type="module"],
 [widget-type="module"] .editron-value {
@@ -26,6 +26,23 @@
 
     &:not(.is-disabled):hover i.mmf-icon {
         text-shadow: none;
-        color: #999;
+        color: #000;
+    }
+}
+
+.editron-value {
+    background: transparent;
+}
+
+
+.sidebar .module {
+    padding: 12px 24px;
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+
+    &:hover {
+        background-color: #ddd;
+        cursor: pointer;
+        user-select: none;
     }
 }

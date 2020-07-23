@@ -72,6 +72,27 @@ export default class SortableEditor extends AbstractEditor {
             onChoose: () => {
                 console.log("choose");
             },
+            onAdd: (event) => {
+                const { from, newIndex, item } = event;
+
+                if (from.dataset.parent == null) {
+                    let data;
+                    try {
+                        data = JSON.parse(item.dataset.content);
+                    } catch (e) {
+                        console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
+                        // remove node
+                        item.parentNode.removeChild(item);
+                        return;
+                    }
+
+                    const toList = this.getData();
+                    toList.splice(newIndex, 0, data);
+                    controller.data().set(this.pointer, toList);
+                }
+
+                // console.log("add to", event);
+            },
             onEnd(event: SortableEvent): void {
                 const element = event.item;  // dragged HTMLElement
                 const { to, from, oldIndex, newIndex } = event;
