@@ -7,12 +7,12 @@ const schema = {
     title: "An object with collapsable property",
     type: "object",
     properties: {
-        title: { type: "string", title: "Title" },
+        title: { type: "string", title: "Title", minLength: 1 },
         details: {
             title: "Details",
             type: "object",
             "editron:ui": {
-                collapse: true
+                collapsed: true
             },
             properties: {
                 description: {
@@ -31,30 +31,7 @@ const schema = {
 };
 
 
-const data = {
-    groups: [
-        {
-            title: "erste",
-            content: [
-                {
-                    type: "embed", title:"first embed"
-                }
-            ]
-        },
-        {
-            title: "zweite",
-            content: [
-                {
-                    type: "embed", title:"MIMIMI"
-                },
-                {
-                    type: "teaser", title:"tease"
-                }
-            ]
-        }
-    ]
-};
-
+const data = {};
 
 const $editor = document.querySelector(".editor") as HTMLElement;
 const editron = new Controller(schema, data);

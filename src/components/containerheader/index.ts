@@ -8,6 +8,8 @@ export type Attrs = {
     disabled?: boolean;
     hideTitle?: boolean;
     icon?: string;
+    collapsed?: boolean;
+    oncollapse?: Function;
     onadd?: Function;
     ondelete?: Function;
     onmovedown?: Function;
@@ -34,7 +36,8 @@ export default {
             ...vnode.attrs
         };
 
-        const hasAction = (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown) != null;
+        const hasAction =
+            (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown || attrs.oncollapse) != null;
 
         return m(".editron-container__header",
             {
@@ -48,21 +51,25 @@ export default {
             ),
 
             m(".editron-container__actions",
-                attrs.onmoveup ? m("i.mmf-icon.mmf-icon--add", {
+                attrs.onmoveup && m("i.mmf-icon.mmf-icon--add", {
                     onclick: attrs.onmoveup
-                }, "arrow_upward") : "",
+                }, "arrow_upward"),
 
-                attrs.onmovedown ? m("i.mmf-icon.mmf-icon--add", {
+                attrs.onmovedown && m("i.mmf-icon.mmf-icon--add", {
                     onclick: attrs.onmovedown
-                }, "arrow_downward") : "",
+                }, "arrow_downward"),
 
-                attrs.onadd ? m("i.mmf-icon.mmf-icon--add", {
+                attrs.onadd && m("i.mmf-icon.mmf-icon--add", {
                     onclick: () => attrs.onadd()
-                }, "add") : "",
+                }, "add"),
 
-                attrs.ondelete ? m("i.mmf-icon.mmf-icon--delete", {
+                attrs.ondelete && m("i.mmf-icon.mmf-icon--delete", {
                     onclick: attrs.ondelete
-                }, "delete") : ""
+                }, "delete"),
+
+                attrs.oncollapse && m("i.mmf-icon.mmf-icon--collapse", {
+                    onclick: attrs.oncollapse
+                }, attrs.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down")
             )
         );
     }

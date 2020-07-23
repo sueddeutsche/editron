@@ -326,6 +326,14 @@ controls.move       | Boolean=true  | up and down move cursors
 controls.insert     | Boolean=true  | insert button between elements
 
 
+Object-Editor options:
+
+property            | type          | description
+:-------------------|:--------------|:--------------------------------------------------------------------------
+collapsed           | Boolean?      | If defined, adds a collapsible-icon. If true, will hide properties per default
+addDelete           | Boolean?      | Adds an delete option for this object (added automatically on array-items)
+
+
 **Add additional editors**
 
 To add new or custom editors globally, use the plugin interface

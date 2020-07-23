@@ -5,6 +5,7 @@ import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
 import { Editor } from "../Editor";
+import AbstractEditor from "../AbstractEditor";
 
 
 function showJSON(controller: Controller, data: JSONData, title: string) {
@@ -19,10 +20,16 @@ export type Options = {
     id?: string;
     attrs?: object;
     icon?: string;
+    /** hide the title */
     hideTitle?: boolean;
+    /** object title from json-schema */
     title?: string;
+    /** object description from json-schema */
     description?: string;
+    /** adds an user-action to delete this object */
     addDelete?: boolean;
+    /** if set, will add a toggle-button to show/hide its properties. Set to true, to hide it by default */
+    collapsed?: boolean;
 }
 
 export type ViewModel = {
@@ -35,12 +42,14 @@ export type ViewModel = {
     description?: string;
     disabled?: boolean;
     ondelete?: Function;
+    oncollapse?: Function;
+    collapsed?: boolean;
 }
 
 
-export default class ObjectEditor implements Editor {
+export default class ObjectEditor extends AbstractEditor {
     viewModel: ViewModel;
-    private $element: HTMLElement;
+    // private $element: HTMLElement;
     pointer: JSONPointer;
     options;
     controller;
@@ -53,11 +62,12 @@ export default class ObjectEditor implements Editor {
     }
 
     constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
+        super(pointer, controller, options);
+
         // add id to element, since no other input-form is associated with this editor...
         // @todo ...except another editron-instance
-        options.attrs = Object.assign({ id: options.id }, options.attrs);
+        options.attrs = { id: options.id, ...options.attrs };
 
-        this.$element = controller.createElement(".editron-container.editron-container--object", options.attrs);
         this.pointer = pointer;
         this.options = options;
         this.controller = controller;
@@ -73,43 +83,41 @@ export default class ObjectEditor implements Editor {
             ...options
         };
 
+        if (options.collapsed != null) {
+            this.viewModel.oncollapse = () => {
+                this.viewModel.collapsed = !this.viewModel.collapsed;
+                this.render();
+            }
+        }
+
         if (options.addDelete) {
             this.viewModel.ondelete = () => controller.data().delete(pointer);
         }
 
-        this.rebuildChildren = controller.data().observe(pointer, this.rebuildChildren.bind(this));
-        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-
-        this.setErrors(controller.validator().getErrorsAndWarnings(pointer));
         this.render();
-        this.$children = this.$element.querySelector(CHILD_CONTAINER_SELECTOR);
-        this.rebuildChildren();
+        this.$children = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
+        this.update();
     }
 
     updatePointer(pointer: JSONPointer) {
-        if (this.pointer === pointer || this.viewModel == null) {
+        const returnValue = super.updatePointer(pointer);
+
+        if (this.viewModel == null) {
             return;
         }
 
-        this.controller.changePointer(pointer, this);
-
-        const oldPointer = this.pointer;
-        this.$element.id = pointer;
-
-        const controller = this.controller;
+        this.dom.id = pointer;
         this.options.attrs.id = pointer;
-        this.pointer = pointer;
+
         this.viewModel.pointer = pointer;
         if (this.options.addDelete) {
-            this.viewModel.ondelete = () => controller.data().delete(pointer);
+            this.viewModel.ondelete = () => this.controller.data().delete(pointer);
         }
-        controller.data().removeObserver(oldPointer, this.rebuildChildren);
-        controller.validator().removeObserver(oldPointer, this.setErrors);
-        controller.data().observe(pointer, this.rebuildChildren);
-        controller.validator().observe(pointer, this.setErrors);
-        this.childEditors.forEach(editor => editor.updatePointer(`${this.pointer}/${editor._property}`));
 
+        this.childEditors.forEach(editor => editor.updatePointer(`${this.pointer}/${editor._property}`));
         this.render();
+
+        return returnValue;
     }
 
     /** de/activate this editors user-interaction */
@@ -119,10 +127,6 @@ export default class ObjectEditor implements Editor {
     }
 
     update(): void {
-        this.rebuildChildren();
-    }
-
-    rebuildChildren(): void {
         if (this.viewModel == null) {
             console.error(`destroyed ObjectEditor receives an update event
                 - this may be invoked through oneOf-Editor`, this);
@@ -161,7 +165,7 @@ export default class ObjectEditor implements Editor {
         showJSON(this.controller, propertyData, property);
     }
 
-    setErrors(errors = []) {
+    updateErrors(errors = []) {
         // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
         // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
         // arrays this should come per default, as the may insert in add items...
@@ -184,15 +188,8 @@ export default class ObjectEditor implements Editor {
     }
 
     render(): void {
-        m.render(this.$element, m(View, this.viewModel));
-    }
-
-    toElement(): HTMLElement {
-        return this.$element;
-    }
-
-    getPointer(): JSONPointer {
-        return this.pointer;
+        this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
+        m.render(this.dom, m(View, this.viewModel));
     }
 
     /** destroy editor, view and event-listeners */
@@ -200,11 +197,9 @@ export default class ObjectEditor implements Editor {
         if (this.viewModel == null) {
             return;
         }
-        this.controller.removeInstance(this);
 
-        m.render(this.$element, m("i"));
-        this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        super.destroy();
+        m.render(this.dom, m("i"));
 
         this.childEditors.forEach(editor => editor.destroy());
         this.childEditors.length = 0;
