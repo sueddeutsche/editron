@@ -85,6 +85,7 @@ export default class ObjectEditor extends AbstractEditor {
 
         if (options.collapsed != null) {
             this.viewModel.oncollapse = () => {
+                this.dom.classList.add("collapsible");
                 this.viewModel.collapsed = !this.viewModel.collapsed;
                 this.render();
             }

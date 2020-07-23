@@ -330,7 +330,7 @@ Object-Editor options:
 
 property            | type          | description
 :-------------------|:--------------|:--------------------------------------------------------------------------
-collapsed           | Boolean?      | If defined, adds a collapsible-icon. If true, will hide properties per default
+collapsed           | Boolean?      | If defined, adds a collapsible-icon. If true, will hide properties per default. Besides a `hidden` class, will add a class `collapsible` to the object-container
 addDelete           | Boolean?      | Adds an delete option for this object (added automatically on array-items)
 
 
