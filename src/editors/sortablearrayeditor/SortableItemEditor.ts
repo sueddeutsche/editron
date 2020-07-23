@@ -42,7 +42,7 @@ export default class SortableItemEditor {
     }
 
     destroy() {
-
+        this.editor.destroy();
     }
 
     toElement() {
