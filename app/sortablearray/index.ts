@@ -1,6 +1,7 @@
-import Controller from "../src/Controller";
-import SortableArrayEditor from "../src/editors/sortablearrayeditor";
-import "./index-array.scss";
+import Controller from "../../src/Controller";
+import SortableArrayEditor from "../../src/editors/sortablearrayeditor";
+import "./index.scss";
+import "./index.html";
 
 
 const schema = {

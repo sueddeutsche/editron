@@ -18,7 +18,8 @@
     "lint": "eslint services plugin utils test Controller.js editron.js",
     "prepublishOnly": "npm run release",
     "release": "npm run build; npm run dist",
-    "serve": "webpack-dev-server --config webpack.serve.js",
+    "start": "webpack-dev-server --config webpack.serve.js",
+    "start:object": "APP=object webpack-dev-server --config webpack.serve.js",
     "test": "webpack --config webpack.mocha.js --display errors-only",
     "test:watch": "webpack --watch --config webpack.mocha.js --display minimal",
     "watch": "watch 'npm run dist' editors components sass services utils"

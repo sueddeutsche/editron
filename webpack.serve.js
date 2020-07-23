@@ -4,13 +4,14 @@ const config = require("./webpack.build");
 
 config.plugins = []; // reset
 
+const app = process.env.APP || "sortablearray";
+
 // LOCAL
 // config.entry["index.html"] = path.join(__dirname, "test", "support", "local-setup.html");
 // config.entry["editron.css"] = path.join(__dirname, "editron.scss");
 
 // app/array
-config.entry["editron"] = path.join(__dirname, "app", "index-array.ts");
-config.entry["index.html"] = path.join(__dirname, "app", "index-array.html");
+config.entry["editron"] = path.join(__dirname, "app", app, "index.ts");
 
 config.module.rules.push({
     test: [/wysiwyg-editor.scss/, /editron.scss$/],
@@ -34,7 +35,6 @@ config.module.rules.push(
         test: /.*\.scss$/,
         use: [
             "style-loader",
-            // "extract-loader",
             "css-loader",
             {
                 loader: "sass-loader",
