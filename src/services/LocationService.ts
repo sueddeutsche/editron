@@ -50,7 +50,7 @@ export default class LocationService {
 
     PAGE_EVENT = "page";
     TARGET_EVENT = "target";
-    timeout: number;
+    timeout: ReturnType<typeof setTimeout>;
 
     constructor() {
         UIState.on(UIEvent.CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
