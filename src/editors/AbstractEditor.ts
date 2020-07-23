@@ -9,6 +9,16 @@ function getTypeClass(schema: JSONSchema): string {
 }
 
 
+export type Options = {
+    /** set to true, to receive errors from current location and all erorrs of child properties/items */
+    notifyNestedChanges?: boolean;
+    /** set to true, to receive update from current location and all child properties/items changes */
+    notifyNestedErrors?: boolean;
+    /** HTMLDom attributes of root element (e.g. className, data-content, etc) */
+    attrs?: { [p:string]: any };
+}
+
+
 /**
  * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
  * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
@@ -40,8 +50,8 @@ function getTypeClass(schema: JSONSchema): string {
 export default class AbstractEditor {
     pointer: JSONPointer;
     controller: Controller;
-    options: any;
-    errors: Array<any>;
+    options: Options;
+    errors: Array<ValidationError>;
     dom: HTMLElement;
     _addError: Observer;
     _clearErrors: Function;
@@ -50,7 +60,7 @@ export default class AbstractEditor {
         throw new Error("Missing editorOf-method in custom editor");
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: any) {
+    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
         this.pointer = pointer;
         this.controller = controller;
         this.options = options;

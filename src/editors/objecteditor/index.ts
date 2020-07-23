@@ -1,11 +1,12 @@
 import m from "mithril";
 import TextareaForm from "mithril-material-forms/components/textareaform";
 import OverlayService from "../../services/OverlayService";
-import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
+import Container, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
 import { Editor } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
+import { ValidationError } from "../../types";
 
 
 function showJSON(controller: Controller, data: JSONData, title: string) {
@@ -16,9 +17,14 @@ function showJSON(controller: Controller, data: JSONData, title: string) {
 }
 
 
+type ModifiedEditor = Editor & { _property?: string };
+
 export type Options = {
     id?: string;
-    attrs?: object;
+    attrs?: {
+        id?: string;
+        [p: string]: any
+    };
     icon?: string;
     /** hide the title */
     hideTitle?: boolean;
@@ -33,27 +39,28 @@ export type Options = {
 }
 
 export type ViewModel = {
-    pointer: JSONPointer;
-    icon?: string;
+    attrs: {
+        id?: string;
+        [p: string]: any
+    };
     errors: Array<any>;
-    attrs: { [p: string]: any };
-    hideTitle?: boolean;
-    title?: string;
+    pointer: JSONPointer;
+    collapsed?: boolean;
     description?: string;
     disabled?: boolean;
-    ondelete?: Function;
+    hideTitle?: boolean;
+    icon?: string;
+    id?: string;
     oncollapse?: Function;
-    collapsed?: boolean;
+    ondelete?: Function;
+    title?: string;
 }
 
 
 export default class ObjectEditor extends AbstractEditor {
     viewModel: ViewModel;
-    // private $element: HTMLElement;
-    pointer: JSONPointer;
-    options;
-    controller;
-    childEditors: Array<any>;
+    options: Options;
+    childEditors: Array<ModifiedEditor>;
     $children: HTMLElement;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -74,25 +81,23 @@ export default class ObjectEditor extends AbstractEditor {
         this.childEditors = [];
         this.viewModel = {
             pointer,
-            icon: options.icon,
             errors: [],
-            attrs: {},
-            hideTitle: options.hideTitle,
-            title: options.title,
-            description: options.description,
-            ...options
+            ...options,
+            attrs: options.attrs || {},
         };
 
         if (options.collapsed != null) {
             this.viewModel.oncollapse = () => {
-                this.dom.classList.add("collapsible");
                 this.viewModel.collapsed = !this.viewModel.collapsed;
-                this.render();
+                this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
+                this.render(); // redraw container, to update header collapse-icon
             }
+            this.dom.classList.add("collapsible");
+            this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
         }
 
         if (options.addDelete) {
-            this.viewModel.ondelete = () => controller.data().delete(pointer);
+            this.viewModel.ondelete = this.delete;
         }
 
         this.render();
@@ -103,19 +108,15 @@ export default class ObjectEditor extends AbstractEditor {
     updatePointer(pointer: JSONPointer) {
         const returnValue = super.updatePointer(pointer);
 
-        if (this.viewModel == null) {
-            return;
-        }
+        // if (this.viewModel == null) {
+        //     return;
+        // }
 
         this.dom.id = pointer;
         this.options.attrs.id = pointer;
-
         this.viewModel.pointer = pointer;
-        if (this.options.addDelete) {
-            this.viewModel.ondelete = () => this.controller.data().delete(pointer);
-        }
 
-        this.childEditors.forEach(editor => editor.updatePointer(`${this.pointer}/${editor._property}`));
+        this.childEditors.forEach(editor => editor.updatePointer(`${pointer}/${editor._property}`));
         this.render();
 
         return returnValue;
@@ -135,7 +136,8 @@ export default class ObjectEditor extends AbstractEditor {
         }
 
         // fetch latest data
-        const data = this.controller.data().get(this.pointer);
+        const data = this.getData();
+        console.log("update object", data);
         // destroy child editor
         this.childEditors.forEach(editor => editor.destroy());
         this.childEditors.length = 0;
@@ -144,7 +146,7 @@ export default class ObjectEditor extends AbstractEditor {
         // rebuild children
         if (data) {
             Object.keys(data).forEach(property => {
-                const editor = this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
+                const editor = <ModifiedEditor>this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
                 if (editor) {
                     editor._property = property;
                     this.childEditors.push(editor);
@@ -155,18 +157,28 @@ export default class ObjectEditor extends AbstractEditor {
         this.render();
     }
 
-    deleteProperty(property) {
+    /** deletes this object from data */
+    delete() {
+        this.controller.data().delete(this.pointer)
+    }
+
+    /** deletes a property from this object */
+    deleteProperty(property: string): void {
         const data = this.controller.data().get(this.pointer);
         delete data[property];
         this.controller.data().set(this.pointer, data);
     }
 
-    showProperty(property) {
+    /** displays the properties json-value */
+    showProperty(property: string): void {
         const propertyData = this.controller.data().get(`${this.pointer}/${property}`);
         showJSON(this.controller, propertyData, property);
     }
 
-    updateErrors(errors = []) {
+    updateErrors(errors: Array<ValidationError> = []) {
+        if (this.viewModel == null) {
+            return;
+        }
         // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
         // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
         // arrays this should come per default, as the may insert in add items...
@@ -189,8 +201,7 @@ export default class ObjectEditor extends AbstractEditor {
     }
 
     render(): void {
-        this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
-        m.render(this.dom, m(View, this.viewModel));
+        m.render(this.dom, m(Container, this.viewModel));
     }
 
     /** destroy editor, view and event-listeners */

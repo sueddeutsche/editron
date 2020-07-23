@@ -20,6 +20,7 @@
     "release": "npm run build; npm run dist",
     "start": "webpack-dev-server --config webpack.serve.js",
     "start:object": "APP=object webpack-dev-server --config webpack.serve.js",
+    "start:sortable": "APP=sortablearray webpack-dev-server --config webpack.serve.js",
     "test": "webpack --config webpack.mocha.js --display errors-only",
     "test:watch": "webpack --watch --config webpack.mocha.js --display minimal",
     "watch": "watch 'npm run dist' editors components sass services utils"
