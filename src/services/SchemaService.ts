@@ -13,7 +13,7 @@ const { JsonEditor: Core } = jlib.cores;
  * @param [core={}] - instance of json-schema-library Core
  */
 export default class SchemaService {
-    core: typeof Core;
+    core;
     data: JSONData;
     schema: JSONSchema;
     /** cache for resolved json-pointer */

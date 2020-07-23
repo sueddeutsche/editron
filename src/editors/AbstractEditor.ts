@@ -75,6 +75,8 @@ export default class AbstractEditor {
     updatePointer(newPointer: JSONPointer): [JSONPointer, JSONPointer] {
         const oldPointer = this.pointer;
 
+        this.controller.changePointer(newPointer, this);
+
         this.controller.data().removeObserver(oldPointer, this.update);
         this.controller.validator().removeObserver(oldPointer, this.setErrors);
 

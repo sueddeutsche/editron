@@ -56,9 +56,12 @@ export default class Validation {
         return validateAsync(core, data, { schema, pointer, onError: this.onError.bind(this) })
             .then(errors => {
                 this.onDone(errors);
-                return errors;
+                return errors as Array<ValidationError>;
             })
-            .catch(error => this.onFail(error));
+            .catch(error => {
+                this.onFail(error);
+                return [];
+            });
     }
 
     onError(validationError: ValidationError): void {

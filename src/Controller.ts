@@ -5,7 +5,7 @@ import addValidator from "json-schema-library/lib/addValidator";
 import DataService, { EventType as DataServiceEvent } from "./services/DataService";
 import SchemaService from "./services/SchemaService";
 import ValidationService from "./services/ValidationService";
-import LocationService from "./services/LocationService";
+import LocationService, { EventType as LocationEvent } from "./services/LocationService";
 import State from "./services/State";
 import selectEditor from "./utils/selectEditor";
 import _createElement from "./utils/createElement";
@@ -115,10 +115,10 @@ export default class Controller {
     disabled = false;
     editors: Array<EditorPlugin>;
     instances: { [p:string]: any };
-    locationService;
+    locationService: LocationService;
     options: Options;
     schemaService: SchemaService;
-    state;
+    state: State;
     validationService: ValidationService;
 
 
@@ -170,6 +170,12 @@ export default class Controller {
             .on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
         // run initial validation
         this.validateAll();
+
+
+        this.locationService = new LocationService();
+        this.locationService.on(LocationEvent.FOCUS, (pointer: JSONPointer) => {
+            console.log("focus", pointer, this.schemaService.get(pointer));
+        })
     }
 
     /** reset undo history */
@@ -280,12 +286,12 @@ export default class Controller {
     /**
      * Request to insert a child item (within the data) at the given pointer. If multiple options are present, a
      * dialogue is opened to let the user select the appropriate type of child (oneof).
-     * @param {String} pointer  - to array on which to insert the child
-     * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
+     * @param pointer - to array on which to insert the child
+     * @param index - index within array, where the child should be inserted (does not replace). Default: 0
      */
     addItemTo(pointer: JSONPointer, index = 0) {
-        addItem(this.data(), this.schema(), pointer, index);
-        LocationService.goto(gp.join(pointer, index, true));
+        addItem(this.data(), this.schema(), this.locationService, pointer, index);
+        this.locationService.goto(gp.join(pointer, index, true));
     }
 
     /**
@@ -322,7 +328,7 @@ export default class Controller {
      *  setCurrent(pointer) - Update current pointer, but do not jump to target
      * @returns LocationService-Singleton
      */
-    location(): typeof LocationService { return LocationService; }
+    location(): LocationService { return this.locationService; }
 
     /**
      * Set the application data
@@ -428,6 +434,7 @@ export default class Controller {
     }
 
     changePointer(newPointer: JSONPointer, editor: Editor): void {
+        console.log("change pointer", newPointer);
         removeEditorFrom(this.instances, editor);
         this.addInstance(newPointer, editor);
     }

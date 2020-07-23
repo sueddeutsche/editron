@@ -31,7 +31,7 @@ export interface Events {
 export default class ValidationService {
     /** state store-id of service */
     id = "errors";
-    core: typeof Core;
+    core;
     currentValidation: Validation;
     emitter = createNanoEvents<Events>();
     errorHandler: ValidationErrorMapper;

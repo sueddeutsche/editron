@@ -17,7 +17,7 @@ import { JSONPointer } from "../types";
  * @param pointer - to array on which to insert the child
  * @param index - index within array, where the child should be inserted (does not replace). Default: 0
  */
-function addItem(dataService: DataService, schemaService: SchemaService, pointer: JSONPointer, index = 0) {
+function addItem(dataService: DataService, schemaService: SchemaService, locationService: LocationService, pointer: JSONPointer, index = 0) {
     const list = dataService.get(pointer);
     const schema = schemaService.get(pointer);
     if (schema.type !== "array") {
@@ -50,7 +50,7 @@ function addItem(dataService: DataService, schemaService: SchemaService, pointer
             const selectedIndex = parseInt(value, 10);
             addSelection(selectedIndex, schemaService, dataService);
             OverlayService.close();
-            LocationService.goto(`${pointer}/${index}`);
+            locationService.goto(`${pointer}/${index}`);
         }
     }));
 

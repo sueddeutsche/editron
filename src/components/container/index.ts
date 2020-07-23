@@ -26,8 +26,10 @@ export default {
     },
 
     view(vnode) {
+        const { hideTitle } = vnode.attrs;
+
         return [
-            vnode.attrs.hideTitle === true ? null : m(ContainerHeader, vnode.attrs),
+            hideTitle === true ? null : m(ContainerHeader, vnode.attrs),
             m(ContainerDescription, vnode.attrs),
             vnode.children,
             m(ContainerErrors, vnode.attrs),

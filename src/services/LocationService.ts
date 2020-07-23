@@ -46,10 +46,16 @@ const emitter = createNanoEvents<Events>();
  * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
  * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
  */
-const LocationService = {
+export default class LocationService {
 
-    PAGE_EVENT: "page",
-    TARGET_EVENT: "target",
+    PAGE_EVENT = "page";
+    TARGET_EVENT = "target";
+    timeout: number;
+
+    constructor() {
+        UIState.on(UIEvent.CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
+        UIState.on(UIEvent.CURRENT_POINTER, pointer => emitter.emit(EventType.TARGET, pointer));
+    }
 
     // update page and target pointer
     goto(targetPointer: JSONPointer) {
@@ -66,7 +72,7 @@ const LocationService = {
         }
         UIState.setCurrentPointer(gp.join(targetPointer, true));
         this.focus();
-    },
+    }
 
     /** set target pointer */
     setCurrent(pointer: JSONPointer) {
@@ -74,11 +80,11 @@ const LocationService = {
             UIState.setCurrentPointer(pointer);
             emitter.emit(EventType.FOCUS, pointer);
         }
-    },
+    }
 
     getCurrent() {
         return UIState.getCurrentPointer();
-    },
+    }
 
     /** focus target pointer */
     focus() {
@@ -103,7 +109,7 @@ const LocationService = {
             targetElement.focus && targetElement.focus();
 
         }, DELAY);
-    },
+    }
 
     blur(pointer: JSONPointer) {
         if (UIState.getCurrentPointer() !== pointer) {
@@ -111,22 +117,17 @@ const LocationService = {
         }
         UIState.setCurrentPointer("");
         emitter.emit(EventType.BLUR, pointer);
-    },
+    }
 
     /** add an event listener to update events */
     on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe {
         return emitter.on(eventType, callback);
-    },
+    }
 
     /** remove an event listener from update events */
     off<T extends keyof Events>(eventType: T, callback: Function): void {
-        emitter.events[eventType] = emitter.events[eventType].filter(func => func !== callback);
+        if (Array.isArray(emitter.events[eventType])) {
+            emitter.events[eventType] = emitter.events[eventType].filter(func => func !== callback);
+        }
     }
 };
-
-
-UIState.on(UIEvent.CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
-UIState.on(UIEvent.CURRENT_POINTER, pointer => emitter.emit(EventType.TARGET, pointer));
-
-
-export default LocationService;

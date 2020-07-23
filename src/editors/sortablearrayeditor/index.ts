@@ -66,11 +66,24 @@ export default class SortableEditor extends AbstractEditor {
         this.$items.dataset.parent = this.pointer;
         this.updateItems();
 
+        let hasMoved = false;
         this.sortable = new Sortable(this.$items, {
             group: options.sortableGroup ?? this.pointer,
             handle: ".editron-handle",
             onChoose: () => {
-                console.log("choose");
+                // console.log("choose");
+            },
+            onStart: () => {
+                hasMoved = true;
+            },
+            onUnchoose: (event) => {
+                const { to, from, oldIndex, newIndex } = event;
+                if (hasMoved === false && to === from && newIndex == null) {
+                    // console.log(event);
+                    // selectionService.toggle(`${this.pointer}/${oldIndex}`);
+                    controller.location().setCurrent(`${this.pointer}/${oldIndex}`);
+                }
+                hasMoved = false;
             },
             onAdd: (event) => {
                 const { from, newIndex, item } = event;
@@ -79,6 +92,9 @@ export default class SortableEditor extends AbstractEditor {
                     let data;
                     try {
                         data = JSON.parse(item.dataset.content);
+                        // for convinience, add missing data
+                        data = controller.schema().core.getTemplate([data], schema)[0];
+
                     } catch (e) {
                         console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
                         // remove node
@@ -96,10 +112,9 @@ export default class SortableEditor extends AbstractEditor {
             onEnd(event: SortableEvent): void {
                 const element = event.item;  // dragged HTMLElement
                 const { to, from, oldIndex, newIndex } = event;
-                console.log("on end", pointer);
 
                 if (to === from && oldIndex === newIndex) {
-                    console.log("nothing changed");
+                    console.log("drag had no effect");
                     return;
                 }
 
