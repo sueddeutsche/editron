@@ -294,6 +294,7 @@ attrs               | Object        | attributes object, passed to the editors h
 icon                | String        | if supported, define the type of [material icon](https://material.io/tools/icons/?style=baseline)
 hidden              | Boolean       | hide the value from the user-interface
 enum                | String[]      | ui titles for an enum-selection
+placeholder         | String        | placeholder, if editor uses an input-element
 
 
 Example:
