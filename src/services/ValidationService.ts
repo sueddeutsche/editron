@@ -7,10 +7,12 @@ import { ActionCreators } from "./reducers/actions";
 import { createNanoEvents, Unsubscribe } from "nanoevents";
 import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
 
-const { JsonEditor: Core} = jlib.cores;
+const { JsonEditor: Core } = jlib.cores;
 
 
 export { Observer };
+
+
 
 export enum EventType {
     BEFORE_VALIDATION = "beforeValidation",
