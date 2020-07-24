@@ -29,7 +29,7 @@ const schema = {
                         type: "array",
                         "editron:ui": {
                             sortableGroup: "group",
-                            sortable: false
+                            sortable: true
                         },
                         items: {
                             oneOfProperty: "type",
@@ -60,7 +60,7 @@ const schema = {
             },
             properties: {
                 type: { type: "string", default: "embed", pattern: "^embed$", "editron:ui": { hidden: true } },
-                title: { type: "string", minLength: 0 }
+                title: { type: "string", minLength: 1 }
             }
         },
         teaser: {
@@ -82,21 +82,11 @@ const schema = {
 const data = {
     groups: [
         {
-            title: "erste",
+            title: "Gruppe",
             content: [
                 {
-                    type: "embed", title:"first embed"
-                }
-            ]
-        },
-        {
-            title: "zweite",
-            content: [
-                {
-                    type: "embed", title:"MIMIMI"
-                },
-                {
-                    type: "teaser", title:"tease"
+                    type: "embed",
+                    title: "first embed"
                 }
             ]
         }
