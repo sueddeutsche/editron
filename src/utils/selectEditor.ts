@@ -37,7 +37,6 @@ function select(editors: Array<EditorPlugin>, pointer: JSONPointer, controller: 
     }
 
     for (let i = 0, l = editors.length; i < l; i += 1) {
-        // @ts-ignore
         if (editors[i].editorOf(pointer, controller, options)) {
             return editors[i];
         }

@@ -184,7 +184,6 @@ export default class SortableEditor extends AbstractEditor {
 
     destroy() {
         if (this.viewModel) {
-            console.log("destroy sortable array");
             this.children.forEach(editor => editor.destroy());
             super.destroy();
             this.sortable.destroy();

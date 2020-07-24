@@ -434,7 +434,6 @@ export default class Controller {
     }
 
     changePointer(newPointer: JSONPointer, editor: Editor): void {
-        console.log("change pointer", newPointer);
         removeEditorFrom(this.instances, editor);
         this.addInstance(newPointer, editor);
     }

@@ -1,10 +1,10 @@
 /* eslint arrow-parens: 0 */
 const gp = require("gson-pointer");
-import { JSONPointer, JSONData, JSONSchema } from "../../types";
+import { JSONPointer, JSONData, JSONSchema, ValidationError } from "../../types";
 
 
 export type Observer = {
-    <T>(event: Array<T>): void;
+    (event: Array<ValidationError>): void;
     receiveChildEvents?: boolean;
 }
 
@@ -185,7 +185,7 @@ class BubblingCollectionObservable {
      * @param pointer
      * @param eventCollection    - array of events at target `pointer`
      */
-    _notifyAll(pointer: JSONPointer, eventCollection) {
+    _notifyAll(pointer: JSONPointer, eventCollection: Array<ValidationError>) {
         const frags = gp.split(pointer);
         while (frags.length > 0) {
             const p = gp.join(frags, true);
@@ -200,18 +200,15 @@ class BubblingCollectionObservable {
      * aggregated event-list []. For a first call the received event will look
      * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
      * etc, until `reset()` ist called by the observable.
-     *
-     * @param  {JsonPointer} pointer
-     * @param  {Any} event
      */
-    notify<T>(pointer: JSONPointer, event: T) {
+    notify(pointer: JSONPointer, event: ValidationError) {
         this.eventCollection[pointer] = this.eventCollection[pointer] || [];
         this.eventCollection[pointer].push(event);
 
         this._notifyAll(pointer, this.eventCollection[pointer]);
     }
 
-    _notify<T>(observerPointer: JSONPointer, sourcePointer: JSONPointer, event: Array<T>) {
+    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, event: Array<ValidationError>) {
         if (this.observers[observerPointer] == null) {
             return;
         }

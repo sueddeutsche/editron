@@ -2,6 +2,10 @@
 import { strict as assert } from "assert";
 import Bubbles from "../../../src/services/utils/BubblingCollectionObservable";
 const cp = <T>(v: T): T => JSON.parse(JSON.stringify(v));
+import { ValidationError } from "../../../src/types";
+
+
+const createValidationError = (o = {}): ValidationError => o as ValidationError;
 
 
 describe("BubblingCollectionObservable", () => {
@@ -11,7 +15,7 @@ describe("BubblingCollectionObservable", () => {
         let called = false;
         const b = new Bubbles();
         b.observe("#", () => (called = true));
-        b.notify("#", []);
+        b.notify("#", createValidationError());
 
         assert.equal(called, true);
     });
@@ -22,7 +26,7 @@ describe("BubblingCollectionObservable", () => {
         const cb = () => (called = true);
         b.observe("#", cb);
         b.removeObserver("#", cb);
-        b.notify("#", []);
+        b.notify("#", createValidationError());
 
         assert.equal(called, false);
     });
@@ -34,7 +38,7 @@ describe("BubblingCollectionObservable", () => {
         b.observe("#/child", () => called.push("#/child"), true);
         b.observe("#/child/item", () => called.push("#/child/item"), true);
 
-        b.notify("#/child/item", []);
+        b.notify("#/child/item", createValidationError());
 
         assert.deepEqual(called, ["#/child/item", "#/child", "#"]);
     });
@@ -46,7 +50,7 @@ describe("BubblingCollectionObservable", () => {
         b.observe("#/child", () => called.push("#/child"), false);
         b.observe("#/child/item", () => called.push("#/child/item"), false);
 
-        b.notify("#/child/item", []);
+        b.notify("#/child/item", createValidationError());
 
         assert.deepEqual(called, ["#/child/item", "#"]);
     });
@@ -56,8 +60,8 @@ describe("BubblingCollectionObservable", () => {
         const b = new Bubbles();
         b.observe("#/child/item", (event) => events.push(cp(event)), false);
 
-        b.notify("#/child/item", { id: 1 });
-        b.notify("#/child/item", { id: 2 });
+        b.notify("#/child/item", createValidationError({ id: 1 }));
+        b.notify("#/child/item", createValidationError({ id: 2 }));
 
         assert.equal(events.length, 2);
         assert.equal(events[0].length, 1);
@@ -69,9 +73,9 @@ describe("BubblingCollectionObservable", () => {
         const b = new Bubbles();
         b.observe("#", (event) => events.push(cp(event)), true);
 
-        b.notify("#/child/item", { id: 1 });
-        b.notify("#/child/item", { id: 2 });
-        b.notify("#/child", { id: 3 });
+        b.notify("#/child/item", createValidationError({ id: 1 }));
+        b.notify("#/child/item", createValidationError({ id: 2 }));
+        b.notify("#/child", createValidationError({ id: 3 }));
 
         assert.equal(events.length, 3);
         assert.equal(events[0].length, 1);
@@ -84,9 +88,9 @@ describe("BubblingCollectionObservable", () => {
         const b = new Bubbles();
         b.observe("#/child", (event) => events.push(cp(event)), true);
 
-        b.notify("#/child/item", { id: 1 });
-        b.notify("#/child/item", { id: 2 });
-        b.notify("#/child", { id: 3 });
+        b.notify("#/child/item", createValidationError({ id: 1 }));
+        b.notify("#/child/item", createValidationError({ id: 2 }));
+        b.notify("#/child", createValidationError({ id: 3 }));
 
         assert.equal(events.length, 3);
         assert.equal(events[0].length, 1);
@@ -104,8 +108,8 @@ describe("BubblingCollectionObservable", () => {
         b.observe("#/parent/target", e => targetEvents.push(e));
         b.observe("#/parent", e => parentEvents.push(e), true);
 
-        b.notify("#/parent/target", { id: 1 });
-        b.notify("#/parent", { id: 2 });
+        b.notify("#/parent/target", createValidationError({ id: 1 }));
+        b.notify("#/parent", createValidationError({ id: 2 }));
         assert.deepEqual(targetEvents, [[{ id: 1 }]]);
         assert.deepEqual(parentEvents, [[{ id: 1 }], [{ id: 1 }, { id: 2 }]]);
         targetEvents.length = 0;
@@ -123,8 +127,8 @@ describe("BubblingCollectionObservable", () => {
         const b = new Bubbles();
         b.observe("#/parent/target", e => targetEvents.push(e));
         b.observe("#/parent", e => parentEvents.push(e), true);
-        b.notify("#/parent/target", { id: 1 });
-        b.notify("#/parent", { id: 2 });
+        b.notify("#/parent/target", createValidationError({ id: 1 }));
+        b.notify("#/parent", createValidationError({ id: 2 }));
         targetEvents.length = 0;
         parentEvents.length = 0;
 
@@ -143,10 +147,10 @@ describe("BubblingCollectionObservable", () => {
         // ignore reset event (empty array)
         b.observe("#/child", (event) => event.length !== 0 && events.push(cp(event)), true);
 
-        b.notify("#/child/item", { id: 1 });
-        b.notify("#/child/item", { id: 2 });
+        b.notify("#/child/item", createValidationError({ id: 1 }));
+        b.notify("#/child/item", createValidationError({ id: 2 }));
         b.reset();
-        b.notify("#/child", { id: 3 });
+        b.notify("#/child", createValidationError({ id: 3 }));
 
         assert.equal(events[0].length, 1);
         assert.equal(events[1].length, 2);
@@ -158,7 +162,7 @@ describe("BubblingCollectionObservable", () => {
         const events = [];
         const b = new Bubbles();
         b.observe("#/child", (event) => events.push(cp(event)), true);
-        b.notify("#/child/item", { id: 1 });
+        b.notify("#/child/item", createValidationError({ id: 1 }));
         b.reset();
 
         assert.equal(events.length, 2);

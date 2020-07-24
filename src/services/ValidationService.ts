@@ -135,7 +135,7 @@ export default class ValidationService {
         this.emitter.emit(eventType, event);
     }
 
-    observe<T extends Observer>(pointer: JSONPointer, observer: T, bubbledEvents = false): T {
+    observe(pointer: JSONPointer, observer: Observer, bubbledEvents = false): Observer {
         this.observer.observe(pointer, observer, bubbledEvents);
         return observer;
     }
@@ -144,7 +144,7 @@ export default class ValidationService {
         this.observer.removeObserver(pointer, observer);
     }
 
-    notify(pointer: JSONPointer, event = {}) {
+    notify(pointer: JSONPointer, event: ValidationError) {
         this.observer.notify(pointer, event);
     }
 

@@ -137,7 +137,6 @@ export default class ObjectEditor extends AbstractEditor {
 
         // fetch latest data
         const data = this.getData();
-        console.log("update object", data);
         // destroy child editor
         this.childEditors.forEach(editor => editor.destroy());
         this.childEditors.length = 0;

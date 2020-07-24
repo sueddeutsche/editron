@@ -1,6 +1,6 @@
 import m from "mithril";
 import getId from "../utils/getID";
-import { JSONPointer } from "../types";
+import { JSONPointer, ValidationError } from "../types";
 import Controller from "../Controller";
 
 
@@ -168,7 +168,8 @@ export default class AbstractValueEditor {
     }
 
     // adds an error to view
-    setErrors(errors) {
+    setErrors(errors: Array<ValidationError>) {
+        console.log("set errors", errors);
         this.viewModel.errors = errors;
         this.render();
     }
