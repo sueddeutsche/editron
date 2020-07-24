@@ -9,11 +9,8 @@
     display: flex;
 
     & > .editron-handle {
-        min-width: 4px;
-        max-width: $mmf-block/2;
+        width: $mmf-block/2;
         margin-right: $mmf-unit;
-        flex-grow: 1;
-        flex-shrink: 1;
         // background: repeating-linear-gradient(-45deg, transparent, transparent 10px, #ccc 10px, #ccc 20px);
         background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABZJREFUeNpi2r9//38gYGAEESAAEGAAasgJOgzOKCoAAAAASUVORK5CYII=);
 
