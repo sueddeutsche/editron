@@ -13,7 +13,7 @@ global.innerWidth = global.window.innerWidth; //860;
 global.innerHeight = global.window.innerHeight; //960;
 
 // Require Mithril to make sure it loads properly.
-require("mithril");
+global.m = require("mithril");
 
 // @todo doesnt work
 // And now, make sure JSDOM ends when the tests end.
