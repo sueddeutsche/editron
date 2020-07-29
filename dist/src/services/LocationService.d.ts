@@ -34,9 +34,11 @@ export interface Events {
  * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
  * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
  */
-declare const LocationService: {
+export default class LocationService {
     PAGE_EVENT: string;
     TARGET_EVENT: string;
+    timeout: ReturnType<typeof setTimeout>;
+    constructor();
     goto(targetPointer: JSONPointer): void;
     /** set target pointer */
     setCurrent(pointer: JSONPointer): void;
@@ -45,8 +47,7 @@ declare const LocationService: {
     focus(): void;
     blur(pointer: JSONPointer): void;
     /** add an event listener to update events */
-    on<T extends EventType>(eventType: T, callback: Events[T]): Unsubscribe;
+    on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe;
     /** remove an event listener from update events */
-    off<T_1 extends EventType>(eventType: T_1, callback: Function): void;
-};
-export default LocationService;
+    off<T extends keyof Events>(eventType: T, callback: Function): void;
+}

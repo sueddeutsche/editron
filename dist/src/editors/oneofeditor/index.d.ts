@@ -1,12 +1,13 @@
 import Controller from "../../Controller";
+import { Option } from "mithril-material-forms/components/select";
 import { Editor } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
 export declare type ViewModel = {
     description?: string;
     disabled?: boolean;
     id: string;
-    onchange?: Function;
-    options?: any;
+    onchange: (value: string) => void;
+    options: Array<Option>;
     pointer: JSONPointer;
     title?: string;
     value?: any;

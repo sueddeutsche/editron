@@ -3,11 +3,12 @@ import DataService from "./services/DataService";
 import SchemaService from "./services/SchemaService";
 import ValidationService from "./services/ValidationService";
 import LocationService from "./services/LocationService";
+import State from "./services/State";
 import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
-import { Editor } from "./editors/Editor";
+import { Editor, EditorPlugin } from "./editors/Editor";
 export declare type Options = {
     log?: boolean;
-    editors?: Array<Editor>;
+    editors?: Array<EditorPlugin>;
     proxy?: ProxyOptions | Foxy;
 };
 /**
@@ -59,14 +60,14 @@ export default class Controller {
     dataService: DataService;
     destroyed: boolean;
     disabled: boolean;
-    editors: Array<Editor>;
+    editors: Array<EditorPlugin>;
     instances: {
         [p: string]: any;
     };
-    locationService: any;
+    locationService: LocationService;
     options: Options;
     schemaService: SchemaService;
-    state: any;
+    state: State;
     validationService: ValidationService;
     constructor(schema?: JSONSchema, data?: JSONData, options?: Options);
     /** reset undo history */
@@ -96,7 +97,7 @@ export default class Controller {
      * @param  [options] - individual editor options
      * @returns created editor-instance or undefined;
      */
-    createEditor(pointer: JSONPointer, element: HTMLElement, options: any): Editor | undefined;
+    createEditor(pointer: JSONPointer, element: HTMLElement, options?: any): Editor | undefined;
     /**
      * Call this method, when your editor is destroyed, deregistering its instance on editron
      * @param editor - editor instance to remove
@@ -106,8 +107,8 @@ export default class Controller {
     /**
      * Request to insert a child item (within the data) at the given pointer. If multiple options are present, a
      * dialogue is opened to let the user select the appropriate type of child (oneof).
-     * @param {String} pointer  - to array on which to insert the child
-     * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
+     * @param pointer - to array on which to insert the child
+     * @param index - index within array, where the child should be inserted (does not replace). Default: 0
      */
     addItemTo(pointer: JSONPointer, index?: number): void;
     /**
@@ -140,7 +141,7 @@ export default class Controller {
      *  setCurrent(pointer) - Update current pointer, but do not jump to target
      * @returns LocationService-Singleton
      */
-    location(): typeof LocationService;
+    location(): LocationService;
     /**
      * Set the application data
      * @param {Any} data    - json data matching registered json-schema
@@ -154,7 +155,7 @@ export default class Controller {
     /**
      * @returns registered editor-widgets used to edit the json-data
      */
-    getEditors(): Editor[];
+    getEditors(): EditorPlugin[];
     /**
      * @returns currently active editor/widget instances
      */

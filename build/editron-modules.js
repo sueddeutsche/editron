@@ -411,443 +411,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 /***/ }),
 
-/***/ "./node_modules/autosize/dist/autosize.js":
-/*!************************************************!*\
-  !*** ./node_modules/autosize/dist/autosize.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	autosize 4.0.2
-	license: MIT
-	http://www.jacklmoore.com/autosize
-*/
-(function (global, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else { var mod; }
-})(this, function (module, exports) {
-  'use strict';
-
-  var map = typeof Map === "function" ? new Map() : function () {
-    var keys = [];
-    var values = [];
-    return {
-      has: function has(key) {
-        return keys.indexOf(key) > -1;
-      },
-      get: function get(key) {
-        return values[keys.indexOf(key)];
-      },
-      set: function set(key, value) {
-        if (keys.indexOf(key) === -1) {
-          keys.push(key);
-          values.push(value);
-        }
-      },
-      "delete": function _delete(key) {
-        var index = keys.indexOf(key);
-
-        if (index > -1) {
-          keys.splice(index, 1);
-          values.splice(index, 1);
-        }
-      }
-    };
-  }();
-
-  var createEvent = function createEvent(name) {
-    return new Event(name, {
-      bubbles: true
-    });
-  };
-
-  try {
-    new Event('test');
-  } catch (e) {
-    // IE does not support `new Event()`
-    createEvent = function createEvent(name) {
-      var evt = document.createEvent('Event');
-      evt.initEvent(name, true, false);
-      return evt;
-    };
-  }
-
-  function assign(ta) {
-    if (!ta || !ta.nodeName || ta.nodeName !== 'TEXTAREA' || map.has(ta)) return;
-    var heightOffset = null;
-    var clientWidth = null;
-    var cachedHeight = null;
-
-    function init() {
-      var style = window.getComputedStyle(ta, null);
-
-      if (style.resize === 'vertical') {
-        ta.style.resize = 'none';
-      } else if (style.resize === 'both') {
-        ta.style.resize = 'horizontal';
-      }
-
-      if (style.boxSizing === 'content-box') {
-        heightOffset = -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
-      } else {
-        heightOffset = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-      } // Fix when a textarea is not on document body and heightOffset is Not a Number
-
-
-      if (isNaN(heightOffset)) {
-        heightOffset = 0;
-      }
-
-      update();
-    }
-
-    function changeOverflow(value) {
-      {
-        // Chrome/Safari-specific fix:
-        // When the textarea y-overflow is hidden, Chrome/Safari do not reflow the text to account for the space
-        // made available by removing the scrollbar. The following forces the necessary text reflow.
-        var width = ta.style.width;
-        ta.style.width = '0px'; // Force reflow:
-
-        /* jshint ignore:start */
-
-        ta.offsetWidth;
-        /* jshint ignore:end */
-
-        ta.style.width = width;
-      }
-      ta.style.overflowY = value;
-    }
-
-    function getParentOverflows(el) {
-      var arr = [];
-
-      while (el && el.parentNode && el.parentNode instanceof Element) {
-        if (el.parentNode.scrollTop) {
-          arr.push({
-            node: el.parentNode,
-            scrollTop: el.parentNode.scrollTop
-          });
-        }
-
-        el = el.parentNode;
-      }
-
-      return arr;
-    }
-
-    function resize() {
-      if (ta.scrollHeight === 0) {
-        // If the scrollHeight is 0, then the element probably has display:none or is detached from the DOM.
-        return;
-      }
-
-      var overflows = getParentOverflows(ta);
-      var docTop = document.documentElement && document.documentElement.scrollTop; // Needed for Mobile IE (ticket #240)
-
-      ta.style.height = '';
-      ta.style.height = ta.scrollHeight + heightOffset + 'px'; // used to check if an update is actually necessary on window.resize
-
-      clientWidth = ta.clientWidth; // prevents scroll-position jumping
-
-      overflows.forEach(function (el) {
-        el.node.scrollTop = el.scrollTop;
-      });
-
-      if (docTop) {
-        document.documentElement.scrollTop = docTop;
-      }
-    }
-
-    function update() {
-      resize();
-      var styleHeight = Math.round(parseFloat(ta.style.height));
-      var computed = window.getComputedStyle(ta, null); // Using offsetHeight as a replacement for computed.height in IE, because IE does not account use of border-box
-
-      var actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(computed.height)) : ta.offsetHeight; // The actual height not matching the style height (set via the resize method) indicates that 
-      // the max-height has been exceeded, in which case the overflow should be allowed.
-
-      if (actualHeight < styleHeight) {
-        if (computed.overflowY === 'hidden') {
-          changeOverflow('scroll');
-          resize();
-          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
-        }
-      } else {
-        // Normally keep overflow set to hidden, to avoid flash of scrollbar as the textarea expands.
-        if (computed.overflowY !== 'hidden') {
-          changeOverflow('hidden');
-          resize();
-          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
-        }
-      }
-
-      if (cachedHeight !== actualHeight) {
-        cachedHeight = actualHeight;
-        var evt = createEvent('autosize:resized');
-
-        try {
-          ta.dispatchEvent(evt);
-        } catch (err) {// Firefox will throw an error on dispatchEvent for a detached element
-          // https://bugzilla.mozilla.org/show_bug.cgi?id=889376
-        }
-      }
-    }
-
-    var pageResize = function pageResize() {
-      if (ta.clientWidth !== clientWidth) {
-        update();
-      }
-    };
-
-    var destroy = function (style) {
-      window.removeEventListener('resize', pageResize, false);
-      ta.removeEventListener('input', update, false);
-      ta.removeEventListener('keyup', update, false);
-      ta.removeEventListener('autosize:destroy', destroy, false);
-      ta.removeEventListener('autosize:update', update, false);
-      Object.keys(style).forEach(function (key) {
-        ta.style[key] = style[key];
-      });
-      map["delete"](ta);
-    }.bind(ta, {
-      height: ta.style.height,
-      resize: ta.style.resize,
-      overflowY: ta.style.overflowY,
-      overflowX: ta.style.overflowX,
-      wordWrap: ta.style.wordWrap
-    });
-
-    ta.addEventListener('autosize:destroy', destroy, false); // IE9 does not fire onpropertychange or oninput for deletions,
-    // so binding to onkeyup to catch most of those events.
-    // There is no way that I know of to detect something like 'cut' in IE9.
-
-    if ('onpropertychange' in ta && 'oninput' in ta) {
-      ta.addEventListener('keyup', update, false);
-    }
-
-    window.addEventListener('resize', pageResize, false);
-    ta.addEventListener('input', update, false);
-    ta.addEventListener('autosize:update', update, false);
-    ta.style.overflowX = 'hidden';
-    ta.style.wordWrap = 'break-word';
-    map.set(ta, {
-      destroy: destroy,
-      update: update
-    });
-    init();
-  }
-
-  function destroy(ta) {
-    var methods = map.get(ta);
-
-    if (methods) {
-      methods.destroy();
-    }
-  }
-
-  function update(ta) {
-    var methods = map.get(ta);
-
-    if (methods) {
-      methods.update();
-    }
-  }
-
-  var autosize = null; // Do nothing in Node.js environment and IE8 (or lower)
-
-  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
-    autosize = function autosize(el) {
-      return el;
-    };
-
-    autosize.destroy = function (el) {
-      return el;
-    };
-
-    autosize.update = function (el) {
-      return el;
-    };
-  } else {
-    autosize = function autosize(el, options) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], function (x) {
-          return assign(x, options);
-        });
-      }
-
-      return el;
-    };
-
-    autosize.destroy = function (el) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], destroy);
-      }
-
-      return el;
-    };
-
-    autosize.update = function (el) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], update);
-      }
-
-      return el;
-    };
-  }
-
-  exports["default"] = autosize;
-  module.exports = exports['default'];
-});
-
-/***/ }),
-
-/***/ "./node_modules/deepmerge/dist/cjs.js":
-/*!********************************************!*\
-  !*** ./node_modules/deepmerge/dist/cjs.js ***!
-  \********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-var isMergeableObject = function isMergeableObject(value) {
-  return isNonNullObject(value) && !isSpecial(value);
-};
-
-function isNonNullObject(value) {
-  return !!value && _typeof(value) === 'object';
-}
-
-function isSpecial(value) {
-  var stringValue = Object.prototype.toString.call(value);
-  return stringValue === '[object RegExp]' || stringValue === '[object Date]' || isReactElement(value);
-} // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
-
-
-var canUseSymbol = typeof Symbol === 'function' && Symbol["for"];
-var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol["for"]('react.element') : 0xeac7;
-
-function isReactElement(value) {
-  return value.$$typeof === REACT_ELEMENT_TYPE;
-}
-
-function emptyTarget(val) {
-  return Array.isArray(val) ? [] : {};
-}
-
-function cloneUnlessOtherwiseSpecified(value, options) {
-  return options.clone !== false && options.isMergeableObject(value) ? deepmerge(emptyTarget(value), value, options) : value;
-}
-
-function defaultArrayMerge(target, source, options) {
-  return target.concat(source).map(function (element) {
-    return cloneUnlessOtherwiseSpecified(element, options);
-  });
-}
-
-function getMergeFunction(key, options) {
-  if (!options.customMerge) {
-    return deepmerge;
-  }
-
-  var customMerge = options.customMerge(key);
-  return typeof customMerge === 'function' ? customMerge : deepmerge;
-}
-
-function getEnumerableOwnPropertySymbols(target) {
-  return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function (symbol) {
-    return target.propertyIsEnumerable(symbol);
-  }) : [];
-}
-
-function getKeys(target) {
-  return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target));
-}
-
-function propertyIsOnObject(object, property) {
-  try {
-    return property in object;
-  } catch (_) {
-    return false;
-  }
-} // Protects from prototype poisoning and unexpected merging up the prototype chain.
-
-
-function propertyIsUnsafe(target, key) {
-  return propertyIsOnObject(target, key) // Properties are safe to merge if they don't exist in the target yet,
-  && !(Object.hasOwnProperty.call(target, key) // unsafe if they exist up the prototype chain,
-  && Object.propertyIsEnumerable.call(target, key)); // and also unsafe if they're nonenumerable.
-}
-
-function mergeObject(target, source, options) {
-  var destination = {};
-
-  if (options.isMergeableObject(target)) {
-    getKeys(target).forEach(function (key) {
-      destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
-    });
-  }
-
-  getKeys(source).forEach(function (key) {
-    if (propertyIsUnsafe(target, key)) {
-      return;
-    }
-
-    if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
-      destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
-    } else {
-      destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
-    }
-  });
-  return destination;
-}
-
-function deepmerge(target, source, options) {
-  options = options || {};
-  options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-  options.isMergeableObject = options.isMergeableObject || isMergeableObject; // cloneUnlessOtherwiseSpecified is added to `options` so that custom arrayMerge()
-  // implementations can use it. The caller may not replace it.
-
-  options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
-  var sourceIsArray = Array.isArray(source);
-  var targetIsArray = Array.isArray(target);
-  var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
-
-  if (!sourceAndTargetTypesMatch) {
-    return cloneUnlessOtherwiseSpecified(source, options);
-  } else if (sourceIsArray) {
-    return options.arrayMerge(target, source, options);
-  } else {
-    return mergeObject(target, source, options);
-  }
-}
-
-deepmerge.all = function deepmergeAll(array, options) {
-  if (!Array.isArray(array)) {
-    throw new Error('first argument should be an array');
-  }
-
-  return array.reduce(function (prev, next) {
-    return deepmerge(prev, next, options);
-  }, {});
-};
-
-var deepmerge_1 = deepmerge;
-module.exports = deepmerge_1;
-
-/***/ }),
-
 /***/ "./node_modules/diff_match_patch/lib/diff_match_patch.js":
 /*!***************************************************************!*\
   !*** ./node_modules/diff_match_patch/lib/diff_match_patch.js ***!
@@ -3166,204 +2729,6 @@ exports['DIFF_EQUAL'] = DIFF_EQUAL;
 
 /***/ }),
 
-/***/ "./node_modules/gson-conform/lib/asArray.js":
-/*!**************************************************!*\
-  !*** ./node_modules/gson-conform/lib/asArray.js ***!
-  \**************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Converts an object to an array
- *
- * @param  {Mixed} value to convert to array
- * @return {Array} to array converted input
- */
-
-function asArray(value) {
-  if (Array.isArray(value)) {
-    return value; // prevent duplication
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    return Object.keys(value).map(function (key) {
-      return value[key];
-    });
-  } else {
-    return [];
-  }
-}
-
-module.exports = asArray;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/forEach.js":
-/*!**************************************************!*\
-  !*** ./node_modules/gson-conform/lib/forEach.js ***!
-  \**************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Iterates over object or array, passing each key, value and parentObject to the callback
- *
- * @param  {Object|Array} value	to iterate
- * @param  {Function} callback	receiving key on given input value
- */
-
-function forEach(object, callback) {
-  var keys;
-
-  if (Array.isArray(object)) {
-    object.forEach(callback);
-  } else if (Object.prototype.toString.call(object) === "[object Object]") {
-    Object.keys(object).forEach(function (key) {
-      callback(object[key], key, object);
-    });
-  }
-}
-
-module.exports = forEach;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/index.js":
-/*!************************************************!*\
-  !*** ./node_modules/gson-conform/lib/index.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.values = __webpack_require__(/*! ./values */ "./node_modules/gson-conform/lib/values.js");
-exports.asArray = __webpack_require__(/*! ./asArray */ "./node_modules/gson-conform/lib/asArray.js");
-exports.forEach = __webpack_require__(/*! ./forEach */ "./node_modules/gson-conform/lib/forEach.js");
-exports.keyOf = __webpack_require__(/*! ./keyOf */ "./node_modules/gson-conform/lib/keyOf.js");
-exports.keys = __webpack_require__(/*! ./keys */ "./node_modules/gson-conform/lib/keys.js");
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/keyOf.js":
-/*!************************************************!*\
-  !*** ./node_modules/gson-conform/lib/keyOf.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var forEach = __webpack_require__(/*! ./forEach */ "./node_modules/gson-conform/lib/forEach.js");
-/**
- * Returns the key of the value
- *
- * @param  {Object|Array} data	to scan
- * @param  {Mixed} value 		to search
- * @return {String|Number} key of (last) found result or null
- */
-
-
-function keyOf(data, value) {
-  var resultKey = null;
-  forEach(data, function (itemValue, itemKey) {
-    if (value === itemValue) {
-      resultKey = itemKey;
-    }
-  });
-  return resultKey;
-}
-
-module.exports = keyOf;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/keys.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-conform/lib/keys.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Returns all keys of the given input data
- *
- * @param  {Mixed} value
- * @return {Array} containing keys of given value
- */
-
-function keys(value) {
-  var keys;
-
-  if (Array.isArray(value)) {
-    keys = value.map(function (value, index) {
-      return index;
-    });
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    return Object.keys(value);
-  } else {
-    keys = [];
-  }
-
-  return keys;
-}
-
-module.exports = keys;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/values.js":
-/*!*************************************************!*\
-  !*** ./node_modules/gson-conform/lib/values.js ***!
-  \*************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Returns all values of the given input data
- * @param  {Mixed} value input data
- * @return {Array} array of input data's values
- */
-
-function values(value) {
-  var values;
-
-  if (Array.isArray(value)) {
-    // []
-    values = value;
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    // {}
-    values = Object.keys(value).map(function (key) {
-      return value[key];
-    });
-  } else if (value != null) {
-    // *
-    values = [value];
-  } else {
-    values = [];
-  }
-
-  return values;
-}
-
-module.exports = values;
-
-/***/ }),
-
 /***/ "./node_modules/gson-pointer/index.js":
 /*!********************************************!*\
   !*** ./node_modules/gson-pointer/index.js ***!
@@ -3709,450 +3074,6 @@ function split(pointer) {
 }
 
 module.exports = split;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/common.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-query/lib/common.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-var rIsRegExp = /^\{.*\}$/;
-/**
- * Removes root prefix of pointer
- *
- * @param  {String} pointer
- * @return {String} simple pointer path
- */
-
-function stripPointerPrefix(pointer) {
-  pointer = pointer.toString();
-  return pointer.replace(/[#/]*/, "");
-}
-
-function convertToRegExp(pointerPartial) {
-  return new RegExp(pointerPartial.replace(/^\{|\}$/g, ""));
-}
-
-function splitRegExp(pointer) {
-  pointer = pointer.replace(/^\{|\/\{/g, "§{");
-  pointer = pointer.replace(/\}\/|\}$/g, "}§");
-  return pointer.split("§");
-}
-/**
- * Can not be used in conjuction with filters...
- * REMOVE stripPointer...
- *
- * @param  {String} pointer
- * @return {Array}
- */
-
-
-function parsePointer(pointer) {
-  var partials;
-  var current;
-  var result;
-  pointer = stripPointerPrefix(pointer);
-
-  if (pointer.indexOf("{") === -1) {
-    return pointer.split("/");
-  }
-
-  result = [];
-  partials = splitRegExp(pointer);
-
-  while ((current = partials.shift()) != null) {
-    if (current === "") {
-      continue;
-    }
-
-    if (rIsRegExp.test(current)) {
-      result.push(current);
-    } else {
-      result.push.apply(result, current.split("/"));
-    }
-  }
-
-  return result;
-}
-
-exports.rIsRegExp = rIsRegExp;
-exports.convertToRegExp = convertToRegExp;
-exports.splitRegExp = splitRegExp;
-exports.parsePointer = parsePointer;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/delete.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-query/lib/delete.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var pointerDelete = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js")["delete"];
-
-var removeUndefinedItems = __webpack_require__(/*! gson-pointer/lib/removeUndefinedItems */ "./node_modules/gson-pointer/lib/removeUndefinedItems.js");
-
-var queryGet = __webpack_require__(/*! ./get */ "./node_modules/gson-query/lib/get.js");
-
-var POINTER = 3;
-var PARENT = 2;
-
-function queryDelete(obj, jsonPointer) {
-  var matches = queryGet(obj, jsonPointer, queryGet.ALL);
-  matches.forEach(function (match) {
-    pointerDelete(obj, match[POINTER], true);
-  });
-  matches.forEach(function (match) {
-    if (Array.isArray(match[PARENT])) {
-      removeUndefinedItems(match[PARENT]);
-    }
-  });
-  return obj;
-}
-
-module.exports = queryDelete;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/filter.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-query/lib/filter.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var o = __webpack_require__(/*! gson-conform */ "./node_modules/gson-conform/lib/index.js");
-
-var common = __webpack_require__(/*! ./common */ "./node_modules/gson-query/lib/common.js");
-
-var f = {
-  queryKey: function queryKey(obj, query) {
-    return function (key) {
-      return valid(obj[key], query);
-    };
-  },
-  queryRegExp: function queryRegExp(obj, query, regex) {
-    return function (key) {
-      return regex.test(key) ? valid(obj[key], query) : false;
-    };
-  }
-};
-var MAP = {
-  "false": false,
-  "true": true,
-  "null": null
-};
-/**
- * Filter properties by query: select|if:property
- *
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Array} values matching the given query
- */
-
-function filterValues(obj, query) {
-  return filterKeys(obj, query).map(function (key) {
-    return obj[key];
-  });
-}
-
-var selectCurly = /(\{[^}]*\})/g;
-var selectPlaceholder = /§§§\d+§§§/g;
-
-function splitQuery(value) {
-  // nothing to escape
-  if (value.indexOf("?") === -1 || value.indexOf("{") === -1) {
-    return value.split("?", 2);
-  } // @todo this must be simpler to solve
-
-
-  var map = {};
-  var temp = value.replace(selectCurly, function replace(match, group, index) {
-    var id = "§§§" + index + "§§§";
-    map[id] = match;
-    return id;
-  });
-  var result = temp.split("?", 2);
-
-  for (var i = 0; i < result.length; i += 1) {
-    result[i] = result[i].replace(selectPlaceholder, function revertReplacement(match) {
-      return map[match];
-    });
-  }
-
-  return result;
-}
-/**
- * Filter properties by query: select|if:property
- *
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Array} object keys matching the given query
- */
-
-
-function filterKeys(obj, query) {
-  if (obj && query) {
-    var matches = splitQuery(query);
-    var propertyQuery = matches[0];
-    var filterQuery = matches[1];
-    var keys;
-    var regex;
-
-    if (propertyQuery === "*" || propertyQuery === "**") {
-      keys = o.keys(obj);
-      return keys.filter(f.queryKey(obj, filterQuery));
-    } else if (common.rIsRegExp.test(propertyQuery)) {
-      keys = o.keys(obj);
-      regex = common.convertToRegExp(propertyQuery);
-      return keys.filter(f.queryRegExp(obj, filterQuery, regex));
-    } else if (obj[propertyQuery] && valid(obj[propertyQuery], filterQuery)) {
-      return [propertyQuery];
-    }
-  }
-
-  return [];
-}
-/**
- * Returns true if the query matches. Query: key:value&key:value
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Boolean} if query matched object
- */
-
-
-function valid(obj, query) {
-  if (!query) {
-    return true;
-  }
-
-  if (!obj) {
-    return false;
-  }
-
-  var key;
-  var value;
-  var isValid = true;
-  var truthy;
-  var tests = query.replace(/(&&)/g, "§$1§").replace(/(\|\|)/g, "§$1§").split("§");
-  var or = false;
-
-  for (var i = 0, l = tests.length; i < l; i += 2) {
-    if (tests[i].indexOf(":!") > -1) {
-      truthy = false;
-      value = tests[i].split(":!");
-    } else if (tests[i].indexOf(":") === -1) {
-      truthy = false;
-      value = [tests[i], undefined];
-    } else {
-      truthy = true;
-      value = tests[i].split(":");
-    }
-
-    key = value[0];
-    value = value[1];
-
-    if (value === "undefined") {
-      value = undefined; // undefined is unmappable
-    } else {
-      value = MAP[value] === undefined ? value : MAP[value];
-    } // perform filter test, exception undefined is not matched for negated non-undefined values
-
-
-    value = truthy ? value === obj[key] : value !== obj[key] && (obj[key] !== undefined || key === undefined);
-
-    if (or) {
-      isValid = isValid || value;
-    } else {
-      isValid = isValid && value;
-    }
-
-    or = tests[i + 1] === "||";
-  }
-
-  return isValid;
-}
-
-exports.values = filterValues;
-exports.keys = filterKeys;
-exports.valid = valid;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/get.js":
-/*!********************************************!*\
-  !*** ./node_modules/gson-query/lib/get.js ***!
-  \********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint no-unused-vars: 0 */
-var query = __webpack_require__(/*! ./run */ "./node_modules/gson-query/lib/run.js");
-/**
- * Returns the query results as an array or object, depending on its callback
- *
- * ## return type
- *
- * - get.ALL = 'all' returns all arguments of query callback [value, key, parent, pointer]
- * - get.POINTER = 'pointer' returns only the json pointers to the targets
- * - get.VALUE = 'value' Default. Returns only the matched value
- * - get.MAP = Returns an object with all available pointers and their data, like { pointer: value }
- *
- * @param  {Mixed} obj
- * @param  {Pointer} jsonPointer
- * @param  {String} type			- type of return value. Defaults to "value"
- * @return {Array|Object} containing result in specified format
- */
-
-
-function queryGet(obj, jsonPointer, type) {
-  var matches = type === queryGet.MAP ? {} : [];
-  var cb = getCbFactory(type, matches);
-  query(obj, jsonPointer, cb);
-  return matches;
-}
-
-queryGet.ALL = "all";
-queryGet.MAP = "map";
-queryGet.POINTER = "pointer";
-queryGet.VALUE = "value";
-
-function getCbFactory(type, matches) {
-  if (typeof type === "function") {
-    return function cb(value, key, obj, pointer) {
-      matches.push(type(obj[key], key, obj, pointer));
-    };
-  }
-
-  switch (type) {
-    case queryGet.ALL:
-      return function cbGetAll(value, key, obj, pointer) {
-        matches.push([obj[key], key, obj, pointer]);
-      };
-
-    case queryGet.MAP:
-      return function cbGetMap(value, key, obj, pointer) {
-        matches[pointer] = value;
-      };
-
-    case queryGet.POINTER:
-      return function cbGetPointer(value, key, obj, pointer) {
-        matches.push(pointer);
-      };
-
-    case queryGet.VALUE:
-      return function cbGetValue(value, key, obj, pointer) {
-        matches.push(value);
-      };
-
-    default:
-      return function cbGetValue(value, key, obj, pointer) {
-        matches.push(value);
-      };
-  }
-}
-
-module.exports = queryGet;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/index.js":
-/*!**********************************************!*\
-  !*** ./node_modules/gson-query/lib/index.js ***!
-  \**********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports.get = __webpack_require__(/*! ./get */ "./node_modules/gson-query/lib/get.js");
-exports.run = __webpack_require__(/*! ./run */ "./node_modules/gson-query/lib/run.js");
-exports["delete"] = __webpack_require__(/*! ./delete */ "./node_modules/gson-query/lib/delete.js");
-exports.filter = __webpack_require__(/*! ./filter */ "./node_modules/gson-query/lib/filter.js");
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/run.js":
-/*!********************************************!*\
-  !*** ./node_modules/gson-query/lib/run.js ***!
-  \********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var filter = __webpack_require__(/*! ./filter */ "./node_modules/gson-query/lib/filter.js");
-
-var parsePointer = __webpack_require__(/*! ./common */ "./node_modules/gson-query/lib/common.js").parsePointer; // @note gson-pointer: only strings are valid pointer properties to join. Ensure key is a string (could be index)
-
-
-var join = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js").join;
-/**
- * callback for each match of json-glob-pointer
- *
- * @param  {Any} obj
- * @param  {String} jsonPointer - function (value, key, parentObject, pointerToValue)
- * @param  {Function} cb
- */
-
-
-function queryRun(obj, jsonPointer, cb) {
-  // get steps into obj
-  var steps = parsePointer(jsonPointer); // cleanup first and last
-
-  if (steps[0] === "") {
-    // @todo due to pointer cleanup, this is probably never called
-    steps.shift();
-  }
-
-  if (steps[steps.length - 1] === "") {
-    steps.length -= 1;
-  }
-
-  _query(obj, steps, cb, "#");
-}
-
-function cbPassAll(obj, cb, pointer) {
-  return function (key) {
-    cb(obj[key], key, obj, join(pointer, String(key)));
-  };
-}
-
-function _query(obj, steps, cb, pointer) {
-  var matches;
-  var query = steps.shift();
-
-  if (steps.length === 0) {
-    // get keys matching the query and call back
-    matches = filter.keys(obj, query);
-    matches.forEach(cbPassAll(obj, cb, pointer));
-  } else if (/^\*\*/.test(query)) {
-    // run next query on current object
-    _query(obj, steps.slice(0), cb, pointer);
-  } else {
-    matches = filter.keys(obj, query);
-    matches.forEach(function (key) {
-      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
-    });
-  }
-
-  if (/^\*\*/.test(query)) {
-    // match this query (**) again
-    steps.unshift(query);
-    matches = filter.keys(obj, query);
-    matches.forEach(function (key) {
-      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
-    });
-  }
-}
-
-module.exports = queryRun;
 
 /***/ }),
 
@@ -4754,7 +3675,7 @@ module.exports = {
   MinItemsError: "Too few items in `{{pointer}}`, should be at least `{{minimum}}`, but got `{{length}}`",
   MinLengthError: "Value `{{pointer}}` should have a minimum length of `{{minLength}}`, but got `{{length}}`.",
   MinPropertiesError: "Too few properties in `{{pointer}}`, should be at least `{{minimum}}`, but got `{{length}}`",
-  MissingOneOfPropertyError: "Value at `{{pointer}}aroperty `{{property}}`",
+  MissingOneOfPropertyError: "Value at `{{pointer}}` property: `{{property}}`",
   MissingDependencyError: "The required propery '{{missingProperty}}' in `{{pointer}}` is missing",
   MultipleOfError: "Expected `{{value}}` in `{{pointer}}` to be multiple of `{{multipleOf}}`",
   MultipleOneOfError: "Value `{{value}}` should not match multiple schemas in oneOf `{{matches}}`",
@@ -5949,7 +4870,7 @@ module.exports = function resolveOneOf(core, data) {
       if (result.length > 0) {
         errors.push.apply(errors, _toConsumableArray(result));
       } else {
-        return schema.oneOf[i];
+        return one; // return resolved schema
       }
     }
 
@@ -6157,7 +5078,7 @@ module.exports = function resolveRefMerge(schema, rootSchema) {
 
 var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
-var gq = __webpack_require__(/*! gson-query */ "./node_modules/gson-query/lib/index.js");
+var gq = __webpack_require__(/*! gson-query */ "./node_modules/json-schema-library/node_modules/gson-query/lib/index.js");
 
 var getTypeId = __webpack_require__(/*! ./getTypeId */ "./node_modules/json-schema-library/lib/schema/getTypeId.js");
 
@@ -6687,7 +5608,7 @@ module.exports = flattenArray;
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-var deepmerge = __webpack_require__(/*! deepmerge */ "./node_modules/deepmerge/dist/cjs.js");
+var deepmerge = __webpack_require__(/*! deepmerge */ "./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js");
 
 var overwriteMerge = function overwriteMerge(destinationArray, sourceArray) {
   return sourceArray;
@@ -6993,7 +5914,7 @@ module.exports = errors;
 /* eslint-disable max-len */
 var errors = __webpack_require__(/*! ./errors */ "./node_modules/json-schema-library/lib/validation/errors.js");
 
-var validUrl = __webpack_require__(/*! valid-url */ "./node_modules/valid-url/index.js"); // https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
+var validUrl = __webpack_require__(/*! valid-url */ "./node_modules/json-schema-library/node_modules/valid-url/index.js"); // https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
 
 
 var isValidDateTime = new RegExp("^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?(([Zz])|([\\+|\\-]([01][0-9]|2[0-3]):[0-5][0-9]))$"); // https://stackoverflow.com/questions/23483855/javascript-regex-to-validate-ipv4-and-ipv6-address-no-hostnames
@@ -7744,6 +6665,892 @@ module.exports = {
   number: ["enum", "format", "maximum", "minimum", "multipleOf", "not", "oneOf", "allOf", "anyOf"],
   "null": ["enum", "format", "not", "oneOf", "allOf", "anyOf"]
 };
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+var isMergeableObject = function isMergeableObject(value) {
+  return isNonNullObject(value) && !isSpecial(value);
+};
+
+function isNonNullObject(value) {
+  return !!value && _typeof(value) === 'object';
+}
+
+function isSpecial(value) {
+  var stringValue = Object.prototype.toString.call(value);
+  return stringValue === '[object RegExp]' || stringValue === '[object Date]' || isReactElement(value);
+} // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
+
+
+var canUseSymbol = typeof Symbol === 'function' && Symbol["for"];
+var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol["for"]('react.element') : 0xeac7;
+
+function isReactElement(value) {
+  return value.$$typeof === REACT_ELEMENT_TYPE;
+}
+
+function emptyTarget(val) {
+  return Array.isArray(val) ? [] : {};
+}
+
+function cloneUnlessOtherwiseSpecified(value, options) {
+  return options.clone !== false && options.isMergeableObject(value) ? deepmerge(emptyTarget(value), value, options) : value;
+}
+
+function defaultArrayMerge(target, source, options) {
+  return target.concat(source).map(function (element) {
+    return cloneUnlessOtherwiseSpecified(element, options);
+  });
+}
+
+function getMergeFunction(key, options) {
+  if (!options.customMerge) {
+    return deepmerge;
+  }
+
+  var customMerge = options.customMerge(key);
+  return typeof customMerge === 'function' ? customMerge : deepmerge;
+}
+
+function getEnumerableOwnPropertySymbols(target) {
+  return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function (symbol) {
+    return target.propertyIsEnumerable(symbol);
+  }) : [];
+}
+
+function getKeys(target) {
+  return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target));
+}
+
+function mergeObject(target, source, options) {
+  var destination = {};
+
+  if (options.isMergeableObject(target)) {
+    getKeys(target).forEach(function (key) {
+      destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+    });
+  }
+
+  getKeys(source).forEach(function (key) {
+    if (!options.isMergeableObject(source[key]) || !target[key]) {
+      destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
+    } else {
+      destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
+    }
+  });
+  return destination;
+}
+
+function deepmerge(target, source, options) {
+  options = options || {};
+  options.arrayMerge = options.arrayMerge || defaultArrayMerge;
+  options.isMergeableObject = options.isMergeableObject || isMergeableObject;
+  var sourceIsArray = Array.isArray(source);
+  var targetIsArray = Array.isArray(target);
+  var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
+
+  if (!sourceAndTargetTypesMatch) {
+    return cloneUnlessOtherwiseSpecified(source, options);
+  } else if (sourceIsArray) {
+    return options.arrayMerge(target, source, options);
+  } else {
+    return mergeObject(target, source, options);
+  }
+}
+
+deepmerge.all = function deepmergeAll(array, options) {
+  if (!Array.isArray(array)) {
+    throw new Error('first argument should be an array');
+  }
+
+  return array.reduce(function (prev, next) {
+    return deepmerge(prev, next, options);
+  }, {});
+};
+
+var deepmerge_1 = deepmerge;
+module.exports = deepmerge_1;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Converts an object to an array
+ *
+ * @param  {Mixed} value to convert to array
+ * @return {Array} to array converted input
+ */
+
+function asArray(value) {
+  if (Array.isArray(value)) {
+    return value; // prevent duplication
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    return Object.keys(value).map(function (key) {
+      return value[key];
+    });
+  } else {
+    return [];
+  }
+}
+
+module.exports = asArray;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Iterates over object or array, passing each key, value and parentObject to the callback
+ *
+ * @param  {Object|Array} value	to iterate
+ * @param  {Function} callback	receiving key on given input value
+ */
+
+function forEach(object, callback) {
+  var keys;
+
+  if (Array.isArray(object)) {
+    object.forEach(callback);
+  } else if (Object.prototype.toString.call(object) === "[object Object]") {
+    Object.keys(object).forEach(function (key) {
+      callback(object[key], key, object);
+    });
+  }
+}
+
+module.exports = forEach;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js ***!
+  \*********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.values = __webpack_require__(/*! ./values */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js");
+exports.asArray = __webpack_require__(/*! ./asArray */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js");
+exports.forEach = __webpack_require__(/*! ./forEach */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js");
+exports.keyOf = __webpack_require__(/*! ./keyOf */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js");
+exports.keys = __webpack_require__(/*! ./keys */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js");
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js ***!
+  \*********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var forEach = __webpack_require__(/*! ./forEach */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js");
+/**
+ * Returns the key of the value
+ *
+ * @param  {Object|Array} data	to scan
+ * @param  {Mixed} value 		to search
+ * @return {String|Number} key of (last) found result or null
+ */
+
+
+function keyOf(data, value) {
+  var resultKey = null;
+  forEach(data, function (itemValue, itemKey) {
+    if (value === itemValue) {
+      resultKey = itemKey;
+    }
+  });
+  return resultKey;
+}
+
+module.exports = keyOf;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Returns all keys of the given input data
+ *
+ * @param  {Mixed} value
+ * @return {Array} containing keys of given value
+ */
+
+function keys(value) {
+  var keys;
+
+  if (Array.isArray(value)) {
+    keys = value.map(function (value, index) {
+      return index;
+    });
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    return Object.keys(value);
+  } else {
+    keys = [];
+  }
+
+  return keys;
+}
+
+module.exports = keys;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js ***!
+  \**********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Returns all values of the given input data
+ * @param  {Mixed} value input data
+ * @return {Array} array of input data's values
+ */
+
+function values(value) {
+  var values;
+
+  if (Array.isArray(value)) {
+    // []
+    values = value;
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    // {}
+    values = Object.keys(value).map(function (key) {
+      return value[key];
+    });
+  } else if (value != null) {
+    // *
+    values = [value];
+  } else {
+    values = [];
+  }
+
+  return values;
+}
+
+module.exports = values;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/common.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports) {
+
+var rIsRegExp = /^\{.*\}$/;
+/**
+ * Removes root prefix of pointer
+ *
+ * @param  {String} pointer
+ * @return {String} simple pointer path
+ */
+
+function stripPointerPrefix(pointer) {
+  pointer = pointer.toString();
+  return pointer.replace(/[#/]*/, "");
+}
+
+function convertToRegExp(pointerPartial) {
+  return new RegExp(pointerPartial.replace(/^\{|\}$/g, ""));
+}
+
+function splitRegExp(pointer) {
+  pointer = pointer.replace(/^\{|\/\{/g, "§{");
+  pointer = pointer.replace(/\}\/|\}$/g, "}§");
+  return pointer.split("§");
+}
+/**
+ * Can not be used in conjuction with filters...
+ * REMOVE stripPointer...
+ *
+ * @param  {String} pointer
+ * @return {Array}
+ */
+
+
+function parsePointer(pointer) {
+  var partials;
+  var current;
+  var result;
+  pointer = stripPointerPrefix(pointer);
+
+  if (pointer.indexOf("{") === -1) {
+    return pointer.split("/");
+  }
+
+  result = [];
+  partials = splitRegExp(pointer);
+
+  while ((current = partials.shift()) != null) {
+    if (current === "") {
+      continue;
+    }
+
+    if (rIsRegExp.test(current)) {
+      result.push(current);
+    } else {
+      result.push.apply(result, current.split("/"));
+    }
+  }
+
+  return result;
+}
+
+exports.rIsRegExp = rIsRegExp;
+exports.convertToRegExp = convertToRegExp;
+exports.splitRegExp = splitRegExp;
+exports.parsePointer = parsePointer;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pointerDelete = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js")["delete"];
+
+var removeUndefinedItems = __webpack_require__(/*! gson-pointer/lib/removeUndefinedItems */ "./node_modules/gson-pointer/lib/removeUndefinedItems.js");
+
+var queryGet = __webpack_require__(/*! ./get */ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js");
+
+var POINTER = 3;
+var PARENT = 2;
+
+function queryDelete(obj, jsonPointer) {
+  var matches = queryGet(obj, jsonPointer, queryGet.ALL);
+  matches.forEach(function (match) {
+    pointerDelete(obj, match[POINTER], true);
+  });
+  matches.forEach(function (match) {
+    if (Array.isArray(match[PARENT])) {
+      removeUndefinedItems(match[PARENT]);
+    }
+  });
+  return obj;
+}
+
+module.exports = queryDelete;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var o = __webpack_require__(/*! gson-conform */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js");
+
+var common = __webpack_require__(/*! ./common */ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js");
+
+var f = {
+  queryKey: function queryKey(obj, query) {
+    return function (key) {
+      return valid(obj[key], query);
+    };
+  },
+  queryRegExp: function queryRegExp(obj, query, regex) {
+    return function (key) {
+      return regex.test(key) ? valid(obj[key], query) : false;
+    };
+  }
+};
+var MAP = {
+  "false": false,
+  "true": true,
+  "null": null
+};
+/**
+ * Filter properties by query: select|if:property
+ *
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Array} values matching the given query
+ */
+
+function filterValues(obj, query) {
+  return filterKeys(obj, query).map(function (key) {
+    return obj[key];
+  });
+}
+/**
+ * Filter properties by query: select|if:property
+ *
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Array} object keys matching the given query
+ */
+
+
+function filterKeys(obj, query) {
+  if (obj && query) {
+    var matches = query.split("?", 2);
+    var keys;
+    var regex;
+
+    if (matches[0] === "*" || matches[0] === "**") {
+      keys = o.keys(obj);
+      return keys.filter(f.queryKey(obj, matches[1]));
+    } else if (common.rIsRegExp.test(matches[0])) {
+      keys = o.keys(obj);
+      regex = common.convertToRegExp(matches[0]);
+      return keys.filter(f.queryRegExp(obj, matches[1], regex));
+    } else if (obj[matches[0]] && valid(obj[matches[0]], matches[1])) {
+      return [matches[0]];
+    }
+  }
+
+  return [];
+}
+/**
+ * Returns true if the query matches. Query: key:value&key:value
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Boolean} if query matched object
+ */
+
+
+function valid(obj, query) {
+  if (!query) {
+    return true;
+  }
+
+  if (!obj) {
+    return false;
+  }
+
+  var key;
+  var value;
+  var isValid = true;
+  var truthy;
+  var tests = query.replace(/(&&)/g, "§$1§").replace(/(\|\|)/g, "§$1§").split("§");
+  var or = false;
+
+  for (var i = 0, l = tests.length; i < l; i += 2) {
+    if (tests[i].indexOf(":!") > -1) {
+      truthy = false;
+      value = tests[i].split(":!");
+    } else if (tests[i].indexOf(":") === -1) {
+      truthy = false;
+      value = [tests[i], undefined];
+    } else {
+      truthy = true;
+      value = tests[i].split(":");
+    }
+
+    key = value[0];
+    value = value[1];
+
+    if (value === "undefined") {
+      // undefined is unmappable
+      value = undefined;
+    } else {
+      value = MAP[value] === undefined ? value : MAP[value];
+    }
+
+    value = truthy ? value === obj[key] : value !== obj[key] && (obj[key] !== undefined || key === undefined);
+
+    if (or) {
+      isValid = isValid || value;
+    } else {
+      isValid = isValid && value;
+    }
+
+    or = tests[i + 1] === "||";
+  }
+
+  return isValid;
+}
+
+exports.values = filterValues;
+exports.keys = filterKeys;
+exports.valid = valid;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/get.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* eslint no-unused-vars: 0 */
+var query = __webpack_require__(/*! ./run */ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js");
+/**
+ * Returns the query results as an array or object, depending on its callback
+ *
+ * ## return type
+ *
+ * - get.ALL = 'all' returns all arguments of query callback [value, key, parent, pointer]
+ * - get.POINTER = 'pointer' returns only the json pointers to the targets
+ * - get.VALUE = 'value' Default. Returns only the matched value
+ * - get.MAP = Returns an object with all available pointers and their data, like { pointer: value }
+ *
+ * @param  {Mixed} obj
+ * @param  {Pointer} jsonPointer
+ * @param  {String} type			- type of return value. Defaults to "value"
+ * @return {Array|Object} containing result in specified format
+ */
+
+
+function queryGet(obj, jsonPointer, type) {
+  var matches = type === queryGet.MAP ? {} : [];
+  var cb = getCbFactory(type, matches);
+  query(obj, jsonPointer, cb);
+  return matches;
+}
+
+queryGet.ALL = "all";
+queryGet.MAP = "map";
+queryGet.POINTER = "pointer";
+queryGet.VALUE = "value";
+
+function getCbFactory(type, matches) {
+  if (typeof type === "function") {
+    return function cb(value, key, obj, pointer) {
+      matches.push(type(obj[key], key, obj, pointer));
+    };
+  }
+
+  switch (type) {
+    case queryGet.ALL:
+      return function cbGetAll(value, key, obj, pointer) {
+        matches.push([obj[key], key, obj, pointer]);
+      };
+
+    case queryGet.MAP:
+      return function cbGetMap(value, key, obj, pointer) {
+        matches[pointer] = value;
+      };
+
+    case queryGet.POINTER:
+      return function cbGetPointer(value, key, obj, pointer) {
+        matches.push(pointer);
+      };
+
+    case queryGet.VALUE:
+      return function cbGetValue(value, key, obj, pointer) {
+        matches.push(value);
+      };
+
+    default:
+      return function cbGetValue(value, key, obj, pointer) {
+        matches.push(value);
+      };
+  }
+}
+
+module.exports = queryGet;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/index.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/index.js ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.get = __webpack_require__(/*! ./get */ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js");
+exports.run = __webpack_require__(/*! ./run */ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js");
+exports["delete"] = __webpack_require__(/*! ./delete */ "./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js");
+exports.filter = __webpack_require__(/*! ./filter */ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js");
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/run.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var filter = __webpack_require__(/*! ./filter */ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js");
+
+var parsePointer = __webpack_require__(/*! ./common */ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js").parsePointer; // @note gson-pointer: only strings are valid pointer properties to join. Ensure key is a string (could be index)
+
+
+var join = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js").join;
+/**
+ * callback for each match of json-glob-pointer
+ *
+ * @param  {Any} obj
+ * @param  {String} jsonPointer - function (value, key, parentObject, pointerToValue)
+ * @param  {Function} cb
+ */
+
+
+function queryRun(obj, jsonPointer, cb) {
+  // get steps into obj
+  var steps = parsePointer(jsonPointer); // cleanup first and last
+
+  if (steps[0] === "") {
+    // @todo due to pointer cleanup, this is probably never called
+    steps.shift();
+  }
+
+  if (steps[steps.length - 1] === "") {
+    steps.length -= 1;
+  }
+
+  _query(obj, steps, cb, "#");
+}
+
+function cbPassAll(obj, cb, pointer) {
+  return function (key) {
+    cb(obj[key], key, obj, join(pointer, String(key)));
+  };
+}
+
+function _query(obj, steps, cb, pointer) {
+  var matches;
+  var query = steps.shift();
+
+  if (steps.length === 0) {
+    // get keys matching the query and call back
+    matches = filter.keys(obj, query);
+    matches.forEach(cbPassAll(obj, cb, pointer));
+  } else if (/^\*\*/.test(query)) {
+    // run next query on current object
+    _query(obj, steps.slice(0), cb, pointer);
+  } else {
+    matches = filter.keys(obj, query);
+    matches.forEach(function (key) {
+      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
+    });
+  }
+
+  if (/^\*\*/.test(query)) {
+    // match this query (**) again
+    steps.unshift(query);
+    matches = filter.keys(obj, query);
+    matches.forEach(function (key) {
+      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
+    });
+  }
+}
+
+module.exports = queryRun;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/valid-url/index.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/valid-url/index.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {(function (module) {
+  'use strict';
+
+  module.exports.is_uri = is_iri;
+  module.exports.is_http_uri = is_http_iri;
+  module.exports.is_https_uri = is_https_iri;
+  module.exports.is_web_uri = is_web_iri; // Create aliases
+
+  module.exports.isUri = is_iri;
+  module.exports.isHttpUri = is_http_iri;
+  module.exports.isHttpsUri = is_https_iri;
+  module.exports.isWebUri = is_web_iri; // private function
+  // internal URI spitter method - direct from RFC 3986
+
+  var splitUri = function splitUri(uri) {
+    var splitted = uri.match(/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/);
+    return splitted;
+  };
+
+  function is_iri(value) {
+    if (!value) {
+      return;
+    } // check for illegal characters
+
+
+    if (/[^a-z0-9\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\.\-\_\~\%]/i.test(value)) return; // check for hex escapes that aren't complete
+
+    if (/%[^0-9a-f]/i.test(value)) return;
+    if (/%[0-9a-f](:?[^0-9a-f]|$)/i.test(value)) return;
+    var splitted = [];
+    var scheme = '';
+    var authority = '';
+    var path = '';
+    var query = '';
+    var fragment = '';
+    var out = ''; // from RFC 3986
+
+    splitted = splitUri(value);
+    scheme = splitted[1];
+    authority = splitted[2];
+    path = splitted[3];
+    query = splitted[4];
+    fragment = splitted[5]; // scheme and path are required, though the path can be empty
+
+    if (!(scheme && scheme.length && path.length >= 0)) return; // if authority is present, the path must be empty or begin with a /
+
+    if (authority && authority.length) {
+      if (!(path.length === 0 || /^\//.test(path))) return;
+    } else {
+      // if authority is not present, the path must not start with //
+      if (/^\/\//.test(path)) return;
+    } // scheme must begin with a letter, then consist of letters, digits, +, ., or -
+
+
+    if (!/^[a-z][a-z0-9\+\-\.]*$/.test(scheme.toLowerCase())) return; // re-assemble the URL per section 5.3 in RFC 3986
+
+    out += scheme + ':';
+
+    if (authority && authority.length) {
+      out += '//' + authority;
+    }
+
+    out += path;
+
+    if (query && query.length) {
+      out += '?' + query;
+    }
+
+    if (fragment && fragment.length) {
+      out += '#' + fragment;
+    }
+
+    return out;
+  }
+
+  function is_http_iri(value, allowHttps) {
+    if (!is_iri(value)) {
+      return;
+    }
+
+    var splitted = [];
+    var scheme = '';
+    var authority = '';
+    var path = '';
+    var port = '';
+    var query = '';
+    var fragment = '';
+    var out = ''; // from RFC 3986
+
+    splitted = splitUri(value);
+    scheme = splitted[1];
+    authority = splitted[2];
+    path = splitted[3];
+    query = splitted[4];
+    fragment = splitted[5];
+    if (!scheme) return;
+
+    if (allowHttps) {
+      if (scheme.toLowerCase() != 'https') return;
+    } else {
+      if (scheme.toLowerCase() != 'http') return;
+    } // fully-qualified URIs must have an authority section that is
+    // a valid host
+
+
+    if (!authority) {
+      return;
+    } // enable port component
+
+
+    if (/:(\d+)$/.test(authority)) {
+      port = authority.match(/:(\d+)$/)[0];
+      authority = authority.replace(/:\d+$/, '');
+    }
+
+    out += scheme + ':';
+    out += '//' + authority;
+
+    if (port) {
+      out += port;
+    }
+
+    out += path;
+
+    if (query && query.length) {
+      out += '?' + query;
+    }
+
+    if (fragment && fragment.length) {
+      out += '#' + fragment;
+    }
+
+    return out;
+  }
+
+  function is_https_iri(value) {
+    return is_http_iri(value, true);
+  }
+
+  function is_web_iri(value) {
+    return is_http_iri(value) || is_https_iri(value);
+  }
+})(module);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
@@ -13473,883 +13280,1672 @@ function isPlainObject(value) {
 
 /***/ }),
 
-/***/ "./node_modules/mithril-material-forms/components/button/index.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/button/index.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  getClassNames: function getClassNames(attrs) {
-    var classNames = [];
-    classNames.push(attrs.raised ? "mmf-button--raised" : "mmf-button--flat");
-    classNames.push(attrs.disabled ? "is-disabled" : "is-enabled");
-
-    if (attrs["class"]) {
-      classNames.push(attrs["class"]);
-    }
-
-    return classNames.join(" ");
-  },
-  view: function view(vnode) {
-    var attrs = _extends({
-      disabled: false,
-      onclick: function onclick(event) {
-        return vnode.attrs.onclick(event);
-      }
-    }, vnode.attrs);
-
-    attrs["class"] = this.getClassNames(vnode.attrs);
-    return m("button.mmf-button", attrs, vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/checkbox/index.js":
+/***/ "./node_modules/mithril-material-forms/components/checkbox/index.ts":
 /*!**************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/checkbox/index.js ***!
+  !*** ./node_modules/mithril-material-forms/components/checkbox/index.ts ***!
   \**************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(_ref) {
-    var attrs = _ref.attrs;
-    return m("input.mmf-checkbox", {
-      id: attrs.id,
-      type: "checkbox",
-      disabled: attrs.disabled === true,
-      checked: attrs.value,
-      onchange: function onchange(e) {
-        return attrs.onchange(e.target.checked);
-      },
-      onfocus: attrs.onfocus,
-      onblur: attrs.onblur
-    });
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/checkboxform/index.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/checkboxform/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Checkbox = __webpack_require__(/*! ../checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-var defaultOptions = {
-  id: null,
-  title: "",
-  disabled: false,
-  value: "",
-  errors: [],
-  description: "",
-  placeholder: "",
-  onchange: Function.prototype
-};
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({}, defaultOptions, vnode.attrs);
-
-    return m(".mmf-form.mmf-form--checkbox.mmf-form--".concat(attrs.disabled ? "disabled" : "enabled"), {
-      "class": Errors.getErrorClass(attrs.errors)
-    }, m(Checkbox, {
-      id: vnode.attrs.id,
-      disabled: attrs.disabled,
-      value: vnode.attrs.value,
-      onchange: vnode.attrs.onchange,
-      onfocus: vnode.attrs.onfocus,
-      onblur: vnode.attrs.onblur
-    }), m(Label, attrs), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/errors/getErrorClass.js":
-/*!********************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/errors/getErrorClass.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-module.exports = function getErrorClass(errors) {
-  if (errors == null || errors.length === 0) {
-    return "no-error";
-  }
-
-  for (var i = 0, l = errors.length; i < l; i += 1) {
-    if (typeof errors[i] === "string" || errors[i].severity !== "warning") {
-      return "has-error";
-    }
-  }
-
-  return "has-warning";
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/errors/index.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/errors/index.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-function isVNode(object) {
-  return typeof object.tag === "string" && object.attrs != null && _typeof(object.attrs) === "object";
-}
-
-module.exports = {
-  getErrorClass: __webpack_require__(/*! ./getErrorClass */ "./node_modules/mithril-material-forms/components/errors/getErrorClass.js"),
-  view: function view(vnode) {
-    if (vnode.attrs.errors == null || vnode.attrs.errors.length === 0) {
-      return "";
-    }
-
-    return m("ul.mmf-form__errors", vnode.attrs.errors.map(function (error) {
-      if (isVNode(error)) {
-        return m("li.mmf-form__error.mmf-form__error--".concat(error.attrs.severity), error);
-      }
-
-      if (error && _typeof(error) === "object") {
-        if (error.severity === "warning") {
-          return m("li.mmf-form__error.mmf-form__error--warning", m.trust(error.message));
-        }
-
-        return m("li.mmf-form__error.mmf-form__error--error", m.trust(error.message));
-      }
-
-      return m("li.mmf-form__error.mmf-form__error--error", m.trust(error));
-    }));
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/imagepreview/index.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/imagepreview/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var RATIO_DEFAULT = [16, 9];
-
-function isEmpty(value) {
-  return value == null || value === "";
-}
-
-function getRatioStyle(ratio) {
-  return "".concat(getRatio(ratio).toFixed(2), "%");
-}
-
-function getRatio(ratio) {
-  var dim = ratio.split(":").map(parseFloat);
-  dim = dim.length === 2 ? dim : RATIO_DEFAULT;
-  return 100 * dim[1] / dim[0];
-}
-
-var MetaDescription = {
-  view: function view(vnode) {
-    var attrs = vnode.attrs;
-    return [isEmpty(attrs.url) ? m(".mmf-preview__placeholder", attrs.placeholder) : [attrs.description ? m(".mmf-preview__description", m.trust(attrs.description)) : "", m(".mmf-preview__overflow-indicator")], vnode.children];
-  }
-};
-var InlineImage = {
-  view: function view(vnode) {
-    var attrs = vnode.attrs;
-    return m(".mmf-preview__content", {
-      style: isEmpty(attrs.url) ? "" : "padding-bottom: ".concat(getRatioStyle(attrs.maxRatio), ";"),
-      oncreate: attrs.oncreate
-    }, isEmpty(attrs.url) ? m(".mmf-preview__placeholder", attrs.placeholder) : [m("img", {
-      src: attrs.url,
-      onload: attrs.onload
-    }), attrs.description ? m(".mmf-preview__description", m.trust(attrs.description)) : "", m(".mmf-preview__overflow-indicator")], vnode.children);
-  }
-};
-var ImagePreview = {
-  overflowContainer: null,
-  updateRatio: function updateRatio(maxRatio, image) {
-    if (this.overflowContainer != null && image.naturalWidth) {
-      var ratioMax = getRatio(maxRatio);
-      var ratioImg = getRatio("".concat(image.naturalWidth, ":").concat(image.naturalHeight));
-
-      if (ratioMax >= ratioImg) {
-        this.overflowContainer.style.paddingBottom = "".concat(ratioImg.toFixed(2), "%");
-        this.overflowContainer.classList.remove("with-overflow");
-        this.hasOverflow = false;
-      } else {
-        this.overflowContainer.style.paddingBottom = "".concat(ratioMax.toFixed(2), "%");
-        this.overflowContainer.classList.add("with-overflow");
-        this.hasOverflow = true;
-      }
-    }
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var attrs = _extends({
-      url: null,
-      "class": "",
-      asBackgroundImage: false,
-      description: null,
-      placeholder: null,
-      onclick: null,
-      maxRatio: "16:9",
-      // "private"
-      onload: function onload(event) {
-        return _this.updateRatio(attrs.maxRatio, event.currentTarget);
-      },
-      oncreate: function oncreate(content) {
-        _this.overflowContainer = content.dom;
-      }
-    }, vnode.attrs);
-
-    return m(".mmf-preview.mmf-preview--image", {
-      "class": attrs["class"] + (isEmpty(attrs.url) ? "" : " with-image"),
-      style: attrs.asBackgroundImage && !isEmpty(attrs.url) ? "background-image: url(".concat(attrs.url, ");") : ""
-    }, attrs.asBackgroundImage ? m(MetaDescription, attrs, vnode.children) : m(InlineImage, attrs, vnode.children));
-  }
-};
-module.exports = ImagePreview;
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/input/index.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/input/index.js ***!
-  \***********************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  value: null,
-  hasFocus: false,
-  onupdate: function onupdate(vnode) {
-    // @prevent redraw of input
-    vnode.dom.id = vnode.attrs.id; // updating the pointer dependend attributes outside of mithril
-  },
-  view: function view(_ref) {
-    var _this = this;
-
-    var attrs = _ref.attrs;
-    var value = attrs.value;
-
-    if (this.hasFocus && this.value != null) {
-      value = this.value; // this will remove any changes applied to this data from "outside"
-    }
-
-    this.value = value;
-    var inputAttributes = {
-      // id: attrs.id, // if the element is pointer sensitive it will be rebuild on pointer updates, loosing focus
-      type: attrs.type,
-      value: value,
-      placeholder: attrs.placeholder,
-      disabled: attrs.disabled === true,
-      oninput: function oninput(e) {
-        return _this.value = e.target.value;
-      },
-      // @fixme this might trigger updates, but ensures the property is always set (on initial rendering)
-      oncreate: function oncreate(vnode) {
-        return vnode.dom.id = attrs.id;
-      },
-      onfocus: function onfocus(event) {
-        _this.hasFocus = true;
-        attrs.onfocus && attrs.onfocus(event);
-      },
-      onblur: function onblur(event) {
-        _this.hasFocus = false;
-        attrs.onblur && attrs.onblur(event);
-      }
-    };
-    var updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
-
-    inputAttributes[updateEvent] = function () {
-      return attrs.onchange(_this.value);
-    };
-
-    return m("input.mmf-input", inputAttributes);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/inputform/index.js":
-/*!***************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/inputform/index.js ***!
-  \***************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Input = __webpack_require__(/*! ../input */ "./node_modules/mithril-material-forms/components/input/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var sanitizeValue = __webpack_require__(/*! ./sanitizeValue */ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-var TYPES = {
-  string: "text",
-  integer: "number",
-  number: "number"
-};
-module.exports = {
-  oncreate: function oncreate(vnode) {
-    this.$form = vnode.dom;
-  },
-  updateClasses: function updateClasses(value) {
-    var hasValue = value !== "";
-    this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
-    this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
-  },
-  onfocus: function onfocus() {
-    this.$form.classList.add("hasFocus");
-    this.$form.classList.remove("hasNoFocus");
-  },
-  onblur: function onblur(value) {
-    this.$form.classList.add("hasNoFocus");
-    this.$form.classList.remove("hasFocus");
-    this.updateClasses(value);
-  },
-  hasFocus: function hasFocus() {
-    return this.$form && this.$form.classList.contains("hasFocus");
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var inputType = TYPES[vnode.attrs.type] || "text";
-
-    var attrs = _extends({
-      id: null,
-      title: "",
-      value: "",
-      errors: [],
-      description: "",
-      placeholder: "",
-      instantUpdate: false,
-      onblur: Function.prototype,
-      onfocus: Function.prototype,
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    var focusClass = this.hasFocus() ? "hasFocus" : "hasNoFocus";
-    var errorClass = Errors.getErrorClass(attrs.errors);
-    var emptyClass = attrs.value === "" ? "isEmpty" : "isNotEmpty";
-    var view = m(".mmf-form.mmf-form--input.mmf-form--".concat(attrs.disabled ? "disabled" : "enabled"), {
-      "class": "".concat(focusClass, " ").concat(errorClass, " ").concat(emptyClass)
-    }, m(Label, attrs), m(Input, {
-      type: inputType,
-      id: attrs.id,
-      disabled: attrs.disabled,
-      instantUpdate: attrs.instantUpdate,
-      placeholder: attrs.placeholder,
-      onchange: function onchange(value) {
-        return attrs.onchange(sanitizeValue(inputType, value));
-      },
-      value: attrs.value,
-      onfocus: function onfocus(e) {
-        _this.onfocus();
-
-        attrs.onfocus && attrs.onfocus(e);
-      },
-      onblur: function onblur(e) {
-        _this.onblur(e.target.value);
-
-        attrs.onblur && attrs.onblur(e);
-      }
-    }), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-    return view;
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js":
-/*!***********************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-module.exports = function sanitizeValue(type, value) {
-  if (type === "number") {
-    var intValue = parseInt(value);
-    var floatValue = parseFloat(value);
-
-    if (floatValue == value) {
-      // eslint-disable-line
-      return floatValue;
-    } else if (isNaN(intValue)) {
-      return value;
-    }
-
-    return intValue;
-  }
-
-  return value;
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/label/index.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/label/index.js ***!
-  \***********************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(vnode) {
-    return m("label.mmf-label", {
-      "for": vnode.attrs.id,
-      "class": vnode.attrs["class"]
-    }, vnode.attrs.title);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/select/index.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/select/index.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(vnode) {
-    var _this = this;
-
-    return m("div.mmf-select__wrapper", {
-      "class": vnode.attrs.disabled === true ? "is-disabled" : "is-enabled",
-      oncreate: function oncreate(_vnode) {
-        return _this.$wrapper = _vnode.dom;
-      }
-    }, m("select.mmf-select", {
-      id: vnode.attrs.id,
-      value: vnode.attrs.value,
-      disabled: vnode.attrs.disabled,
-      "class": vnode.attrs["class"],
-      onfocus: function onfocus() {
-        _this.$wrapper && _this.$wrapper.classList.add("has-focus");
-        vnode.attrs.onfocus && vnode.attrs.onfocus(vnode);
-      },
-      onblur: function onblur() {
-        _this.$wrapper && _this.$wrapper.classList.remove("has-focus");
-        vnode.attrs.onblur && vnode.attrs.onblur(vnode);
-      },
-      // @reminder will always be string, which must be specified in json-schema or else datatype must
-      // be passed to select-component
-      onchange: function onchange(e) {
-        return vnode.attrs.onchange(e.target.value);
-      }
-    }, vnode.attrs.options.map(function (value) {
-      var title = value.title || value; // value must be a string or else is discarded
-
-      value = "".concat(value.value == null ? value : value.value);
-      return m("option", {
-        value: value
-      }, title);
-    })));
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/selectform/index.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/selectform/index.js ***!
-  \****************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Select = __webpack_require__(/*! ../select */ "./node_modules/mithril-material-forms/components/select/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({
-      id: null,
-      value: "",
-      options: [{
-        title: "-",
-        value: false
-      }],
-      errors: [],
-      description: "",
-      placeholder: "",
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    return m(".mmf-form.mmf-form--select.mmf-form--".concat(attrs.disabled ? "disabled" : "enabled"), {
-      "class": Errors.getErrorClass(attrs.errors)
-    }, m(Select, attrs), m(Label, _extends({
-      "class": "mmf-grow-2"
-    }, attrs)), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/textarea/index.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/textarea/index.js ***!
-  \**************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var autosize = __webpack_require__(/*! autosize */ "./node_modules/autosize/dist/autosize.js");
-
-var raf = window.requestAnimationFrame;
-module.exports = {
-  textarea: null,
-  focus: false,
-  onupdate: function onupdate(vnode) {
-    raf(function () {
-      return autosize.update(vnode.dom);
-    });
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var attrs = _extends({
-      id: null,
-      value: "",
-      rows: 1,
-      placeholder: "",
-      disabled: false,
-      instantUpdate: false,
-      onblur: Function.prototype,
-      onfocus: Function.prototype,
-      onchange: Function.prototype,
-      oncreate: Function.prototype,
-      onbeforeremove: Function.prototype
-    }, vnode.attrs);
-
-    var disabled = attrs.disabled === true;
-
-    if (this.focus) {
-      // keep current value, while input is being active this prevents
-      // jumps in cursor, caused by race conditions
-      // @attention - this may produce other problems
-      attrs.value = this.textarea.value;
-    }
-
-    var textareaAttributes = {
-      id: attrs.id,
-      value: attrs.value,
-      rows: attrs.rows,
-      disabled: disabled,
-      placeholder: attrs.placeholder,
-      onblur: function onblur(e) {
-        _this.focus = false;
-        attrs.onblur && attrs.onblur(e);
-      },
-      onfocus: function onfocus(e) {
-        _this.focus = true;
-        attrs.onfocus && attrs.onfocus(e);
-      },
-      onupdate: function onupdate(node) {
-        return autosize.update(node.dom);
-      },
-      oncreate: function oncreate(node) {
-        _this.textarea = node.dom;
-        attrs.oncreate(node);
-        autosize(node.dom);
-        autosize.update(vnode.dom);
-      },
-      onbeforeremove: function onbeforeremove(node) {
-        attrs.onbeforeremove(node);
-        autosize.destroy(node.dom);
-      }
-    };
-    var updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
-
-    textareaAttributes[updateEvent] = function (e) {
-      return attrs.onchange(e.target.value);
-    };
-
-    return m("textarea.mmf-textarea", textareaAttributes);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/textareaform/index.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/textareaform/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Textarea = __webpack_require__(/*! ../textarea */ "./node_modules/mithril-material-forms/components/textarea/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-function isEmpty(value) {
-  return value == null || value === "";
-}
-
-module.exports = {
-  oncreate: function oncreate(vnode) {
-    this.$form = vnode.dom;
-    this.onblur(vnode.attrs.value);
-  },
-  onfocus: function onfocus() {
-    this.$form.classList.remove("hasNoFocus");
-    this.$form.classList.add("hasFocus");
-  },
-  onblur: function onblur(value) {
-    this.$form.classList.remove("hasFocus");
-    this.$form.classList.add("hasNoFocus");
-    this.updateClasses(value);
-  },
-  updateClasses: function updateClasses(value) {
-    var hasValue = isEmpty(value) === false;
-    this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
-    this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
-  },
-  onupdate: function onupdate(vnode) {
-    this.updateClasses(vnode.attrs.value);
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var attrs = _extends({
-      id: null,
-      title: "",
-      value: "",
-      errors: [],
-      disabled: false,
-      description: "",
-      placeholder: "",
-      rows: 1,
-      instantUpdate: false,
-      onblur: Function.prototype,
-      onfocus: Function.prototype,
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    var disabled = attrs.disabled === true;
-    return m(".mmf-form.mmf-form--textarea.mmf-form--".concat(disabled ? "disabled" : "enabled"), {
-      "class": Errors.getErrorClass(attrs.errors)
-    }, m(Label, attrs), m(Textarea, {
-      id: attrs.id,
-      value: attrs.value,
-      disabled: disabled,
-      instantUpdate: attrs.instantUpdate,
-      placeholder: attrs.placeholder,
-      rows: attrs.rows,
-      // onchange: m.withAttr("value", attrs.onchange),
-      onchange: attrs.onchange,
-      onblur: function onblur(e) {
-        _this.onblur(e.target.value);
-
-        attrs.onblur(e);
-      },
-      onfocus: function onfocus(e) {
-        _this.onfocus();
-
-        attrs.onfocus(e);
-      }
-    }), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/index.js":
-/*!******************************************************!*\
-  !*** ./node_modules/mithril-material-forms/index.js ***!
-  \******************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  button: __webpack_require__(/*! ./components/button */ "./node_modules/mithril-material-forms/components/button/index.js"),
-  checkbox: __webpack_require__(/*! ./components/checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.js"),
-  checkboxForm: __webpack_require__(/*! ./components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js"),
-  errors: __webpack_require__(/*! ./components/errors */ "./node_modules/mithril-material-forms/components/errors/index.js"),
-  input: __webpack_require__(/*! ./components/input */ "./node_modules/mithril-material-forms/components/input/index.js"),
-  inputForm: __webpack_require__(/*! ./components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js"),
-  label: __webpack_require__(/*! ./components/label */ "./node_modules/mithril-material-forms/components/label/index.js"),
-  select: __webpack_require__(/*! ./components/select */ "./node_modules/mithril-material-forms/components/select/index.js"),
-  selectForm: __webpack_require__(/*! ./components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js"),
-  textarea: __webpack_require__(/*! ./components/textarea */ "./node_modules/mithril-material-forms/components/textarea/index.js"),
-  textareaForm: __webpack_require__(/*! ./components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js"),
-  imagePreview: __webpack_require__(/*! ./components/imagepreview */ "./node_modules/mithril-material-forms/components/imagepreview/index.js")
-};
-
-/***/ }),
-
-/***/ "./node_modules/mitt/dist/mitt.es.js":
-/*!*******************************************!*\
-  !*** ./node_modules/mitt/dist/mitt.es.js ***!
-  \*******************************************/
 /*! exports provided: default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//      
-// An event handler can take an optional event argument
-// and should not return a value
-// An array of all currently registered event handlers for a type
-// A map of event types and their corresponding event handlers.
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 
-/** Mitt: Tiny (~200b) functional event emitter / pubsub.
- *  @name mitt
- *  @returns {Mitt}
- */
-function mitt(all) {
-  all = all || Object.create(null);
-  return {
-    /**
-     * Register an event handler for the given type.
-     *
-     * @param  {String} type	Type of event to listen for, or `"*"` for all events
-     * @param  {Function} handler Function to call in response to given event
-     * @memberOf mitt
-     */
-    on: function on(type, handler) {
-      (all[type] || (all[type] = [])).push(handler);
-    },
-
-    /**
-     * Remove an event handler for the given type.
-     *
-     * @param  {String} type	Type of event to unregister `handler` from, or `"*"`
-     * @param  {Function} handler Handler function to remove
-     * @memberOf mitt
-     */
-    off: function off(type, handler) {
-      if (all[type]) {
-        all[type].splice(all[type].indexOf(handler) >>> 0, 1);
-      }
-    },
-
-    /**
-     * Invoke all handlers for the given type.
-     * If present, `"*"` handlers are invoked after type-matched handlers.
-     *
-     * @param {String} type  The event type to invoke
-     * @param {Any} [evt]  Any value (object is recommended and powerful), passed to each handler
-     * @memberOf mitt
-     */
-    emit: function emit(type, evt) {
-      (all[type] || []).slice().map(function (handler) {
-        handler(evt);
-      });
-      (all['*'] || []).slice().map(function (handler) {
-        handler(type, evt);
-      });
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view({ attrs }) {
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("input.mmf-checkbox", {
+            ...attrs,
+            type: "checkbox",
+            disabled: attrs.disabled === true,
+            checked: attrs.value,
+            value: undefined,
+            onchange: e => attrs.onchange(e.target.checked)
+        });
     }
-  };
-}
+});
 
-/* harmony default export */ __webpack_exports__["default"] = (mitt);
 
 /***/ }),
 
-/***/ "./node_modules/mitt/dist/mitt.js":
-/*!****************************************!*\
-  !*** ./node_modules/mitt/dist/mitt.js ***!
-  \****************************************/
+/***/ "./node_modules/mithril-material-forms/components/checkboxform/index.ts":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/checkboxform/index.ts ***!
+  \******************************************************************************/
+/*! exports provided: defaultOptions, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultOptions", function() { return defaultOptions; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _checkbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+
+
+
+
+const defaultOptions = {
+    id: null,
+    title: "",
+    disabled: false,
+    value: "",
+    errors: [],
+    description: "",
+    placeholder: "",
+    onchange: Function.prototype
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = { ...defaultOptions, ...vnode.attrs };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.mmf-form.mmf-form--checkbox.mmf-form--${attrs.disabled ? "disabled" : "enabled"}`, {
+            "class": Object(_errors__WEBPACK_IMPORTED_MODULE_3__["getErrorClass"])(attrs.errors)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], {
+            ...attrs,
+            invertOrder: attrs.invertOrder !== true
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_checkbox__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            id: vnode.attrs.id,
+            disabled: attrs.disabled,
+            value: vnode.attrs.value,
+            onchange: vnode.attrs.onchange,
+            onfocus: vnode.attrs.onfocus,
+            onblur: vnode.attrs.onblur
+        })), mithril__WEBPACK_IMPORTED_MODULE_0___default()(_errors__WEBPACK_IMPORTED_MODULE_3__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-meta", attrs.description), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/errors/getErrorClass.ts":
+/*!********************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/errors/getErrorClass.ts ***!
+  \********************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getErrorClass; });
+function isVNode(object) {
+    return typeof object.tag === "string" && object.attrs != null && typeof object.attrs === "object";
+}
+/**
+ * returns class for existing errors, warnings or no-error
+ */
+function getErrorClass(errors) {
+    if (errors == null || errors.length === 0) {
+        return "no-error";
+    }
+    for (let i = 0, l = errors.length; i < l; i += 1) {
+        const error = errors[i];
+        if (isVNode(error) || typeof error === "string") {
+            return "has-error";
+        }
+        else if (error && error.severity !== "warning") {
+            return "has-error";
+        }
+    }
+    return "has-warning";
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/errors/index.ts":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/errors/index.ts ***!
+  \************************************************************************/
+/*! exports provided: getErrorClass, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _getErrorClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getErrorClass */ "./node_modules/mithril-material-forms/components/errors/getErrorClass.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getErrorClass", function() { return _getErrorClass__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+
+
+function isVNode(object) {
+    return typeof object.tag === "string" && object.attrs != null && typeof object.attrs === "object";
+}
+function isError(object) {
+    return object && object.message;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const { errors } = vnode.attrs;
+        if (errors == null || errors.length === 0) {
+            return "";
+        }
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul.mmf-form__errors", errors.map(error => {
+            if (isVNode(error)) {
+                return mithril__WEBPACK_IMPORTED_MODULE_0___default()(`li.mmf-form__error.mmf-form__error--${error.attrs.severity}`, error);
+            }
+            if (isError(error)) {
+                if (error.severity === "warning") {
+                    return mithril__WEBPACK_IMPORTED_MODULE_0___default()("li.mmf-form__error.mmf-form__error--warning", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(error.message));
+                }
+                return mithril__WEBPACK_IMPORTED_MODULE_0___default()("li.mmf-form__error.mmf-form__error--error", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(error.message));
+            }
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()("li.mmf-form__error.mmf-form__error--error", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(error));
+        }));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/input/index.ts":
+/*!***********************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/input/index.ts ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    value: null,
+    hasFocus: false,
+    onupdate(vnode) {
+        // @prevent redraw of input
+        vnode.dom.id = vnode.attrs.id; // updating the pointer dependend attributes outside of mithril
+    },
+    view({ attrs }) {
+        let { value } = attrs;
+        // prevent any changes applied from "outside"
+        if (this.hasFocus && this.value != null) {
+            value = this.value;
+        }
+        this.value = value;
+        const inputAttributes = {
+            // id: attrs.id -- if the element is pointer sensitive it will be rebuild on pointer updates, loosing focus
+            ...attrs,
+            value,
+            disabled: attrs.disabled === true,
+            oninput: e => (this.value = e.target.value),
+            // @fixme this might trigger updates, but ensures the property is always set (on initial rendering)
+            oncreate: vnode => (vnode.dom.id = attrs.id),
+            onfocus: event => {
+                this.hasFocus = true;
+                attrs.onfocus && attrs.onfocus(event);
+            },
+            onblur: event => {
+                this.hasFocus = false;
+                attrs.onblur && attrs.onblur(event);
+            }
+        };
+        const updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
+        inputAttributes[updateEvent] = () => attrs.onchange(this.value);
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("input.mmf-input", inputAttributes);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/inputform/index.ts":
+/*!***************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/inputform/index.ts ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _input__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../input */ "./node_modules/mithril-material-forms/components/input/index.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var _sanitizeValue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sanitizeValue */ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.ts");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+
+
+
+
+
+const TYPES = {
+    string: "text",
+    integer: "number",
+    number: "number"
+};
+const InputForm = {
+    oncreate(vnode) {
+        this.$form = vnode.dom;
+    },
+    updateClasses(value) {
+        const hasValue = value !== "";
+        this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
+        this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
+    },
+    onfocus() {
+        this.$form.classList.add("hasFocus");
+        this.$form.classList.remove("hasNoFocus");
+    },
+    onblur(value) {
+        this.$form.classList.add("hasNoFocus");
+        this.$form.classList.remove("hasFocus");
+        this.updateClasses(value);
+    },
+    hasFocus() {
+        return this.$form && this.$form.classList.contains("hasFocus");
+    },
+    view(vnode) {
+        const inputType = TYPES[vnode.attrs.type] || vnode.attrs.type || "text";
+        const attrs = Object.assign({
+            id: null,
+            title: "",
+            value: "",
+            errors: [],
+            description: "",
+            placeholder: "",
+            instantUpdate: false,
+            onblur: Function.prototype,
+            onfocus: Function.prototype,
+            onchange: Function.prototype
+        }, vnode.attrs);
+        const focusClass = this.hasFocus() ? "hasFocus" : "hasNoFocus";
+        const errorClass = Object(_errors__WEBPACK_IMPORTED_MODULE_4__["getErrorClass"])(attrs.errors);
+        const emptyClass = attrs.value === "" ? "isEmpty" : "isNotEmpty";
+        const view = mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.mmf-form.mmf-form--input.mmf-form--${attrs.disabled ? "disabled" : "enabled"}`, {
+            "class": `${focusClass} ${errorClass} ${emptyClass}`
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], attrs, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_input__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            type: inputType,
+            id: attrs.id,
+            disabled: attrs.disabled,
+            instantUpdate: attrs.instantUpdate,
+            placeholder: attrs.placeholder,
+            onchange: value => attrs.onchange(Object(_sanitizeValue__WEBPACK_IMPORTED_MODULE_3__["default"])(inputType, value)),
+            value: attrs.value,
+            onfocus: e => {
+                this.onfocus();
+                attrs.onfocus && attrs.onfocus(e);
+            },
+            onblur: e => {
+                this.onblur(e.target.value);
+                attrs.onblur && attrs.onblur(e);
+            }
+        })), mithril__WEBPACK_IMPORTED_MODULE_0___default()(_errors__WEBPACK_IMPORTED_MODULE_4__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-meta", attrs.description), vnode.children);
+        return view;
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (InputForm);
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.ts":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/inputform/sanitizeValue.ts ***!
+  \***********************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sanitizeValue; });
+function sanitizeValue(type, value) {
+    if (type === "number") {
+        const intValue = parseInt(value);
+        const floatValue = parseFloat(value);
+        if (floatValue == value) { // eslint-disable-line
+            return floatValue;
+        }
+        else if (isNaN(intValue)) {
+            return value;
+        }
+        return intValue;
+    }
+    return value;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/isEmpty.ts":
+/*!*******************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/isEmpty.ts ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isEmpty; });
+/** returns true, if value is undefined or an empty string */
+function isEmpty(value) {
+    return value == null || value === "";
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/label/index.ts":
+/*!***********************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/label/index.ts ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const { invertOrder, id, title, class: classNames } = vnode.attrs;
+        if (invertOrder === true) {
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()("label.order--label-last", {
+                "for": id,
+                "class": classNames
+            }, vnode.children, mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title));
+        }
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("label.order--label-first", {
+            "for": id,
+            "class": classNames
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/select/index.ts":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/select/index.ts ***!
+  \************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+const isOptionValue = (option) => option && option.value !== undefined;
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const { attrs } = vnode;
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("div.mmf-select__wrapper", {
+            "class": attrs.disabled === true ? "is-disabled" : "is-enabled",
+            oncreate: _vnode => (this.$wrapper = _vnode.dom)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("select.mmf-select", {
+            ...attrs,
+            type: undefined,
+            options: undefined,
+            onfocus: () => {
+                this.$wrapper && this.$wrapper.classList.add("has-focus");
+                attrs.onfocus && attrs.onfocus(vnode);
+            },
+            onblur: () => {
+                this.$wrapper && this.$wrapper.classList.remove("has-focus");
+                attrs.onblur && attrs.onblur(vnode);
+            },
+            // @reminder will always be string, which must be specified in json-schema or else datatype must
+            // be passed to select-component
+            onchange: e => attrs.onchange(e.target.value)
+        }, attrs.options.map(value => {
+            if (isOptionValue(value)) {
+                // value must be a string or else is discarded
+                return mithril__WEBPACK_IMPORTED_MODULE_0___default()("option", { value: `${value.value}` }, value.title || value.value);
+            }
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()("option", { value: `${value}` }, value);
+        })));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/selectform/index.ts":
+/*!****************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/selectform/index.ts ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _select__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../select */ "./node_modules/mithril-material-forms/components/select/index.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = {
+            id: null,
+            value: "",
+            options: [{ title: "-", value: false }],
+            errors: [],
+            description: "",
+            placeholder: "",
+            onchange: Function.prototype,
+            ...vnode.attrs
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.mmf-form.mmf-form--select.mmf-form--${attrs.disabled ? "disabled" : "enabled"}`, {
+            "class": Object(_errors__WEBPACK_IMPORTED_MODULE_3__["getErrorClass"])(attrs.errors)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], {
+            "class": "mmf-grow-2",
+            ...attrs
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_select__WEBPACK_IMPORTED_MODULE_1__["default"], attrs)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(_errors__WEBPACK_IMPORTED_MODULE_3__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-meta", attrs.description), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/textarea/index.ts":
+/*!**************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/textarea/index.ts ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var autosize__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! autosize */ "./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js");
+/* harmony import */ var autosize__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(autosize__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const raf = window.requestAnimationFrame;
+const emptyFunction = Function.prototype;
+/* harmony default export */ __webpack_exports__["default"] = ({
+    boolean: false,
+    onupdate(vnode) {
+        raf(() => autosize__WEBPACK_IMPORTED_MODULE_1___default.a.update(vnode.dom));
+    },
+    view(vnode) {
+        const attrs = {
+            rows: 1,
+            onblur: emptyFunction,
+            onfocus: emptyFunction,
+            onchange: emptyFunction,
+            oncreate: emptyFunction,
+            onbeforeremove: emptyFunction,
+            ...vnode.attrs
+        };
+        const disabled = attrs.disabled === true;
+        let { value } = attrs;
+        if (this.focus) {
+            // keep current value, while input is being active this prevents
+            // jumps in cursor, caused by race conditions
+            // @attention - this may produce other problems
+            value = this.textarea.value;
+        }
+        const textareaAttributes = {
+            ...attrs,
+            value,
+            disabled,
+            type: undefined,
+            onblur: e => {
+                this.focus = false;
+                attrs.onblur && attrs.onblur(e);
+            },
+            onfocus: e => {
+                this.focus = true;
+                attrs.onfocus && attrs.onfocus(e);
+            },
+            onupdate: node => autosize__WEBPACK_IMPORTED_MODULE_1___default.a.update(node.dom),
+            oncreate: node => {
+                this.textarea = node.dom;
+                attrs.oncreate(node);
+                autosize__WEBPACK_IMPORTED_MODULE_1___default()(node.dom);
+                autosize__WEBPACK_IMPORTED_MODULE_1___default.a.update(node.dom);
+            },
+            onbeforeremove: node => {
+                attrs.onbeforeremove(node);
+                autosize__WEBPACK_IMPORTED_MODULE_1___default.a.destroy(node.dom);
+            }
+        };
+        const updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
+        textareaAttributes[updateEvent] = e => attrs.onchange(e.target.value);
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("textarea.mmf-textarea", textareaAttributes);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/textareaform/index.ts":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/textareaform/index.ts ***!
+  \******************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+/* harmony import */ var _isEmpty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../isEmpty */ "./node_modules/mithril-material-forms/components/isEmpty.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _textarea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../textarea */ "./node_modules/mithril-material-forms/components/textarea/index.ts");
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    oncreate(vnode) {
+        this.$form = vnode.dom;
+        this.onblur(vnode.attrs.value);
+    },
+    onfocus() {
+        this.$form.classList.remove("hasNoFocus");
+        this.$form.classList.add("hasFocus");
+    },
+    onblur(value) {
+        this.$form.classList.remove("hasFocus");
+        this.$form.classList.add("hasNoFocus");
+        this.updateClasses(value);
+    },
+    updateClasses(value) {
+        const hasValue = Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(value) === false;
+        this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
+        this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
+    },
+    onupdate(vnode) {
+        this.updateClasses(vnode.attrs.value);
+    },
+    view(vnode) {
+        const attrs = Object.assign({
+            id: null,
+            title: "",
+            value: "",
+            errors: [],
+            disabled: false,
+            description: "",
+            placeholder: "",
+            rows: 1,
+            instantUpdate: false,
+            onblur: Function.prototype,
+            onfocus: Function.prototype,
+            onchange: Function.prototype
+        }, vnode.attrs);
+        const disabled = attrs.disabled === true;
+        return mithril__WEBPACK_IMPORTED_MODULE_3___default()(`.mmf-form.mmf-form--textarea.mmf-form--${disabled ? "disabled" : "enabled"}`, {
+            "class": Object(_errors__WEBPACK_IMPORTED_MODULE_0__["getErrorClass"])(attrs.errors)
+        }, mithril__WEBPACK_IMPORTED_MODULE_3___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], attrs, mithril__WEBPACK_IMPORTED_MODULE_3___default()(_textarea__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            id: attrs.id,
+            value: attrs.value,
+            disabled,
+            instantUpdate: attrs.instantUpdate,
+            placeholder: attrs.placeholder,
+            rows: attrs.rows,
+            onchange: attrs.onchange,
+            onblur: e => {
+                this.onblur(e.target.value);
+                attrs.onblur(e);
+            },
+            onfocus: e => {
+                this.onfocus();
+                attrs.onfocus(e);
+            }
+        })), mithril__WEBPACK_IMPORTED_MODULE_3___default()(_errors__WEBPACK_IMPORTED_MODULE_0__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_3___default()(".mmf-meta", attrs.description), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/dist/mmf.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/mithril-material-forms/dist/mmf.js ***!
+  \*********************************************************/
 /*! no static exports found */
 /*! all exports used */
 /***/ (function(module, exports) {
 
-function n(n) {
-  return n = n || Object.create(null), {
-    on: function on(c, e) {
-      (n[c] || (n[c] = [])).push(e);
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+/*! For license information please see mmf.js.LICENSE.txt */
+var MMF = function (e) {
+  var t = {};
+
+  function r(o) {
+    if (t[o]) return t[o].exports;
+    var n = t[o] = {
+      i: o,
+      l: !1,
+      exports: {}
+    };
+    return e[o].call(n.exports, n, n.exports, r), n.l = !0, n.exports;
+  }
+
+  return r.m = e, r.c = t, r.d = function (e, t, o) {
+    r.o(e, t) || Object.defineProperty(e, t, {
+      enumerable: !0,
+      get: o
+    });
+  }, r.r = function (e) {
+    "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+      value: "Module"
+    }), Object.defineProperty(e, "__esModule", {
+      value: !0
+    });
+  }, r.t = function (e, t) {
+    if (1 & t && (e = r(e)), 8 & t) return e;
+    if (4 & t && "object" == _typeof(e) && e && e.__esModule) return e;
+    var o = Object.create(null);
+    if (r.r(o), Object.defineProperty(o, "default", {
+      enumerable: !0,
+      value: e
+    }), 2 & t && "string" != typeof e) for (var n in e) {
+      r.d(o, n, function (t) {
+        return e[t];
+      }.bind(null, n));
+    }
+    return o;
+  }, r.n = function (e) {
+    var t = e && e.__esModule ? function () {
+      return e["default"];
+    } : function () {
+      return e;
+    };
+    return r.d(t, "a", t), t;
+  }, r.o = function (e, t) {
+    return Object.prototype.hasOwnProperty.call(e, t);
+  }, r.p = "", r(r.s = 3);
+}([function (e, t) {
+  e.exports = m;
+}, function (e, t, r) {
+  var o, n, s;
+  n = [e, t], void 0 === (s = "function" == typeof (o = function o(e, t) {
+    "use strict";
+
+    var r,
+        o,
+        n = "function" == typeof Map ? new Map() : (r = [], o = [], {
+      has: function has(e) {
+        return r.indexOf(e) > -1;
+      },
+      get: function get(e) {
+        return o[r.indexOf(e)];
+      },
+      set: function set(e, t) {
+        -1 === r.indexOf(e) && (r.push(e), o.push(t));
+      },
+      "delete": function _delete(e) {
+        var t = r.indexOf(e);
+        t > -1 && (r.splice(t, 1), o.splice(t, 1));
+      }
+    }),
+        s = function s(e) {
+      return new Event(e, {
+        bubbles: !0
+      });
+    };
+
+    try {
+      new Event("test");
+    } catch (e) {
+      s = function s(e) {
+        var t = document.createEvent("Event");
+        return t.initEvent(e, !0, !1), t;
+      };
+    }
+
+    function a(e) {
+      if (e && e.nodeName && "TEXTAREA" === e.nodeName && !n.has(e)) {
+        var t,
+            r = null,
+            o = null,
+            a = null,
+            i = function i() {
+          e.clientWidth !== o && d();
+        },
+            l = function (t) {
+          window.removeEventListener("resize", i, !1), e.removeEventListener("input", d, !1), e.removeEventListener("keyup", d, !1), e.removeEventListener("autosize:destroy", l, !1), e.removeEventListener("autosize:update", d, !1), Object.keys(t).forEach(function (r) {
+            e.style[r] = t[r];
+          }), n["delete"](e);
+        }.bind(e, {
+          height: e.style.height,
+          resize: e.style.resize,
+          overflowY: e.style.overflowY,
+          overflowX: e.style.overflowX,
+          wordWrap: e.style.wordWrap
+        });
+
+        e.addEventListener("autosize:destroy", l, !1), "onpropertychange" in e && "oninput" in e && e.addEventListener("keyup", d, !1), window.addEventListener("resize", i, !1), e.addEventListener("input", d, !1), e.addEventListener("autosize:update", d, !1), e.style.overflowX = "hidden", e.style.wordWrap = "break-word", n.set(e, {
+          destroy: l,
+          update: d
+        }), "vertical" === (t = window.getComputedStyle(e, null)).resize ? e.style.resize = "none" : "both" === t.resize && (e.style.resize = "horizontal"), r = "content-box" === t.boxSizing ? -(parseFloat(t.paddingTop) + parseFloat(t.paddingBottom)) : parseFloat(t.borderTopWidth) + parseFloat(t.borderBottomWidth), isNaN(r) && (r = 0), d();
+      }
+
+      function u(t) {
+        var r = e.style.width;
+        e.style.width = "0px", e.offsetWidth, e.style.width = r, e.style.overflowY = t;
+      }
+
+      function c() {
+        if (0 !== e.scrollHeight) {
+          var t = function (e) {
+            for (var t = []; e && e.parentNode && e.parentNode instanceof Element;) {
+              e.parentNode.scrollTop && t.push({
+                node: e.parentNode,
+                scrollTop: e.parentNode.scrollTop
+              }), e = e.parentNode;
+            }
+
+            return t;
+          }(e),
+              n = document.documentElement && document.documentElement.scrollTop;
+
+          e.style.height = "", e.style.height = e.scrollHeight + r + "px", o = e.clientWidth, t.forEach(function (e) {
+            e.node.scrollTop = e.scrollTop;
+          }), n && (document.documentElement.scrollTop = n);
+        }
+      }
+
+      function d() {
+        c();
+        var t = Math.round(parseFloat(e.style.height)),
+            r = window.getComputedStyle(e, null),
+            o = "content-box" === r.boxSizing ? Math.round(parseFloat(r.height)) : e.offsetHeight;
+
+        if (o < t ? "hidden" === r.overflowY && (u("scroll"), c(), o = "content-box" === r.boxSizing ? Math.round(parseFloat(window.getComputedStyle(e, null).height)) : e.offsetHeight) : "hidden" !== r.overflowY && (u("hidden"), c(), o = "content-box" === r.boxSizing ? Math.round(parseFloat(window.getComputedStyle(e, null).height)) : e.offsetHeight), a !== o) {
+          a = o;
+          var n = s("autosize:resized");
+
+          try {
+            e.dispatchEvent(n);
+          } catch (e) {}
+        }
+      }
+    }
+
+    function i(e) {
+      var t = n.get(e);
+      t && t.destroy();
+    }
+
+    function l(e) {
+      var t = n.get(e);
+      t && t.update();
+    }
+
+    var u = null;
+    "undefined" == typeof window || "function" != typeof window.getComputedStyle ? ((u = function u(e) {
+      return e;
+    }).destroy = function (e) {
+      return e;
+    }, u.update = function (e) {
+      return e;
+    }) : ((u = function u(e, t) {
+      return e && Array.prototype.forEach.call(e.length ? e : [e], function (e) {
+        return a(e);
+      }), e;
+    }).destroy = function (e) {
+      return e && Array.prototype.forEach.call(e.length ? e : [e], i), e;
+    }, u.update = function (e) {
+      return e && Array.prototype.forEach.call(e.length ? e : [e], l), e;
+    }), t["default"] = u, e.exports = t["default"];
+  }) ? o.apply(t, n) : o) || (e.exports = s);
+},, function (e, t, r) {
+  "use strict";
+
+  r.r(t), r.d(t, "Button", function () {
+    return s;
+  }), r.d(t, "Checkbox", function () {
+    return a;
+  }), r.d(t, "CheckboxForm", function () {
+    return d;
+  }), r.d(t, "Errors", function () {
+    return u;
+  }), r.d(t, "Input", function () {
+    return f;
+  }), r.d(t, "InputForm", function () {
+    return m;
+  }), r.d(t, "Label", function () {
+    return i;
+  }), r.d(t, "Select", function () {
+    return h;
+  }), r.d(t, "SelectForm", function () {
+    return v;
+  }), r.d(t, "Textarea", function () {
+    return F;
+  }), r.d(t, "TextareaForm", function () {
+    return _;
+  }), r.d(t, "ImagePreview", function () {
+    return k;
+  });
+  var o = r(0),
+      n = r.n(o),
+      s = {
+    getClassNames: function getClassNames(e) {
+      var t = [];
+      return t.push(e.raised ? "mmf-button--raised" : "mmf-button--flat"), t.push(e.disabled ? "is-disabled" : "is-enabled"), e["class"] && t.push(e["class"]), t.join(" ");
     },
-    off: function off(c, e) {
-      n[c] && n[c].splice(n[c].indexOf(e) >>> 0, 1);
-    },
-    emit: function emit(c, e) {
-      (n[c] || []).slice().map(function (n) {
-        n(e);
-      }), (n["*"] || []).slice().map(function (n) {
-        n(c, e);
+    view: function view(e) {
+      var t = _objectSpread(_objectSpread({
+        disabled: !1,
+        onclick: function onclick(t) {
+          return e.attrs.onclick(t);
+        }
+      }, e.attrs), {}, {
+        "class": this.getClassNames(e.attrs)
+      });
+
+      return n()("button.mmf-button", t, e.children);
+    }
+  },
+      a = {
+    view: function view(_ref) {
+      var e = _ref.attrs;
+      return n()("input.mmf-checkbox", {
+        id: e.id,
+        type: "checkbox",
+        disabled: !0 === e.disabled,
+        checked: e.value,
+        onchange: function onchange(t) {
+          return e.onchange(t.target.checked);
+        },
+        onfocus: e.onfocus,
+        onblur: e.onblur
       });
     }
+  },
+      i = {
+    view: function view(e) {
+      var _e$attrs = e.attrs,
+          t = _e$attrs.invertOrder,
+          r = _e$attrs.id,
+          o = _e$attrs.title,
+          s = _e$attrs["class"];
+      return !0 === t ? n()("label.order--label-last", {
+        "for": r,
+        "class": s
+      }, e.children, n()("span.mmf-label", o)) : n()("label.order--label-first", {
+        "for": r,
+        "class": s
+      }, n()("span.mmf-label", o), e.children);
+    }
   };
-}
 
-module.exports = n;
+  function l(e) {
+    if (null == e || 0 === e.length) return "no-error";
+
+    for (var _t = 0, _r = e.length; _t < _r; _t += 1) {
+      var _r2 = e[_t];
+      if ("string" == typeof _r2) return "has-error";
+      if (_r2 && "warning" !== _r2.severity) return "has-error";
+    }
+
+    return "has-warning";
+  }
+
+  var u = {
+    view: function view(e) {
+      var t = e.attrs.errors;
+      return null == t || 0 === t.length ? "" : n()("ul.mmf-form__errors", t.map(function (e) {
+        return "string" == typeof (t = e).tag && null != t.attrs && "object" == _typeof(t.attrs) ? n()("li.mmf-form__error.mmf-form__error--" + e.attrs.severity, e) : function (e) {
+          return e && e.message && e.severity;
+        }(e) ? "warning" === e.severity ? n()("li.mmf-form__error.mmf-form__error--warning", n.a.trust(e.message)) : n()("li.mmf-form__error.mmf-form__error--error", n.a.trust(e.message)) : n()("li.mmf-form__error.mmf-form__error--error", n.a.trust(e));
+        var t;
+      }));
+    }
+  };
+  var c = {
+    id: null,
+    title: "",
+    disabled: !1,
+    value: "",
+    errors: [],
+    description: "",
+    placeholder: "",
+    onchange: Function.prototype
+  };
+  var d = {
+    view: function view(e) {
+      var t = _objectSpread(_objectSpread({}, c), e.attrs);
+
+      return n()(".mmf-form.mmf-form--checkbox.mmf-form--" + (t.disabled ? "disabled" : "enabled"), {
+        "class": l(t.errors)
+      }, n()(i, _objectSpread(_objectSpread({}, t), {}, {
+        invertOrder: !0 !== t.invertOrder
+      }), n()(a, {
+        id: e.attrs.id,
+        disabled: t.disabled,
+        value: e.attrs.value,
+        onchange: e.attrs.onchange,
+        onfocus: e.attrs.onfocus,
+        onblur: e.attrs.onblur
+      })), n()(u, t), t.description && n()(".mmf-meta", t.description), e.children);
+    }
+  },
+      f = {
+    value: null,
+    hasFocus: !1,
+    onupdate: function onupdate(e) {
+      e.dom.id = e.attrs.id;
+    },
+    view: function view(_ref2) {
+      var _this = this;
+
+      var e = _ref2.attrs;
+      var t = e.value;
+      this.hasFocus && null != this.value && (t = this.value), this.value = t;
+      var r = {
+        type: e.type,
+        value: t,
+        placeholder: e.placeholder,
+        disabled: !0 === e.disabled,
+        oninput: function oninput(e) {
+          return _this.value = e.target.value;
+        },
+        oncreate: function oncreate(t) {
+          return t.dom.id = e.id;
+        },
+        onfocus: function onfocus(t) {
+          _this.hasFocus = !0, e.onfocus && e.onfocus(t);
+        },
+        onblur: function onblur(t) {
+          _this.hasFocus = !1, e.onblur && e.onblur(t);
+        }
+      };
+      return r[!0 === e.instantUpdate ? "onkeyup" : "onchange"] = function () {
+        return e.onchange(_this.value);
+      }, n()("input.mmf-input", r);
+    }
+  };
+  var p = {
+    string: "text",
+    integer: "number",
+    number: "number"
+  };
+  var m = {
+    oncreate: function oncreate(e) {
+      this.$form = e.dom;
+    },
+    updateClasses: function updateClasses(e) {
+      var t = "" !== e;
+      this.$form.classList.remove(t ? "isEmpty" : "isNotEmpty"), this.$form.classList.add(!1 === t ? "isEmpty" : "isNotEmpty");
+    },
+    onfocus: function onfocus() {
+      this.$form.classList.add("hasFocus"), this.$form.classList.remove("hasNoFocus");
+    },
+    onblur: function onblur(e) {
+      this.$form.classList.add("hasNoFocus"), this.$form.classList.remove("hasFocus"), this.updateClasses(e);
+    },
+    hasFocus: function hasFocus() {
+      return this.$form && this.$form.classList.contains("hasFocus");
+    },
+    view: function view(e) {
+      var _this2 = this;
+
+      var t = p[e.attrs.type] || e.attrs.type || "text",
+          r = _extends({
+        id: null,
+        title: "",
+        value: "",
+        errors: [],
+        description: "",
+        placeholder: "",
+        instantUpdate: !1,
+        onblur: Function.prototype,
+        onfocus: Function.prototype,
+        onchange: Function.prototype
+      }, e.attrs),
+          o = this.hasFocus() ? "hasFocus" : "hasNoFocus",
+          s = l(r.errors),
+          a = "" === r.value ? "isEmpty" : "isNotEmpty";
+
+      return n()(".mmf-form.mmf-form--input.mmf-form--" + (r.disabled ? "disabled" : "enabled"), {
+        "class": "".concat(o, " ").concat(s, " ").concat(a)
+      }, n()(i, r, n()(f, {
+        type: t,
+        id: r.id,
+        disabled: r.disabled,
+        instantUpdate: r.instantUpdate,
+        placeholder: r.placeholder,
+        onchange: function onchange(e) {
+          return r.onchange(function (e, t) {
+            if ("number" === e) {
+              var _e = parseInt(t),
+                  _r3 = parseFloat(t);
+
+              return _r3 == t ? _r3 : isNaN(_e) ? t : _e;
+            }
+
+            return t;
+          }(t, e));
+        },
+        value: r.value,
+        onfocus: function onfocus(e) {
+          _this2.onfocus(), r.onfocus && r.onfocus(e);
+        },
+        onblur: function onblur(e) {
+          _this2.onblur(e.target.value), r.onblur && r.onblur(e);
+        }
+      })), n()(u, r), r.description && n()(".mmf-meta", r.description), e.children);
+    }
+  };
+  var h = {
+    view: function view(e) {
+      var _this3 = this;
+
+      return n()("div.mmf-select__wrapper", {
+        "class": !0 === e.attrs.disabled ? "is-disabled" : "is-enabled",
+        oncreate: function oncreate(e) {
+          return _this3.$wrapper = e.dom;
+        }
+      }, n()("select.mmf-select", {
+        id: e.attrs.id,
+        value: e.attrs.value,
+        disabled: e.attrs.disabled,
+        "class": e.attrs["class"],
+        onfocus: function onfocus() {
+          _this3.$wrapper && _this3.$wrapper.classList.add("has-focus"), e.attrs.onfocus && e.attrs.onfocus(e);
+        },
+        onblur: function onblur() {
+          _this3.$wrapper && _this3.$wrapper.classList.remove("has-focus"), e.attrs.onblur && e.attrs.onblur(e);
+        },
+        onchange: function onchange(t) {
+          return e.attrs.onchange(t.target.value);
+        }
+      }, e.attrs.options.map(function (e) {
+        return (t = e) && void 0 !== t.value ? n()("option", {
+          value: "" + e.value
+        }, e.title || e.value) : n()("option", {
+          value: "" + e
+        }, e);
+        var t;
+      })));
+    }
+  },
+      v = {
+    view: function view(e) {
+      var t = _objectSpread({
+        id: null,
+        value: "",
+        options: [{
+          title: "-",
+          value: !1
+        }],
+        errors: [],
+        description: "",
+        placeholder: "",
+        onchange: Function.prototype
+      }, e.attrs);
+
+      return n()(".mmf-form.mmf-form--select.mmf-form--" + (t.disabled ? "disabled" : "enabled"), {
+        "class": l(t.errors)
+      }, n()(i, _objectSpread({
+        "class": "mmf-grow-2"
+      }, t), n()(h, t)), n()(u, t), t.description && n()(".mmf-meta", t.description), e.children);
+    }
+  },
+      b = r(1),
+      g = r.n(b);
+  var y = window.requestAnimationFrame,
+      w = Function.prototype;
+  var F = {
+    "boolean": !1,
+    onupdate: function onupdate(e) {
+      y(function () {
+        return g.a.update(e.dom);
+      });
+    },
+    view: function view(e) {
+      var _this4 = this;
+
+      var t = _extends({
+        id: null,
+        value: "",
+        rows: 1,
+        placeholder: "",
+        disabled: !1,
+        instantUpdate: !1,
+        onblur: w,
+        onfocus: w,
+        onchange: w,
+        oncreate: w,
+        onbeforeremove: w
+      }, e.attrs),
+          r = !0 === t.disabled;
+
+      this.focus && (t.value = this.textarea.value);
+      var o = {
+        id: t.id,
+        value: t.value,
+        rows: t.rows,
+        disabled: r,
+        placeholder: t.placeholder,
+        onblur: function onblur(e) {
+          _this4.focus = !1, t.onblur && t.onblur(e);
+        },
+        onfocus: function onfocus(e) {
+          _this4.focus = !0, t.onfocus && t.onfocus(e);
+        },
+        onupdate: function onupdate(e) {
+          return g.a.update(e.dom);
+        },
+        oncreate: function oncreate(e) {
+          _this4.textarea = e.dom, t.oncreate(e), g()(e.dom), g.a.update(e.dom);
+        },
+        onbeforeremove: function onbeforeremove(e) {
+          t.onbeforeremove(e), g.a.destroy(e.dom);
+        }
+      };
+      return o[!0 === t.instantUpdate ? "onkeyup" : "onchange"] = function (e) {
+        return t.onchange(e.target.value);
+      }, n()("textarea.mmf-textarea", o);
+    }
+  };
+
+  function x(e) {
+    return null == e || "" === e;
+  }
+
+  var _ = {
+    oncreate: function oncreate(e) {
+      this.$form = e.dom, this.onblur(e.attrs.value);
+    },
+    onfocus: function onfocus() {
+      this.$form.classList.remove("hasNoFocus"), this.$form.classList.add("hasFocus");
+    },
+    onblur: function onblur(e) {
+      this.$form.classList.remove("hasFocus"), this.$form.classList.add("hasNoFocus"), this.updateClasses(e);
+    },
+    updateClasses: function updateClasses(e) {
+      var t = !1 === x(e);
+      this.$form.classList.remove(t ? "isEmpty" : "isNotEmpty"), this.$form.classList.add(!1 === t ? "isEmpty" : "isNotEmpty");
+    },
+    onupdate: function onupdate(e) {
+      this.updateClasses(e.attrs.value);
+    },
+    view: function view(e) {
+      var _this5 = this;
+
+      var t = _extends({
+        id: null,
+        title: "",
+        value: "",
+        errors: [],
+        disabled: !1,
+        description: "",
+        placeholder: "",
+        rows: 1,
+        instantUpdate: !1,
+        onblur: Function.prototype,
+        onfocus: Function.prototype,
+        onchange: Function.prototype
+      }, e.attrs),
+          r = !0 === t.disabled;
+
+      return n()(".mmf-form.mmf-form--textarea.mmf-form--" + (r ? "disabled" : "enabled"), {
+        "class": l(t.errors)
+      }, n()(i, t, n()(F, {
+        id: t.id,
+        value: t.value,
+        disabled: r,
+        instantUpdate: t.instantUpdate,
+        placeholder: t.placeholder,
+        rows: t.rows,
+        onchange: t.onchange,
+        onblur: function onblur(e) {
+          _this5.onblur(e.target.value), t.onblur(e);
+        },
+        onfocus: function onfocus(e) {
+          _this5.onfocus(), t.onfocus(e);
+        }
+      })), n()(u, t), t.description && n()(".mmf-meta", t.description), e.children);
+    }
+  };
+  var E = [16, 9];
+
+  function L(e) {
+    var t = e.split(":").map(parseFloat);
+    return t = 2 === t.length ? t : E, 100 * t[1] / t[0];
+  }
+
+  var $ = {
+    view: function view(e) {
+      var t = e.attrs;
+      return [x(t.url) ? n()(".mmf-preview__placeholder", t.placeholder) : [t.description ? n()(".mmf-preview__description", n.a.trust(t.description)) : "", n()(".mmf-preview__overflow-indicator")], e.children];
+    }
+  },
+      N = {
+    view: function view(e) {
+      var t = e.attrs;
+      return n()(".mmf-preview__content", {
+        style: x(t.url) ? "" : (r = t.maxRatio, "padding-bottom: ".concat(L(r).toFixed(2), "%;")),
+        oncreate: t.oncreate
+      }, x(t.url) ? n()(".mmf-preview__placeholder", t.placeholder) : [n()("img", {
+        src: t.url,
+        onload: t.onload
+      }), t.description ? n()(".mmf-preview__description", n.a.trust(t.description)) : "", n()(".mmf-preview__overflow-indicator")], e.children);
+      var r;
+    }
+  };
+  var k = {
+    updateRatio: function updateRatio(e, t) {
+      if (null != this.overflowContainer && t.naturalWidth) {
+        var _r4 = L(e),
+            _o = L("".concat(t.naturalWidth, ":").concat(t.naturalHeight));
+
+        _r4 >= _o ? (this.overflowContainer.style.paddingBottom = _o.toFixed(2) + "%", this.overflowContainer.classList.remove("with-overflow"), this.hasOverflow = !1) : (this.overflowContainer.style.paddingBottom = _r4.toFixed(2) + "%", this.overflowContainer.classList.add("with-overflow"), this.hasOverflow = !0);
+      }
+    },
+    view: function view(e) {
+      var _this6 = this;
+
+      var t = _objectSpread({
+        url: null,
+        "class": "",
+        asBackgroundImage: !1,
+        description: null,
+        placeholder: null,
+        onclick: null,
+        maxRatio: "16:9",
+        onload: function onload(t) {
+          return _this6.updateRatio(e.attrs.maxRatio, t.currentTarget);
+        },
+        oncreate: function oncreate(e) {
+          _this6.overflowContainer = e.dom;
+        }
+      }, e.attrs);
+
+      return n()(".mmf-preview.mmf-preview--image", {
+        "class": t["class"] + (x(t.url) ? "" : " with-image"),
+        style: t.asBackgroundImage && !x(t.url) ? "background-image: url(".concat(t.url, ");") : ""
+      }, t.asBackgroundImage ? n()($, t, e.children) : n()(N, t, e.children));
+    }
+  };
+}]);
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js ***!
+  \************************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	autosize 4.0.2
+	license: MIT
+	http://www.jacklmoore.com/autosize
+*/
+(function (global, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else { var mod; }
+})(this, function (module, exports) {
+  'use strict';
+
+  var map = typeof Map === "function" ? new Map() : function () {
+    var keys = [];
+    var values = [];
+    return {
+      has: function has(key) {
+        return keys.indexOf(key) > -1;
+      },
+      get: function get(key) {
+        return values[keys.indexOf(key)];
+      },
+      set: function set(key, value) {
+        if (keys.indexOf(key) === -1) {
+          keys.push(key);
+          values.push(value);
+        }
+      },
+      "delete": function _delete(key) {
+        var index = keys.indexOf(key);
+
+        if (index > -1) {
+          keys.splice(index, 1);
+          values.splice(index, 1);
+        }
+      }
+    };
+  }();
+
+  var createEvent = function createEvent(name) {
+    return new Event(name, {
+      bubbles: true
+    });
+  };
+
+  try {
+    new Event('test');
+  } catch (e) {
+    // IE does not support `new Event()`
+    createEvent = function createEvent(name) {
+      var evt = document.createEvent('Event');
+      evt.initEvent(name, true, false);
+      return evt;
+    };
+  }
+
+  function assign(ta) {
+    if (!ta || !ta.nodeName || ta.nodeName !== 'TEXTAREA' || map.has(ta)) return;
+    var heightOffset = null;
+    var clientWidth = null;
+    var cachedHeight = null;
+
+    function init() {
+      var style = window.getComputedStyle(ta, null);
+
+      if (style.resize === 'vertical') {
+        ta.style.resize = 'none';
+      } else if (style.resize === 'both') {
+        ta.style.resize = 'horizontal';
+      }
+
+      if (style.boxSizing === 'content-box') {
+        heightOffset = -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+      } else {
+        heightOffset = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+      } // Fix when a textarea is not on document body and heightOffset is Not a Number
+
+
+      if (isNaN(heightOffset)) {
+        heightOffset = 0;
+      }
+
+      update();
+    }
+
+    function changeOverflow(value) {
+      {
+        // Chrome/Safari-specific fix:
+        // When the textarea y-overflow is hidden, Chrome/Safari do not reflow the text to account for the space
+        // made available by removing the scrollbar. The following forces the necessary text reflow.
+        var width = ta.style.width;
+        ta.style.width = '0px'; // Force reflow:
+
+        /* jshint ignore:start */
+
+        ta.offsetWidth;
+        /* jshint ignore:end */
+
+        ta.style.width = width;
+      }
+      ta.style.overflowY = value;
+    }
+
+    function getParentOverflows(el) {
+      var arr = [];
+
+      while (el && el.parentNode && el.parentNode instanceof Element) {
+        if (el.parentNode.scrollTop) {
+          arr.push({
+            node: el.parentNode,
+            scrollTop: el.parentNode.scrollTop
+          });
+        }
+
+        el = el.parentNode;
+      }
+
+      return arr;
+    }
+
+    function resize() {
+      if (ta.scrollHeight === 0) {
+        // If the scrollHeight is 0, then the element probably has display:none or is detached from the DOM.
+        return;
+      }
+
+      var overflows = getParentOverflows(ta);
+      var docTop = document.documentElement && document.documentElement.scrollTop; // Needed for Mobile IE (ticket #240)
+
+      ta.style.height = '';
+      ta.style.height = ta.scrollHeight + heightOffset + 'px'; // used to check if an update is actually necessary on window.resize
+
+      clientWidth = ta.clientWidth; // prevents scroll-position jumping
+
+      overflows.forEach(function (el) {
+        el.node.scrollTop = el.scrollTop;
+      });
+
+      if (docTop) {
+        document.documentElement.scrollTop = docTop;
+      }
+    }
+
+    function update() {
+      resize();
+      var styleHeight = Math.round(parseFloat(ta.style.height));
+      var computed = window.getComputedStyle(ta, null); // Using offsetHeight as a replacement for computed.height in IE, because IE does not account use of border-box
+
+      var actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(computed.height)) : ta.offsetHeight; // The actual height not matching the style height (set via the resize method) indicates that 
+      // the max-height has been exceeded, in which case the overflow should be allowed.
+
+      if (actualHeight < styleHeight) {
+        if (computed.overflowY === 'hidden') {
+          changeOverflow('scroll');
+          resize();
+          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
+        }
+      } else {
+        // Normally keep overflow set to hidden, to avoid flash of scrollbar as the textarea expands.
+        if (computed.overflowY !== 'hidden') {
+          changeOverflow('hidden');
+          resize();
+          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
+        }
+      }
+
+      if (cachedHeight !== actualHeight) {
+        cachedHeight = actualHeight;
+        var evt = createEvent('autosize:resized');
+
+        try {
+          ta.dispatchEvent(evt);
+        } catch (err) {// Firefox will throw an error on dispatchEvent for a detached element
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=889376
+        }
+      }
+    }
+
+    var pageResize = function pageResize() {
+      if (ta.clientWidth !== clientWidth) {
+        update();
+      }
+    };
+
+    var destroy = function (style) {
+      window.removeEventListener('resize', pageResize, false);
+      ta.removeEventListener('input', update, false);
+      ta.removeEventListener('keyup', update, false);
+      ta.removeEventListener('autosize:destroy', destroy, false);
+      ta.removeEventListener('autosize:update', update, false);
+      Object.keys(style).forEach(function (key) {
+        ta.style[key] = style[key];
+      });
+      map["delete"](ta);
+    }.bind(ta, {
+      height: ta.style.height,
+      resize: ta.style.resize,
+      overflowY: ta.style.overflowY,
+      overflowX: ta.style.overflowX,
+      wordWrap: ta.style.wordWrap
+    });
+
+    ta.addEventListener('autosize:destroy', destroy, false); // IE9 does not fire onpropertychange or oninput for deletions,
+    // so binding to onkeyup to catch most of those events.
+    // There is no way that I know of to detect something like 'cut' in IE9.
+
+    if ('onpropertychange' in ta && 'oninput' in ta) {
+      ta.addEventListener('keyup', update, false);
+    }
+
+    window.addEventListener('resize', pageResize, false);
+    ta.addEventListener('input', update, false);
+    ta.addEventListener('autosize:update', update, false);
+    ta.style.overflowX = 'hidden';
+    ta.style.wordWrap = 'break-word';
+    map.set(ta, {
+      destroy: destroy,
+      update: update
+    });
+    init();
+  }
+
+  function destroy(ta) {
+    var methods = map.get(ta);
+
+    if (methods) {
+      methods.destroy();
+    }
+  }
+
+  function update(ta) {
+    var methods = map.get(ta);
+
+    if (methods) {
+      methods.update();
+    }
+  }
+
+  var autosize = null; // Do nothing in Node.js environment and IE8 (or lower)
+
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+    autosize = function autosize(el) {
+      return el;
+    };
+
+    autosize.destroy = function (el) {
+      return el;
+    };
+
+    autosize.update = function (el) {
+      return el;
+    };
+  } else {
+    autosize = function autosize(el, options) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], function (x) {
+          return assign(x, options);
+        });
+      }
+
+      return el;
+    };
+
+    autosize.destroy = function (el) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], destroy);
+      }
+
+      return el;
+    };
+
+    autosize.update = function (el) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], update);
+      }
+
+      return el;
+    };
+  }
+
+  exports["default"] = autosize;
+  module.exports = exports['default'];
+});
+
+/***/ }),
+
+/***/ "./node_modules/nanoevents/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/nanoevents/index.js ***!
+  \******************************************/
+/*! exports provided: createNanoEvents */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createNanoEvents", function() { return createNanoEvents; });
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var createNanoEvents = function createNanoEvents() {
+  return {
+    events: {},
+    emit: function emit(event) {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      var _iterator = _createForOfIteratorHelper(this.events[event] || []),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var i = _step.value;
+          i.apply(void 0, args);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    },
+    on: function on(event, cb) {
+      var _this = this;
+
+      ;
+      (this.events[event] = this.events[event] || []).push(cb);
+      return function () {
+        return _this.events[event] = _this.events[event].filter(function (i) {
+          return i !== cb;
+        });
+      };
+    }
+  };
+};
+
+
 
 /***/ }),
 
@@ -15732,161 +16328,6 @@ function symbolObservablePonyfill(root) {
 
 /***/ }),
 
-/***/ "./node_modules/valid-url/index.js":
-/*!*****************************************!*\
-  !*** ./node_modules/valid-url/index.js ***!
-  \*****************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(module) {(function (module) {
-  'use strict';
-
-  module.exports.is_uri = is_iri;
-  module.exports.is_http_uri = is_http_iri;
-  module.exports.is_https_uri = is_https_iri;
-  module.exports.is_web_uri = is_web_iri; // Create aliases
-
-  module.exports.isUri = is_iri;
-  module.exports.isHttpUri = is_http_iri;
-  module.exports.isHttpsUri = is_https_iri;
-  module.exports.isWebUri = is_web_iri; // private function
-  // internal URI spitter method - direct from RFC 3986
-
-  var splitUri = function splitUri(uri) {
-    var splitted = uri.match(/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/);
-    return splitted;
-  };
-
-  function is_iri(value) {
-    if (!value) {
-      return;
-    } // check for illegal characters
-
-
-    if (/[^a-z0-9\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\.\-\_\~\%]/i.test(value)) return; // check for hex escapes that aren't complete
-
-    if (/%[^0-9a-f]/i.test(value)) return;
-    if (/%[0-9a-f](:?[^0-9a-f]|$)/i.test(value)) return;
-    var splitted = [];
-    var scheme = '';
-    var authority = '';
-    var path = '';
-    var query = '';
-    var fragment = '';
-    var out = ''; // from RFC 3986
-
-    splitted = splitUri(value);
-    scheme = splitted[1];
-    authority = splitted[2];
-    path = splitted[3];
-    query = splitted[4];
-    fragment = splitted[5]; // scheme and path are required, though the path can be empty
-
-    if (!(scheme && scheme.length && path.length >= 0)) return; // if authority is present, the path must be empty or begin with a /
-
-    if (authority && authority.length) {
-      if (!(path.length === 0 || /^\//.test(path))) return;
-    } else {
-      // if authority is not present, the path must not start with //
-      if (/^\/\//.test(path)) return;
-    } // scheme must begin with a letter, then consist of letters, digits, +, ., or -
-
-
-    if (!/^[a-z][a-z0-9\+\-\.]*$/.test(scheme.toLowerCase())) return; // re-assemble the URL per section 5.3 in RFC 3986
-
-    out += scheme + ':';
-
-    if (authority && authority.length) {
-      out += '//' + authority;
-    }
-
-    out += path;
-
-    if (query && query.length) {
-      out += '?' + query;
-    }
-
-    if (fragment && fragment.length) {
-      out += '#' + fragment;
-    }
-
-    return out;
-  }
-
-  function is_http_iri(value, allowHttps) {
-    if (!is_iri(value)) {
-      return;
-    }
-
-    var splitted = [];
-    var scheme = '';
-    var authority = '';
-    var path = '';
-    var port = '';
-    var query = '';
-    var fragment = '';
-    var out = ''; // from RFC 3986
-
-    splitted = splitUri(value);
-    scheme = splitted[1];
-    authority = splitted[2];
-    path = splitted[3];
-    query = splitted[4];
-    fragment = splitted[5];
-    if (!scheme) return;
-
-    if (allowHttps) {
-      if (scheme.toLowerCase() != 'https') return;
-    } else {
-      if (scheme.toLowerCase() != 'http') return;
-    } // fully-qualified URIs must have an authority section that is
-    // a valid host
-
-
-    if (!authority) {
-      return;
-    } // enable port component
-
-
-    if (/:(\d+)$/.test(authority)) {
-      port = authority.match(/:(\d+)$/)[0];
-      authority = authority.replace(/:\d+$/, '');
-    }
-
-    out += scheme + ':';
-    out += '//' + authority;
-
-    if (port) {
-      out += port;
-    }
-
-    out += path;
-
-    if (query && query.length) {
-      out += '?' + query;
-    }
-
-    if (fragment && fragment.length) {
-      out += '#' + fragment;
-    }
-
-    return out;
-  }
-
-  function is_https_iri(value) {
-    return is_http_iri(value, true);
-  }
-
-  function is_web_iri(value) {
-    return is_http_iri(value) || is_https_iri(value);
-  }
-})(module);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
-
-/***/ }),
-
 /***/ "./node_modules/webpack/buildin/global.js":
 /*!***********************************!*\
   !*** (webpack)/buildin/global.js ***!
@@ -16023,6 +16464,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./editors/arrayeditor */ "./src/editors/arrayeditor/index.ts");
 /* harmony import */ var _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./editors/objecteditor */ "./src/editors/objecteditor/index.ts");
 /* harmony import */ var _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./editors/valueeditor */ "./src/editors/valueeditor/index.ts");
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _proxy;
 
 
 
@@ -16044,16 +16499,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.cores;
-function isValidPointer(pointer) {
-    return pointer[0] === "#";
-}
 /** throws an error, when given pointer is not a valid jons-pointer */
 function assertValidPointer(pointer) {
-    if (isValidPointer(pointer) === false) {
+    if (pointer[0] !== "#") {
         throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
     }
 }
-// removes the editor from the instances-inventory of active editors
+/** removes the editor from the instances-inventory of active editors */
 function removeEditorFrom(instances, editor) {
     const pointer = editor.getPointer();
     if (instances[pointer]) {
@@ -16063,6 +16515,7 @@ function removeEditorFrom(instances, editor) {
         }
     }
 }
+/** callback on each editor-instance */
 function eachInstance(instances, cb) {
     Object.keys(instances).forEach(pointer => {
         instances[pointer].forEach(editor => cb(pointer, editor));
@@ -16077,7 +16530,7 @@ function eachInstance(instances, cb) {
  * Instantiate the controller
  *
  * ```js
- * import { Controller } from "editron";
+ * import Controller from "editron";
  * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  * const editron = new Controller(jsonSchema);
  * ```
@@ -16085,7 +16538,7 @@ function eachInstance(instances, cb) {
  * or, using all parameters
  *
  * ```js
- *  import { Controller } from "editron";
+ *  import Controller from "editron";
  *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  *  // data = { title: "Hello" } - or simply use {}
  *  // options = { editors: [ complete list of custom editors ] }
@@ -16113,6 +16566,7 @@ function eachInstance(instances, cb) {
  */
 class Controller {
     constructor(schema = { type: "object" }, data = {}, options = {}) {
+        _proxy.set(this, void 0);
         this.destroyed = false;
         this.disabled = false;
         schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].extendSchema(schema);
@@ -16130,7 +16584,7 @@ class Controller {
         this.state = new _services_State__WEBPACK_IMPORTED_MODULE_7__["default"]();
         this.instances = {};
         this.core = new Core();
-        this._proxy = Object(_utils_createProxy__WEBPACK_IMPORTED_MODULE_15__["default"])(this.options.proxy);
+        __classPrivateFieldSet(this, _proxy, Object(_utils_createProxy__WEBPACK_IMPORTED_MODULE_15__["default"])(this.options.proxy));
         _plugin__WEBPACK_IMPORTED_MODULE_13__["default"].getValidators().forEach(([validationType, ...validator]) => {
             try {
                 if (validationType === "format") {
@@ -16157,9 +16611,13 @@ class Controller {
         this.dataService = new _services_DataService__WEBPACK_IMPORTED_MODULE_3__["default"](this.state, data);
         // start validation after data has been updated
         this.onAfterDataUpdate = this.dataService
-            .on(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EVENTS"].AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+            .on(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EventType"].AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
         // run initial validation
         this.validateAll();
+        this.locationService = new _services_LocationService__WEBPACK_IMPORTED_MODULE_6__["default"]();
+        this.locationService.on(_services_LocationService__WEBPACK_IMPORTED_MODULE_6__["EventType"].FOCUS, (pointer) => {
+            console.log("focus", pointer, this.schemaService.get(pointer));
+        });
     }
     /** reset undo history */
     resetUndoRedo() {
@@ -16188,7 +16646,7 @@ class Controller {
      *
      * @param  {String} selector    - a css selector describing the desired element
      * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
-     * @return the resulting dom-element (not attached)
+     * @returns the resulting dom-element (not attached)
      */
     createElement(selector, attributes) {
         return Object(_utils_createElement__WEBPACK_IMPORTED_MODULE_9__["default"])(selector, attributes);
@@ -16201,7 +16659,7 @@ class Controller {
      * @param  pointer - data pointer to editor in current state
      * @param  element - parent element of create editor. Will be appended automatically
      * @param  [options] - individual editor options
-     * @return created editor-instance or undefined;
+     * @returns created editor-instance or undefined;
      */
     createEditor(pointer, element, options) {
         if (pointer == null || element == null) {
@@ -16215,17 +16673,17 @@ class Controller {
             disabled: this.disabled
         }, _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].copyOptions(pointer, this), options);
         // find a matching editor
-        const Editor = Object(_utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__["default"])(this.getEditors(), pointer, this, instanceOptions);
-        if (Editor === false) {
+        const EditorConstructor = Object(_utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__["default"])(this.getEditors(), pointer, this, instanceOptions);
+        if (EditorConstructor === false) {
             return undefined;
         }
-        if (Editor === undefined) {
-            console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
+        if (EditorConstructor === undefined) {
+            this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
             return undefined;
         }
         // iniitialize editor and save editor in list
         // @TODO loose reference to destroyed editors
-        const editor = new Editor(pointer, this, instanceOptions);
+        const editor = new EditorConstructor(pointer, this, instanceOptions);
         element.appendChild(editor.toElement());
         editor.setActive(!this.disabled);
         this.addInstance(pointer, editor);
@@ -16233,10 +16691,11 @@ class Controller {
     }
     /**
      * Call this method, when your editor is destroyed, deregistering its instance on editron
-     * @param  {Instance} editor    - editor instance to remove
+     * @param editor - editor instance to remove
      */
     removeInstance(editor) {
         // controller inserted child and removes it here again
+        // @ts-ignore
         const $element = editor.toElement();
         if ($element.parentNode) {
             $element.parentNode.removeChild($element);
@@ -16250,45 +16709,44 @@ class Controller {
     /**
      * Request to insert a child item (within the data) at the given pointer. If multiple options are present, a
      * dialogue is opened to let the user select the appropriate type of child (oneof).
-     * @param {String} pointer  - to array on which to insert the child
-     * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
+     * @param pointer - to array on which to insert the child
+     * @param index - index within array, where the child should be inserted (does not replace). Default: 0
      */
     addItemTo(pointer, index = 0) {
-        Object(_utils_addItem__WEBPACK_IMPORTED_MODULE_10__["default"])(this.data(), this.schema(), pointer, index);
-        _services_LocationService__WEBPACK_IMPORTED_MODULE_6__["default"].goto(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, index, true));
+        Object(_utils_addItem__WEBPACK_IMPORTED_MODULE_10__["default"])(this.data(), this.schema(), this.locationService, pointer, index);
+        this.locationService.goto(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, index, true));
     }
     /**
      * Get or update data from a pointer
-     * @return {DataService} DataService instance
+     * @returns DataService instance
      */
     data() { return this.dataService; }
     /**
      * Get the json schema from a pointer or replace the schema
-     * @return {SchemaService} SchemaService instance
+     * @returns SchemaService instance
      */
     schema() { return this.schemaService; }
     /**
-     * @return {Foxy} proxy instance
+     * @returns proxy instance
      */
-    proxy() { return this._proxy; }
+    proxy() { return __classPrivateFieldGet(this, _proxy); }
     /**
      * Validate data based on a json-schema and register to generated error events
      *
      * - start validation
-     * - get your current errors at _pointer_
-     * - hook into validation to receive your errors at _pointer_
+     * - get your current errors at `pointer`
+     * - hook into validation to receive your errors at `pointer`
      *
-     * @return {ValidationService} ValidationService instance
+     * @returns ValidationService instance
      */
     validator() { return this.validationService; }
     /**
      * ## Usage
      *  goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
      *  setCurrent(pointer) - Update current pointer, but do not jump to target
-     *
-     * @return {Object} LocationService-Singleton
+     * @returns LocationService-Singleton
      */
-    location() { return _services_LocationService__WEBPACK_IMPORTED_MODULE_6__["default"]; }
+    location() { return this.locationService; }
     /**
      * Set the application data
      * @param {Any} data    - json data matching registered json-schema
@@ -16299,22 +16757,22 @@ class Controller {
     }
     /**
      * @param {JsonPointer} [pointer="#"] - location of data to fetch. Defaults to root (all) data
-     * @return {Any} data at the given location
+     * @returns data at the given location
      */
     getData(pointer = "#") {
         return this.data().get(pointer);
     }
     /**
-     * @return {Array} registered editor-widgets used to edit the json-data
+     * @returns registered editor-widgets used to edit the json-data
      */
     getEditors() { return this.editors; }
     /**
-     * @return {Object} currently active editor/widget instances
+     * @returns currently active editor/widget instances
      */
     getInstances() { return this.instances; }
     /**
-     * @param {String} format       - value of _format_
-     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     * @param format - value of _format_
+     * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
      *      als return a promise
      */
@@ -16322,9 +16780,9 @@ class Controller {
         json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2___default.a.format(this.core, format, validator);
     }
     /**
-     * @param {String} datatype     - JSON-Schema datatype to register attribute, e.g. "string" or "object"
-     * @param {String} keyword      - custom keyword
-     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     * @param datatype - JSON-Schema datatype to register attribute, e.g. "string" or "object"
+     * @param keyword - custom keyword
+     * @param validator - validator function receiving (core, schema, value, pointer). Return `undefined`
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
      *      als return a promise
      */
@@ -16333,7 +16791,7 @@ class Controller {
     }
     /**
      * Change the new schema for the current data
-     * @param {Object} schema   - a valid json-schema
+     * @param schema   - a valid json-schema
      */
     setSchema(schema) {
         schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].extendSchema(schema);
@@ -16350,9 +16808,7 @@ class Controller {
     validateAll() {
         setTimeout(() => this.destroyed !== true && this.validationService.validate(this.dataService.getDataByReference()));
     }
-    /**
-     * Destroy the editor, its widgets and services
-     */
+    /** Destroy the editor, its widgets and services */
     destroy() {
         // delete all editors
         Object.keys(this.instances).forEach(pointer => {
@@ -16363,7 +16819,7 @@ class Controller {
         this.schemaService.destroy();
         this.validationService.destroy();
         this.dataService.destroy();
-        this.dataService.off(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EVENTS"].AFTER_UPDATE, this.onAfterDataUpdate);
+        this.dataService.off(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EventType"].AFTER_UPDATE, this.onAfterDataUpdate);
     }
     onAfterDataUpdate({ pointer }) {
         this.update();
@@ -16383,6 +16839,7 @@ class Controller {
         this.addInstance(newPointer, editor);
     }
 }
+_proxy = new WeakMap();
 
 
 /***/ }),
@@ -16422,8 +16879,9 @@ const CHILD_CONTAINER_SELECTOR = ".editron-container__children";
         return $childContainer;
     },
     view(vnode) {
+        const { hideTitle } = vnode.attrs;
         return [
-            vnode.attrs.hideTitle === true ? null : mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containerheader__WEBPACK_IMPORTED_MODULE_1__["default"], vnode.attrs),
+            hideTitle === true ? null : mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containerheader__WEBPACK_IMPORTED_MODULE_1__["default"], vnode.attrs),
             mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containerdescription__WEBPACK_IMPORTED_MODULE_3__["default"], vnode.attrs),
             vnode.children,
             mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containererrors__WEBPACK_IMPORTED_MODULE_2__["default"], vnode.attrs),
@@ -16533,19 +16991,21 @@ function getClass(hasAction, { title, icon, disabled }) {
             disabled: false,
             ...vnode.attrs
         };
-        const hasAction = (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown) != null;
+        const hasAction = (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown || attrs.oncollapse) != null;
         return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__header", {
             "class": getClass(hasAction, attrs),
             name: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.pointer)
-        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__title", Object(_utils_populated__WEBPACK_IMPORTED_MODULE_2__["default"])(vnode.attrs.icon, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", attrs.icon)), (!attrs.hideTitle) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("h2", attrs.title)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__actions", attrs.onmoveup ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__title", Object(_utils_populated__WEBPACK_IMPORTED_MODULE_2__["default"])(vnode.attrs.icon, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", attrs.icon)), (!attrs.hideTitle) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("h2", attrs.title)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__actions", attrs.onmoveup && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
             onclick: attrs.onmoveup
-        }, "arrow_upward") : "", attrs.onmovedown ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+        }, "arrow_upward"), attrs.onmovedown && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
             onclick: attrs.onmovedown
-        }, "arrow_downward") : "", attrs.onadd ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+        }, "arrow_downward"), attrs.onadd && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
             onclick: () => attrs.onadd()
-        }, "add") : "", attrs.ondelete ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--delete", {
+        }, "add"), attrs.ondelete && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--delete", {
             onclick: attrs.ondelete
-        }, "delete") : ""));
+        }, "delete"), attrs.oncollapse && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--collapse", {
+            onclick: attrs.oncollapse
+        }, attrs.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down")));
     }
 });
 
@@ -16602,11 +17062,10 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms */ "./node_modules/mithril-material-forms/index.js");
+/* harmony import */ var mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms */ "./node_modules/mithril-material-forms/dist/mmf.js");
 /* harmony import */ var mithril_material_forms__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__);
 
 
-const { button: Button } = mithril_material_forms__WEBPACK_IMPORTED_MODULE_1___default.a;
 /**
  * Content overlay
  */
@@ -16614,13 +17073,9 @@ const { button: Button } = mithril_material_forms__WEBPACK_IMPORTED_MODULE_1___d
     view(vnode) {
         return mithril__WEBPACK_IMPORTED_MODULE_0___default()("section.ui-overlay__card", {
             "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
-        }, vnode.attrs.header ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__header", mithril__WEBPACK_IMPORTED_MODULE_0___default()("h1", vnode.attrs.header)) : "", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__content", {
+        }, vnode.attrs.header && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__header", mithril__WEBPACK_IMPORTED_MODULE_0___default()("h1", vnode.attrs.header)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__content", {
             oncreate: (contentNode) => contentNode.dom.appendChild(vnode.attrs.container)
-        }), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__footer", mithril__WEBPACK_IMPORTED_MODULE_0___default()(Button, {
-            onClick: vnode.attrs.onAbort
-        }, vnode.attrs.titleAbort), vnode.attrs.showSave ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(Button, {
-            onClick: vnode.attrs.onSave
-        }, "Speichern") : ""));
+        }), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__footer", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onAbort }, vnode.attrs.titleAbort), vnode.attrs.showSave && mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onSave }, "Speichern")));
     }
 });
 
@@ -16723,6 +17178,8 @@ function getDataValue(node) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractEditor; });
+/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/ValidationService */ "./src/services/ValidationService.ts");
+
 function getTypeClass(schema) {
     return schema.type === "array" || schema.type === "object" ? schema.type : "value";
 }
@@ -16776,6 +17233,7 @@ class AbstractEditor {
     }
     updatePointer(newPointer) {
         const oldPointer = this.pointer;
+        this.controller.changePointer(newPointer, this);
         this.controller.data().removeObserver(oldPointer, this.update);
         this.controller.validator().removeObserver(oldPointer, this.setErrors);
         this.pointer = newPointer;
@@ -16788,6 +17246,9 @@ class AbstractEditor {
     }
     setData(data) {
         return this.controller.data().set(this.pointer, data);
+    }
+    setActive(active = true) {
+        throw new Error(`Missing implementation of method 'setActive' in custom editor ${this}`);
     }
     getErrors() {
         return this.errors;
@@ -16811,11 +17272,14 @@ class AbstractEditor {
         this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
         this.controller.data().removeObserver(this.pointer, this.update);
         this.controller.validator().removeObserver(this.pointer, this._addError);
-        this.controller.validator().off("beforeValidation", this._clearErrors);
+        // @todo this event is not registered in this class
+        this.controller.validator().off(_services_ValidationService__WEBPACK_IMPORTED_MODULE_0__["EventType"].BEFORE_VALIDATION, this._clearErrors);
     }
     setErrors(errors) {
         this.errors = errors;
+        // @ts-ignore
         if (this.updateErrors) {
+            // @ts-ignore
             this.updateErrors(this.errors);
         }
     }
@@ -16976,6 +17440,7 @@ class AbstractValueEditor {
     }
     // adds an error to view
     setErrors(errors) {
+        console.log("set errors", errors);
         this.viewModel.errors = errors;
         this.render();
     }
@@ -17166,9 +17631,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class ArrayEditor {
-    constructor(pointer, controller, options) {
+    constructor(pointer, controller, options = {}) {
         // add id to element, since no other input-form is associated with this editor
-        options.attrs = Object.assign({ id: options.id }, options.attrs);
+        options.attrs = { id: options.id, ...options.attrs };
         const schema = controller.schema().get(pointer);
         const data = controller.data().get(pointer);
         this.onAdd = (index = 0) => {
@@ -17390,10 +17855,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ObjectEditor; });
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
-/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.ts");
 /* harmony import */ var _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/OverlayService */ "./src/services/OverlayService.ts");
 /* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../AbstractEditor */ "./src/editors/AbstractEditor.ts");
+
 
 
 
@@ -17402,62 +17868,55 @@ function showJSON(controller, data, title) {
     const element = controller.createElement(".overlay__item.overlay__item--json");
     _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__["default"].open(element, { ok: true, save: false });
     // render textarea after it is injected into dom, to correctly update textarea size
-    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1___default.a, { title, value: JSON.stringify(data, null, 4) }));
+    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__["default"], { title, value: JSON.stringify(data, null, 4) }));
 }
-class ObjectEditor {
+class ObjectEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default"] {
     constructor(pointer, controller, options = {}) {
+        super(pointer, controller, options);
         // add id to element, since no other input-form is associated with this editor...
         // @todo ...except another editron-instance
-        options.attrs = Object.assign({ id: options.id }, options.attrs);
-        this.$element = controller.createElement(".editron-container.editron-container--object", options.attrs);
+        options.attrs = { id: options.id, ...options.attrs };
         this.pointer = pointer;
         this.options = options;
         this.controller = controller;
         this.childEditors = [];
         this.viewModel = {
             pointer,
-            icon: options.icon,
             errors: [],
-            attrs: {},
-            hideTitle: options.hideTitle,
-            title: options.title,
-            description: options.description,
-            ...options
+            ...options,
+            attrs: options.attrs || {},
         };
-        if (options.addDelete) {
-            this.viewModel.ondelete = () => controller.data().delete(pointer);
+        if (options.collapsed != null) {
+            this.viewModel.oncollapse = () => {
+                this.viewModel.collapsed = !this.viewModel.collapsed;
+                this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
+                this.render(); // redraw container, to update header collapse-icon
+            };
+            this.dom.classList.add("collapsible");
+            this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
         }
-        this.rebuildChildren = controller.data().observe(pointer, this.rebuildChildren.bind(this));
-        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-        this.setErrors(controller.validator().getErrorsAndWarnings(pointer));
+        if (options.addDelete) {
+            this.viewModel.ondelete = this.delete;
+        }
         this.render();
-        this.$children = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
-        this.rebuildChildren();
+        this.$children = this.dom.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
+        this.update();
     }
     static editorOf(pointer, controller) {
         const schema = controller.schema().get(pointer);
         return schema.type === "object";
     }
     updatePointer(pointer) {
-        if (this.pointer === pointer || this.viewModel == null) {
-            return;
-        }
-        this.controller.changePointer(pointer, this);
-        const oldPointer = this.pointer;
-        this.$element.id = pointer;
-        const controller = this.controller;
+        const returnValue = super.updatePointer(pointer);
+        // if (this.viewModel == null) {
+        //     return;
+        // }
+        this.dom.id = pointer;
         this.options.attrs.id = pointer;
-        this.pointer = pointer;
         this.viewModel.pointer = pointer;
-        if (this.options.addDelete) {
-            this.viewModel.ondelete = () => controller.data().delete(pointer);
-        }
-        controller.data().removeObserver(oldPointer, this.rebuildChildren);
-        controller.validator().removeObserver(oldPointer, this.setErrors);
-        controller.data().observe(pointer, this.rebuildChildren);
-        controller.validator().observe(pointer, this.setErrors);
-        this.childEditors.forEach(editor => editor.updatePointer(`${this.pointer}/${editor._property}`));
+        this.childEditors.forEach(editor => editor.updatePointer(`${pointer}/${editor._property}`));
         this.render();
+        return returnValue;
     }
     /** de/activate this editors user-interaction */
     setActive(active = true) {
@@ -17465,16 +17924,13 @@ class ObjectEditor {
         this.render();
     }
     update() {
-        this.rebuildChildren();
-    }
-    rebuildChildren() {
         if (this.viewModel == null) {
             console.error(`destroyed ObjectEditor receives an update event
                 - this may be invoked through oneOf-Editor`, this);
             return;
         }
         // fetch latest data
-        const data = this.controller.data().get(this.pointer);
+        const data = this.getData();
         // destroy child editor
         this.childEditors.forEach(editor => editor.destroy());
         this.childEditors.length = 0;
@@ -17492,16 +17948,25 @@ class ObjectEditor {
         }
         this.render();
     }
+    /** deletes this object from data */
+    delete() {
+        this.controller.data().delete(this.pointer);
+    }
+    /** deletes a property from this object */
     deleteProperty(property) {
         const data = this.controller.data().get(this.pointer);
         delete data[property];
         this.controller.data().set(this.pointer, data);
     }
+    /** displays the properties json-value */
     showProperty(property) {
         const propertyData = this.controller.data().get(`${this.pointer}/${property}`);
         showJSON(this.controller, propertyData, property);
     }
-    setErrors(errors = []) {
+    updateErrors(errors = []) {
+        if (this.viewModel == null) {
+            return;
+        }
         // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
         // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
         // arrays this should come per default, as the may insert in add items...
@@ -17519,23 +17984,15 @@ class ObjectEditor {
         this.render();
     }
     render() {
-        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
-    }
-    toElement() {
-        return this.$element;
-    }
-    getPointer() {
-        return this.pointer;
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
     }
     /** destroy editor, view and event-listeners */
     destroy() {
         if (this.viewModel == null) {
             return;
         }
-        this.controller.removeInstance(this);
-        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
-        this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        super.destroy();
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
         this.childEditors.forEach(editor => editor.destroy());
         this.childEditors.length = 0;
         this.$children.innerHTML = "";
@@ -17557,22 +18014,21 @@ class ObjectEditor {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return OneOfEditor; });
-/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
-/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/getID */ "./src/utils/getID.ts");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.js");
-/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/getID */ "./src/utils/getID.ts");
-/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
-/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/UISchema */ "./src/utils/UISchema.ts");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.ts");
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/UISchema */ "./src/utils/UISchema.ts");
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
 
 
 
 
 
 
-const { UI_PROPERTY } = _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__["default"];
+const { UI_PROPERTY } = _utils_UISchema__WEBPACK_IMPORTED_MODULE_4__["default"];
 class OneOfEditor {
     constructor(pointer, controller, options) {
         const childSchema = controller.schema().get(pointer);
@@ -17587,7 +18043,7 @@ class OneOfEditor {
         this.controller = controller;
         this.pointer = pointer;
         this.viewModel = {
-            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer),
+            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_0__["default"])(pointer),
             pointer,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
             onchange: (oneOfIndex) => this.changeChild(schema.oneOf[oneOfIndex]),
@@ -17598,7 +18054,7 @@ class OneOfEditor {
         // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
         this.update = controller.data().observe(pointer, this.update.bind(this), true);
         this.render();
-        this.$childContainer = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_4__["CHILD_CONTAINER_SELECTOR"]);
+        this.$childContainer = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_5__["CHILD_CONTAINER_SELECTOR"]);
         this.rebuild();
     }
     static editorOf(pointer, controller, options) {
@@ -17629,7 +18085,7 @@ class OneOfEditor {
         }
         this.controller.changePointer(newPointer, this);
         this.pointer = newPointer;
-        this.viewModel.id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_3__["default"])(newPointer);
+        this.viewModel.id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_0__["default"])(newPointer);
         this.viewModel.pointer = newPointer;
         this.$element.id = newPointer;
         this.controller.data().removeObserver(oldPointer, this.update);
@@ -17659,7 +18115,7 @@ class OneOfEditor {
         this.render();
     }
     render() {
-        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_4__["default"], this.viewModel, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-value", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_2___default.a, this.viewModel))));
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_2___default()(_components_container__WEBPACK_IMPORTED_MODULE_5__["default"], this.viewModel, mithril__WEBPACK_IMPORTED_MODULE_2___default()(".editron-value", mithril__WEBPACK_IMPORTED_MODULE_2___default()(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel))));
     }
     toElement() {
         return this.$element;
@@ -17673,7 +18129,7 @@ class OneOfEditor {
         }
         this.controller.removeInstance(this);
         this.viewModel = null;
-        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, "i");
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, "i");
         this.controller.data().removeObserver(this.pointer, this.update);
     }
 }
@@ -17693,14 +18149,10 @@ class OneOfEditor {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js");
-/* harmony import */ var mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js");
-/* harmony import */ var mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
-/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mithril-material-forms/components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js");
-/* harmony import */ var mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.ts");
+/* harmony import */ var mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.ts");
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.ts");
+/* harmony import */ var mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mithril-material-forms/components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.ts");
 /* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/UISchema */ "./src/utils/UISchema.ts");
 
 
@@ -17724,19 +18176,19 @@ const Component = {
         };
         if (schema.enum && schema.enum.length > 0) {
             config.options = _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].enumOptions(schema);
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2___default.a, config);
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__["default"], config);
         }
         if (schema.type === "boolean") {
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1___default.a, config);
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__["default"], config);
         }
         if (schema.type === "string" && schema.format === "html") {
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3___default.a, config);
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], config);
         }
         if (schema.type === "string" && schema.format === "textarea") {
             config.rows = options["textarea:rows"] || 1;
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3___default.a, config);
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], config);
         }
-        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4___default.a, config);
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__["default"], config);
     }
 };
 /* harmony default export */ __webpack_exports__["default"] = (Component);
@@ -17792,20 +18244,35 @@ __webpack_require__.r(__webpack_exports__);
 const editors = [];
 const validators = [];
 /* harmony default export */ __webpack_exports__["default"] = ({
+    /** register an editor (widget) to use in editron-controller */
     editor(constructor) {
+        // @ts-ignore
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);
     },
-    // format validator
-    validator(keyword, value, validator) {
+    /**
+     * add a custom json-schema format-validator for a specific format value
+     * @param _ - unused...
+     * @param value - value of property format for this validator (must be unique formatType)
+     * @param validator - (format) validation function
+     */
+    validator(_, value, validator) {
         validators.push(["format", value, validator]);
     },
-    keywordValidator(datatype, property, validator) {
-        validators.push(["keyword", datatype, property, validator]);
+    /**
+     * add a custom keyword-validator for a new keyword
+     * @param datatype - datatype, to register keyword
+     * @param keywordName - name of the keyword (like oneOf, format, etc)
+     * @param validator - (keyword) validation function
+     */
+    keywordValidator(datatype, keywordName, validator) {
+        validators.push(["keyword", datatype, keywordName, validator]);
     },
+    /** returns all registered plugin-editors */
     getEditors() {
         return editors;
     },
+    /** returns all validation function */
     getValidators() {
         return validators;
     }
@@ -17818,28 +18285,41 @@ const validators = [];
 /*!*************************************!*\
   !*** ./src/services/DataService.ts ***!
   \*************************************/
-/*! exports provided: EVENTS, default */
+/*! exports provided: EventType, default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENTS", function() { return EVENTS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DataService; });
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/copy */ "./src/services/utils/copy.ts");
+/* harmony import */ var _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducers/dataReducer */ "./src/services/reducers/dataReducer.ts");
 /* harmony import */ var _utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/diffpatch */ "./src/services/utils/diffpatch.ts");
-/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/copy */ "./src/services/utils/copy.ts");
-/* harmony import */ var _utils_isRootPointer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/isRootPointer */ "./src/services/utils/isRootPointer.ts");
-/* harmony import */ var _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./reducers/dataReducer */ "./src/services/reducers/dataReducer.ts");
-/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
-/* harmony import */ var _utils_getParentPointer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/getParentPointer */ "./src/services/utils/getParentPointer.ts");
-/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
-/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8__);
-/* harmony import */ var _utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/getPatchesPerPointer */ "./src/services/utils/getPatchesPerPointer.ts");
-/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
+/* harmony import */ var _utils_getParentPointer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/getParentPointer */ "./src/services/utils/getParentPointer.ts");
+/* harmony import */ var _utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/getPatchesPerPointer */ "./src/services/utils/getPatchesPerPointer.ts");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _utils_isRootPointer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/isRootPointer */ "./src/services/utils/isRootPointer.ts");
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
+/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
+/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var _onStateChanged;
 
 
 
@@ -17852,35 +18332,38 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const DEBUG = false;
-const EVENTS = {
+var EventType;
+(function (EventType) {
     /** called before starting data update */
-    BEFORE_UPDATE: "beforeUpdate",
+    EventType["BEFORE_UPDATE"] = "beforeUpdate";
     /** called after data udpate was performed */
-    AFTER_UPDATE: "afterUpdate",
-    FINAL_UPDATE: "finalUpdate"
-};
+    EventType["AFTER_UPDATE"] = "afterUpdate";
+    /** called after all updates with a list of patches */
+    EventType["FINAL_UPDATE"] = "finalUpdate";
+})(EventType || (EventType = {}));
 /**
  * Read and modify form data and notify observers
- *
- * @param {State} state     - current state/store of application
- * @param {Any} data        - current application data (form)
+ * @param state - current state/store of application
+ * @param data - current application data (form)
  */
 class DataService {
     constructor(state, data) {
-        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_10__["default"])) {
+        /** state store-id of service */
+        this.id = "data";
+        /** event emitter */
+        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_10__["createNanoEvents"])();
+        _onStateChanged.set(this, void 0);
+        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_8__["default"])) {
             throw new Error("Given state in DataService must be of instance 'State'");
         }
         this.observers = {};
-        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_1___default()();
-        this.EVENTS = EVENTS;
-        this.id = "data";
         this.state = state;
-        this.state.register(this.id, _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_5__["default"]);
+        this.state.register(this.id, _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_1__["default"]);
         let lastUpdate = {};
         // improved version - supporting multiple patches
-        this.onStateChanged = () => {
+        __classPrivateFieldSet(this, _onStateChanged, () => {
             const current = this.state.get(this.id);
-            const patches = Object(_utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_9__["default"])(lastUpdate, current.data.present);
+            const patches = Object(_utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_4__["default"])(lastUpdate, current.data.present);
             if (patches.length === 0) {
                 DEBUG && console.info("DataService abort update event -- nothing changed");
                 return;
@@ -17889,44 +18372,45 @@ class DataService {
             for (let i = 0, l = patches.length; i < l; i += 1) {
                 const eventLocation = patches[i].pointer;
                 const parentData = this.getDataByReference(eventLocation);
-                const parentDataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_8___default()(parentData);
-                this.emit(EVENTS.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
+                const parentDataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5___default()(parentData);
+                this.emit(EventType.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
                 this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
             }
-            this.emitter.emit(EVENTS.FINAL_UPDATE, patches);
+            this.emitter.emit(EventType.FINAL_UPDATE, patches);
             lastUpdate = current.data.present;
-        };
-        this.state.subscribe(this.id, this.onStateChanged);
+        });
+        this.state.subscribe(this.id, __classPrivateFieldGet(this, _onStateChanged));
         if (data !== undefined) {
             this.set("#", data);
             this.resetUndoRedo();
         }
     }
+    /** clear undo/redo stack */
     resetUndoRedo() {
         this.state.get(this.id).data.past.length = 0;
     }
-    destroy() {
-        this.state.unsubscribe(this.id, this.onStateChanged);
-        this.state.unregister(this.id);
-    }
     /**
-     * Get a copy of current data from the requested _json-pointer_
-     * @param {JsonPointer} [pointer="#"]  - data to fetch. Defaults to _root_
-     * @returns {Any} data, associated with _pointer_
+     * Get a copy of current data from the requested `pointer`
+     * @param [pointer="#"] - data to fetch. Defaults to _root_
+     * @returns data, associated with `pointer`
      */
     get(pointer = "#") {
         const value = this.getDataByReference(pointer);
-        return Object(_utils_copy__WEBPACK_IMPORTED_MODULE_3__["default"])(value);
+        return Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(value);
     }
+    /** returns a reference to data from the requested `pointer` (cheaper)
+     * @param [pointer="#"] - data to fetch. Defaults to _root_
+     * @returns data, associated with `pointer`
+     */
     getDataByReference(pointer = "#") {
         // eslint-disable-next-line no-invalid-this
-        return gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.state.get(this.id).data.present, pointer);
+        return gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get(this.state.get(this.id).data.present, pointer);
     }
     /**
-     * Change data at the given _pointer_
-     * @param {JsonPointer}  pointer    - data location to modify
-     * @param {Any}  value              - new value at pointer
-     * @param {Boolean} [isSynched]
+     * Change data at the given `pointer`
+     * @param pointer - data location to modify
+     * @param value - new value at pointer
+     * @param [isSynched]
      */
     set(pointer, value, isSynched = false) {
         if (this.isValid(pointer) === false) {
@@ -17937,65 +18421,78 @@ class DataService {
             DEBUG && console.info("DataService abort update -- value not changed");
             return;
         }
-        this.emit(EVENTS.BEFORE_UPDATE, pointer, { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionTypes"].DATA_SET, isSynched });
-        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionCreators"].setData(pointer, value, currentValue, isSynched));
+        this.emit(EventType.BEFORE_UPDATE, pointer, { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].DATA_SET, isSynched });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].setData(pointer, value, currentValue, isSynched));
         if (pointer === "#" && isSynched === false) {
             // do not add root changes to undo
             this.state.get(this.id).data.past.pop();
         }
     }
     /**
-     * Delete data at the given _pointer_
-     * @param  {JsonPointer} pointer    - data location to delete
+     * Delete data at the given `pointer`
+     * @param pointer - data location to delete
      */
     delete(pointer) {
-        if (Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_4__["default"])(pointer)) {
+        if (Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer)) {
             throw new Error("Can not remove root data via delete. Use set(\"#/\", {}) instead.");
         }
         const key = pointer.split("/").pop();
-        const parentPointer = Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer);
+        const parentPointer = Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer);
         const data = this.get(parentPointer);
-        gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.delete(data, key);
+        gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.delete(data, key);
         this.set(parentPointer, data);
     }
+    /** get valid undo count */
     undoCount() {
         return this.state.get(this.id).data.past.length;
     }
+    /** get valid redo count */
     redoCount() {
         return this.state.get(this.id).data.future.length;
     }
+    /** undo last change */
     undo() {
-        this.emit(EVENTS.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionTypes"].UNDO });
-        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionCreators"].undo());
+        this.emit(EventType.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].UNDO });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].undo());
     }
+    /** redo last undo */
     redo() {
-        this.emit(EVENTS.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionTypes"].REDO });
-        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_6__["ActionCreators"].redo());
+        this.emit(EventType.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].REDO });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].redo());
     }
+    /** add an event listener to update events */
     on(eventType, callback) {
-        if (eventType === undefined) {
-            throw new Error("Missing event type in DataService.on");
-        }
-        this.emitter.on(eventType, callback);
-        return callback;
+        return this.emitter.on(eventType, callback);
     }
-    off(...args) {
-        this.emitter.off(...args);
+    /** remove an event listener from update events */
+    off(eventType, callback) {
+        // @ts-ignore
+        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
     }
     emit(eventType, pointer, data) {
+        // @ts-ignore
         this.emitter.emit(eventType, createEventObject(pointer, data));
     }
+    /**
+     * observes changes in data at the specified json-pointer
+     * @param pointer - json-pointer to watch
+     * @param callback - called on a change
+     * @param bubbleEvents - set to true to receive notifications changes in children of pointer
+     * @returns callback
+     */
     observe(pointer, callback, bubbleEvents = false) {
         callback.bubbleEvents = bubbleEvents;
         this.observers[pointer] = this.observers[pointer] || [];
         this.observers[pointer].push(callback);
         return callback;
     }
+    /** stop an observer from watching changes on pointer */
     removeObserver(pointer, callback) {
         if (this.observers[pointer] && this.observers[pointer].length > 0) {
             this.observers[pointer] = this.observers[pointer].filter(cb => cb !== callback);
         }
     }
+    /** send an event to all json-pointer observers */
     notify(pointer, event) {
         if (this.observers[pointer] == null || this.observers[pointer].length === 0) {
             return;
@@ -18009,23 +18506,30 @@ class DataService {
     }
     bubbleObservers(pointer, data) {
         const eventObject = createEventObject(pointer, data);
-        const frags = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.split(pointer);
+        const frags = gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.split(pointer);
         while (frags.length) {
-            this.notify(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(frags, true), eventObject);
+            this.notify(gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.join(frags, true), eventObject);
             frags.length -= 1;
         }
         this.notify("#", eventObject);
     }
+    /** Test the pointer for existing data */
     isValid(pointer) {
-        return Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_4__["default"])(pointer) || gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(this.getDataByReference(), pointer) !== undefined;
+        return Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer) || gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get(this.getDataByReference(), pointer) !== undefined;
+    }
+    /** destroy service */
+    destroy() {
+        this.state.unsubscribe(this.id, __classPrivateFieldGet(this, _onStateChanged));
+        this.state.unregister(this.id);
     }
 }
+_onStateChanged = new WeakMap();
 function createEventObject(pointer, data) {
-    const parentPointer = Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer);
-    return Object.assign(data, {
+    return {
+        ...data,
         pointer,
-        parentPointer
-    });
+        parentPointer: Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer)
+    };
 }
 
 
@@ -18035,14 +18539,15 @@ function createEventObject(pointer, data) {
 /*!*****************************************!*\
   !*** ./src/services/LocationService.ts ***!
   \*****************************************/
-/*! exports provided: default */
+/*! exports provided: EventType, default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LocationService; });
+/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
@@ -18052,7 +18557,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const DELAY = 25;
-const emitter = mitt__WEBPACK_IMPORTED_MODULE_0___default()();
+var EventType;
+(function (EventType) {
+    /** called for a focused editor */
+    EventType["FOCUS"] = "focus";
+    /** called for a blurred editor */
+    EventType["BLUR"] = "blur";
+    /** called, when a new page is focused (page = first property on root data) */
+    EventType["PAGE"] = "page";
+    /** called, when the current selected json-pointer has changed */
+    EventType["TARGET"] = "target";
+})(EventType || (EventType = {}));
+const emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_0__["createNanoEvents"])();
 /**
  * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
  *
@@ -18066,12 +18582,14 @@ const emitter = mitt__WEBPACK_IMPORTED_MODULE_0___default()();
  * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
  * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
  * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
- *
- * @type {Object}
  */
-const LocationService = {
-    PAGE_EVENT: "page",
-    TARGET_EVENT: "target",
+class LocationService {
+    constructor() {
+        this.PAGE_EVENT = "page";
+        this.TARGET_EVENT = "target";
+        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["EventType"].CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
+        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["EventType"].CURRENT_POINTER, pointer => emitter.emit(EventType.TARGET, pointer));
+    }
     // update page and target pointer
     goto(targetPointer) {
         const path = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.split(targetPointer);
@@ -18085,18 +18603,18 @@ const LocationService = {
         }
         _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer(gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(targetPointer, true));
         this.focus();
-    },
-    // set target pointer
+    }
+    /** set target pointer */
     setCurrent(pointer) {
         if (pointer !== this.getCurrent()) {
             _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer(pointer);
-            emitter.emit("focus", pointer);
+            emitter.emit(EventType.FOCUS, pointer);
         }
-    },
+    }
     getCurrent() {
         return _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer();
-    },
-    // focus target pointer
+    }
+    /** focus target pointer */
     focus() {
         clearTimeout(this.timeout);
         const pointer = _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer();
@@ -18117,24 +18635,26 @@ const LocationService = {
             targetElement.dispatchEvent(new Event("focus"));
             targetElement.focus && targetElement.focus();
         }, DELAY);
-    },
+    }
     blur(pointer) {
         if (_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer() !== pointer) {
             return;
         }
         _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer("");
-        emitter.emit("blur", pointer);
-    },
-    // @ts-ignore
-    on: (...args) => emitter.on(...args),
-    // @ts-ignore
-    off: (...args) => emitter.off(...args)
-};
-// @ts-ignore
-_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.CURRENT_PAGE_EVENT, pointer => emitter.emit(LocationService.PAGE_EVENT, pointer));
-// @ts-ignore
-_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].EVENTS.CURRENT_POINTER_EVENT, pointer => emitter.emit(LocationService.TARGET_EVENT, pointer));
-/* harmony default export */ __webpack_exports__["default"] = (LocationService);
+        emitter.emit(EventType.BLUR, pointer);
+    }
+    /** add an event listener to update events */
+    on(eventType, callback) {
+        return emitter.on(eventType, callback);
+    }
+    /** remove an event listener from update events */
+    off(eventType, callback) {
+        if (Array.isArray(emitter.events[eventType])) {
+            emitter.events[eventType] = emitter.events[eventType].filter(func => func !== callback);
+        }
+    }
+}
+;
 
 
 /***/ }),
@@ -18159,8 +18679,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-// @ts-ignore
-_uistate__WEBPACK_IMPORTED_MODULE_3__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_3__["default"].EVENTS.OVERLAY_EVENT, (value = {}) => OverlayService.onChange(value.element, value.options));
+_uistate__WEBPACK_IMPORTED_MODULE_3__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_3__["EventType"].OVERLAY, value => OverlayService.onChange(value === null || value === void 0 ? void 0 : value.element, value === null || value === void 0 ? void 0 : value.options));
 /**
  * Opens an overlay with a DOM-Node as contents
  * @type {Object}
@@ -18257,13 +18776,14 @@ const { getChildSchemaSelection } = json_schema_library__WEBPACK_IMPORTED_MODULE
 const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.cores;
 /**
  * Manages json-schema interactions and adds caching of reoccuring json-schema requests
- *
- * @param schema       - json-schema
- * @param [data={}]    - data corresponding to json-schema
- * @param [core={}]      - instance of json-schema-library Core
+ * @param schema - json-schema
+ * @param [data={}] - data corresponding to json-schema
+ * @param [core={}] - instance of json-schema-library Core
  */
 class SchemaService {
     constructor(schema = { type: "object" }, data = {}, core = new Core()) {
+        /** cache for resolved json-pointer */
+        this.cache = {};
         this.core = core;
         this.setSchema(schema);
         this.setData(data);
@@ -18287,7 +18807,7 @@ class SchemaService {
         return this.core.getTemplate(undefined, schema);
     }
     /**
-     * @return list of valid items to insert at the given position
+     * @returns list of valid items to insert at the given position
      */
     getChildSchemaSelection(pointer, property) {
         const parentSchema = this.get(pointer);
@@ -18296,8 +18816,7 @@ class SchemaService {
     /**
      * Sets the root data. This is optional and used within internal functions to support optional _data_-parameters.
      * On every change in data, call this method with that latest state `schemaService.setData(latestData)`;
-     *
-     * @param {Any} data    - latest root data corresponding to stored json-schema
+     * @param data - latest root data corresponding to stored json-schema
      */
     setData(data) {
         this.data = this.addDefaultData(data);
@@ -18401,20 +18920,20 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return State; });
 /* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
 
 
 const FLAG_CHANGED = "hasChanged";
 class State {
     constructor() {
         this.FLAG_CHANGED = FLAG_CHANGED;
+        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_1__["createNanoEvents"])();
         this.FLAG_CHANGED = FLAG_CHANGED;
         this.reducers = {
             action: (state, action) => action
         };
-        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_1___default()();
         this.store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(() => { }); // eslint-disable-line @typescript-eslint/no-empty-function
         this.store.subscribe(() => this.onChange(this.store.getState()));
     }
@@ -18428,8 +18947,7 @@ class State {
             }
         });
     }
-    // eslint-disable-next-line
-    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting-in-a-redux-application
+    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting
     register(id, reducer) {
         if (this.reducers[id]) {
             throw new Error(`A reducer with id ${id} is already registered`);
@@ -18469,13 +18987,13 @@ class State {
         }
     }
     unsubscribe(id, callback) {
+        var _a;
         if (typeof id !== "string" || typeof callback !== "function") {
             throw new Error(`Invalid arguments for state.unsubscribe ${arguments}`);
         }
-        this.emitter.off(id, callback);
+        this.emitter.events[id] = (_a = this.emitter.events[id]) === null || _a === void 0 ? void 0 : _a.filter(func => func !== callback);
     }
 }
-/* harmony default export */ __webpack_exports__["default"] = (State);
 
 
 /***/ }),
@@ -18484,23 +19002,22 @@ class State {
 /*!*******************************************!*\
   !*** ./src/services/ValidationService.ts ***!
   \*******************************************/
-/*! exports provided: EVENTS, default */
+/*! exports provided: EventType, default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENTS", function() { return EVENTS; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ValidationService; });
-/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
-/* harmony import */ var _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./src/services/utils/BubblingCollectionObservable.ts");
-/* harmony import */ var _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./reducers/errorReducer */ "./src/services/reducers/errorReducer.ts");
-/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
-/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_3__);
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_4__);
-/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
-/* harmony import */ var _utils_Validation__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/Validation */ "./src/services/utils/Validation.ts");
+/* harmony import */ var _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./src/services/utils/BubblingCollectionObservable.ts");
+/* harmony import */ var _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducers/errorReducer */ "./src/services/reducers/errorReducer.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
+/* harmony import */ var _utils_Validation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/Validation */ "./src/services/utils/Validation.ts");
+/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
+/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
 
 
 
@@ -18508,45 +19025,44 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_3___default.a.cores;
-const EVENTS = {
-    BEFORE_VALIDATION: "beforeValidation",
-    AFTER_VALIDATION: "afterValidation",
-    ON_ERROR: "onError"
-};
-/**
- * @class  ValidationService
- */
+const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_2___default.a.cores;
+var EventType;
+(function (EventType) {
+    EventType["BEFORE_VALIDATION"] = "beforeValidation";
+    EventType["AFTER_VALIDATION"] = "afterValidation";
+    EventType["ON_ERROR"] = "onError";
+})(EventType || (EventType = {}));
+;
 class ValidationService {
     constructor(state, schema = { type: "object" }, core = new Core()) {
-        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_5__["default"])) {
+        /** state store-id of service */
+        this.id = "errors";
+        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_6__["createNanoEvents"])();
+        this.observer = new _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_3__["default"])) {
             throw new Error("Given state in ValidationService must be of instance 'State'");
         }
         this.core = core;
         this.set(schema);
-        this.observer = new _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_1__["default"]();
-        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_4___default()();
-        this.id = "errors";
         this.state = state;
-        this.state.register(this.id, _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_2__["default"]);
+        this.state.register(this.id, _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_1__["default"]);
         this.setErrorHandler(error => error);
-        this.EVENTS = EVENTS;
     }
+    /** sets a custom error handler to map errors */
     setErrorHandler(callback) {
         this.errorHandler = callback;
     }
     /**
      * Starts the validation, executing callback handlers and emitters on the go
-     *
-     * @param  {Any} data               - data to validate
-     * @param  {JsonPointer} [pointer]  - optional location. Per default all data is validated
-     * @return {Promise} promise, resolving with list of errors when all async validations are performed
+     * @param data               - data to validate
+     * @param [pointer]  - optional location. Per default all data is validated
+     * @return promise, resolving with list of errors when all async validations are performed
      */
     validate(data, pointer = "#") {
         if (this.currentValidation) {
             this.currentValidation.cancel();
         }
-        this.emit(EVENTS.BEFORE_VALIDATION);
+        this.emit(EventType.BEFORE_VALIDATION);
         // @feature selective-validation
         this.observer.clearEvents(pointer);
         // reset stored list of events
@@ -18556,52 +19072,62 @@ class ValidationService {
             remainingErrors = this.state.get(this.id)
                 .filter(e => e.data.pointer == null || e.data.pointer.startsWith(pointer) === false);
         }
-        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].setErrors(remainingErrors));
-        this.currentValidation = new _utils_Validation__WEBPACK_IMPORTED_MODULE_6__["default"](data, pointer, this.errorHandler);
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(remainingErrors));
+        this.currentValidation = new _utils_Validation__WEBPACK_IMPORTED_MODULE_4__["default"](data, pointer, this.errorHandler);
         return this.currentValidation.start(this.core, (newError, currentErrors) => {
             // @feature selective-validation
             const completeListOfErrors = remainingErrors.concat(currentErrors);
-            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].setErrors(completeListOfErrors));
+            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(completeListOfErrors));
             this.observer.notify(newError.data.pointer, newError);
-            this.emit(EVENTS.ON_ERROR, newError);
+            this.emit(EventType.ON_ERROR, newError);
         }, validationErrors => {
             // @feature selective-validation
             const completeListOfErrors = remainingErrors.concat(validationErrors);
-            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].setErrors(completeListOfErrors));
-            this.emit(EVENTS.AFTER_VALIDATION, completeListOfErrors);
+            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(completeListOfErrors));
+            this.emit(EventType.AFTER_VALIDATION, completeListOfErrors);
             this.currentValidation = null;
         });
     }
+    /** set or change the json-schema for data validation */
     set(schema) {
         this.core.setSchema(schema);
         this.schema = this.core.getSchema();
     }
+    /** returns the current json-schema */
     get() {
         return this.schema;
     }
+    /**
+     * add an event listener to update events
+     * @returns the callback
+     */
     on(eventType, callback) {
         if (eventType === undefined) {
-            throw new Error("Missing event type in ValidationService.on");
+            throw new Error("Missing `eventType` in ValidationService.on");
         }
         this.emitter.on(eventType, callback);
         return callback;
     }
-    off(...args) {
-        this.emitter && this.emitter.off(...args);
+    /** remove an event listener from update events */
+    off(eventType, callback) {
+        var _a, _b;
+        // @ts-ignore
+        this.emitter.events[eventType] = (_b = (_a = this.emitter.events[eventType]) === null || _a === void 0 ? void 0 : _a.filter(func => func !== callback)) !== null && _b !== void 0 ? _b : [];
     }
     emit(eventType, event = {}) {
         this.emitter.emit(eventType, event);
     }
-    observe(pointer, callback, bubbledEvents = false) {
-        this.observer.observe(pointer, callback, bubbledEvents);
-        return callback;
+    observe(pointer, observer, bubbledEvents = false) {
+        this.observer.observe(pointer, observer, bubbledEvents);
+        return observer;
     }
-    removeObserver(pointer, callback) {
-        this.observer.removeObserver(pointer, callback);
+    removeObserver(pointer, observer) {
+        this.observer.removeObserver(pointer, observer);
     }
-    notify(pointer, event = {}) {
+    notify(pointer, event) {
         this.observer.notify(pointer, event);
     }
+    /** returns all validation errors and warnings */
     getErrorsAndWarnings(pointer, withChildErrors = false) {
         const errors = this.state.get(this.id) || [];
         if (pointer == null) {
@@ -18611,9 +19137,11 @@ class ValidationService {
         const selectError = new RegExp(`^${pointer}${withChildErrors ? "" : "$"}`);
         return errors.filter(error => selectError.test(error.data.pointer));
     }
+    /** returns all validation errors only */
     getErrors(pointer, withChildErrors = false) {
         return this.getErrorsAndWarnings(pointer, withChildErrors).filter(error => error.severity !== "warning");
     }
+    /** returns all validation warnings only */
     getWarnings(pointer, withChildWarnings = false) {
         return this.getErrorsAndWarnings(pointer, withChildWarnings).filter(error => error.severity === "warning");
     }
@@ -18621,7 +19149,8 @@ class ValidationService {
         this.set(null);
         this.emitter = null;
         this.observer = null;
-        this.state.unregister(this.id, _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_2__["default"]);
+        this.state.unregister(this.id);
+        // this.state.unregister(this.id, errorReducer);
     }
 }
 
@@ -18820,15 +19349,14 @@ const ActionCreators = {
 /*!***************************************!*\
   !*** ./src/services/uistate/index.ts ***!
   \***************************************/
-/*! exports provided: EVENTS, default */
+/*! exports provided: EventType, default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EVENTS", function() { return EVENTS; });
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-/* harmony import */ var mitt__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mitt__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
+/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
 /* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../State */ "./src/services/State.ts");
 /* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions */ "./src/services/uistate/actions.ts");
 /* harmony import */ var _uiReducer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uiReducer */ "./src/services/uistate/uiReducer.ts");
@@ -18836,16 +19364,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const EVENTS = {
-    OVERLAY_EVENT: "overlay",
-    CURRENT_POINTER_EVENT: "current",
-    CURRENT_PAGE_EVENT: "page"
-};
+var EventType;
+(function (EventType) {
+    EventType["OVERLAY"] = "overlay";
+    EventType["CURRENT_POINTER"] = "current";
+    EventType["CURRENT_PAGE"] = "page";
+})(EventType || (EventType = {}));
+;
 class UIState {
     constructor() {
         this.id = "ui";
+        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_0__["createNanoEvents"])();
+        this.id = "ui";
         this.state = new _State__WEBPACK_IMPORTED_MODULE_1__["default"]();
-        this.emitter = mitt__WEBPACK_IMPORTED_MODULE_0___default()();
         this.state.register(this.id, _uiReducer__WEBPACK_IMPORTED_MODULE_3__["default"]);
         // @todo: subscribe to state-changes and diff current state?
     }
@@ -18862,29 +19393,35 @@ class UIState {
         const currentContent = this.get("overlay");
         if (currentContent !== content) {
             this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setOverlay(content));
-            this.emitter.emit(EVENTS.OVERLAY_EVENT, this.get("overlay"));
+            this.emitter.emit(EventType.OVERLAY, this.get("overlay"));
         }
     }
-    on(...args) { this.emitter.on(...args); }
-    off(...args) { this.emitter.off(...args); }
+    /** add an event listener to update events */
+    on(eventType, callback) {
+        return this.emitter.on(eventType, callback);
+    }
+    /** remove an event listener from update events */
+    off(eventType, callback) {
+        // @ts-ignore
+        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+    }
     setCurrentPage(pointer) {
         const currentPage = this.get("currentPage");
         if (currentPage !== pointer) {
             this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setCurrentPage(pointer));
-            this.emitter.emit(EVENTS.CURRENT_PAGE_EVENT, this.get("currentPage"));
+            this.emitter.emit(EventType.CURRENT_PAGE, this.get("currentPage"));
         }
     }
     setCurrentPointer(pointer) {
         const currentPointer = this.get("currentPointer");
         if (currentPointer !== pointer) {
             this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setCurrentPointer(pointer));
-            this.emitter.emit(EVENTS.CURRENT_POINTER_EVENT, this.get("currentPointer"));
+            this.emitter.emit(EventType.CURRENT_POINTER, this.get("currentPointer"));
         }
     }
 }
 const Singleton = new UIState();
 Singleton.UIStateContructor = UIState;
-Singleton.EVENTS = EVENTS;
 /* harmony default export */ __webpack_exports__["default"] = (Singleton);
 
 
@@ -19034,27 +19571,27 @@ class BubblingCollectionObservable {
      * option `receiveChildEvents` set to `true`
      *
      * @param pointer - location to observe
-     * @param cb - observer
+     * @param observer - observer
      * @param [receiveChildEvents=false]
      */
-    observe(pointer, cb, receiveChildEvents = false) {
+    observe(pointer, observer, receiveChildEvents = false) {
         this.observers[pointer] = this.observers[pointer] || [];
-        if (this.observers[pointer].includes(cb) === false) {
-            cb.receiveChildEvents = receiveChildEvents;
-            this.observers[pointer].push(cb);
+        if (this.observers[pointer].includes(observer) === false) {
+            observer.receiveChildEvents = receiveChildEvents;
+            this.observers[pointer].push(observer);
         }
-        return cb;
+        return observer;
     }
     /**
      * Remove an observer
      * @param  {JsonPointer} pointer
-     * @param  {Function} cb
+     * @param  {Function} observer
      */
-    removeObserver(pointer, cb) {
+    removeObserver(pointer, observer) {
         if (this.observers[pointer] == null) {
             return;
         }
-        const index = this.observers[pointer].indexOf(cb);
+        const index = this.observers[pointer].indexOf(observer);
         if (index !== -1) {
             this.observers[pointer].splice(index, 1);
         }
@@ -19131,9 +19668,6 @@ class BubblingCollectionObservable {
      * aggregated event-list []. For a first call the received event will look
      * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
      * etc, until `reset()` ist called by the observable.
-     *
-     * @param  {JsonPointer} pointer
-     * @param  {Any} event
      */
     notify(pointer, event) {
         this.eventCollection[pointer] = this.eventCollection[pointer] || [];
@@ -19144,19 +19678,19 @@ class BubblingCollectionObservable {
         if (this.observers[observerPointer] == null) {
             return;
         }
-        this.observers[observerPointer].forEach(cb => {
-            if (cb.receiveChildEvents === false && observerPointer === sourcePointer) {
-                cb(event);
+        this.observers[observerPointer].forEach(observer => {
+            if (observer.receiveChildEvents === false && observerPointer === sourcePointer) {
+                observer(event);
                 return;
             }
-            if (cb.receiveChildEvents === false && observerPointer !== sourcePointer) {
+            if (observer.receiveChildEvents === false && observerPointer !== sourcePointer) {
                 return;
             }
             this.bubbleCollection[observerPointer] = this.bubbleCollection[observerPointer] || {};
             const map = this.bubbleCollection[observerPointer];
             map[sourcePointer] = event;
             const events = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
-            cb(events);
+            observer(events);
         });
     }
 }
@@ -19175,23 +19709,33 @@ class BubblingCollectionObservable {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-const validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Validation; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
+/* harmony import */ var json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1__);
+
+
 /**
- * @class  Validation
- *
- * @param {Object|Array} data       - application json data
- * @param {Object} schema           - json-schema describing data
- * @param {Function} [errorHandler] - optional callback to modify errors
+ * @param data - application json data
+ * @param schema - json-schema describing data
+ * @param [errorHandler] - optional callback to modify errors
  */
 class Validation {
     constructor(data, pointer, errorHandler) {
+        /** if validation has been canceled and thus, is obsolete */
+        this.canceled = false;
         this.errors = [];
         this.data = data;
         this.pointer = pointer;
-        this.canceled = false;
         this.errorHandler = errorHandler;
     }
+    /**
+     * start validation of data
+     * @param core - json-schema-library core, containing json-schema
+     * @param onErrorCb - called for error notification while validation is running
+     * @param onDoneCb - called on a finished validation with a list of validation errors
+     */
     start(core, onErrorCb, onDoneCb) {
         this.cbDone = onDoneCb;
         this.cbError = onErrorCb;
@@ -19201,16 +19745,17 @@ class Validation {
         let schema = core.getSchema();
         if (pointer !== "#") {
             schema = core.getSchema(pointer, data);
-            data = gp.get(data, pointer);
+            data = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(data, pointer);
         }
-        // console.log("validate", pointer, data, JSON.stringify(schema, null, 2));
-        // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
-        return validateAsync(core, data, { schema, pointer, onError: this.onError.bind(this) })
+        return json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1___default()(core, data, { schema, pointer, onError: this.onError.bind(this) })
             .then(errors => {
             this.onDone(errors);
             return errors;
         })
-            .catch(error => this.onFail(error));
+            .catch(error => {
+            this.onFail(error);
+            return [];
+        });
     }
     onError(validationError) {
         if (this.canceled) {
@@ -19236,11 +19781,11 @@ class Validation {
         console.error("Validation failed", error);
         this.cbDone(this.errors);
     }
+    /** cancel validation - preventing notification of running validation results */
     cancel() {
         this.canceled = true;
     }
 }
-/* harmony default export */ __webpack_exports__["default"] = (Validation);
 
 
 /***/ }),
@@ -19276,8 +19821,9 @@ function copy(data) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const DiffPatcher = __webpack_require__(/*! jsondiffpatch */ "./node_modules/jsondiffpatch/dist/jsondiffpatch.umd.js").DiffPatcher;
-const diffMatchPatch = __webpack_require__(/*! diff_match_patch */ "./node_modules/diff_match_patch/lib/diff_match_patch.js");
+/* harmony import */ var jsondiffpatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jsondiffpatch */ "./node_modules/jsondiffpatch/dist/jsondiffpatch.umd.js");
+/* harmony import */ var jsondiffpatch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jsondiffpatch__WEBPACK_IMPORTED_MODULE_0__);
+
 const options = {
     // used to match objects when diffing arrays, by default only === operator is used
     // this function is used only to when objects are not equal by ref
@@ -19291,12 +19837,13 @@ const options = {
 };
 try {
     // required in browser environments
-    window["diff_match_patch"] = diffMatchPatch;
+    // window["diff_match_patch"] = diffMatchPatch;
 }
 catch (e) {
     // loaded by default in nodejs
 }
-const diffpatch = new DiffPatcher(options); // jsondiffpatch.create(options);
+const diffpatch = new jsondiffpatch__WEBPACK_IMPORTED_MODULE_0__["DiffPatcher"](options); // jsondiffpatch.create(options);
+// @ts-ignore
 diffpatch.options = options;
 /* harmony default export */ __webpack_exports__["default"] = (diffpatch);
 
@@ -19331,12 +19878,11 @@ function addMissingItemIDs(list) {
     });
 }
 function ensureItemIDs(data) {
-    const dataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default()(data);
-    if (dataType === "array") {
+    if (Array.isArray(data)) {
         ensureItemIDs.config.addMissingItemIDs(data);
-        data.forEach((item) => ensureItemIDs(item));
+        data.forEach(item => ensureItemIDs(item));
     }
-    else if (dataType === "object") {
+    else if (json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default()(data) === "object") {
         Object.keys(data).forEach((key) => ensureItemIDs(data[key]));
     }
     return data;
@@ -19361,14 +19907,16 @@ ensureItemIDs.config = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getParentPointer; });
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
 
-/* harmony default export */ __webpack_exports__["default"] = ((pointer) => {
+function getParentPointer(pointer) {
     const list = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.split(pointer);
     list.pop();
     return gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(list, pointer[0] === "#");
-});
+}
+;
 
 
 /***/ }),
@@ -19387,6 +19935,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _diffpatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diffpatch */ "./src/services/utils/diffpatch.ts");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _getParentPointer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getParentPointer */ "./src/services/utils/getParentPointer.ts");
+
 
 
 function sortByPointer(a, b) {
@@ -19462,7 +20012,7 @@ function getPatchesPerPointer(previousValue, newValue) {
         }
     });
     return Object.keys(map)
-        .map((pointer) => ({ pointer, patch: map[pointer] }))
+        .map(pointer => ({ pointer, parentPointer: Object(_getParentPointer__WEBPACK_IMPORTED_MODULE_2__["default"])(pointer), patch: map[pointer] }))
         .sort(sortByPointer);
 }
 ;
@@ -19498,10 +20048,16 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const { eachSchema } = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
-const gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+const { eachSchema } = json_schema_library__WEBPACK_IMPORTED_MODULE_2___default.a;
 const UI_PROPERTY = "editron:ui";
-const populated = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
 function isPointer(string) {
     return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
 }
@@ -19513,7 +20069,7 @@ function getBreadcrumps(pointer, controller) {
             title: getOption(pointer, controller, "title"),
             pointer
         });
-        pointer = gp.join(pointer, "..");
+        pointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, "..");
     }
     return breadcrumps;
 }
@@ -19539,31 +20095,27 @@ function enumOptions(schema) {
 }
 /**
  * Resolves the given pointer absolute or relative in data
- *
- * @param  {String} pointer             - current base pointer for relative targets
- * @param  {Controller} controller
- * @param  {String} pointerToResolve    - relative or absolute pointer (must start with `/` or `../`)
- * @return {Mixed} target value of at #/pointer/pointerToResolve or false
+ * @param pointer - current base pointer for relative targets
+ * @param controller
+ * @param pointerToResolve - relative or absolute pointer (must start with `/` or `../`)
+ * @return target value of at #/pointer/pointerToResolve or false
  */
 function resolveReference(pointer, controller, pointerToResolve) {
-    if (populated(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
+    if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
         return null;
     }
     let targetPointer = pointerToResolve;
     if (targetPointer[0] !== "#") {
-        targetPointer = gp.join(pointer, targetPointer);
+        targetPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, targetPointer);
     }
     const result = controller.data().get(targetPointer);
-    return populated(result, result, null);
+    return Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(result, result, null);
 }
 /**
  * Returns the resolved copy of an options object. This method is used by the controller to help setup the
  * main options object of an editor instance. It is simplified, in that it currently does  not resolve any reference
  * on the current data
- *
- * @param {String} pointer
- * @param {Controller} controller
- * @return {Object} a resolved copy of the editron:ui settings
+ * @return a resolved copy of the editron:ui settings
  */
 function copyOptions(pointer, controller) {
     const schema = controller.schema().get(pointer);
@@ -19581,8 +20133,8 @@ function copyOptions(pointer, controller) {
 }
 /**
  * Ensures each schema contains a valid schema[UI_PROPERTY] object
- * @param  {Object} rootSchema
- * @return {Object} extended clone of json-schema
+ * @param rootSchema
+ * @return extended clone of json-schema
  */
 function extendSchema(rootSchema) {
     rootSchema = JSON.parse(JSON.stringify(rootSchema));
@@ -19600,10 +20152,7 @@ function extendSchema(rootSchema) {
  * Resolves a list of pointers, where the first found value is returned. Supports simple strings as fallback.
  *  e.g. `["/data/local/title", "/data/local/subtitle", "Title"]`
  *
- * @param  {String} pointer     [description]
- * @param  {Controller} controller  [description]
- * @param  {String|Array} optionValue [description]
- * @return {Mixed} the option value
+ * @return the option value
  */
 function resolveOption(pointer, controller, optionValue) {
     if (Array.isArray(optionValue)) {
@@ -19611,11 +20160,11 @@ function resolveOption(pointer, controller, optionValue) {
             const option = optionValue[i];
             if (isPointer(option)) {
                 const value = resolveReference(pointer, controller, option);
-                if (populated(value)) {
+                if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(value)) {
                     return value;
                 }
             }
-            else if (populated(option)) {
+            else if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(option)) {
                 return option;
             }
         }
@@ -19625,25 +20174,25 @@ function resolveOption(pointer, controller, optionValue) {
 /**
  * Returns the first defined option set in schema. Supports relative and absolute pointers in data
  *
- * @param  {String} pointer
- * @param  {Controller} controller
- * @param  {...[String]} options    - a list of option properties. The first non-empty option will be returned
- * @return {Mixed} the first non-empty option
+ * @param pointer
+ * @param controller
+ * @param options - a list of option properties. The first non-empty option will be returned
+ * @return the first non-empty option
  */
 function getOption(pointer, controller, ...options) {
-    const schema = controller.schema().get(pointer);
-    const editronOptions = schema[UI_PROPERTY] || {};
     if (options.length === 0) {
         throw new Error("Expected at least one options property to be given in getOption");
     }
+    const schema = controller.schema().get(pointer);
+    const editronOptions = schema[UI_PROPERTY] || {};
     for (let i = 0; i < options.length; i += 1) {
         const option = editronOptions[options[i]];
         const resolver = isPointer(option) ? resolveReference : resolveOption;
         const value = resolver(pointer, controller, option);
-        if (populated(value)) {
+        if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(value)) {
             return value;
         }
-        else if (populated(schema[options[i]])) {
+        else if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(schema[options[i]])) {
             return schema[options[i]];
         }
     }
@@ -19681,15 +20230,12 @@ function getDefaultOption(schema, option) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return addItem; });
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _createElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createElement */ "./src/utils/createElement.ts");
-/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/LocationService */ "./src/services/LocationService.ts");
-/* harmony import */ var _services_OverlayService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../services/OverlayService */ "./src/services/OverlayService.ts");
-/* harmony import */ var _components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/overlayselecttiles */ "./src/components/overlayselecttiles/index.ts");
-/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
-
+/* harmony import */ var _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/OverlayService */ "./src/services/OverlayService.ts");
+/* harmony import */ var _components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/overlayselecttiles */ "./src/components/overlayselecttiles/index.ts");
+/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
 
 
 
@@ -19698,13 +20244,12 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Request to insert an array child item at the given pointer. If multiple options are present, a dialogue is opened to
  * let the user select the appropriate type of child (oneof).
- *
- * @param {Object} dataService
- * @param {Object} schemaService
- * @param {String} pointer  - to array on which to insert the child
- * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
+ * @param dataService
+ * @param schemaService
+ * @param pointer - to array on which to insert the child
+ * @param index - index within array, where the child should be inserted (does not replace). Default: 0
  */
-function addItem(dataService, schemaService, pointer, index = 0) {
+function addItem(dataService, schemaService, locationService, pointer, index = 0) {
     const list = dataService.get(pointer);
     const schema = schemaService.get(pointer);
     if (schema.type !== "array") {
@@ -19719,21 +20264,21 @@ function addItem(dataService, schemaService, pointer, index = 0) {
     // multiple options, ask user
     const element = Object(_createElement__WEBPACK_IMPORTED_MODULE_1__["default"])(".overlay__item");
     const selection = selectOptions.map((item, oneOfIndex) => ({
-        icon: _UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].getDefaultOption(item, "icon"),
-        title: _UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].getDefaultOption(item, "title"),
-        description: _UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].getDefaultOption(item, "description"),
+        icon: _UISchema__WEBPACK_IMPORTED_MODULE_4__["default"].getDefaultOption(item, "icon"),
+        title: _UISchema__WEBPACK_IMPORTED_MODULE_4__["default"].getDefaultOption(item, "title"),
+        description: _UISchema__WEBPACK_IMPORTED_MODULE_4__["default"].getDefaultOption(item, "description"),
         value: oneOfIndex
     }));
     // create user-selection
-    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_4__["default"], {
+    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_3__["default"], {
         // description: "Modulauswahl - Bitte wählen",
         value: 0,
         options: selection,
         onchange: (value) => {
             const selectedIndex = parseInt(value, 10);
             addSelection(selectedIndex, schemaService, dataService);
-            _services_OverlayService__WEBPACK_IMPORTED_MODULE_3__["default"].close();
-            _services_LocationService__WEBPACK_IMPORTED_MODULE_2__["default"].goto(`${pointer}/${index}`);
+            _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__["default"].close();
+            locationService.goto(`${pointer}/${index}`);
         }
     }));
     // add data of selection
@@ -19744,8 +20289,9 @@ function addItem(dataService, schemaService, pointer, index = 0) {
         dataService.set(pointer, list);
     }
     // and ask question
-    _services_OverlayService__WEBPACK_IMPORTED_MODULE_3__["default"].open(element, { save: false });
+    _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__["default"].open(element, { save: false });
 }
+/* harmony default export */ __webpack_exports__["default"] = (addItem);
 
 
 /***/ }),
@@ -19831,12 +20377,14 @@ function createElement(selector, attributes) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createProxy; });
-const { Foxy, handler } = __webpack_require__(/*! @technik-sde/foxy */ "./node_modules/@technik-sde/foxy/dist/foxy.js");
+/* harmony import */ var _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @technik-sde/foxy */ "./node_modules/@technik-sde/foxy/dist/foxy.js");
+/* harmony import */ var _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__);
+
 const defaultOptions = {
     handlers: [
-        handler.unsplash,
-        handler.image,
-        handler.video
+        _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["handler"].unsplash,
+        _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["handler"].image,
+        _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["handler"].video
     ]
 };
 function createProxy(options = {}) {
@@ -19845,7 +20393,7 @@ function createProxy(options = {}) {
     }
     const o = { ...defaultOptions, ...options };
     if (Array.isArray(o.handlers)) {
-        return new Foxy(o);
+        return new _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["Foxy"](o);
     }
     throw new Error(`Failed initializing proxy from: ${JSON.stringify(options)}`);
 }
@@ -19886,12 +20434,14 @@ function getID(pointer) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const render = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0__);
+
 translate.strings = {};
 translateError.strings = {};
 function translate(key, data) {
     if (typeof translate.strings[key] === "string") {
-        return render(translate.strings[key], data);
+        return json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0___default()(translate.strings[key], data);
     }
     else if (typeof translate.strings[key] === "function") {
         return translate.strings[key](data);
@@ -19900,7 +20450,7 @@ function translate(key, data) {
 }
 function translateError(controller, error) {
     if (typeof translateError.strings[error.code] === "string") {
-        error.message = render(translateError.strings[error.code], error.data);
+        error.message = json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0___default()(translateError.strings[error.code], error.data);
     }
     else if (typeof translateError.strings[error.code] === "function") {
         error.message = translateError.strings[error.code](controller, error);
@@ -20015,7 +20565,7 @@ function isNodeContext() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return populated; });
 // returns true if the value is valid, that is: it has content
-function populated(value, returnIf, returnElse = "") {
+function populated(value, returnIf, returnElse) {
     let isPopulated = true;
     if (value == null || value === "" || value === "#") {
         isPopulated = false;
@@ -20029,7 +20579,7 @@ function populated(value, returnIf, returnElse = "") {
     else if (Object.prototype.toString.call(value) === "[object Object]") {
         isPopulated = Object.keys(value).length > 0;
     }
-    if (returnIf === undefined && returnElse === "") {
+    if (returnIf === undefined && returnElse === undefined) {
         return isPopulated;
     }
     return isPopulated ? returnIf : returnElse;
@@ -20048,18 +20598,17 @@ function populated(value, returnIf, returnElse = "") {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return select; });
 /**
  * Selects an editor based on the given schema
  *
- * @param  {Array} editorViews  - List of editors with a static function 'editorOf'
- * @param  {String} pointer     - current pointer in data
- * @param  {Controller} controller
- * @param  {Object} options     - the complete and resolved (UISchema) options object (editron:ui + additions)
- * @return {Boolean|Constructor} The constructor of the chosen editor od false if no editor could be resolved
+ * @param editorViews - List of editors with a static function 'editorOf'
+ * @param pointer - current pointer in data
+ * @param controller
+ * @param options - the complete and resolved (UISchema) options object (editron:ui + additions)
+ * @return The constructor of the chosen editor od false if no editor could be resolved
  *  or is denied
  */
-function select(editorViews, pointer, controller, options) {
+function select(editors, pointer, controller, options) {
     // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
     if (/_id$/.test(pointer)) {
         return false; // abort if it is an internal value
@@ -20074,13 +20623,14 @@ function select(editorViews, pointer, controller, options) {
     if (options.hidden === true) {
         return false;
     }
-    for (let i = 0, l = editorViews.length; i < l; i += 1) {
-        if (editorViews[i].editorOf(pointer, controller, options)) {
-            return editorViews[i];
+    for (let i = 0, l = editors.length; i < l; i += 1) {
+        if (editors[i].editorOf(pointer, controller, options)) {
+            return editors[i];
         }
     }
     return undefined;
 }
+/* harmony default export */ __webpack_exports__["default"] = (select);
 
 
 /***/ }),
@@ -20098,9 +20648,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _getID__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getID */ "./src/utils/getID.ts");
 
 const isBlurable = (element) => (typeof element.mayBlur === "function");
-/**
- * Return true, if the given element may blur in the requested direction
- */
+/** returns true if one may trigger blur on the element via cursor movement **/
 function mayBlur(element, direction) {
     const dir = (direction === "down" || direction === "right") ? 1 : -1;
     if (isBlurable(element)) {
@@ -20146,9 +20694,7 @@ function mayBlur(element, direction) {
     }
     return true;
 }
-/**
- * Return the current active element or false
- */
+/** returns the current active (editron) input element or false */
 function getActiveInput(controller, parent = document.body) {
     const currentPointer = controller.location().getCurrent();
     const currentId = `#${Object(_getID__WEBPACK_IMPORTED_MODULE_0__["default"])(currentPointer)}`;
@@ -20165,16 +20711,11 @@ function getActiveInput(controller, parent = document.body) {
     }
     return activeInput;
 }
+/** returns a list of available editron input-elements (including textaras, select) */
 function getAvailableInputs(parent) {
     return Array.from(parent.querySelectorAll("input,textarea,select"));
 }
-/**
- * Return the next input-element or false
- * @param  {Controller} controller
- * @param  {"up"|"down"|"left"|"right"} direction
- * @param  {HTMLElement} options.parent
- * @return {HTMLElement|false}
- */
+/** returns the next input element in direction or false if it is last/first */
 function getNextInput(controller, direction = "down", { parent = document.body } = {}) {
     const activeElement = getActiveInput(controller, parent);
     if (activeElement === false) {
@@ -20195,13 +20736,7 @@ function getNextInput(controller, direction = "down", { parent = document.body }
 /**
  * move the focus from current element to next visible input-element
  * inputs being (textarea, input and select with an id-attribute containing a json-pointer-id)
- *
- * @param  {Controller}  controller
- * @param  {"up"|"down"|"left"|"right"} direction
- * @param  {Object} options
- * @param  {Boolean} options.force    ignores movement restrictions (e.g. navigation in textarea)
- * @param  {HTMLElement} options.parent    scan only in given parentNode
- * @returns {Boolean} true - if there was a new target was found or the move prevented
+ * @returns true - if there was a new target was found or the move prevented
  */
 function focusNextInput(controller, direction = "down", options = {}) {
     const { force = false, parent = document.body } = options;

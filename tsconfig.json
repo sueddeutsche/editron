@@ -18,7 +18,8 @@
         "*",
         "app/**/*",
         "src/**/*",
-        "@technik-sde/foxy/**/*"
+        "@technik-sde/foxy/**/*",
+        "node_modules/mithril-material-forms/**/*"
     ],
     "exclude": [
         "node_modules/**/*.test.ts",

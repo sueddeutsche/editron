@@ -1,4 +1,4 @@
-import { JSONPointer } from "../types";
+import { JSONPointer, ValidationError } from "../types";
 import Controller from "../Controller";
 /**
  * Convenience class, which registers required events and base methods for value-editors (not object, array)
@@ -38,7 +38,7 @@ export default class AbstractValueEditor {
     setActive(active?: boolean): void;
     update(): void;
     setValue(value: any): void;
-    setErrors(errors: any): void;
+    setErrors(errors: Array<ValidationError>): void;
     render(): void;
     toElement(): HTMLElement;
     destroy(): void;

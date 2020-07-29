@@ -1,13 +1,12 @@
 import m from "mithril";
-import mmf from "mithril-material-forms";
-const { button: Button } = mmf;
+import { Button } from "mithril-material-forms";
 
 
 export type Attrs = {
     container?: HTMLElement;
     header?: string;
-    onAbort?: Function;
-    onSave?: Function;
+    onAbort?: () => void;
+    onSave?: () => void;
     showSave?: boolean;
     titleAbort?: string;
     fullscreen?: boolean;
@@ -23,27 +22,17 @@ export default {
             {
                 "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
             },
-            vnode.attrs.header ? m(".ui-card__header",
+            vnode.attrs.header && m(".ui-card__header",
                 m("h1", vnode.attrs.header)
-            ) : "",
+            ),
             m(".ui-card__content",
                 {
                     oncreate: (contentNode) => contentNode.dom.appendChild(vnode.attrs.container)
                 }
             ),
             m(".ui-card__footer",
-                m(Button,
-                    {
-                        onClick: vnode.attrs.onAbort
-                    },
-                    vnode.attrs.titleAbort
-                ),
-                vnode.attrs.showSave ? m(Button,
-                    {
-                        onClick: vnode.attrs.onSave
-                    },
-                    "Speichern"
-                ) : ""
+                m(Button, { onclick: vnode.attrs.onAbort }, vnode.attrs.titleAbort),
+                vnode.attrs.showSave && m(Button, { onclick: vnode.attrs.onSave }, "Speichern")
             )
         );
     }

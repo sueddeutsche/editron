@@ -2,7 +2,7 @@ import Controller from "../../Controller";
 import getId from "../../utils/getID";
 import gp from "gson-pointer";
 import m from "mithril";
-import Select from "mithril-material-forms/components/select";
+import Select, { Option } from "mithril-material-forms/components/select";
 import UISchema from "../../utils/UISchema";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { Editor } from "../Editor";
@@ -15,8 +15,8 @@ export type ViewModel = {
     description?: string;
     disabled?: boolean;
     id: string;
-    onchange?: Function;
-    options?: any;
+    onchange: (value: string) => void;
+    options: Array<Option>;
     pointer: JSONPointer;
     title?: string;
     value?: any;
@@ -61,7 +61,7 @@ export default class OneOfEditor implements Editor {
             id: getId(pointer),
             pointer,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
-            onchange: (oneOfIndex: number) => this.changeChild(schema.oneOf[oneOfIndex]),
+            onchange: (oneOfIndex: string) => this.changeChild(schema.oneOf[oneOfIndex]),
             value: this.getIndexOf(childSchema),
             title: schema.title,
             description: schema.description

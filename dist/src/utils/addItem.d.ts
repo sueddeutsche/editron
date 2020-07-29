@@ -1,3 +1,4 @@
+import LocationService from "../services/LocationService";
 import DataService from "../services/DataService";
 import SchemaService from "../services/SchemaService";
 import { JSONPointer } from "../types";
@@ -9,5 +10,5 @@ import { JSONPointer } from "../types";
  * @param pointer - to array on which to insert the child
  * @param index - index within array, where the child should be inserted (does not replace). Default: 0
  */
-declare function addItem(dataService: DataService, schemaService: SchemaService, pointer: JSONPointer, index?: number): void;
+declare function addItem(dataService: DataService, schemaService: SchemaService, locationService: LocationService, pointer: JSONPointer, index?: number): void;
 export default addItem;

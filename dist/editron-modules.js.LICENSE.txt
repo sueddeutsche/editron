@@ -3,3 +3,5 @@
 	license: MIT
 	http://www.jacklmoore.com/autosize
 */
+
+/*! For license information please see mmf.js.LICENSE.txt */

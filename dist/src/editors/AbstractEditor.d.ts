@@ -1,7 +1,16 @@
-import { JSONData, JSONPointer, JSONSchema } from "../types";
+import { JSONData, JSONPointer, JSONSchema, ValidationError } from "../types";
 import Controller from "../Controller";
-import { Editor } from "./Editor";
 import { Observer } from "../services/ValidationService";
+export declare type Options = {
+    /** set to true, to receive errors from current location and all erorrs of child properties/items */
+    notifyNestedChanges?: boolean;
+    /** set to true, to receive update from current location and all child properties/items changes */
+    notifyNestedErrors?: boolean;
+    /** HTMLDom attributes of root element (e.g. className, data-content, etc) */
+    attrs?: {
+        [p: string]: any;
+    };
+};
 /**
  * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
  * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
@@ -30,21 +39,22 @@ import { Observer } from "../services/ValidationService";
  * @param {Controller} controller   - editron controller instance
  * @param {Object} options          - resolved options object
  */
-export default class AbstractEditor implements Editor {
+export default class AbstractEditor {
     pointer: JSONPointer;
     controller: Controller;
-    options: any;
-    errors: Array<any>;
+    options: Options;
+    errors: Array<ValidationError>;
     dom: HTMLElement;
     _addError: Observer;
     _clearErrors: Function;
     static editorOf(pointer: JSONPointer, controller: Controller, options: any): void;
-    constructor(pointer: JSONPointer, controller: Controller, options: any);
+    constructor(pointer: JSONPointer, controller: Controller, options: Options);
     update(): void;
     updatePointer(newPointer: JSONPointer): [JSONPointer, JSONPointer];
     getData(): any;
     setData(data: JSONData): void;
-    getErrors(): any[];
+    setActive(active?: boolean): void;
+    getErrors(): ValidationError[];
     getSchema(): JSONSchema;
     getPointer(): JSONPointer;
     focus(): void;

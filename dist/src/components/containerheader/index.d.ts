@@ -4,6 +4,8 @@ export declare type Attrs = {
     disabled?: boolean;
     hideTitle?: boolean;
     icon?: string;
+    collapsed?: boolean;
+    oncollapse?: Function;
     onadd?: Function;
     ondelete?: Function;
     onmovedown?: Function;

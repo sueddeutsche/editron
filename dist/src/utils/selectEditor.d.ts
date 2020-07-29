@@ -1,6 +1,6 @@
 import { JSONPointer } from "../types";
 import Controller from "../Controller";
-import { Editor } from "../editors/Editor";
+import { EditorPlugin } from "../editors/Editor";
 /**
  * Selects an editor based on the given schema
  *
@@ -11,5 +11,5 @@ import { Editor } from "../editors/Editor";
  * @return The constructor of the chosen editor od false if no editor could be resolved
  *  or is denied
  */
-declare function select(editors: Array<Editor>, pointer: JSONPointer, controller: Controller, options: any): Editor | false | undefined;
+declare function select(editors: Array<EditorPlugin>, pointer: JSONPointer, controller: Controller, options: any): EditorPlugin | false | undefined;
 export default select;

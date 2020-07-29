@@ -1,6 +1,6 @@
-import { JSONPointer } from "../../types";
+import { JSONPointer, ValidationError } from "../../types";
 export declare type Observer = {
-    <T>(event: Array<T>): void;
+    (event: Array<ValidationError>): void;
     receiveChildEvents?: boolean;
 };
 /**
@@ -119,17 +119,14 @@ declare class BubblingCollectionObservable {
      * @param pointer
      * @param eventCollection    - array of events at target `pointer`
      */
-    _notifyAll(pointer: JSONPointer, eventCollection: any): void;
+    _notifyAll(pointer: JSONPointer, eventCollection: Array<ValidationError>): void;
     /**
      * Notify observers at _pointer_. Note that the received event is a
      * aggregated event-list []. For a first call the received event will look
      * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
      * etc, until `reset()` ist called by the observable.
-     *
-     * @param  {JsonPointer} pointer
-     * @param  {Any} event
      */
-    notify<T>(pointer: JSONPointer, event: T): void;
-    _notify<T>(observerPointer: JSONPointer, sourcePointer: JSONPointer, event: Array<T>): void;
+    notify(pointer: JSONPointer, event: ValidationError): void;
+    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, event: Array<ValidationError>): void;
 }
 export default BubblingCollectionObservable;
