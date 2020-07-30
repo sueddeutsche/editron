@@ -4,7 +4,7 @@ const config = require("./webpack.build");
 
 config.plugins = []; // reset
 
-const app = process.env.APP || "sortablearray";
+const app = process.env.APP || "editron";
 
 // LOCAL
 // config.entry["index.html"] = path.join(__dirname, "test", "support", "local-setup.html");
