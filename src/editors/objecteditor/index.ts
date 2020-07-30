@@ -17,7 +17,7 @@ function showJSON(controller: Controller, data: JSONData, title: string) {
 }
 
 
-type ModifiedEditor = Editor & { _property?: string };
+type EditorInstance = Editor & { _property?: string };
 
 export type Options = {
     id?: string;
@@ -60,7 +60,7 @@ export type ViewModel = {
 export default class ObjectEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
-    childEditors: Array<ModifiedEditor>;
+    childEditors: Array<EditorInstance>;
     $children: HTMLElement;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -75,9 +75,6 @@ export default class ObjectEditor extends AbstractEditor {
         // @todo ...except another editron-instance
         options.attrs = { id: options.id, ...options.attrs };
 
-        this.pointer = pointer;
-        this.options = options;
-        this.controller = controller;
         this.childEditors = [];
         this.viewModel = {
             pointer,
@@ -145,7 +142,7 @@ export default class ObjectEditor extends AbstractEditor {
         // rebuild children
         if (data) {
             Object.keys(data).forEach(property => {
-                const editor = <ModifiedEditor>this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
+                const editor = <EditorInstance>this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
                 if (editor) {
                     editor._property = property;
                     this.childEditors.push(editor);
