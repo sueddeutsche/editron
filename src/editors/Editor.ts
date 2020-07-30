@@ -10,20 +10,6 @@ export interface EditorPlugin {
 };
 
 
-// export interface EditorPlugin {
-//     /**
-//      * for the given input, returns true if this editor-class should be used for editing
-//      * @param pointer - current json-pointer that is looking for an widget
-//      * @param controller
-//      * @param options
-//      * @returns true, if this editor should be instantiated for json-pointer
-//      */
-//     editorOf(pointer: JSONPointer, controller: Controller, options?): boolean;
-
-//     (pointer: JSONPointer, controller: Controller, options?): Editor
-// }
-
-
 export interface Editor {
 
     // update is used as a convention, not enforced, nor required
@@ -40,6 +26,11 @@ export interface Editor {
 
     /** destroys the editor */
     destroy(): void;
+
+    getPointer(): JSONPointer;
+
+    /** enable/disable editor */
+    setActive(isActive: boolean): void;
 
     // render is used as a convention, not enforced, nor required
     // render(): void;
