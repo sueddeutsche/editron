@@ -1,14 +1,20 @@
-import { Editor } from "../editors/Editor";
+import { EditorPlugin } from "../editors/Editor";
 import { FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
 
-const editors: Array<Editor> = [];
+const editors: Array<EditorPlugin> = [];
 const validators = [];
+
+
+export interface Plugin {
+    id: string;
+    initialize(controller);
+}
 
 
 export default {
 
     /** register an editor (widget) to use in editron-controller */
-    editor(constructor: Editor): void {
+    editor(constructor: EditorPlugin): void {
         // @ts-ignore
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);
