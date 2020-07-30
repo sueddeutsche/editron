@@ -2,6 +2,7 @@ import m from "mithril";
 import getId from "../utils/getID";
 import { JSONPointer, ValidationError } from "../types";
 import Controller from "../Controller";
+import { Editor } from "./Editor";
 
 
 const convert = {
@@ -50,11 +51,12 @@ const convert = {
  *      }
  * ```
  */
-export default class AbstractValueEditor {
+export default class AbstractValueEditor implements Editor {
     pointer: JSONPointer;
     controller: Controller;
     $element: HTMLElement;
     viewModel;
+    options;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.schema().get(pointer);
@@ -74,27 +76,27 @@ export default class AbstractValueEditor {
     constructor(pointer: JSONPointer, controller: Controller, options) {
         this.pointer = pointer;
         this.controller = controller;
+        this.options = options;
 
         const schema = controller.schema().get(pointer);
 
-        options = Object.assign({
+        options = {
             viewModel: null,
             title: null,
             description: null,
             editorValueType: schema.enum ? "select" : schema.type,
-            editorElementProperties: null
-        }, options);
+            editorElementProperties: null,
+            ...options
+        };
 
         // create main DOM-element for view-generation
         this.$element = controller.createElement(
             `.editron-value.editron-value--${options.editorValueType}`,
-            Object.assign({
-                name: getId(pointer)
-            }, options.attrs)
+            { name: getId(pointer), ...options.attrs }
         );
 
         // use this model to generate the view. may be customized with `options.viewModel`
-        this.viewModel = Object.assign({
+        this.viewModel = {
             pointer,
             id: getId(pointer),
             title: options.title,
@@ -111,13 +113,13 @@ export default class AbstractValueEditor {
                     value = convert[schema.type](value);
                 }
                 this.setValue(value);
-            }
-        }, options.viewModel);
+            },
+            ...options.viewModel
+        };
 
         // in order to deregister callbacks in destroy(), bind all callbacks to this class
         this.update = controller.data().observe(pointer, this.update.bind(this));
         this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-
         // this.render();
     }
 
