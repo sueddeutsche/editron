@@ -28,6 +28,7 @@ export type Options = {
  *
  *      1. a custom `static editorOf(p, c, o)`-method, to register on a schema
  *      2. an `update(patch)`-method to respond to changes of the data at _pointer_
+ *      3. a `setActive(isActive = true)`-method to disabled/enable the editors interaction
  *      3. a custom `updatePointer(newPointer)`-method to respond to changes in the location of the editor. Most of
  *          times, the pointer will be used in rendering and/or when creating child-editors. Dont forget to call
  *          `super.updatePointer(newPointer)`
