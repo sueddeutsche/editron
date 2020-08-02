@@ -1,5 +1,5 @@
 import m from "mithril";
-import { Button } from "mithril-material-forms";
+import { Button } from "mithril-material-forms/index";
 
 
 export type Attrs = {
