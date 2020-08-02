@@ -19,6 +19,7 @@
     "prepublishOnly": "npm run release",
     "release": "npm run build; npm run dist",
     "start": "webpack-dev-server --config webpack.serve.js",
+    "start:array": "APP=array webpack-dev-server --config webpack.serve.js",
     "start:object": "APP=object webpack-dev-server --config webpack.serve.js",
     "start:sortable": "APP=sortablearray webpack-dev-server --config webpack.serve.js",
     "test": "webpack --config webpack.mocha.js --display errors-only",
