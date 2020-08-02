@@ -78,7 +78,6 @@ export default class SortablePlugin implements Plugin {
                 const { from, newIndex, item } = event;
 
                 // always remove node - we create it from data
-                console.log("remove child");
                 item.parentNode.removeChild(item);
 
                 if (from.dataset.parent == null) {
@@ -95,7 +94,6 @@ export default class SortablePlugin implements Plugin {
 
                     const toList = controller.data().get(pointer);
                     toList.splice(newIndex, 0, data);
-                    console.log("add item at", newIndex);
                     controller.data().set(pointer, toList);
                 }
 
@@ -111,7 +109,6 @@ export default class SortablePlugin implements Plugin {
                 }
 
                 if (to === from) {
-                    console.log("move item within list", oldIndex, newIndex);
                     arrayUtils.moveItem(pointer, controller, oldIndex, newIndex);
                     return;
                 }
@@ -141,7 +138,6 @@ export default class SortablePlugin implements Plugin {
                 // );
             }
         });
-        console.log("sortable array", pointer, options, $children);
 
         editor.__sortablePlugin = { sortable };
     }
