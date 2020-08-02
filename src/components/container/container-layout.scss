@@ -1,4 +1,5 @@
 @import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/elevation";
 @import "../../sass/export-once";
 @import "../containerheader/container-header-layout";
 @import "../containerdescription/container-description";
@@ -24,10 +25,46 @@
     .editron-container__controls--child {
         position: absolute;
         top: 0;
-        right: -2 * $mmf-block-padding;
-        display: flex;
-        flex-direction: column;
-        flex-wrap: wrap;
-        max-height: $mmf-block + $mmf-block-padding;
+        right: 0;
+        // display: flex;
+        // flex-direction: column;
+        // flex-wrap: wrap;
+        // max-height: $mmf-block + $mmf-block-padding;
+        transform: translateX(100%);
+        z-index: 999;
+
+        ul {
+            margin: 0;
+            padding: 0;
+            display: none;
+            // background: #fff;
+            position: absolute;
+            top: 1.5em;
+            right: 0;
+            list-style: none;
+
+            li {
+                button {
+                    width: 100%;
+                    margin: 0;
+                    white-space: nowrap;
+                    text-align: left;
+
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+                // padding: $mmf-unit;
+            }
+        }
+
+        &:hover {
+            background: #fff;
+        }
+
+        &:hover ul {
+            display: block;
+            @include elevation(2);
+        }
     }
 }

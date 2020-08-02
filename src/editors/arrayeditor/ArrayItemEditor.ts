@@ -12,9 +12,10 @@ export type Options = {
     length: number;
     attrs?: EditronConfigAttrs;
     disabled?: boolean;
-    onadd?: () => void;
-    onremove?: () => void;
-    onmove?: () => void;
+    onAdd?: () => void;
+    onRemove?: () => void;
+    onMove?: () => void;
+    onClone?: () => void;
 }
 
 
@@ -23,9 +24,10 @@ export type ViewModel = {
     pointer: JSONPointer;
     length: number;
     disabled: boolean;
-    onadd: () => void;
-    onremove: () => void;
-    onmove: () => void;
+    onAdd: () => void;
+    onRemove: () => void;
+    onMove: () => void;
+    onClone: () => void;
     attrs?: EditronConfigAttrs;
 }
 
@@ -42,14 +44,15 @@ export default class ArrayItemEditor {
         this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
         this.controller = controller;
 
-        const onadd = () => this.add();
-        const onremove = () => this.remove();
+        const onAdd = () => this.add();
+        const onRemove = () => this.remove();
 
         this.viewModel = {
             disabled: false,
-            onadd,
-            onremove,
-            onmove: index => this.move(index),
+            onAdd,
+            onRemove,
+            onMove: index => this.move(index),
+            onClone: () => this.clone(),
             ...options
         };
 
@@ -57,7 +60,7 @@ export default class ArrayItemEditor {
 
         const $target = this.$element.querySelector(EditorTarget) as HTMLElement;
         this.editor = controller.createEditor(pointer, $target, {
-            ondelete: onremove
+            ondelete: onRemove
         });
 
         this.updatePointer(pointer);
@@ -71,11 +74,15 @@ export default class ArrayItemEditor {
         arrayUtils.addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
     }
 
+    clone(): void {
+        arrayUtils.cloneItem(this.parentPointer, this.controller, this.viewModel.index);
+    }
+
     remove(): void {
         arrayUtils.removeItem(this.parentPointer, this.controller, this.viewModel.index);
     }
 
-    move(to): void {
+    move(to: number): void {
         arrayUtils.moveItem(this.parentPointer, this.controller, this.viewModel.index, to);
     }
 

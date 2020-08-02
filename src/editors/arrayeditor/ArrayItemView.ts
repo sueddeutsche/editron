@@ -1,4 +1,6 @@
 import m from "mithril";
+import { Button } from "mithril-material-forms/index";
+import InsertButtonView from "./InsertButtonView";
 
 
 export const EditorTarget = ".editron-item";
@@ -11,13 +13,19 @@ export type Attrs = {
     showIndex?: boolean;
     index: number;
     length: number;
+
     add?: boolean;
-    onadd?: (index: number) => void;
-    remove?: boolean;
-    onremove?: (index: number) => void;
-    move?: boolean;
-    onmove?: (index: number) => void;
     insert?: boolean;
+    onAdd?: (index: number) => void;
+
+    remove?: boolean;
+    onRemove?: (index: number) => void;
+
+    move?: boolean;
+    onMove?: (index: number) => void;
+
+    clone?: boolean;
+    onClone?: () => void;
 };
 
 
@@ -30,27 +38,38 @@ export default {
         const showIndex = attrs.showIndex === true;
 
         return [
-            // CONTROLS
-            m("ul.editron-container__controls.editron-container__controls--child",
+            // ARRAY-CONTROLS
+            m(".editron-container__controls.editron-container__controls--child",
                 {
                     "class": disabled ? "is-disabled" : undefined
                 },
-                (attrs.move === false || attrs.index === 0) ? "" : m("li",
-                    { onclick: () => !disabled && attrs.onmove(attrs.index - 1) },
-                    m("i.mmf-icon", "arrow_upward")
-                ),
-                (attrs.move === false || attrs.index === attrs.length - 1) ? "" : m("li",
-                    { onclick: () => !disabled && attrs.onmove(attrs.index + 1) },
-                    m("i.mmf-icon", "arrow_downward")
-                ),
-                (attrs.remove && attrs.onremove && canRemove) ? m("li",
-                    { onclick: () => !disabled && attrs.onremove(attrs.index) },
-                    m("i.mmf-icon", "delete")
-                ) : "",
-                (attrs.add && attrs.onadd && canAdd) ? m("li",
-                    { onclick: () => !disabled && attrs.onadd(attrs.index) },
-                    m("i.mmf-icon", "add")
-                ) : ""
+                m("i.mmf-icon", "more_vert"),
+                m("ul",
+                    !(attrs.move === false || attrs.index === 0) && m("li",
+                        { onclick: () => !disabled && attrs.onMove(attrs.index - 1) },
+                        m(Button, m("i.mmf-icon", "arrow_upward"), "move up")
+                    ),
+
+                    !(attrs.move === false || attrs.index === attrs.length - 1) && m("li",
+                        { onclick: () => !disabled && attrs.onMove(attrs.index + 1) },
+                        m(Button, m("i.mmf-icon", "arrow_downward"), "move down")
+                    ),
+
+                    attrs.clone && m("li",
+                        { onclick: () => !disabled && attrs.onClone() },
+                        m(Button, m("i.mmf-icon", "content_copy"), "duplicate")
+                    ),
+
+                    (attrs.remove && attrs.onRemove && canRemove) && m("li",
+                        { onclick: () => !disabled && attrs.onRemove(attrs.index) },
+                        m(Button, m("i.mmf-icon", "delete"), "delete")
+                    ),
+
+                    (attrs.add && attrs.onAdd && canAdd) && m("li",
+                        { onclick: () => !disabled && attrs.onAdd(attrs.index) },
+                        m(Button, m("i.mmf-icon", "add"), "add")
+                    )
+                )
             ),
 
             // TARGET CONTAINER FOR EDITOR
@@ -64,22 +83,11 @@ export default {
                 ].join(" ").trim()
             }),
 
-            // ADD BUTTON
-            (attrs.insert && canAdd) ? m(".editron-container__separator.mmf-row",
-                m(".editron-container__button--add",
-                    {
-                        "class": disabled ? "is-disabled" : undefined,
-                        onclick: e => {
-                            console.log("add", disabled);
-                            if (!disabled) {
-                                e.preventDefault();
-                                attrs.onadd && attrs.onadd(attrs.index);
-                            }
-                        }
-                    },
-                    m("i.mmf-icon", "add_circle")
-                )
-            ) : ""
+            (attrs.insert && canAdd) && m(InsertButtonView, {
+                disabled,
+                onAdd: attrs.onAdd,
+                index: attrs.index
+            })
         ];
     }
 

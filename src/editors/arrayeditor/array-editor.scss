@@ -11,12 +11,12 @@
 
     .mmf-icon {
         color: rgba($mmf-color--light, $mmf-opacity--primary);
-        text-shadow: 0 3px 6px rgba($mmf-color--dark, 0.16), 0 3px 6px rgba($mmf-color--dark, 0.23);
+        // text-shadow: 0 3px 6px rgba($mmf-color--dark, 0.16), 0 3px 6px rgba($mmf-color--dark, 0.23);
     }
 
     &:not(.is-disabled):hover .mmf-icon {
         color: $mmf-color--light;
-        text-shadow: 0 14px 28px rgba($mmf-color--dark, 0.25), 0 10px 10px rgba($mmf-color--dark, 0.22);
+        // text-shadow: 0 14px 28px rgba($mmf-color--dark, 0.25), 0 10px 10px rgba($mmf-color--dark, 0.22);
     }
 
     &.is-disabled:hover {

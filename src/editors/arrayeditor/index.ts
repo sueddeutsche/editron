@@ -11,6 +11,7 @@ export type Controls = {
     add?: boolean;
     remove?: boolean;
     move?: boolean;
+    clone?: boolean;
     insert?: boolean;
     maxItems?: number;
     minItems?: number;
@@ -78,6 +79,7 @@ export default class ArrayEditor implements Editor {
 
             controls: {
                 add: false,
+                clone: true,
                 remove: true,
                 move: true,
                 insert: true,
@@ -142,7 +144,7 @@ export default class ArrayEditor implements Editor {
 
     applyPatches(patch): void {
         // fetch a copy of the original list
-        const originalChildren = this.children.slice(0);
+        const originalChildren = Array.from(this.children);
         // and patch the current list
         diffpatch.patch(this.children, patch);
 

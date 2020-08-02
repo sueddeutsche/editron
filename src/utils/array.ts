@@ -14,6 +14,13 @@ export default {
         controller.data().set(pointer, nextList);
     },
 
+    cloneItem(pointer: JSONPointer, controller: Controller, index: number): void {
+        const nextList = controller.data().get(pointer);
+        const item = nextList[index];
+        nextList.splice(index, 0, JSON.parse(JSON.stringify(item)));
+        controller.data().set(pointer, nextList);
+    },
+
     moveItem(pointer: JSONPointer, controller: Controller, index: number, destinationIndex: number): void {
         if (destinationIndex < 0) {
             return;
