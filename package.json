@@ -94,7 +94,7 @@
     "@technik-sde/foxy": "^1.0.0",
     "diff_match_patch": "^0.1.1",
     "gson-pointer": "^3.4.3",
-    "json-schema-library": "^4.1.1",
+    "json-schema-library": "^4.1.4",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
     "mithril-material-forms": "^3.2.2",
