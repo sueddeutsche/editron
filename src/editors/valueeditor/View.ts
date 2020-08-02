@@ -1,56 +1,112 @@
 import m from "mithril";
-import CheckboxForm from "mithril-material-forms/components/checkboxform";
-import SelectForm from "mithril-material-forms/components/selectform";
-import TextareaForm from "mithril-material-forms/components/textareaform";
-import InputForm from "mithril-material-forms/components/inputform";
+import CheckboxForm, { Attrs as CheckboxAttrs } from "mithril-material-forms/components/checkboxform";
+import SelectForm, { Attrs as SelectAttrs } from "mithril-material-forms/components/selectform";
+import TextareaForm, { Attrs as TextareaAttrs } from "mithril-material-forms/components/textareaform";
+import InputForm, { Attrs as InputAttrs, InputType } from "mithril-material-forms/components/inputform";
 import UISchema from "../../utils/UISchema";
 import { JSONSchema } from "../../types";
+import { ViewModel } from "../AbstractValueEditor";
 
 
-export type Attrs = {
-    schema: JSONSchema;
-    options?: any;
-    onblur?: Function;
-    onfocus?: Function;
-    onchange?: Function;
+export type Attrs = ViewModel;
+
+
+const TYPES = {
+    string: "text",
+    integer: "number",
+    number: "number"
+};
+
+function getInputType(schema): InputType {
+    return TYPES[schema.type] || "text";
 }
 
 
 const Component: m.Component<Attrs> = {
 
     view({ attrs }) {
-        const { schema } = attrs;
-        const { options = {} } = attrs.options;
-        const config: any = {
-            type: schema.type,
-            title: schema.title,
-            description: schema.description,
-            onblur: attrs.onblur || Function.prototype,
-            onfocus: attrs.onfocus || Function.prototype,
-            onchange: attrs.onchange || Function.prototype,
-            ...attrs,
-            ...options
-        };
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value, id, pointer } = attrs;
 
         if (schema.enum && schema.enum.length > 0) {
-            config.options = UISchema.enumOptions(schema);
-            return m(SelectForm, config);
+            const selectFormModel: SelectAttrs = {
+                id,
+                title: options.title,
+                description: options.description,
+                errors,
+
+                options: UISchema.enumOptions(schema),
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return m(SelectForm, selectFormModel);
         }
 
         if (schema.type === "boolean") {
-            return m(CheckboxForm, config);
+            const checkBoxModel: CheckboxAttrs = {
+                id,
+                title: options.title,
+                description: options.description,
+                errors,
+
+                value,
+                onchange,
+                onblur,
+                onfocus
+            }
+
+            return m(CheckboxForm, checkBoxModel);
         }
 
         if (schema.type === "string" && schema.format === "html") {
-            return m(TextareaForm, config);
+            const textareaModel: TextareaAttrs = {
+                id,
+                title: options.title,
+                description: options.description,
+                placeholder: options.placeholder,
+                errors,
+
+                value,
+                onchange,
+                onblur,
+                onfocus
+            }
+            return m(TextareaForm, textareaModel);
         }
 
         if (schema.type === "string" && schema.format === "textarea") {
-            config.rows = options["textarea:rows"] || 1;
-            return m(TextareaForm, config);
+            const textareaModel: TextareaAttrs = {
+                id,
+                title: options.title,
+                description: options.description,
+                placeholder: options.placeholder,
+                errors,
+                rows: options["textarea:rows"] || 1,
+
+                value,
+                onchange,
+                onblur,
+                onfocus
+            }
+            return m(TextareaForm, textareaModel);
         }
 
-        return m(InputForm, config);
+        const inputModel: InputAttrs = {
+            id,
+            title: options.title,
+            description: options.description,
+            placeholder: options.placeholder,
+            errors,
+            type: getInputType(schema),
+
+            value,
+            onchange,
+            onblur,
+            onfocus
+        }
+
+        return m(InputForm, inputModel);
     }
 };
 
