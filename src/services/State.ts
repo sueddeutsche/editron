@@ -74,11 +74,11 @@ export default class State {
         }
 
         const state = this.store.getState();
-        if (state[id] && state[id][FLAG_CHANGED] != null) {
-            this.emitter.on(id, callback);
-        } else {
+        if (state[id]?.[FLAG_CHANGED] == null) {
             throw new Error(`Could not subscribe to state ${id}. Property ${FLAG_CHANGED} not available`);
         }
+
+        this.emitter.on(id, callback);
     }
 
     unsubscribe(id: string, callback) {

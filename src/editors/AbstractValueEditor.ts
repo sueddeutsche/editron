@@ -1,6 +1,6 @@
 import m from "mithril";
 import getId from "../utils/getID";
-import { JSONPointer, ValidationError } from "../types";
+import { JSONPointer, JSONSchema, ValidationError } from "../types";
 import Controller from "../Controller";
 import { Editor } from "./Editor";
 
@@ -35,6 +35,23 @@ const convert = {
 };
 
 
+export type ViewModel = {
+    pointer: JSONPointer;
+    id: string;
+    title?: string;
+    description?: string;
+    disabled?: boolean;
+    value?;
+    instantUpdate?: boolean;
+    schema: JSONSchema;
+    options;
+    errors: Array<string|ValidationError>;
+    onfocus: () => void;
+    onblur: () => void;
+    onchange: (value) => void;
+}
+
+
 /**
  * Convenience class, which registers required events and base methods for value-editors (not object, array)
  *
@@ -55,7 +72,7 @@ export default class AbstractValueEditor implements Editor {
     pointer: JSONPointer;
     controller: Controller;
     $element: HTMLElement;
-    viewModel;
+    viewModel: ViewModel;
     options;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
