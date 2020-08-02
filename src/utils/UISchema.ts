@@ -84,10 +84,12 @@ export type EditorSettings = {
 function copyOptions(pointer: JSONPointer, controller: Controller): EditorSettings {
     const schema = controller.schema().get(pointer);
 
-    const settings = Object.assign({
+    const settings = {
         hidden: false,
-        description: schema.description
-    }, schema.options, schema[UI_PROPERTY]); // @legacy options
+        description: schema.description,
+        ...schema.options, // @legacy options
+        ...schema[UI_PROPERTY]
+    };
 
     settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
 
@@ -108,13 +110,21 @@ function copyOptions(pointer: JSONPointer, controller: Controller): EditorSettin
  */
 function extendSchema<T extends JSONSchema>(rootSchema: T): T {
     rootSchema = JSON.parse(JSON.stringify(rootSchema));
+
     eachSchema(rootSchema, childSchema => {
-        childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
-        childSchema[UI_PROPERTY] = Object.assign({
+        if (childSchema.$ref && childSchema[UI_PROPERTY] == null) {
+            // do not add default options for references - json-schema-library
+            // merges on root elements only (which is acceptable)
+            return;
+        }
+
+        childSchema[UI_PROPERTY] = {
             hidden: false,
             title: childSchema.title || "",
-            description: childSchema.description || ""
-        }, childSchema.options, childSchema[UI_PROPERTY]); // @legacy options
+            description: childSchema.description || "",
+            ...childSchema.options, // @legacy options
+            ...childSchema[UI_PROPERTY]
+        };
     });
 
     return rootSchema;
