@@ -12,7 +12,7 @@ import _createElement from "./utils/createElement";
 import addItem from "./utils/addItem";
 import UISchema from "./utils/UISchema";
 import getID from "./utils/getID";
-import plugin from "./plugin";
+import plugin, { Plugin } from "./plugin";
 import i18n from "./utils/i18n";
 import createProxy from "./utils/createProxy";
 import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
@@ -56,6 +56,7 @@ export type Options = {
     log?: boolean;
     editors?: Array<EditorPlugin>;
     proxy?: ProxyOptions|Foxy;
+    plugins?;
 };
 
 
@@ -120,6 +121,7 @@ export default class Controller {
     schemaService: SchemaService;
     state: State;
     validationService: ValidationService;
+    plugins: Array<Plugin> = [];
 
 
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, options: Options = {}) {
@@ -171,11 +173,20 @@ export default class Controller {
         // run initial validation
         this.validateAll();
 
-
         this.locationService = new LocationService();
         this.locationService.on(LocationEvent.FOCUS, (pointer: JSONPointer) => {
             console.log("focus", pointer, this.schemaService.get(pointer));
-        })
+        });
+
+        // @lifecycle hook initialize on controller ready
+        if (Array.isArray(options.plugins)) {
+            this.plugins = options.plugins.map(plugin => plugin.initialize(this));
+        }
+    }
+
+
+    getPlugin(pluginId: string) {
+        return this.plugins.find(plugin => plugin.id === pluginId);
     }
 
     /** reset undo history */
@@ -243,7 +254,7 @@ export default class Controller {
         );
 
         // find a matching editor
-        const EditorConstructor = <any>selectEditor(this.getEditors(), pointer, this, instanceOptions);
+        const EditorConstructor = selectEditor(this.getEditors(), pointer, this, instanceOptions);
         if (EditorConstructor === false) {
             return undefined;
         }
@@ -260,6 +271,13 @@ export default class Controller {
         editor.setActive(!this.disabled);
         this.addInstance(pointer, editor);
 
+        // @lifecycle hook create widget
+        this.plugins.forEach(plugin => {
+            if (plugin.onCreateEditor) {
+                plugin.onCreateEditor(pointer, editor, instanceOptions);
+            }
+        });
+
         return editor;
     }
 
@@ -274,6 +292,13 @@ export default class Controller {
         if ($element.parentNode) {
             $element.parentNode.removeChild($element);
         }
+
+        // @lifecycle hook destroy widget
+        this.plugins.forEach(plugin => {
+            if (plugin.onDestroyEditor) {
+                plugin.onDestroyEditor(editor.getPointer(), editor);
+            }
+        });
 
         removeEditorFrom(this.instances, editor);
     }

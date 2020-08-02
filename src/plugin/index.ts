@@ -1,5 +1,5 @@
-import { EditorPlugin } from "../editors/Editor";
-import { FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
+import { EditorPlugin, Editor } from "../editors/Editor";
+import { JSONPointer, FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
 
 const editors: Array<EditorPlugin> = [];
 const validators = [];
@@ -7,7 +7,9 @@ const validators = [];
 
 export interface Plugin {
     id: string;
-    initialize(controller);
+    initialize(controller): Plugin;
+    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: object) => void;
+    onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
 }
 
 
