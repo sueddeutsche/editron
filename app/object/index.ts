@@ -1,5 +1,6 @@
 import Controller from "../../src/Controller";
 import RemoteDataPlugin from "../../src/plugin/remotedataplugin";
+import SyncPlugin from "../../src/plugin/syncplugin";
 import "./index.scss";
 import "./index.html";
 
@@ -32,16 +33,10 @@ const schema = {
             title: "Overwrite",
             type: "object",
             "editron:ui": {
-                // @todo: must exclude source-values from watch...
-                // -> triggers loop: load -> set -> changed -> load again -> random changes thing -> set -> changed ...
-                // watch singular fields => support mulitple fields
-
-                remoteData: {
-                    url: "https://api.chucknorris.io/jokes/random?category={{referenceId}}",
-                    source: "referenceId",
-                    set: {
-                        // "url": "title",
-                        "value": "teaser"
+                sync: {
+                    fromTo: {
+                        "../remote/title": "title",
+                        "../remote/teaser": "teaser"
                     }
                 }
             },
@@ -70,9 +65,14 @@ const schema = {
                 remoteData: {
                     source: "../overwrite/referenceId",
                     url: "https://api.chucknorris.io/jokes/random?category={{referenceId}}",
+                    overwrite: true,
                     set: {
                         "url": "title",
                         "value": "teaser"
+                    },
+                    sync: {
+                        "url": "../overwrite/title",
+                        "value": "../overwrite/teaser"
                     }
                 }
             },
@@ -116,7 +116,8 @@ const editron = new Controller(schema, data, {
         ],
     },
     plugins: [
-        new RemoteDataPlugin({})
+        new RemoteDataPlugin({}),
+        new SyncPlugin({})
     ]
 });
 editron.createEditor("#", $editor);

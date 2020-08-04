@@ -41,36 +41,54 @@ export default class RemoteDataPlugin implements Plugin {
         return this;
     }
 
+    setData(pointer, json, remote) {
+        const { controller } = this;
+        const currentData = controller.data().getDataByReference();
+        const source = Object.keys(remote.set);
+        const sourcePointer = gp.join(pointer, remote.source);
+
+        source.forEach(key => {
+            const targetPointer = gp.join(pointer, remote.set[key]);
+            const currentValue = gp.get(currentData, targetPointer);
+            if (remote.overwrite !== true && !(currentValue === "" || currentValue == null)) {
+                return;
+            }
+
+            const targetValue = gp.get(json, key);
+            // console.log("set", targetPointer, targetValue, "//", key, remote.set);
+            controller.data().set(targetPointer, targetValue);
+        });
+    }
+
+    // syncData(pointer, json, remote) {
+    //     if (remote.sync == null) {
+    //         return;
+    //     }
+    // }
 
     onCreateEditor(pointer: JSONPointer, editor: RemoteDataEditor, options?) {
         if (options && options.remoteData) {
+            const { controller } = this;
             const remote = options.remoteData;
+            const source = Object.keys(remote.set);
+
             const sourcePointer = gp.join(pointer, remote.source);
-            let sourceData = this.controller.data().get(sourcePointer);
+            let sourceData = controller.data().get(sourcePointer);
             let remoteUrl = render(remote.url, sourceData);
 
-            this.controller.data().observe(sourcePointer, async () => {
-                sourceData = this.controller.data().get(sourcePointer);
+            controller.data().observe(sourcePointer, async () => {
+                sourceData = controller.data().get(sourcePointer);
                 if (sourceData == null) {
                     return;
                 }
                 if (typeof sourceData !== "object") {
                     sourceData = { [sourcePointer.split("/").pop()]: sourceData };
                 }
-
                 remoteUrl = render(remote.url, sourceData);
-                // console.log("=> url", remoteUrl);
+                const json = await controller.proxy().get("json", ({ source: remoteUrl }));
 
-                const json = await this.controller.proxy().get("json", ({ source: remoteUrl }));
-                // console.log("set", pointer, json);
-
-                const source = Object.keys(remote.set);
-                source.forEach(key => {
-                    const targetValue = gp.get(json, key);
-                    const targetPointer = gp.join(pointer, remote.set[key]);
-                    console.log("set", targetPointer, targetValue, "//", key, remote.set);
-                    this.controller.data().set(targetPointer, targetValue);
-                });
+                this.setData(pointer, json, remote);
+                // this.syncData(pointer, json, remote);
 
             }, true);
 
