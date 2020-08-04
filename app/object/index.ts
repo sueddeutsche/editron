@@ -9,7 +9,18 @@ const schema = {
     title: "An object with collapsable property",
     type: "object",
     properties: {
-        title: { type: "string", title: "Title", minLength: 1 },
+        title: {
+            type: "string",
+            title: "Title",
+            minLength: 1,
+            "editron:ui": {
+                sync: {
+                    fromTo: {
+                        "../overwrite/title": ""
+                    }
+                }
+            }
+        },
         details: {
             title: "Details",
             type: "object",
@@ -49,7 +60,10 @@ const schema = {
                 },
                 title: {
                     title: "Titel",
-                    type: "string"
+                    type: "string",
+                    "editron:ui": {
+                        instantUpdate: true
+                    }
                 },
                 teaser: {
                     title: "Teaser",
@@ -69,10 +83,6 @@ const schema = {
                     set: {
                         "url": "title",
                         "value": "teaser"
-                    },
-                    sync: {
-                        "url": "../overwrite/title",
-                        "value": "../overwrite/teaser"
                     }
                 }
             },

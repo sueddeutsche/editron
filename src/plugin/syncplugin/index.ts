@@ -54,12 +54,13 @@ export default class SyncPlugin implements Plugin {
         fromPointer.forEach((pointer, index) => (currentData[pointer] = controller.data().get(pointer)));
         const toPointer = from.map(key => gp.join(pointer, sync.fromTo[key]));
 
+
         fromPointer.forEach((sourcePointer, index) => {
             controller.data().observe(sourcePointer, () => {
                 const targetValue = controller.data().get(toPointer[index]);
                 const currentValue = currentData[sourcePointer];
                 currentData[sourcePointer] = controller.data().get(sourcePointer);
-                if (!(currentValue == null && currentValue !== "") && targetValue !== currentValue) {
+                if (!(targetValue == null || targetValue == "") && targetValue !== currentValue) {
                     return;
                 }
 
