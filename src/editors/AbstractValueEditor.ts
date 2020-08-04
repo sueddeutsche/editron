@@ -188,7 +188,6 @@ export default class AbstractValueEditor implements Editor {
 
     // adds an error to view
     setErrors(errors: Array<ValidationError>) {
-        console.log("set errors", errors);
         this.viewModel.errors = errors;
         this.render();
     }
