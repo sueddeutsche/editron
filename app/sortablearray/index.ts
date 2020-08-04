@@ -1,7 +1,7 @@
 import Controller from "../../src/Controller";
-import SortableArrayEditor from "../../src/editors/sortablearrayeditor";
 import "./index.scss";
 import "./index.html";
+import SortablePlugin from "../../src/plugin/sortableplugin";
 
 
 const schema = {
@@ -94,8 +94,11 @@ const data = {
 };
 
 const $editor = document.querySelector(".editor") as HTMLElement;
-const editron = new Controller(schema, data);
-editron.editors.unshift(SortableArrayEditor);
+const editron = new Controller(schema, data, {
+    plugins: [
+        new SortablePlugin({})
+    ]
+});
 editron.createEditor("#", $editor);
 // @ts-ignore
 window.controller = editron;
