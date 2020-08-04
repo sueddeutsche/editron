@@ -24,8 +24,8 @@ function getInputType(schema): InputType {
 
 const Component: m.Component<Attrs> = {
 
-    view({ attrs }) {
-        const { schema, options = {}, onblur, onfocus, onchange, errors, value, id, pointer } = attrs;
+    view(vnode) {
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value, id, pointer } = vnode.attrs;
 
         if (schema.enum && schema.enum.length > 0) {
             const selectFormModel: SelectAttrs = {
@@ -40,7 +40,7 @@ const Component: m.Component<Attrs> = {
                 onblur,
                 onfocus
             };
-            return m(SelectForm, selectFormModel);
+            return m(SelectForm, selectFormModel, vnode.children);
         }
 
         if (schema.type === "boolean") {
@@ -56,7 +56,7 @@ const Component: m.Component<Attrs> = {
                 onfocus
             }
 
-            return m(CheckboxForm, checkBoxModel);
+            return m(CheckboxForm, checkBoxModel, vnode.children);
         }
 
         if (schema.type === "string" && schema.format === "html") {
@@ -72,7 +72,7 @@ const Component: m.Component<Attrs> = {
                 onblur,
                 onfocus
             }
-            return m(TextareaForm, textareaModel);
+            return m(TextareaForm, textareaModel, vnode.children);
         }
 
         if (schema.type === "string" && schema.format === "textarea") {
@@ -89,7 +89,7 @@ const Component: m.Component<Attrs> = {
                 onblur,
                 onfocus
             }
-            return m(TextareaForm, textareaModel);
+            return m(TextareaForm, textareaModel, vnode.children);
         }
 
         const inputModel: InputAttrs = {
@@ -107,7 +107,7 @@ const Component: m.Component<Attrs> = {
             onfocus
         }
 
-        return m(InputForm, inputModel);
+        return m(InputForm, inputModel, vnode.children);
     }
 };
 
