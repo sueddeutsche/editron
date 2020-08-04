@@ -99,6 +99,7 @@ const Component: m.Component<Attrs> = {
             placeholder: options.placeholder,
             errors,
             type: getInputType(schema),
+            instantUpdate: options.instantUpdate,
 
             value,
             onchange,
