@@ -6,6 +6,9 @@ const UI_PROPERTY = "editron:ui";
 import { JSONPointer, JSONSchema } from "../types";
 import Controller from "../Controller";
 
+/** property on a schema-definition, containing editron-options */
+export const EDITRON_OPTION_PROPERTY = "editron:ui";
+
 
 function isPointer(string: JSONPointer): boolean {
     return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
@@ -163,7 +166,7 @@ function resolveOption<T>(pointer: JSONPointer, controller: Controller, optionVa
  * @param options - a list of option properties. The first non-empty option will be returned
  * @return the first non-empty option
  */
-function getOption(pointer, controller, ...options: Array<string>): any {
+function getOption(pointer: JSONPointer, controller: Controller, ...options: Array<string>): any {
     if (options.length === 0) {
         throw new Error("Expected at least one options property to be given in getOption");
     }

@@ -44,9 +44,9 @@ export type Options = {
  *      - `toElement()` gives you the root dom-node for this editor (aka render target)
  *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
  *
- * @param {String} pointer          - pointer referencing the current data and schema
- * @param {Controller} controller   - editron controller instance
- * @param {Object} options          - resolved options object
+ * @param pointer - pointer referencing the current data and schema
+ * @param controller - editron controller instance
+ * @param options - resolved options object
  */
 export default class AbstractEditor {
     pointer: JSONPointer;
@@ -57,11 +57,11 @@ export default class AbstractEditor {
     _addError: Observer;
     _clearErrors: Function;
 
-    static editorOf(pointer: JSONPointer, controller: Controller, options) { // eslint-disable-line
+    static editorOf(pointer: JSONPointer, controller: Controller, options?) { // eslint-disable-line
         throw new Error("Missing editorOf-method in custom editor");
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
+    constructor(pointer: JSONPointer, controller: Controller, options) {
         this.pointer = pointer;
         this.controller = controller;
         this.options = options;
