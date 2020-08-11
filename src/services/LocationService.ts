@@ -32,6 +32,25 @@ export interface Events {
 const emitter = createNanoEvents<Events>();
 
 
+function getViewportHeight() {
+    return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+}
+
+
+export type Options = {
+    /** default root element, where any json-pointers (editron widgets) are
+    searched for. Defaults to `document.body` */
+    rootElement?: HTMLElement;
+    /** additional offset in px, to scroll into view. In case you want to
+    adjust scroll-position on focus (e.g. skip a header). Defaults to 0 */
+    scrollTopOffset?: number;
+}
+
+export const defaultOptions: Options = {
+    rootElement: document.body,
+    scrollTopOffset: 0
+}
+
 /**
  * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
  *
@@ -51,8 +70,11 @@ export default class LocationService {
     PAGE_EVENT = "page";
     TARGET_EVENT = "target";
     timeout: ReturnType<typeof setTimeout>;
+    options: Options;
 
-    constructor() {
+    constructor(options: Options = {}) {
+        this.options = { ...defaultOptions, ...options };
+
         UIState.on(UIEvent.CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
         UIState.on(UIEvent.CURRENT_POINTER, pointer => emitter.emit(EventType.TARGET, pointer));
     }
@@ -87,27 +109,35 @@ export default class LocationService {
     }
 
     /** focus target pointer */
-    focus() {
+    focus(rootElement = this.options.rootElement) {
         clearTimeout(this.timeout);
+
         const pointer = UIState.getCurrentPointer();
-        const id = getId(pointer);
-        const targetElement = document.getElementById(id);
-        // console.log(`pointer ${pointer} - id ${id}`, targetElement);
+        const targetElement = <HTMLElement>rootElement.querySelector(`[data-point="${pointer}"]`);
         if (targetElement == null) {
-            // console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
+            console.log(`Location:focus - target ${pointer} not found`);
             return;
         }
-        // const targetPosition = targetElement.getBoundingClientRect().top
+
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+
         this.timeout = setTimeout(() => {
-            // try scrolling to header-row in container (low height) to have a more robust scroll target position
-            let scrollTarget: HTMLElement = targetElement.querySelector(".editron-container > .editron-container__header");
-            scrollTarget = (scrollTarget == null || scrollTarget.offsetParent === null) ? targetElement : scrollTarget;
-            scrollTarget.scrollIntoView();
+            const { scrollTopOffset } = this.options;
+            const bound = targetElement.getBoundingClientRect();
+            const viewportHeight = getViewportHeight();
+            if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
+                // @note: this works only if editron is within a scrollable page
+                window.scrollTo(0, bound.top + scrollTopOffset);
+            } else {
+                console.log("skip scrolling - already in viewport", viewportHeight, bound.top);
+            }
 
-            // @todo only fire focus event?
             targetElement.dispatchEvent(new Event("focus"));
-            targetElement.focus && targetElement.focus();
-
+            // @todo only fire focus event?
+            // targetElement.focus && targetElement.focus();
+            this.timeout = null;
         }, DELAY);
     }
 
