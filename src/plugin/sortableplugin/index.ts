@@ -20,6 +20,74 @@ interface SortableEditor extends Editor {
     }
 }
 
+export function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
+    console.log("on add");
+    const { from, newIndex, item } = event;
+    const schema = controller.schema().get(pointer);
+
+    // always remove node - we create it from data
+    item.parentNode.removeChild(item);
+
+    if (from.dataset.parent == null) {
+        console.log("Add -- create new child from data-property");
+        let data;
+        try {
+            data = JSON.parse(item.dataset.content);
+            // for convinience, add missing data
+            data = controller.schema().core.getTemplate([data], schema)[0];
+
+        } catch (e) {
+            console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
+            return;
+        }
+
+        const toList = controller.data().get(pointer);
+        toList.splice(newIndex, 0, data);
+        controller.data().set(pointer, toList);
+    }
+}
+
+export function onEndSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
+    console.log("on end");
+    const element = event.item;  // dragged HTMLElement
+    const { to, from, oldIndex, newIndex } = event;
+
+    if (to === from && oldIndex === newIndex) {
+        console.log("drag had no effect");
+        return;
+    }
+
+    const toPointer = to.dataset.parent;
+    const fromPointer = from.dataset.parent;
+
+    // if container or pointer (different editors) are the same, its a move within a list
+    if (to === from || (toPointer != null && toPointer === fromPointer)) {
+        arrayUtils.moveItem(pointer, controller, oldIndex, newIndex);
+        return;
+    }
+
+    if (to !== from) {
+        if (toPointer == null) {
+            console.log("undefined `toPointer` on", to);
+            return;
+        }
+        if (fromPointer == null) {
+            console.log("undefined `fromPointer` on", from);
+            return;
+        }
+
+        const toList = controller.data().get(toPointer);
+        const fromList = controller.data().get(fromPointer);
+        toList.splice(newIndex, 0, fromList[oldIndex]);
+        fromList.splice(oldIndex, 1);
+
+        // console.log("set", fromList, toList);
+        controller.data().set(fromPointer, fromList);
+        controller.data().set(toPointer, toList);
+    }
+}
+
+
 export default class SortablePlugin implements Plugin {
     id = "sortable-plugin";
 
@@ -52,6 +120,12 @@ export default class SortablePlugin implements Plugin {
 
         const { controller } = this;
         const $children = <HTMLElement>editor.toElement().querySelector(CHILD_CONTAINER_SELECTOR);
+        if ($children == null) {
+            console.log(`failed retrieving sortable children container '${CHILD_CONTAINER_SELECTOR}' -- abort`);
+            return;
+        }
+
+        $children.dataset.parent = pointer;
         let hasMoved;
 
         const sortable = new Sortable($children, {
@@ -74,58 +148,11 @@ export default class SortablePlugin implements Plugin {
                 }
                 hasMoved = false;
             },
-            onAdd: (event) => {
-                const { from, newIndex, item } = event;
-
-                // always remove node - we create it from data
-                item.parentNode.removeChild(item);
-
-                if (from.dataset.parent == null) {
-                    let data;
-                    try {
-                        data = JSON.parse(item.dataset.content);
-                        // for convinience, add missing data
-                        data = controller.schema().core.getTemplate([data], schema)[0];
-
-                    } catch (e) {
-                        console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
-                        return;
-                    }
-
-                    const toList = controller.data().get(pointer);
-                    toList.splice(newIndex, 0, data);
-                    controller.data().set(pointer, toList);
-                }
-
-                // console.log("add to", event);
+            onAdd(event: SortableEvent) {
+                onAddSortable(pointer, controller, event)
             },
             onEnd(event: SortableEvent): void {
-                const element = event.item;  // dragged HTMLElement
-                const { to, from, oldIndex, newIndex } = event;
-
-                if (to === from && oldIndex === newIndex) {
-                    console.log("drag had no effect");
-                    return;
-                }
-
-                if (to === from) {
-                    arrayUtils.moveItem(pointer, controller, oldIndex, newIndex);
-                    return;
-                }
-
-                if (to !== from) {
-                    const toPointer = to.dataset.parent;
-                    const toList = controller.data().get(toPointer);
-                    const fromPointer = from.dataset.parent;
-                    const fromList = controller.data().get(fromPointer);
-
-                    toList.splice(newIndex, 0, fromList[oldIndex]);
-                    fromList.splice(oldIndex, 1);
-
-                    controller.data().set(fromPointer, fromList);
-                    controller.data().set(toPointer, toList);
-                }
-
+                onEndSortable(pointer, controller, event)
                 // console.log(
                 //     "target list", to, "\n",
                 //     "previous list", from, "\n",

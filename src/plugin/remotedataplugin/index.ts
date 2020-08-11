@@ -41,11 +41,22 @@ export default class RemoteDataPlugin implements Plugin {
         return this;
     }
 
-    setData(pointer, json, remote) {
+    async setData(pointer, remote) {
         const { controller } = this;
         const currentData = controller.data().getDataByReference();
         const source = Object.keys(remote.set);
         const sourcePointer = gp.join(pointer, remote.source);
+
+        let sourceData = controller.data().get(sourcePointer);
+        if (sourceData == null || sourceData === "") {
+            return;
+        }
+        if (typeof sourceData !== "object") {
+            sourceData = { [sourcePointer.split("/").pop()]: sourceData };
+        }
+
+        const remoteUrl = render(remote.url, sourceData);
+        const json = await controller.proxy().get("json", ({ source: remoteUrl }));
 
         source.forEach(key => {
             const targetPointer = gp.join(pointer, remote.set[key]);
@@ -60,12 +71,6 @@ export default class RemoteDataPlugin implements Plugin {
         });
     }
 
-    // syncData(pointer, json, remote) {
-    //     if (remote.sync == null) {
-    //         return;
-    //     }
-    // }
-
     onCreateEditor(pointer: JSONPointer, editor: RemoteDataEditor, options?) {
         if (options && options.remoteData) {
             const { controller } = this;
@@ -77,22 +82,10 @@ export default class RemoteDataPlugin implements Plugin {
             let remoteUrl = render(remote.url, sourceData);
 
             controller.data().observe(sourcePointer, async () => {
-                sourceData = controller.data().get(sourcePointer);
-                if (sourceData == null) {
-                    return;
-                }
-                if (typeof sourceData !== "object") {
-                    sourceData = { [sourcePointer.split("/").pop()]: sourceData };
-                }
-                remoteUrl = render(remote.url, sourceData);
-                const json = await controller.proxy().get("json", ({ source: remoteUrl }));
-
-                this.setData(pointer, json, remote);
-                // this.syncData(pointer, json, remote);
-
+                this.setData(pointer, remote);
             }, true);
 
-            // this.controller.proxy().get("json", ({ source: remote.url }));
+            this.setData(pointer, remote);
 
             editor.__remoteDataPlugin = {
                 options: remote,

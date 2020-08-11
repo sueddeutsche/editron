@@ -24,7 +24,10 @@ export * as components from "./src/components";
 export { default as editors } from "./src/editors";
 export * as services from "./src/services";
 export * as utils from "./src/utils";
+
 export { default as plugin } from "./src/plugin";
 export { default as DelegationPlugin } from "./src/plugin/delegationplugin";
 export { default as SelectionPlugin } from "./src/plugin/selectionplugin";
 export { default as SortablePlugin } from "./src/plugin/sortableplugin";
+export { default as RemoteDataPlugin } from "./src/plugin/remotedataplugin";
+export { default as SyncPlugin } from "./src/plugin/syncplugin";

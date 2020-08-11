@@ -81,6 +81,10 @@ export default class SelectionPlugin implements Plugin {
         if (editor.__selectionPlugin) {
             editor.toElement().removeEventListener("click", editor.__selectionPlugin.select);
             editor.__selectionPlugin = undefined;
+
+            if (this.currentSelection === editor) {
+                this.currentSelection = null;
+            }
         }
     }
 }
