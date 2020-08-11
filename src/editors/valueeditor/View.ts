@@ -32,6 +32,7 @@ const Component: m.Component<Attrs> = {
                 id,
                 title: options.title,
                 description: options.description,
+                disabled: options.disabled,
                 errors,
 
                 options: UISchema.enumOptions(schema),
@@ -48,6 +49,7 @@ const Component: m.Component<Attrs> = {
                 id,
                 title: options.title,
                 description: options.description,
+                disabled: options.disabled,
                 errors,
 
                 value,
@@ -65,6 +67,7 @@ const Component: m.Component<Attrs> = {
                 title: options.title,
                 description: options.description,
                 placeholder: options.placeholder,
+                disabled: options.disabled,
                 errors,
 
                 value,
@@ -81,6 +84,7 @@ const Component: m.Component<Attrs> = {
                 title: options.title,
                 description: options.description,
                 placeholder: options.placeholder,
+                disabled: options.disabled,
                 errors,
                 rows: options["textarea:rows"] || 1,
 
@@ -97,6 +101,7 @@ const Component: m.Component<Attrs> = {
             title: options.title,
             description: options.description,
             placeholder: options.placeholder,
+            disabled: options.disabled,
             errors,
             type: getInputType(schema),
             instantUpdate: options.instantUpdate,

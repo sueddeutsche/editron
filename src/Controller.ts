@@ -243,15 +243,18 @@ export default class Controller {
         assertValidPointer(pointer);
 
         // merge schema["editron:ui"] object with options. options precede
-        const instanceOptions = Object.assign(
-            {
-                id: getID(pointer),
-                pointer,
-                disabled: this.disabled
-            },
-            UISchema.copyOptions(pointer, this),
-            options
-        );
+        const instanceOptions = {
+            id: getID(pointer),
+            pointer,
+            disabled: this.disabled,
+            ...UISchema.copyOptions(pointer, this),
+            ...options
+        };
+
+        instanceOptions.attrs = {
+            "data-title": instanceOptions.title,
+            ...instanceOptions.attrs
+        }
 
         // find a matching editor
         const EditorConstructor = selectEditor(this.getEditors(), pointer, this, instanceOptions);
@@ -267,8 +270,10 @@ export default class Controller {
         // iniitialize editor and save editor in list
         // @TODO loose reference to destroyed editors
         const editor = new EditorConstructor(pointer, this, instanceOptions);
-        element.appendChild(editor.toElement());
-        editor.setActive(!this.disabled);
+        const dom = editor.toElement();
+        element.appendChild(dom);
+        editor.setActive(!instanceOptions.disabled);
+        dom.setAttribute("data-point", pointer);
         this.addInstance(pointer, editor);
 
         // @lifecycle hook create widget
@@ -460,6 +465,7 @@ export default class Controller {
 
     changePointer(newPointer: JSONPointer, editor: Editor): void {
         removeEditorFrom(this.instances, editor);
+        editor.toElement().setAttribute("data-point", newPointer);
         this.addInstance(newPointer, editor);
     }
 }

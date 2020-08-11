@@ -89,12 +89,18 @@ const schema = {
             properties: {
                 title: {
                     type: "string",
-                    title: "Titel"
+                    title: "Titel",
+                    "editron:ui": {
+                        disabled: true
+                    }
                 },
                 teaser: {
                     type: "string",
                     title: "Teaser",
-                    format: "textarea"
+                    format: "textarea",
+                    "editron:ui": {
+                        disabled: true
+                    }
                 }
             }
         }
