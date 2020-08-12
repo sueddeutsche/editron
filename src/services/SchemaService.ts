@@ -6,12 +6,6 @@ const { getChildSchemaSelection } = jlib;
 const { JsonEditor: Core } = jlib.cores;
 
 
-/**
- * Manages json-schema interactions and adds caching of reoccuring json-schema requests
- * @param schema - json-schema
- * @param [data={}] - data corresponding to json-schema
- * @param [core={}] - instance of json-schema-library Core
- */
 export default class SchemaService {
     core;
     data: JSONData;
@@ -19,6 +13,12 @@ export default class SchemaService {
     /** cache for resolved json-pointer */
     cache: { [p: string]: any } = {};
 
+    /**
+     * Manages json-schema interactions and adds caching of reoccuring json-schema requests
+     * @param schema - json-schema
+     * @param [data] - data corresponding to json-schema
+     * @param [core] - instance of json-schema-library Core
+     */
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, core = new Core()) {
         this.core = core;
         this.setSchema(schema);

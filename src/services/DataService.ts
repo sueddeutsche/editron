@@ -43,11 +43,6 @@ export type Observer = {
     bubbleEvents?: boolean;
 }
 
-/**
- * Read and modify form data and notify observers
- * @param state - current state/store of application
- * @param data - current application data (form)
- */
 export default class DataService {
     /** state store-id of service */
     id = "data";
@@ -61,6 +56,11 @@ export default class DataService {
     emitter = createNanoEvents<Events>();
     #onStateChanged: Function;
 
+    /**
+     * Read and modify form data and notify observers
+     * @param state - current state/store of application
+     * @param data - current application data (form)
+     */
     constructor(state: State, data?: JSONData) {
         if (!(state instanceof State)) {
             throw new Error("Given state in DataService must be of instance 'State'");
