@@ -110,10 +110,6 @@ export default class OneOfEditor implements Editor {
         this.controller.data().removeObserver(oldPointer, this.update);
         this.controller.data().observe(newPointer, this.update, true);
 
-        if (this.childEditor) {
-            this.childEditor.updatePointer(newPointer);
-        }
-
         this.render();
     }
 

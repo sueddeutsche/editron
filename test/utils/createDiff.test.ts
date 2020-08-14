@@ -1,19 +1,19 @@
 import { strict as assert } from "assert";
 import gp from "gson-pointer";
 import diffpatch from "../../src/services/utils/diffpatch";
-import getPatchesPerPointer from "../../src/services/utils/getPatchesPerPointer";
+import createDiff from "../../src/services/utils/createDiff";
 
 
-describe("utils/getPatchesPerPointer", () => {
+describe.only("utils/createDiff", () => {
 
     it("should return empty array if data is the same", () => {
-        const result = getPatchesPerPointer({ a: "prop" }, { a: "prop" });
+        const result = createDiff({ a: "prop" }, { a: "prop" });
 
         assert.equal(result.length, 0);
     });
 
     it("should return patches with pointer of change and its patch", () => {
-        const result = getPatchesPerPointer({ a: "prop" }, { a: "properly" });
+        const result = createDiff({ a: "prop" }, { a: "properly" });
 
         assert.equal(result.length, 1);
         assert.deepEqual(result[0], {
@@ -24,7 +24,7 @@ describe("utils/getPatchesPerPointer", () => {
     });
 
     it("should return nested patches with pointer of change and its patch", () => {
-        const result = getPatchesPerPointer(
+        const result = createDiff(
             { a: { changedHere: "prop" } },
             { a: { changedHere: "properly" } }
         );
@@ -38,7 +38,7 @@ describe("utils/getPatchesPerPointer", () => {
     });
 
     it("should return all patches with pointer of change and its patch", () => {
-        const result = getPatchesPerPointer(
+        const result = createDiff(
             { a: { changedHere: "prop" }, andHere: "boo" },
             { a: { changedHere: "properly" }, andHere: "foo" }
         );
@@ -57,7 +57,7 @@ describe("utils/getPatchesPerPointer", () => {
     });
 
     it("should return pointer of object for key changes", () => {
-        const result = getPatchesPerPointer(
+        const result = createDiff(
             { a: { b: "key" } },
             { a: { c: "key" } }
         );
@@ -71,7 +71,7 @@ describe("utils/getPatchesPerPointer", () => {
     });
 
     it("should return pointer of array for item changes", () => {
-        const result = getPatchesPerPointer(
+        const result = createDiff(
             { a: ["string"] },
             { a: ["modifiedString"] }
         );
@@ -85,7 +85,7 @@ describe("utils/getPatchesPerPointer", () => {
     });
 
     it("should return movement of arrays", () => {
-        const result = getPatchesPerPointer(
+        const result = createDiff(
             { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] },
             { a: [{ _id: 2, title: "third" }, { _id: 1, title: "second" }, { _id: 0, title: "first" }] }
         );
@@ -94,7 +94,7 @@ describe("utils/getPatchesPerPointer", () => {
     });
 
     it("should return patches in correct order", () => {
-        const result = getPatchesPerPointer(
+        const result = createDiff(
             { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] },
             { a: [{ _id: 2, title: "third" }, { _id: 1, title: "zwei" }, { _id: 0, title: "eins" }] }
         );
@@ -125,7 +125,7 @@ describe("utils/getPatchesPerPointer", () => {
     it("patch should correctly patch array movement", () => {
         const input = { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] };
         const update = { a: [{ _id: 2, title: "third" }, { _id: 1, title: "zwei" }, { _id: 0, title: "eins" }] };
-        const patches = getPatchesPerPointer(input, update);
+        const patches = createDiff(input, update);
 
         const result = applyPatches(input, patches);
 
@@ -135,7 +135,7 @@ describe("utils/getPatchesPerPointer", () => {
     it("patch should correctly patch array insertion", () => {
         const input = { a: [{ _id: 0, title: "first" }, { _id: 2, title: "third" }] };
         const update = { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] };
-        const patches = getPatchesPerPointer(input, update);
+        const patches = createDiff(input, update);
 
         const result = applyPatches(input, patches);
 
@@ -145,7 +145,7 @@ describe("utils/getPatchesPerPointer", () => {
     it("patch should also patch different input arrays", () => {
         const input = { a: [{ _id: 0, title: "first" }, { _id: 1, title: "second" }, { _id: 2, title: "third" }] };
         const update = { a: [{ _id: 2, title: "third" }, { _id: 1, title: "second" }, { _id: 0, title: "first" }] };
-        const patches = getPatchesPerPointer(input, update);
+        const patches = createDiff(input, update);
 
         const result = applyPatches({ a: [1, 2, 3] }, patches);
 

@@ -2,7 +2,7 @@ import gp from "gson-pointer";
 import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
 import jsonSchemaLibrary from "json-schema-library";
 import addValidator from "json-schema-library/lib/addValidator";
-import DataService, { EventType as DataServiceEvent } from "./services/DataService";
+import DataService, { EventType as DataServiceEvent, isMoveChange, isDeleteChange } from "./services/DataService";
 import SchemaService from "./services/SchemaService";
 import ValidationService from "./services/ValidationService";
 import LocationService, { EventType as LocationEvent } from "./services/LocationService";
@@ -49,6 +49,17 @@ function eachInstance(instances: { [p: string]: Array<Editor> }, cb: (pointer: J
     Object.keys(instances).forEach(pointer => {
         instances[pointer].forEach(editor => cb(pointer, editor));
     });
+}
+
+/** callback on each editor-instance */
+function getInstances(instances: { [p: string]: Array<Editor> }, parentPointer: JSONPointer) {
+    const editors = [];
+    eachInstance(instances, (pointer, editor) => {
+        if (pointer.startsWith(parentPointer)) {
+            editors.push(...instances[pointer]);
+        }
+    });
+    return editors;
 }
 
 
@@ -102,10 +113,10 @@ interface EditorInstance {
  *  const data = editron.getData();
  * ```
  *
- * @param  {Object} schema          - json schema describing required data/form template
- * @param  {Any} data               - initial data for given json-schema
- * @param  {Object} [options]       - configuration options
- * @param  {Array} options.editors  - list of editron-editors/widgets to use. Order defines editor to use
+ * @param [schema] - json schema describing required data/form template
+ * @param [data] - initial data for given json-schema
+ * @param [options] - configuration options
+ * @param [options.editors] - list of editron-editors/widgets to use. Order defines editor to use
  *      (based on editorOf-method)
  */
 export default class Controller {
@@ -154,9 +165,11 @@ export default class Controller {
                     return this.addKeywordValidator(...validator);
                 }
                 throw new Error(`Unknown validation type '${validationType}'`);
+
             } catch (e) {
                 console.log("Error:", e.message);
             }
+
             return false;
         });
 
@@ -166,10 +179,42 @@ export default class Controller {
         this.validationService.setErrorHandler(error => i18n.translateError(this, error));
         // merge given data with template data
         data = this.schemaService.addDefaultData(data, schema);
+
         this.dataService = new DataService(this.state, data);
+        // update container will be called before any editor change-notification
+        // this gives us time, to manage update-pointer and destory events of
+        // known editors
+        this.dataService.on(DataServiceEvent.UPDATE_CONTAINER, (pointer, changes) => {
+                const changePointers = [];
+                const removeEditors = [];
+
+                for (let i = 0, l = changes.length; i < l; i += 1) {
+                    const change = changes[i];
+                    // we need to prefetch all editors that are going to change,
+                    // because upcoming modification will mess with pointers per change
+                    // (and thus mangle updated and not-updated editors)
+                    if (isMoveChange(change)) {
+                        changePointers.push({
+                            old: change.old,
+                            next: change.next,
+                            editors: getInstances(this.instances, change.old)
+                        });
+
+                    // immediately destroy editors
+                    } else if (isDeleteChange(change)) {
+                        getInstances(this.instances, change.old).forEach(ed => ed.destroy());
+                    }
+                }
+
+                // notify editors of pointer changes
+                changePointers.forEach(change => {
+                    change.editors.forEach(ed => ed.updatePointer(ed.getPointer().replace(change.old, change.next)))
+                });
+            });
+
         // start validation after data has been updated
-        this.onAfterDataUpdate = this.dataService
-            .on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+        this.onAfterDataUpdate = this.dataService.on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+
         // run initial validation
         this.validateAll();
 
@@ -183,7 +228,6 @@ export default class Controller {
             this.plugins = options.plugins.map(plugin => plugin.initialize(this));
         }
     }
-
 
     getPlugin(pluginId: string) {
         return this.plugins.find(plugin => plugin.id === pluginId);
@@ -464,6 +508,9 @@ export default class Controller {
     }
 
     changePointer(newPointer: JSONPointer, editor: Editor): void {
+        // @ts-ignore
+        editor.__called = true;
+
         removeEditorFrom(this.instances, editor);
         editor.toElement().setAttribute("data-point", newPointer);
         this.addInstance(newPointer, editor);

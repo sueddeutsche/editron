@@ -92,7 +92,6 @@ export default class ArrayItemEditor {
         this.viewModel.pointer = newPointer;
         this.viewModel.length = this.controller.data().get(this.parentPointer).length;
         this.render();
-        this.editor && this.editor.updatePointer(newPointer);
     }
 
     toElement(): HTMLElement {

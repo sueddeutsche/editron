@@ -2,7 +2,7 @@ import copy from "./utils/copy";
 import dataReducer from "./reducers/dataReducer";
 import diffpatch from "./utils/diffpatch";
 import getParentPointer from "./utils/getParentPointer";
-import getPatchesPerPointer, { Delta } from "./utils/getPatchesPerPointer";
+import createDiff, { Patch, PatchResult } from "./utils/createDiff";
 import getTypeOf from "json-schema-library/lib/getTypeOf";
 import gp from "gson-pointer";
 import isRootPointer from "./utils/isRootPointer";
@@ -10,6 +10,7 @@ import State from "./State";
 import { ActionTypes, ActionCreators } from "./reducers/actions";
 import { createNanoEvents, Unsubscribe } from "nanoevents";
 import { JSONData, JSONPointer } from "../types";
+import { isPointer } from "../utils/UISchema";
 
 const DEBUG = false;
 
@@ -17,6 +18,8 @@ const DEBUG = false;
 export enum EventType {
     /** called before starting data update */
     BEFORE_UPDATE = "beforeUpdate",
+    /** called for changes array items order, receiving a list of move, add and delete operations */
+    UPDATE_CONTAINER = "updateContainer",
     /** called after data udpate was performed */
     AFTER_UPDATE = "afterUpdate",
     /** called after all updates with a list of patches */
@@ -29,9 +32,12 @@ export type DataServiceEvent = {
     [p: string]: any;
 }
 
+
 export interface Events {
     /** called before starting data update */
     [EventType.BEFORE_UPDATE]: (pointer: JSONPointer, eventObject: DataServiceEvent) => void;
+    /** called for changes array items order, receiving a list of move, add and delete operations */
+    [EventType.UPDATE_CONTAINER]: (pointer: JSONPointer, change: Array<Change>) => void;
     /** called after data udpate was performed */
     [EventType.AFTER_UPDATE]: (pointer: JSONPointer, eventObject: DataServiceEvent) => void;
     /** called after all updates with a list of patches */
@@ -41,6 +47,81 @@ export interface Events {
 export type Observer = {
     (event: DataServiceEvent): void;
     bubbleEvents?: boolean;
+}
+
+type AddChange = {
+    type: "add";
+    next: JSONPointer;
+    data?: any;
+}
+
+type DeleteChange = {
+    type: "delete";
+    old: JSONPointer;
+}
+
+type MoveChange = {
+    type: "move";
+    old: JSONPointer;
+    next: JSONPointer;
+}
+
+type Change = AddChange|DeleteChange|MoveChange;
+
+export const isAddChange = (change): change is AddChange => change?.type === "add";
+export const isDeleteChange = (change): change is DeleteChange => change?.type === "delete";
+export const isMoveChange = (change): change is MoveChange => change?.type === "move";
+
+/** converts a patch to a list of simple changes for add, delete and move operations */
+function getArrayChangeList(patchResult: PatchResult, originalData: any): Array<Change> {
+    const changeList = [];
+
+    const eventLocation = patchResult.pointer;
+    const originalArray = gp.get(originalData, eventLocation).map((_, index) => `${eventLocation}/${index}`);
+    const changedArray = diffpatch.patch(Array.from(originalArray), patchResult.patch);
+
+    // retrieve deleted items
+    for (let i = 0, l = originalArray.length; i < l; i += 1) {
+        if (changedArray.includes(originalArray[i]) === false) {
+            const change: DeleteChange = { type: "delete", old: originalArray[i] };
+            changeList.push(change);
+        }
+    }
+
+    // identify added and movement items
+    for (let i = 0, l = changedArray.length; i < l; i += 1) {
+        let change: AddChange|MoveChange;
+        const ptrOrData = changedArray[i];
+        if (isPointer(ptrOrData)) {
+            change = <MoveChange>{ type: "move", old: ptrOrData, next: `${eventLocation}/${i}` };
+        } else {
+            change = <AddChange>{ type: "add", next: `${eventLocation}/${i}`, data: ptrOrData };
+        }
+        changeList.push(change);
+    }
+
+    return changeList;
+}
+
+function getObjectChangeList(patchResult: PatchResult): Array<Change> {
+    const changeList = [];
+    const { pointer } = patchResult;
+    const properties = Object.keys(patchResult.patch);
+    for (let i = 0, l = properties.length; i < l; i += 1) {
+        const property = properties[i];
+        const change = patchResult.patch[property];
+        if (change.length === 1) {
+            changeList.push(<AddChange>{ type: "add", next: `${pointer}/${property}` });
+        } else if (change[2] === 0) {
+            changeList.push(<DeleteChange>{ type: "delete", old: `${pointer}/${property}` });
+        } else if (change[2] === 3) {
+            console.log("object property movement", patchResult);
+            throw new Error(`Property movement currently unsupported (${JSON.stringify(change)})`);
+        }
+        // changed value
+        // else if (change.length === 2) { console.log("change", `${patch.pointer}/${property}`); }
+    }
+    return changeList;
 }
 
 export default class DataService {
@@ -54,7 +135,8 @@ export default class DataService {
     };
     /** event emitter */
     emitter = createNanoEvents<Events>();
-    #onStateChanged: Function;
+    /** internal value to track previous data */
+    lastUpdate = {};
 
     /**
      * Read and modify form data and notify observers
@@ -69,37 +151,47 @@ export default class DataService {
         this.observers = {};
         this.state = state;
         this.state.register(this.id, dataReducer);
-
-        let lastUpdate = {};
-        // improved version - supporting multiple patches
-        this.#onStateChanged = () => {
-            const current = this.state.get(this.id);
-            const patches = getPatchesPerPointer(lastUpdate, current.data.present);
-            if (patches.length === 0) {
-                DEBUG && console.info("DataService abort update event -- nothing changed");
-                return;
-            }
-
-            DEBUG && console.log("Patch locations", patches.map(delta => delta.pointer));
-
-            for (let i = 0, l = patches.length; i < l; i += 1) {
-                const eventLocation = patches[i].pointer;
-                const parentData = this.getDataByReference(eventLocation);
-                const parentDataType = getTypeOf(parentData);
-                this.emit(EventType.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
-                this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
-            }
-
-            this.emitter.emit(EventType.FINAL_UPDATE, patches);
-            lastUpdate = current.data.present;
-        };
-
-        this.state.subscribe(this.id, this.#onStateChanged);
+        this.onStateChanged = this.onStateChanged.bind(this);
+        this.state.subscribe(this.id, this.onStateChanged);
 
         if (data !== undefined) {
             this.set("#", data);
             this.resetUndoRedo();
         }
+    }
+
+    // improved version - supporting multiple patches
+    onStateChanged() {
+        const current = this.state.get(this.id);
+        const patches = createDiff(this.lastUpdate, current.data.present);
+        if (patches.length === 0) {
+            return;
+        }
+
+        for (let i = 0, l = patches.length; i < l; i += 1) {
+            const eventLocation = patches[i].pointer;
+            const parentData = this.getDataByReference(eventLocation);
+            const parentDataType = getTypeOf(parentData);
+
+            // build simple patch-information and notify about changes in pointer for move-instance support
+            // this is a major performance improvement for array-item movements
+            if (parentDataType === "array") {
+                const changes = getArrayChangeList(patches[i], this.lastUpdate);
+                console.log("changed array", changes);
+                this.emitter.emit(EventType.UPDATE_CONTAINER, eventLocation, changes);
+
+            } else if (parentDataType === "object") {
+                const changes = getObjectChangeList(patches[i]);
+                console.log("changed object", changes);
+                this.emitter.emit(EventType.UPDATE_CONTAINER, eventLocation, changes);
+            }
+
+            this.emit(EventType.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
+            this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
+        }
+
+        this.emitter.emit(EventType.FINAL_UPDATE, patches);
+        this.lastUpdate = current.data.present;
     }
 
     /** clear undo/redo stack */
@@ -109,7 +201,7 @@ export default class DataService {
 
     /**
      * Get a copy of current data from the requested `pointer`
-     * @param [pointer="#"] - data to fetch. Defaults to _root_
+     * @param [pointer] - data to fetch. Defaults to _root_
      * @returns data, associated with `pointer`
      */
     get(pointer: JSONPointer = "#") {
@@ -241,7 +333,7 @@ export default class DataService {
         }
     }
 
-    bubbleObservers(pointer: JSONPointer, data: { type: string, patch: { [p: string]: Delta }}) {
+    bubbleObservers(pointer: JSONPointer, data: { type: string, patch: Patch }) {
         const eventObject = createEventObject(pointer, data);
         const frags = gp.split(pointer);
         while (frags.length) {
@@ -258,7 +350,7 @@ export default class DataService {
 
     /** destroy service */
     destroy() {
-        this.state.unsubscribe(this.id, this.#onStateChanged);
+        this.state.unsubscribe(this.id, this.onStateChanged);
         this.state.unregister(this.id);
     }
 }

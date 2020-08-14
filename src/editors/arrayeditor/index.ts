@@ -129,7 +129,7 @@ export default class ArrayEditor implements Editor {
         this.controller.data().observe(newPointer, this.updateView);
         this.controller.validator().observe(newPointer, this.setErrors);
 
-        this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
+        // this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
         this.render();
     }
 
@@ -158,15 +158,9 @@ export default class ArrayEditor implements Editor {
             }
         });
 
-        // search for removed children
-        originalChildren.forEach(child => {
-            if (this.children.indexOf(child) === -1) {
-                child.destroy();
-            }
-        });
-
         // update view: move and inserts nodes
         const currentLocation = this.controller.location().getCurrent();
+        const changePointer = {};
 
         for (let i = 0, l = this.children.length; i < l; i += 1) {
             const previousPointer = this.children[i].getPointer();
@@ -179,7 +173,13 @@ export default class ArrayEditor implements Editor {
             }
 
             // update child views to match patched list
+            if (previousPointer !== currentPointer) {
+                changePointer[previousPointer] = currentPointer;
+            }
+
+            // this updates the array-item wrapper
             this.children[i].updatePointer(currentPointer);
+
             if (this.$items.children[i] === this.children[i].toElement()) {
                 // skip moving node, already in place
                 continue;

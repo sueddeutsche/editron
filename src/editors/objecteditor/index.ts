@@ -105,15 +105,10 @@ export default class ObjectEditor extends AbstractEditor {
     updatePointer(pointer: JSONPointer) {
         const returnValue = super.updatePointer(pointer);
 
-        // if (this.viewModel == null) {
-        //     return;
-        // }
-
-        this.dom.id = pointer;
+        // this.dom.id = pointer;
         this.options.attrs.id = pointer;
         this.viewModel.pointer = pointer;
 
-        this.childEditors.forEach(editor => editor.updatePointer(`${pointer}/${editor._property}`));
         this.render();
 
         return returnValue;
@@ -208,8 +203,6 @@ export default class ObjectEditor extends AbstractEditor {
 
         super.destroy();
         m.render(this.dom, m("i"));
-
-        this.childEditors.forEach(editor => editor.destroy());
         this.childEditors.length = 0;
         this.$children.innerHTML = "";
         this.viewModel = null;

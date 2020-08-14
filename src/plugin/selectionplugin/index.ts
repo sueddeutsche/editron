@@ -62,7 +62,7 @@ export default class SelectionPlugin implements Plugin {
         this.deselect();
         this.currentSelection = editor;
         this.currentSelection.toElement().classList.add("selected");
-        console.log("add class to ", this.currentSelection.toElement());
+        // console.log("add class to ", this.currentSelection.toElement());
         this.onSelect({ pointer: editor.getPointer(), editor, options: editor.__selectionPlugin.options });
     }
 
