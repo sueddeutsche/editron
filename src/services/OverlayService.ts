@@ -8,35 +8,40 @@ import UIState, { EventType as UIEvent } from "./uistate";
 UIState.on(UIEvent.OVERLAY, value => OverlayService.onChange(value?.element, value?.options));
 
 
+export const defaultOptions = {
+    ok: false,
+    save: true,
+    fullscreen: false,
+    onAbort: Function.prototype,
+    onSave: Function.prototype
+};
+
+
+export type Options = {
+    /** display `ok`, instead of `abort` */
+    ok?: boolean;
+    /** fullscreen size of overlay, regardless of content */
+    fullscreen?: boolean;
+    /** show save button, defaults to true */
+    save?: boolean;
+    /** called when Overlay is closed via ok/abort */
+    onAbort?: () => void;
+    /** called when Overlay is closed via save */
+    onSave?: () => void;
+}
+
+
 /**
  * Opens an overlay with a DOM-Node as contents
- * @type {Object}
  */
 const OverlayService = {
 
-    /**
-     * Opens the overlay, showing the given `container` as conten
-     *
-     * Options
-     *  {Boolean} ok            - display `ok`, instead of `abort`
-     *  {Boolean} fullscreen    - fullscreen size of overlay, regardless of content
-     *  {Function} onAbort      - called when Overlay is closed via ok/abort
-     *  {Function} onSave       - called when Overlay is closed via save
-     *
-     * @param  {HTMLElement} container
-     * @param  {Obejct} options
-     */
-    open(container, options) {
+    /** Opens the overlay, showing the given `container` as content */
+    open(container: HTMLElement, options: Options) {
         // @ts-ignore
         UIState.setOverlay({
             element: container,
-            options: Object.assign({
-                ok: false,
-                save: true,
-                fullscreen: false,
-                onAbort: Function.prototype,
-                onSave: Function.prototype
-            }, options)
+            options: { ...defaultOptions, ...options }
         });
     },
 
@@ -46,7 +51,7 @@ const OverlayService = {
         m.render(this.getElement(), m("i"));
     },
 
-    onChange(container, options) {
+    onChange(container: HTMLElement, options: Options) {
         if (container == null) {
             const $el = this.getElement();
             $el.parentNode && $el.parentNode.removeChild($el);

@@ -11,7 +11,7 @@ export default class SchemaService {
     data: JSONData;
     schema: JSONSchema;
     /** cache for resolved json-pointer */
-    cache: { [p: string]: any } = {};
+    cache: { [p: string]: JSONSchema } = {};
 
     /**
      * Manages json-schema interactions and adds caching of reoccuring json-schema requests
