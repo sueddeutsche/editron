@@ -107,7 +107,7 @@ export default class ArrayItemEditor {
             return;
         }
         this.viewModel = null;
-        this.editor && this.editor.destroy();
+        this.controller.destroyEditor(this.editor);
         this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
     }
 

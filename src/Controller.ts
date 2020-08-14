@@ -2,7 +2,7 @@ import gp from "gson-pointer";
 import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
 import jsonSchemaLibrary from "json-schema-library";
 import addValidator from "json-schema-library/lib/addValidator";
-import DataService, { EventType as DataServiceEvent, isMoveChange, isDeleteChange } from "./services/DataService";
+import DataService, { EventType as DataServiceEvent, Change, isMoveChange, isDeleteChange } from "./services/DataService";
 import SchemaService from "./services/SchemaService";
 import ValidationService from "./services/ValidationService";
 import LocationService, { EventType as LocationEvent } from "./services/LocationService";
@@ -184,34 +184,8 @@ export default class Controller {
         // update container will be called before any editor change-notification
         // this gives us time, to manage update-pointer and destory events of
         // known editors
-        this.dataService.on(DataServiceEvent.UPDATE_CONTAINER, (pointer, changes) => {
-                const changePointers = [];
-                const removeEditors = [];
-
-                for (let i = 0, l = changes.length; i < l; i += 1) {
-                    const change = changes[i];
-                    // we need to prefetch all editors that are going to change,
-                    // because upcoming modification will mess with pointers per change
-                    // (and thus mangle updated and not-updated editors)
-                    if (isMoveChange(change)) {
-                        changePointers.push({
-                            old: change.old,
-                            next: change.next,
-                            editors: getInstances(this.instances, change.old)
-                        });
-
-                    // immediately destroy editors
-                    } else if (isDeleteChange(change)) {
-                        getInstances(this.instances, change.old).forEach(ed => ed.destroy());
-                    }
-                }
-
-                // notify editors of pointer changes
-                changePointers.forEach(change => {
-                    change.editors.forEach(ed => ed.updatePointer(ed.getPointer().replace(change.old, change.next)))
-                });
-            });
-
+        this.onUpdateContainer = this.onUpdateContainer.bind(this);
+        this.dataService.on(DataServiceEvent.UPDATE_CONTAINER, this.onUpdateContainer);
         // start validation after data has been updated
         this.onAfterDataUpdate = this.dataService.on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
 
@@ -312,13 +286,12 @@ export default class Controller {
         }
 
         // iniitialize editor and save editor in list
-        // @TODO loose reference to destroyed editors
         const editor = new EditorConstructor(pointer, this, instanceOptions);
         const dom = editor.toElement();
         element.appendChild(dom);
         editor.setActive(!instanceOptions.disabled);
         dom.setAttribute("data-point", pointer);
-        this.addInstance(pointer, editor);
+        this.addInstance(editor);
 
         // @lifecycle hook create widget
         this.plugins.forEach(plugin => {
@@ -330,6 +303,13 @@ export default class Controller {
         return editor;
     }
 
+    destroyEditor(editor: Editor) {
+        if (editor) {
+            const removed = this.removeInstance(editor);
+            editor.destroy();
+        }
+    }
+
     /**
      * Call this method, when your editor is destroyed, deregistering its instance on editron
      * @param editor - editor instance to remove
@@ -338,7 +318,7 @@ export default class Controller {
         // controller inserted child and removes it here again
         // @ts-ignore
         const $element = editor.toElement();
-        if ($element.parentNode) {
+        if ($element?.parentNode) {
             $element.parentNode.removeChild($element);
         }
 
@@ -352,7 +332,8 @@ export default class Controller {
         removeEditorFrom(this.instances, editor);
     }
 
-    addInstance(pointer: JSONPointer, editor: Editor) {
+    addInstance(editor: Editor) {
+        const pointer = editor.getPointer();
         this.instances[pointer] = this.instances[pointer] || [];
         this.instances[pointer].push(editor);
     }
@@ -489,6 +470,41 @@ export default class Controller {
         this.validationService.destroy();
         this.dataService.destroy();
         this.dataService.off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
+    }
+
+    /** management tasks before upcoming editor updates */
+    onUpdateContainer(pointer: JSONPointer, changes: Array<Change>) {
+        const changePointers = [];
+        const removeEditors = [];
+
+        for (let i = 0, l = changes.length; i < l; i += 1) {
+            const change = changes[i];
+            // we need to prefetch all editors that are going to change,
+            // because upcoming modification will mess with pointers per change
+            // (and thus mangle updated and not-updated editors)
+            if (isMoveChange(change)) {
+                changePointers.push({
+                    old: change.old,
+                    next: change.next,
+                    editors: getInstances(this.instances, change.old)
+                });
+
+            // immediately destroy editors
+            } else if (isDeleteChange(change)) {
+                getInstances(this.instances, change.old).forEach(ed => this.destroyEditor(ed));
+            }
+        }
+
+        // notify editors of pointer changes
+        changePointers.forEach(change => {
+            change.editors.forEach(ed => {
+                const newPointer = ed.getPointer().replace(change.old, change.next);
+                ed.updatePointer(newPointer)
+                ed.toElement().setAttribute("data-point", newPointer);
+                this.removeInstance(ed);
+                this.addInstance(ed);
+            });
+        });
     }
 
     onAfterDataUpdate({ pointer }): void {

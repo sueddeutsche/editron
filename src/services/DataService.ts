@@ -66,7 +66,7 @@ type MoveChange = {
     next: JSONPointer;
 }
 
-type Change = AddChange|DeleteChange|MoveChange;
+export type Change = AddChange|DeleteChange|MoveChange;
 
 export const isAddChange = (change): change is AddChange => change?.type === "add";
 export const isDeleteChange = (change): change is DeleteChange => change?.type === "delete";

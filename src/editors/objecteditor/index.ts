@@ -203,6 +203,7 @@ export default class ObjectEditor extends AbstractEditor {
 
         super.destroy();
         m.render(this.dom, m("i"));
+        this.childEditors.forEach(ed => this.controller.destroyEditor(ed));
         this.childEditors.length = 0;
         this.$children.innerHTML = "";
         this.viewModel = null;
