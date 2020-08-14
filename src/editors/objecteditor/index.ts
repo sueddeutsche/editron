@@ -17,8 +17,6 @@ function showJSON(controller: Controller, data: JSONData, title: string) {
 }
 
 
-type EditorInstance = Editor & { _property?: string };
-
 export type Options = {
     id?: string;
     attrs?: {
@@ -40,7 +38,6 @@ export type Options = {
 
 export type ViewModel = {
     attrs: {
-        id?: string;
         [p: string]: any
     };
     errors: Array<any>;
@@ -60,7 +57,7 @@ export type ViewModel = {
 export default class ObjectEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
-    childEditors: Array<EditorInstance>;
+    childEditors: Array<Editor>;
     $children: HTMLElement;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -73,7 +70,7 @@ export default class ObjectEditor extends AbstractEditor {
 
         // add id to element, since no other input-form is associated with this editor...
         // @todo ...except another editron-instance
-        options.attrs = { id: options.id, ...options.attrs };
+        options.attrs = { ...options.attrs };
 
         this.childEditors = [];
         this.viewModel = {
@@ -108,7 +105,6 @@ export default class ObjectEditor extends AbstractEditor {
         }
 
         super.updatePointer(pointer);
-        this.options.attrs.id = pointer;
         this.viewModel.pointer = pointer;
         this.render();
     }
@@ -133,17 +129,16 @@ export default class ObjectEditor extends AbstractEditor {
         this.childEditors.length = 0;
         // clear html
         this.$children.innerHTML = "";
-        // rebuild children
-        if (data) {
-            Object.keys(data).forEach(property => {
-                const editor = <EditorInstance>this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
-                if (editor) {
-                    editor._property = property;
-                    this.childEditors.push(editor);
-                }
-            });
+
+        if (data == null) {
+            this.render();
+            return;
         }
 
+        // rebuild children
+        Object.keys(data).forEach(property => {
+            this.childEditors.push(this.controller.createEditor(`${this.pointer}/${property}`, this.$children));
+        });
         this.render();
     }
 
