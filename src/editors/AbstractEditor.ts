@@ -131,8 +131,6 @@ export default class AbstractEditor {
     destroy(): void {
         this.controller.data().removeObserver(this.pointer, this.update);
         this.controller.validator().removeObserver(this.pointer, this._addError);
-        // @todo this event is not registered in this class
-        // this.controller.validator().off(ValidationEvent.BEFORE_VALIDATION, this._clearErrors);
     }
 
     setErrors(errors: Array<ValidationError>): void {

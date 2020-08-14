@@ -22,6 +22,7 @@ export type ViewModel = {
     value?: any;
 };
 
+
 export type Options = {
     renderOneOf?: boolean;
 };
@@ -29,13 +30,14 @@ export type Options = {
 
 export default class OneOfEditor implements Editor {
     $childContainer: HTMLElement;
-    $element: HTMLElement;
+    dom: HTMLElement;
     childEditor: any;
     childSchema: JSONSchema;
     controller;
     pointer: JSONPointer;
     schema: JSONSchema;
     viewModel: ViewModel;
+
 
     static editorOf(pointer: JSONPointer, controller: Controller, options: Options) {
         const schema = controller.schema().get(pointer);
@@ -54,7 +56,7 @@ export default class OneOfEditor implements Editor {
         // ensure requried titles are set
         schema.oneOf.forEach((oneOfSchema, index) => (oneOfSchema.title = oneOfSchema.title || `${index}.`));
 
-        this.$element = controller.createElement(".editron-container.editron-container--oneof", attrs);
+        this.dom = controller.createElement(".editron-container.editron-container--oneof", attrs);
         this.controller = controller;
         this.pointer = pointer;
         this.viewModel = {
@@ -71,7 +73,7 @@ export default class OneOfEditor implements Editor {
         this.update = controller.data().observe(pointer, this.update.bind(this), true);
 
         this.render();
-        this.$childContainer = this.$element.querySelector(CHILD_CONTAINER_SELECTOR);
+        this.$childContainer = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
         this.rebuild();
     }
 
@@ -104,7 +106,7 @@ export default class OneOfEditor implements Editor {
         this.pointer = newPointer;
         this.viewModel.id = getId(newPointer);
         this.viewModel.pointer = newPointer;
-        this.$element.id = newPointer;
+        this.dom.id = newPointer;
         this.controller.data().removeObserver(oldPointer, this.update);
         this.controller.data().observe(newPointer, this.update, true);
 
@@ -135,7 +137,7 @@ export default class OneOfEditor implements Editor {
     }
 
     render(): void {
-        m.render(this.$element, m(View, this.viewModel,
+        m.render(this.dom, m(View, this.viewModel,
             m(".editron-value",
                 m(Select, this.viewModel)
             )
@@ -143,7 +145,7 @@ export default class OneOfEditor implements Editor {
     }
 
     toElement(): HTMLElement {
-        return this.$element;
+        return this.dom;
     }
 
     getPointer(): JSONPointer {
@@ -154,10 +156,9 @@ export default class OneOfEditor implements Editor {
         if (this.viewModel == null) {
             return;
         }
-        this.controller.removeInstance(this);
-
         this.viewModel = null;
-        m.render(this.$element, "i");
+        m.render(this.dom, "i");
+        this.controller.destroyEditor(this.childEditor);
         this.controller.data().removeObserver(this.pointer, this.update);
     }
 }

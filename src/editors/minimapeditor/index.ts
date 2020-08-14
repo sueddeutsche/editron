@@ -21,6 +21,7 @@ export type ViewModel = {
     onChange: (pointers, reordered, target) => void;
 }
 
+
 export type Options = EditorOptions & {
     minimap?: {
         use?: boolean;
@@ -32,6 +33,7 @@ export type Options = EditorOptions & {
 export default class MinimapEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
+
 
     static editorOf(pointer: JSONPointer, controller: Controller, options?: Options) {
         return options?.minimap?.use === true;
@@ -101,7 +103,7 @@ export default class MinimapEditor extends AbstractEditor {
     }
 
     update() {
-        const data = this.controller.data().get(this.pointer);
+        const data = this.getData();
         this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
         this.render();
     }
