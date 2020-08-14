@@ -109,7 +109,7 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     update(changeEvent): void {
-        if (changeEvent && changeEvent.patch) {
+        if (changeEvent?.patch) {
             this.applyPatches(changeEvent.patch);
         } else {
             this.rebuildChildren();
@@ -196,7 +196,7 @@ export default class ArrayEditor extends AbstractEditor {
         return this.pointer;
     }
 
-    setErrors(errors): void {
+    updateErrors(errors): void {
         this.viewModel.errors = errors;
         this.render();
     }
