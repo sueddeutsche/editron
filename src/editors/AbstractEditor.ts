@@ -79,7 +79,7 @@ export default class AbstractEditor {
             .getErrorsAndWarnings(pointer);
     }
 
-    update() {
+    update(changeEvent) {
         throw new Error("Missing implemented of method 'update' in custom editor");
     }
 

@@ -26,7 +26,7 @@ describe("ArrayEditor.applyPatches", () => {
         const data = { list: [{ title: "first" }, { title: "second" }, { title: "third" }] };
         // @ts-ignore
         controller = new Controller(schema, data, { editors: [ArrayEditor] });
-        editor = new ArrayEditor("#/list", controller, { id: "list" });
+        editor = new ArrayEditor("#/list", controller);
     });
 
 

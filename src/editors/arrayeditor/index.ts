@@ -5,6 +5,8 @@ import m from "mithril";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONSchema } from "../../types";
 import { Editor } from "../Editor";
+import AbstractEditor from "../AbstractEditor";
+import { ValidationError } from "../../types";
 
 
 export type Controls = {
@@ -20,7 +22,7 @@ export type Controls = {
 export type ViewModel = {
     pointer: string;
     attrs: object;
-    errors: Array<ArrayItemWrapper>;
+    errors: Array<ValidationError>;
     onAdd: Function;
     length: number;
     maxItems: number;
@@ -29,18 +31,16 @@ export type ViewModel = {
 }
 
 export type Options = {
-    id?: string;
     attrs?: object;
     controls?: Controls;
 }
 
 
-export default class ArrayEditor implements Editor {
+export default class ArrayEditor extends AbstractEditor {
     viewModel;
-    $element: HTMLElement;
     controller: Controller;
     pointer: string;
-    children: Array<any>;
+    children: Array<ArrayItemWrapper> = [];
     $items: HTMLElement;
     onAdd: Function;
 
@@ -50,23 +50,16 @@ export default class ArrayEditor implements Editor {
     }
 
     constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
-        // add id to element, since no other input-form is associated with this editor
-        options.attrs = { id: options.id, ...options.attrs };
-        const schema = controller.schema().get(pointer);
-        const data = controller.data().get(pointer);
-
+        super(pointer, controller, options);
+        this.dom.classList.add("withAddButton");
         this.onAdd = (index = 0) => {
             if (!this.viewModel.disabled) {
                 controller.addItemTo(this.pointer, index);
             }
         };
 
-        const arrayHTMLElement = ".editron-container.editron-container--array.withAddButton";
-        this.$element = controller.createElement(arrayHTMLElement, options.attrs);
-
-        this.controller = controller;
-        this.pointer = pointer;
-        this.children = [];
+        const schema = this.getSchema();
+        const data = this.getData();
         this.viewModel = {
             pointer,
             attrs: {},
@@ -90,11 +83,8 @@ export default class ArrayEditor implements Editor {
             }
         };
 
-        this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
-        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-
         this.render();
-        this.$items = this.$element.querySelector(CHILD_CONTAINER_SELECTOR);
+        this.$items = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
         this.rebuildChildren();
         this.updateControls();
     }
@@ -107,31 +97,18 @@ export default class ArrayEditor implements Editor {
         this.render();
     }
 
-    update(): void {
-        this.rebuildChildren();
-        this.updateControls();
-    }
-
     updatePointer(newPointer: JSONPointer): void {
         if (this.pointer === newPointer) {
             return;
         }
 
-        const previousPointer = this.pointer;
-        this.pointer = newPointer;
+        super.updatePointer(newPointer);
         this.viewModel.pointer = newPointer;
-        this.viewModel.attrs.id = newPointer;
-
-        this.controller.data().removeObserver(previousPointer, this.updateView);
-        this.controller.validator().removeObserver(previousPointer, this.setErrors);
-        this.controller.data().observe(newPointer, this.updateView);
-        this.controller.validator().observe(newPointer, this.setErrors);
-
         this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
         this.render();
     }
 
-    updateView(changeEvent): void {
+    update(changeEvent): void {
         if (changeEvent && changeEvent.patch) {
             this.applyPatches(changeEvent.patch);
         } else {
@@ -192,7 +169,7 @@ export default class ArrayEditor implements Editor {
     }
 
     rebuildChildren(): void {
-        const data = this.controller.data().get(this.pointer);
+        const data = this.getData();
 
         // delete all child editors
         this.children.forEach(editor => editor.destroy());
@@ -211,9 +188,8 @@ export default class ArrayEditor implements Editor {
     updateControls(): void {
         this.viewModel.length = this.children.length;
         this.viewModel.onadd = this.viewModel.maxItems > this.children.length ? this.onAdd : false;
-
-        this.$element.classList.toggle("has-add-disabled", this.viewModel.maxItems <= this.children.length);
-        this.$element.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
+        this.dom.classList.toggle("has-add-disabled", this.viewModel.maxItems <= this.children.length);
+        this.dom.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
     }
 
     getPointer(): JSONPointer {
@@ -226,11 +202,7 @@ export default class ArrayEditor implements Editor {
     }
 
     render(): void {
-        m.render(this.$element, m(View, this.viewModel));
-    }
-
-    toElement(): HTMLElement {
-        return this.$element;
+        m.render(this.dom, m(View, this.viewModel));
     }
 
     destroy(): void {
@@ -238,10 +210,9 @@ export default class ArrayEditor implements Editor {
             return;
         }
 
-        this.viewModel = null;
-        m.render(this.$element, m("i"));
-        this.controller.data().removeObserver(this.pointer, this.updateView);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
+        super.destroy();
         this.children.forEach(editor => editor.destroy());
+        this.viewModel = null;
+        m.render(this.dom, m("i"));
     }
 }
