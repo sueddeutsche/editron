@@ -103,15 +103,14 @@ export default class ObjectEditor extends AbstractEditor {
     }
 
     updatePointer(pointer: JSONPointer) {
-        const returnValue = super.updatePointer(pointer);
+        if (this.viewModel == null || this.pointer === pointer) {
+            return;
+        }
 
-        // this.dom.id = pointer;
+        super.updatePointer(pointer);
         this.options.attrs.id = pointer;
         this.viewModel.pointer = pointer;
-
         this.render();
-
-        return returnValue;
     }
 
     /** de/activate this editors user-interaction */
@@ -130,7 +129,7 @@ export default class ObjectEditor extends AbstractEditor {
         // fetch latest data
         const data = this.getData();
         // destroy child editor
-        this.childEditors.forEach(editor => editor.destroy());
+        this.childEditors.forEach(editor => this.controller.destroyEditor(editor));
         this.childEditors.length = 0;
         // clear html
         this.$children.innerHTML = "";

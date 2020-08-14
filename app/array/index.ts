@@ -1,5 +1,5 @@
 import Controller from "../../src/Controller";
-import DelegationPlugin from "../../src/plugin/delegationplugin";
+import SortablePlugin from "../../src/plugin/sortableplugin";
 
 import "./index.scss";
 import "./index.html";
@@ -13,10 +13,6 @@ const schema = {
         details: {
             title: "Details",
             type: "object",
-
-            "editron:ui": {
-                //collapsed: false
-            },
             properties: {
                 description: {
                     title: "Extensive description",
@@ -33,13 +29,12 @@ const schema = {
         list: {
             title: "list",
             type: "array",
+            "editron:ui": {
+                sortable: {}
+            },
             items: {
                 title: "item",
                 type: "object",
-                "editron:ui": {
-                    delegate: "sidebar",
-                    // collapsed: true
-                },
                 properties: {
                     description: {
                         title: "Extensive description",
@@ -53,17 +48,24 @@ const schema = {
 };
 
 
-const data = {};
+const data = {
+    list: [
+        {
+            description: "123"
+        },
+        {
+            description: "abc"
+        },
+        {
+            description: "Hans"
+        }
+    ]
+};
 
 const $editor = document.querySelector(".editor") as HTMLElement;
 const editron = new Controller(schema, data, {
     plugins: [
-        new DelegationPlugin({
-            onDelegation: (event) => {
-                const dom = document.querySelector(".sidepanel");
-                dom.appendChild(event.editor.toElement());
-            }
-        })
+        new SortablePlugin({})
     ]
 });
 editron.createEditor("#", $editor);

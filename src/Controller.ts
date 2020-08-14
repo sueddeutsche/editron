@@ -33,35 +33,6 @@ function assertValidPointer(pointer: JSONPointer): void {
     }
 }
 
-/** removes the editor from the instances-inventory of active editors */
-function removeEditorFrom(instances: { [p: string]: Array<Editor> }, editor): void {
-    const pointer = editor.getPointer();
-    if (instances[pointer]) {
-        instances[pointer] = instances[pointer].filter(instance => editor !== instance);
-        if (instances[pointer].length === 0) {
-            delete instances[pointer];
-        }
-    }
-}
-
-/** callback on each editor-instance */
-function eachInstance(instances: { [p: string]: Array<Editor> }, cb: (pointer: JSONPointer, editor) => void) {
-    Object.keys(instances).forEach(pointer => {
-        instances[pointer].forEach(editor => cb(pointer, editor));
-    });
-}
-
-/** callback on each editor-instance */
-function getInstances(instances: { [p: string]: Array<Editor> }, parentPointer: JSONPointer) {
-    const editors = [];
-    eachInstance(instances, (pointer, editor) => {
-        if (pointer.startsWith(parentPointer)) {
-            editors.push(...instances[pointer]);
-        }
-    });
-    return editors;
-}
-
 
 export type Options = {
     log?: boolean;
@@ -69,11 +40,6 @@ export type Options = {
     proxy?: ProxyOptions|Foxy;
     plugins?;
 };
-
-
-interface EditorInstance {
-    toElement(): HTMLElement;
-}
 
 
 /**
@@ -126,7 +92,7 @@ export default class Controller {
     destroyed = false;
     disabled = false;
     editors: Array<EditorPlugin>;
-    instances: { [p:string]: any };
+    editorInstances: Array<Editor> = [];
     locationService: LocationService;
     options: Options;
     schemaService: SchemaService;
@@ -151,7 +117,6 @@ export default class Controller {
 
         this.editors = this.options.editors;
         this.state = new State();
-        this.instances = {};
         this.core = new Core();
         this.#proxy = createProxy(this.options.proxy);
 
@@ -222,9 +187,7 @@ export default class Controller {
             return;
         }
         this.disabled = disabled;
-        eachInstance(this.getInstances(), (pointer, editor) => {
-            editor.setActive(!this.disabled);
-        });
+        this.editorInstances.forEach(ed => ed.setActive(!this.disabled))
     }
 
     /** returns the editors active state */
@@ -303,39 +266,29 @@ export default class Controller {
         return editor;
     }
 
-    destroyEditor(editor: Editor) {
-        if (editor) {
-            const removed = this.removeInstance(editor);
-            editor.destroy();
-        }
-    }
-
     /**
-     * Call this method, when your editor is destroyed, deregistering its instance on editron
+     * Call this method, to destroy your editors, deregistering its instance on editron
      * @param editor - editor instance to remove
      */
-    removeInstance(editor: Editor) {
-        // controller inserted child and removes it here again
-        // @ts-ignore
-        const $element = editor.toElement();
-        if ($element?.parentNode) {
-            $element.parentNode.removeChild($element);
-        }
+    destroyEditor(editor: Editor) {
+        if (editor) {
+            this.removeInstance(editor);
 
-        // @lifecycle hook destroy widget
-        this.plugins.forEach(plugin => {
-            if (plugin.onDestroyEditor) {
-                plugin.onDestroyEditor(editor.getPointer(), editor);
+            // @lifecycle hook destroy widget
+            this.plugins.forEach(plugin => {
+                if (plugin.onDestroyEditor) {
+                    plugin.onDestroyEditor(editor.getPointer(), editor);
+                }
+            });
+
+            // controller inserted child and removes it here again
+            const $element = editor.toElement();
+            if ($element?.parentNode) {
+                $element.parentNode.removeChild($element);
             }
-        });
 
-        removeEditorFrom(this.instances, editor);
-    }
-
-    addInstance(editor: Editor) {
-        const pointer = editor.getPointer();
-        this.instances[pointer] = this.instances[pointer] || [];
-        this.instances[pointer].push(editor);
+            editor.destroy();
+        }
     }
 
     /**
@@ -367,13 +320,9 @@ export default class Controller {
     proxy(): Foxy { return this.#proxy; }
 
     /**
-     * Validate data based on a json-schema and register to generated error events
-     *
-     * - start validation
-     * - get your current errors at `pointer`
-     * - hook into validation to receive your errors at `pointer`
-     *
-     * @returns ValidationService instance
+     * validates data based on a json-schema and register to generated error events:
+     * start validation, get your current errors at `pointer`, hook into validation
+     * to receive your errors at `pointer`
      */
     validator(): ValidationService { return this.validationService; }
 
@@ -387,7 +336,7 @@ export default class Controller {
 
     /**
      * Set the application data
-     * @param {Any} data    - json data matching registered json-schema
+     * @param data - json data matching registered json-schema
      */
     setData(data: JSONData) {
         data = this.schemaService.addDefaultData(data);
@@ -395,7 +344,7 @@ export default class Controller {
     }
 
     /**
-     * @param {JsonPointer} [pointer="#"] - location of data to fetch. Defaults to root (all) data
+     * @param [pointer="#"] - location of data to fetch. Defaults to root (all) data
      * @returns data at the given location
      */
     getData(pointer: JSONPointer = "#"): JSONData {
@@ -406,11 +355,6 @@ export default class Controller {
      * @returns registered editor-widgets used to edit the json-data
      */
     getEditors() { return this.editors; }
-
-    /**
-     * @returns currently active editor/widget instances
-     */
-    getInstances() { return this.instances; }
 
     /**
      * @param format - value of _format_
@@ -448,6 +392,22 @@ export default class Controller {
         this.schemaService.setData(this.dataService.get());
     }
 
+    onAfterDataUpdate({ pointer }): void {
+        this.update();
+
+        // @feature selective-validation
+        if (pointer.includes("/")) {
+            // @attention validate parent-object or array, in order to support parent-validators.
+            // Any higher validators will still be ignore
+            pointer = pointer.replace(/\/[^/]+$/, "");
+        }
+
+        setTimeout(() => {
+            const data = this.dataService.getDataByReference();
+            this.destroyed !== true && this.validationService.validate(data, pointer);
+        });
+    }
+
     /**
      * Starts validation of current data
      */
@@ -459,13 +419,10 @@ export default class Controller {
 
     /** Destroy the editor, its widgets and services */
     destroy(): void {
-        // delete all editors
-        Object.keys(this.instances).forEach(pointer => {
-            this.instances[pointer] && this.instances[pointer].forEach(instance => instance.destroy());
-        });
+        this.editorInstances.forEach(instance => instance.destroy());
 
         this.destroyed = true;
-        this.instances = {};
+        this.editorInstances.length = 0;
         this.schemaService.destroy();
         this.validationService.destroy();
         this.dataService.destroy();
@@ -486,49 +443,54 @@ export default class Controller {
                 changePointers.push({
                     old: change.old,
                     next: change.next,
-                    editors: getInstances(this.instances, change.old)
+                    editors: this.findInstancesFrom(change.old)
                 });
 
             // immediately destroy editors
             } else if (isDeleteChange(change)) {
-                getInstances(this.instances, change.old).forEach(ed => this.destroyEditor(ed));
+                this.findInstancesFrom(change.old).forEach(ed => this.destroyEditor(ed));
             }
         }
 
         // notify editors of pointer changes
         changePointers.forEach(change => {
-            change.editors.forEach(ed => {
-                const newPointer = ed.getPointer().replace(change.old, change.next);
+            const { old: prevPtr, next: nextPtr } = change;
+            change.editors.forEach((ed: Editor) => {
+                const newPointer: JSONPointer = ed.getPointer().replace(prevPtr, nextPtr);
                 ed.updatePointer(newPointer)
                 ed.toElement().setAttribute("data-point", newPointer);
-                this.removeInstance(ed);
-                this.addInstance(ed);
             });
         });
     }
 
-    onAfterDataUpdate({ pointer }): void {
-        this.update();
-
-        // @feature selective-validation
-        if (pointer.includes("/")) {
-            // @attention validate parent-object or array, in order to support parent-validators.
-            // Any higher validators will still be ignore
-            pointer = pointer.replace(/\/[^/]+$/, "");
-        }
-
-        setTimeout(() => {
-            const data = this.dataService.getDataByReference();
-            this.destroyed !== true && this.validationService.validate(data, pointer);
-        });
+    addInstance(editor: Editor) {
+        this.editorInstances.push(editor);
     }
 
-    changePointer(newPointer: JSONPointer, editor: Editor): void {
-        // @ts-ignore
-        editor.__called = true;
+    findInstancesFrom(parentPointer: JSONPointer) {
+        return this.editorInstances.filter(editor => editor.getPointer().startsWith(parentPointer))
+    }
 
-        removeEditorFrom(this.instances, editor);
-        editor.toElement().setAttribute("data-point", newPointer);
-        this.addInstance(newPointer, editor);
+    removeInstance(editor: Editor) {
+        this.editorInstances = this.editorInstances.filter(ed => ed !== editor);
+    }
+
+    /**
+     * @debug
+     * @returns currently active editor/widget instances sorted by pointer
+     */
+    getInstancesPerPointer() {
+        const map = {};
+        this.editorInstances.forEach(editor => {
+            const pointer = editor.getPointer();
+            map[pointer] = map[pointer] || [];
+            if (map[pointer].includes(editor) === false) {
+                map[pointer].push(editor);
+            } else {
+                console.log("multiple instances on", editor.getPointer(), editor);
+            }
+
+        });
+        return map;
     }
 }

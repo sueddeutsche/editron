@@ -83,20 +83,13 @@ export default class AbstractEditor {
         throw new Error("Missing implemented of method 'update' in custom editor");
     }
 
-    updatePointer(newPointer: JSONPointer): [JSONPointer, JSONPointer] {
+    updatePointer(newPointer: JSONPointer) {
         const oldPointer = this.pointer;
-
-        this.controller.changePointer(newPointer, this);
-
         this.controller.data().removeObserver(oldPointer, this.update);
         this.controller.validator().removeObserver(oldPointer, this.setErrors);
-
         this.pointer = newPointer;
-
         this.controller.data().observe(newPointer, this.update, this.options.notifyNestedChanges === true);
         this.setErrors = this.controller.validator().observe(newPointer, this.setErrors);
-
-        return [newPointer, oldPointer];
     }
 
     getData(): any {
@@ -136,7 +129,6 @@ export default class AbstractEditor {
     }
 
     destroy(): void {
-        this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
         this.controller.data().removeObserver(this.pointer, this.update);
         this.controller.validator().removeObserver(this.pointer, this._addError);
         // @todo this event is not registered in this class

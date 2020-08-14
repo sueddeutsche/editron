@@ -92,6 +92,11 @@ function getArrayChangeList(patchResult: PatchResult, originalData: any): Array<
     for (let i = 0, l = changedArray.length; i < l; i += 1) {
         let change: AddChange|MoveChange;
         const ptrOrData = changedArray[i];
+        const ptrChanged = ptrOrData !== `${eventLocation}/${i}`;
+        if (ptrChanged === false) {
+            continue;
+        }
+
         if (isPointer(ptrOrData)) {
             change = <MoveChange>{ type: "move", old: ptrOrData, next: `${eventLocation}/${i}` };
         } else {

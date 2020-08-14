@@ -117,8 +117,6 @@ export default class ArrayEditor implements Editor {
             return;
         }
 
-        this.controller.changePointer(newPointer, this);
-
         const previousPointer = this.pointer;
         this.pointer = newPointer;
         this.viewModel.pointer = newPointer;
@@ -129,7 +127,7 @@ export default class ArrayEditor implements Editor {
         this.controller.data().observe(newPointer, this.updateView);
         this.controller.validator().observe(newPointer, this.setErrors);
 
-        // this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
+        this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
         this.render();
     }
 
@@ -240,7 +238,6 @@ export default class ArrayEditor implements Editor {
             return;
         }
 
-        this.controller.removeInstance(this);
         this.viewModel = null;
         m.render(this.$element, m("i"));
         this.controller.data().removeObserver(this.pointer, this.updateView);

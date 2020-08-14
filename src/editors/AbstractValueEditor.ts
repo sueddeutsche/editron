@@ -149,8 +149,6 @@ export default class AbstractValueEditor implements Editor {
             return;
         }
 
-        this.controller.changePointer(pointer, this);
-
         const oldPointer = this.pointer;
         this.$element.setAttribute("name", `editor-${pointer}`);
         this.pointer = pointer;
@@ -208,7 +206,6 @@ export default class AbstractValueEditor implements Editor {
         if (this.viewModel == null) {
             return;
         }
-        this.controller.removeInstance(this);
         // destroy this editor only once
         m.render(this.$element, m("i"));
         this.viewModel = null;
