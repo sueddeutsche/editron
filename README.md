@@ -678,6 +678,7 @@ is an implementation detail, but is required for a performant user-experience. I
 (i.e. drag & drop), the main view must rerender all UI-forms, which will become sluggish on large documents. Thus
 `updatePointer` is required to reuse existing HTML nodes for a performant rendering. The `AbstractEditor` will change
 all default listeners to the new pointer, but any custom usage of the pointer (and _id_) must be treated manually.
+Note: since version 8, updating pointers of child-editors (using controller.createEditor) is no longer required.
 
 **further details**
 
