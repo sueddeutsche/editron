@@ -74,14 +74,14 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
         });
 
         it("should observe its own update event", () => {
-            const observe = controller.dataService.observe;
+            const observe = controller.data().observe;
             new Constructor(pointer, controller);
 
             assert.ok(observe.calledWith(pointer));
         });
 
         it("should remove its own update event on destroy", () => {
-            const removeObserver = controller.dataService.removeObserver;
+            const removeObserver = controller.data().removeObserver;
             const editor = new Constructor(pointer, controller);
             editor.destroy();
 

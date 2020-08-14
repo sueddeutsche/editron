@@ -238,7 +238,7 @@ export default class Controller {
         }
 
         // find a matching editor
-        const EditorConstructor = selectEditor(this.getEditors(), pointer, this, instanceOptions);
+        const EditorConstructor = selectEditor(this.editors, pointer, this, instanceOptions);
         if (EditorConstructor === false) {
             return undefined;
         }
@@ -257,11 +257,8 @@ export default class Controller {
         this.addInstance(editor);
 
         // @lifecycle hook create widget
-        this.plugins.forEach(plugin => {
-            if (plugin.onCreateEditor) {
-                plugin.onCreateEditor(pointer, editor, instanceOptions);
-            }
-        });
+        this.plugins.filter(plugin => plugin.onCreateEditor)
+            .forEach(plugin => plugin.onCreateEditor(pointer, editor, instanceOptions));
 
         return editor;
     }
@@ -271,24 +268,17 @@ export default class Controller {
      * @param editor - editor instance to remove
      */
     destroyEditor(editor: Editor) {
-        if (editor) {
-            this.removeInstance(editor);
-
-            // @lifecycle hook destroy widget
-            this.plugins.forEach(plugin => {
-                if (plugin.onDestroyEditor) {
-                    plugin.onDestroyEditor(editor.getPointer(), editor);
-                }
-            });
-
-            // controller inserted child and removes it here again
-            const $element = editor.toElement();
-            if ($element?.parentNode) {
-                $element.parentNode.removeChild($element);
-            }
-
-            editor.destroy();
+        if (!editor) {
+            return;
         }
+        this.removeInstance(editor);
+        // @lifecycle hook destroy widget
+        this.plugins.filter(plugin => plugin.onDestroyEditor)
+            .forEach(plugin => plugin.onDestroyEditor(editor.getPointer(), editor));
+        // controller inserted child and removes it here again
+        const $element = editor.toElement();
+        $element?.parentNode?.removeChild($element);
+        editor.destroy();
     }
 
     /**
@@ -352,11 +342,6 @@ export default class Controller {
     }
 
     /**
-     * @returns registered editor-widgets used to edit the json-data
-     */
-    getEditors() { return this.editors; }
-
-    /**
      * @param format - value of _format_
      * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
      *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
@@ -415,18 +400,6 @@ export default class Controller {
         setTimeout(() =>
             this.destroyed !== true && this.validationService.validate(this.dataService.getDataByReference())
         );
-    }
-
-    /** Destroy the editor, its widgets and services */
-    destroy(): void {
-        this.editorInstances.forEach(instance => instance.destroy());
-
-        this.destroyed = true;
-        this.editorInstances.length = 0;
-        this.schemaService.destroy();
-        this.validationService.destroy();
-        this.dataService.destroy();
-        this.dataService.off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 
     /** management tasks before upcoming editor updates */
@@ -491,5 +464,17 @@ export default class Controller {
 
         });
         return map;
+    }
+
+    /** Destroy the editor, its widgets and services */
+    destroy(): void {
+        this.editorInstances.forEach(instance => instance.destroy());
+
+        this.destroyed = true;
+        this.editorInstances.length = 0;
+        this.schemaService.destroy();
+        this.validationService.destroy();
+        this.dataService.destroy();
+        this.dataService.off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
     }
 }
