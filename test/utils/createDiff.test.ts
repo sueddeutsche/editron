@@ -4,7 +4,7 @@ import diffpatch from "../../src/services/utils/diffpatch";
 import createDiff from "../../src/services/utils/createDiff";
 
 
-describe.only("utils/createDiff", () => {
+describe("utils/createDiff", () => {
 
     it("should return empty array if data is the same", () => {
         const result = createDiff({ a: "prop" }, { a: "prop" });

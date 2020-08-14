@@ -1,4 +1,4 @@
-import ArrayItemEditor from "./ArrayItemEditor";
+import ArrayItemWrapper from "./ArrayItemWrapper";
 import Controller from "../../Controller";
 import diffpatch from "../../services/utils/diffpatch";
 import m from "mithril";
@@ -20,7 +20,7 @@ export type Controls = {
 export type ViewModel = {
     pointer: string;
     attrs: object;
-    errors: Array<any>;
+    errors: Array<ArrayItemWrapper>;
     onAdd: Function;
     length: number;
     maxItems: number;
@@ -148,9 +148,9 @@ export default class ArrayEditor implements Editor {
 
         // search for inserted children
         this.children.forEach((child, index) => {
-            if (child instanceof ArrayItemEditor === false) {
+            if (child instanceof ArrayItemWrapper === false) {
                 const pointer = `${this.pointer}/${index}`;
-                const newChild = new ArrayItemEditor(pointer, this.controller, this.viewModel.controls);
+                const newChild = new ArrayItemWrapper(pointer, this.controller, this.viewModel.controls);
                 // @insert?
                 this.children[index] = newChild;
             }
@@ -202,7 +202,7 @@ export default class ArrayEditor implements Editor {
         // recreate child editors
         data.forEach((item, index) => {
             const childPointer = `${this.pointer}/${index}`;
-            const childEditor = new ArrayItemEditor(childPointer, this.controller, this.viewModel.controls);
+            const childEditor = new ArrayItemWrapper(childPointer, this.controller, this.viewModel.controls);
             this.$items.appendChild(childEditor.toElement());
             this.children.push(childEditor);
         });

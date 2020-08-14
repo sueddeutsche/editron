@@ -4,7 +4,6 @@ import sinon from "sinon";
 
 import Controller from "../../../src/Controller";
 import ArrayEditor from "../../../src/editors/arrayeditor";
-// import { Editor } from "../../../src/editors/Editor";
 
 
 describe("ArrayEditor.applyPatches", () => {
@@ -68,23 +67,5 @@ describe("ArrayEditor.applyPatches", () => {
         assert.ok(editor.children[1].getPointer() === "#/list/1", "should have update pointer of child editors");
         // test dom
         assert.ok(editor.$items.childNodes[1] === editor.children[1].$element, "should have inserted editor in markup");
-    });
-
-
-    it("should call destroy() on removed array item", () => {
-        const childEditor = sinon.spy(editor.children[1], "destroy");
-        const editorElement = editor.children[1].$element;
-        const data = controller.data().get("#/list");
-        // pretest
-        data.splice(1, 1);
-        assert.equal(data.length + 1, controller.data().get("#/list").length, "should have item removed");
-
-        controller.data().set("#/list", data);
-
-        assert.ok(childEditor.called === true);
-        assert.ok(editor.children.length === data.length, "should have child editor removed from child list");
-        // test dom
-        assert.ok(editor.$items.childNodes.length === data.length, "should have child editor removed from dom");
-        assert.ok(editorElement.parentNode == null, "should have child editor removed from dom");
     });
 });

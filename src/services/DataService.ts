@@ -77,7 +77,11 @@ function getArrayChangeList(patchResult: PatchResult, originalData: any): Array<
     const changeList = [];
 
     const eventLocation = patchResult.pointer;
-    const originalArray = gp.get(originalData, eventLocation).map((_, index) => `${eventLocation}/${index}`);
+    let originalArray = gp.get(originalData, eventLocation);
+    if (Array.isArray(originalArray) === false) {
+        return changeList;
+    }
+    originalArray = originalArray.map((_, index) => `${eventLocation}/${index}`);
     const changedArray = diffpatch.patch(Array.from(originalArray), patchResult.patch);
 
     // retrieve deleted items
@@ -182,12 +186,12 @@ export default class DataService {
             // this is a major performance improvement for array-item movements
             if (parentDataType === "array") {
                 const changes = getArrayChangeList(patches[i], this.lastUpdate);
-                console.log("changed array", changes);
+                // console.log("changed array", changes);
                 this.emitter.emit(EventType.UPDATE_CONTAINER, eventLocation, changes);
 
             } else if (parentDataType === "object") {
                 const changes = getObjectChangeList(patches[i]);
-                console.log("changed object", changes);
+                // console.log("changed object", changes);
                 this.emitter.emit(EventType.UPDATE_CONTAINER, eventLocation, changes);
             }
 
@@ -220,7 +224,7 @@ export default class DataService {
      */
     getDataByReference(pointer: JSONPointer = "#") {
         // eslint-disable-next-line no-invalid-this
-        return gp.get(this.state.get(this.id).data.present, pointer);
+        return gp.get(this.state.get(this.id)?.data.present, pointer);
     }
 
     /**

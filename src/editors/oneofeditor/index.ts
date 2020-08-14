@@ -81,7 +81,7 @@ export default class OneOfEditor implements Editor {
     }
 
     changeChild(schema): void {
-        this.childEditor && this.childEditor.destroy();
+        this.controller.destroyEditor(this.childEditor)
         const data = this.controller.schema().getTemplate(schema);
         this.controller.data().set(this.pointer, data);
     }
@@ -100,8 +100,6 @@ export default class OneOfEditor implements Editor {
         if (oldPointer === newPointer) {
             return;
         }
-
-        this.controller.changePointer(newPointer, this);
 
         this.pointer = newPointer;
         this.viewModel.id = getId(newPointer);
@@ -126,7 +124,7 @@ export default class OneOfEditor implements Editor {
     }
 
     rebuild(): void {
-        this.childEditor && this.childEditor.destroy();
+        this.controller.destroy(this.childEditor);
         this.$childContainer.innerHTML = "";
         this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
             // @attention this is very important or else we create an infinite loop through selectEditor

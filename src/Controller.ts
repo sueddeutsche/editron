@@ -432,35 +432,34 @@ export default class Controller {
     /** management tasks before upcoming editor updates */
     onUpdateContainer(pointer: JSONPointer, changes: Array<Change>) {
         const changePointers = [];
-        const removeEditors = [];
 
         for (let i = 0, l = changes.length; i < l; i += 1) {
             const change = changes[i];
-            // we need to prefetch all editors that are going to change,
-            // because upcoming modification will mess with pointers per change
-            // (and thus mangle updated and not-updated editors)
+
+            // we have to collect editors up front or patch-sequences get mangled
+            // between update and not yet udpated editor
             if (isMoveChange(change)) {
                 changePointers.push({
-                    old: change.old,
-                    next: change.next,
+                    ...change,
                     editors: this.findInstancesFrom(change.old)
                 });
 
-            // immediately destroy editors
+            // destroy editor instances
             } else if (isDeleteChange(change)) {
                 this.findInstancesFrom(change.old).forEach(ed => this.destroyEditor(ed));
             }
         }
 
-        // notify editors of pointer changes
+        // change pointer of instances
         changePointers.forEach(change => {
-            const { old: prevPtr, next: nextPtr } = change;
-            change.editors.forEach((ed: Editor) => {
-                const newPointer: JSONPointer = ed.getPointer().replace(prevPtr, nextPtr);
-                ed.updatePointer(newPointer)
-                ed.toElement().setAttribute("data-point", newPointer);
+            const { old: prevPtr, next: nextPtr, editors } = change;
+            editors.forEach((instance: Editor) => {
+                const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);
+                // console.log("C", instance.getPointer(), "=>", newPointer);
+                instance.updatePointer(newPointer)
+                instance.toElement().setAttribute("data-point", newPointer);
             });
-        });
+        })
     }
 
     addInstance(editor: Editor) {

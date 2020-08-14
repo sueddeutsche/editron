@@ -45,8 +45,6 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
 
         beforeEach(() => {
             controller = new Controller(schema, data, { editors: [Constructor] });
-            sinon.spy(controller, "removeInstance");
-            sinon.spy(controller, "changePointer");
             sinon.spy(controller.data(), "observe");
             sinon.spy(controller.data(), "removeObserver");
             sinon.spy(controller.validator(), "observe");
@@ -56,8 +54,6 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
         });
 
         afterEach(() => {
-            controller.removeInstance.restore();
-            controller.changePointer.restore();
             controller.data().observe.restore();
             controller.data().removeObserver.restore();
             controller.validator().observe.restore();
@@ -77,14 +73,12 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
             assert.ok(typeof editorInstance.destroy === "function", "should have a method 'destroy'");
         });
 
-
         it("should observe its own update event", () => {
             const observe = controller.dataService.observe;
             new Constructor(pointer, controller);
 
             assert.ok(observe.calledWith(pointer));
         });
-
 
         it("should remove its own update event on destroy", () => {
             const removeObserver = controller.dataService.removeObserver;
@@ -93,31 +87,6 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
 
             assert.ok(removeObserver.calledWith(pointer));
         });
-
-
-        it("should call 'controller.removeInstance()' on 'destroy()'", () => {
-            const editor = new Constructor(pointer, controller);
-            editor.destroy();
-
-            assert.ok(controller.removeInstance.calledWith(editor));
-        });
-
-
-        it("should have 'pointer' and 'element' defined when calling 'controller.removeInstance()'", () => {
-            const editor = new Constructor(pointer, controller);
-            const $element = editor.toElement();
-            controller.removeInstance.restore();
-            sinon.stub(controller, "removeInstance").callsFake(instance => {
-                if (instance === editor) {
-
-                    assert.ok(instance.getPointer() === pointer, "should return correct pointer in 'controller.removeInstance()'");
-                    assert.ok(instance.toElement() === $element, "should return correct element in 'controller.removeInstance()'");
-                }
-            });
-
-            editor.destroy();
-        });
-
 
         // copy schema at pointer to new location, copy data at pointer to new location
         it("should update pointer", () => {
@@ -129,7 +98,6 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
             assert.ok(editor.getPointer() === "#/newLocation");
         });
 
-
         it("should remove listener of old pointer on 'updatePointer()'", () => {
             const editor = new Constructor(pointer, controller);
             copyPointerToLocation(controller, pointer, "#/newLocation");
@@ -140,7 +108,6 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
             assert.ok(controller.data().removeObserver.calledWith(pointer));
         });
 
-
         it("should add listener for new pointer on 'updatePointer()'", () => {
             const editor = new Constructor(pointer, controller);
             copyPointerToLocation(controller, pointer, "#/newLocation");
@@ -150,33 +117,6 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
 
             assert.ok(controller.data().observe.calledWith("#/newLocation"));
         });
-
-
-        it("should notify controller of changed pointer on 'updatePointer()'", () => {
-            const editor = new Constructor(pointer, controller);
-            copyPointerToLocation(controller, pointer, "#/newLocation");
-
-            editor.updatePointer("#/newLocation");
-
-            assert.ok(controller.changePointer.calledWith("#/newLocation", editor));
-        });
-
-
-        it("should return old pointer when calling 'controller.changePointer()'", () => {
-            const editor = new Constructor(pointer, controller);
-            copyPointerToLocation(controller, pointer, "#/newLocation");
-            controller.changePointer.restore();
-            sinon.stub(controller, "changePointer").callsFake((newPointer, instance) => {
-                if (instance === editor) {
-
-                    assert.ok(newPointer === "#/newLocation", "should call 'controller.changePointer()' with new pointer");
-                    assert.ok(instance.getPointer() === pointer, "should return current pointer on 'controller.changePointer()'");
-                }
-            });
-
-            editor.updatePointer("#/newLocation");
-        });
-
 
         options.ignoreRegisterErrors !== true &&
         it("should observe its own error even", () => {
@@ -208,28 +148,6 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
 
             assert.ok(controller.validator().observe.calledWith("#/newLocation"));
         });
-
-        // options.ignoreRegisterErrors !== true &&
-        // it("should register to clear errors event", () => {
-
-        //     const on = controller.validationService.on;
-        //     new Constructor(pointer, controller);
-
-        //     assert.ok(on.calledWith(ValidationService.EVENTS.BEFORE_VALIDATION));
-        //     assert.ok(on.callCount > 0); // there may be multiple editors instantiated
-        // });
-
-
-        // options.ignoreRegisterErrors !== true &&
-        // it("should unregister error events on destroy", () => {
-
-        //     const off = controller.validationService.off;
-        //     const editor = new Constructor(pointer, controller);
-        //     editor.destroy();
-
-        //     assert.ok(off.calledWith(ValidationService.EVENTS.BEFORE_VALIDATION));
-        //     assert.ok(off.callCount > 0); // there may be multiple editors instantiated
-        // });
     });
 };
 

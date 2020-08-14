@@ -69,7 +69,6 @@ export type ViewModel = {
  * ```
  */
 export default class AbstractValueEditor implements Editor {
-    pointer: JSONPointer;
     controller: Controller;
     $element: HTMLElement;
     viewModel: ViewModel;
@@ -91,7 +90,6 @@ export default class AbstractValueEditor implements Editor {
      * @param  {Object} options
      */
     constructor(pointer: JSONPointer, controller: Controller, options) {
-        this.pointer = pointer;
         this.controller = controller;
         this.options = options;
 
@@ -141,17 +139,16 @@ export default class AbstractValueEditor implements Editor {
     }
 
     getPointer() {
-        return this.pointer;
+        return this.viewModel?.pointer;
     }
 
     updatePointer(pointer) {
-        if (pointer === this.pointer) {
+        if (pointer === this.viewModel.pointer) {
             return;
         }
 
-        const oldPointer = this.pointer;
+        const oldPointer = this.getPointer();
         this.$element.setAttribute("name", `editor-${pointer}`);
-        this.pointer = pointer;
         this.viewModel.pointer = pointer;
         this.viewModel.id = getId(pointer);
         this.viewModel.onfocus = () => this.controller.location().setCurrent(pointer);
@@ -173,14 +170,14 @@ export default class AbstractValueEditor implements Editor {
 
     // update display value in view
     update() {
-        this.viewModel.value = this.controller.data().get(this.pointer);
+        this.viewModel.value = this.controller.data().get(this.getPointer());
         this.viewModel.disabled = !this.controller.isActive();
         this.render();
     }
 
     // updates value in data-store
     setValue(value) {
-        this.controller.data().set(this.pointer, value);
+        this.controller.data().set(this.getPointer(), value);
         // do not trigger rendering here. data-observer will notify change event
     }
 
@@ -208,9 +205,9 @@ export default class AbstractValueEditor implements Editor {
         }
         // destroy this editor only once
         m.render(this.$element, m("i"));
+        this.controller.data().removeObserver(this.getPointer(), this.update);
+        this.controller.validator().removeObserver(this.getPointer(), this.setErrors);
         this.viewModel = null;
-        this.controller.data().removeObserver(this.pointer, this.update);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
         this.$element = null;
     }
 }
