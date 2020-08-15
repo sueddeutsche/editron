@@ -68,4 +68,14 @@ describe("ArrayEditor.applyPatches", () => {
         // test dom
         assert.ok(editor.$items.childNodes[1] === editor.children[1].$element, "should have inserted editor in markup");
     });
+
+    it("should call destroy() on array item-wrapper", () => {
+        const childEditor = sinon.spy(editor.children[1], "destroy");
+
+        editor.destroy();
+
+        assert.ok(childEditor.called === true);
+        assert.ok(editor.$items.childNodes.length === 0, "should have child editor removed from dom");
+    });
+
 });
