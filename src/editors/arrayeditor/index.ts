@@ -133,6 +133,13 @@ export default class ArrayEditor extends AbstractEditor {
             }
         });
 
+        // search for removed children (item wrappers)
+        originalChildren.forEach(child => {
+            if (this.children.indexOf(child) === -1) {
+                child.destroy();
+            }
+        });
+
         // update view: move and inserts nodes
         const currentLocation = this.controller.location().getCurrent();
         const changePointer = {};
