@@ -36,7 +36,6 @@ const convert = {
 
 export type ViewModel = {
     pointer: JSONPointer;
-    id: string;
     title?: string;
     description?: string;
     disabled?: boolean;
@@ -53,19 +52,6 @@ export type ViewModel = {
 
 /**
  * Convenience class, which registers required events and base methods for value-editors (not object, array)
- *
- * Usage
- * ```js
- *      MyValueEditor extends AbstractValueEditor {
- *          constructor(pointer, controller, options) {
- *              super(pointer, controller, options);
- *              this.render();
- *          }
- *          render() {
- *              m.render(this.dom, m(MyView, this.viewModel));
- *          }
- *      }
- * ```
  */
 export default class AbstractValueEditor implements Editor {
     dom: HTMLElement;
@@ -75,20 +61,21 @@ export default class AbstractValueEditor implements Editor {
     pointer: JSONPointer;
     viewModel: ViewModel;
 
+
     static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.service("schema").get(pointer);
         return schema.type !== "object" && schema.type !== "array";
     }
 
     /**
-     * #options
-     *      - editorValueType:String - custom type of editor value (added as classname)
-     *      - editorElementProperties:Object - add custom properties to main DOM-element
-     *      - viewModel:Object - viewModel which extends base viewmodel
+     * options
+     *    - editorValueType:String - custom type of editor value (added as classname)
+     *    - editorElementProperties:Object - add custom properties to main DOM-element
+     *    - viewModel:Object - viewModel which extends base viewmodel
      *
-     * @param  {String} pointer         - json pointer to value
-     * @param  {Controller} controller  - json editor controller
-     * @param  {Object} options
+     * @param pointer - json pointer to value
+     * @param controller - json editor controller
+     * @param options
      */
     constructor(pointer: JSONPointer, controller: Controller, options) {
         this.controller = controller;
@@ -116,7 +103,6 @@ export default class AbstractValueEditor implements Editor {
         // use this model to generate the view. may be customized with `options.viewModel`
         this.viewModel = {
             pointer,
-            id: getId(pointer),
             title: options.title,
             description: options.description,
             value: controller.service("data").get(pointer),
@@ -126,34 +112,22 @@ export default class AbstractValueEditor implements Editor {
             errors: controller.service("validation").getErrorsAndWarnings(pointer),
             onfocus: () => controller.service("location").setCurrent(pointer),
             onblur: () => controller.service("location").blur(pointer),
-            onchange: value => {
-                if (convert[schema.type]) {
-                    value = convert[schema.type](value);
-                }
-                this.setValue(value);
-            },
+            onchange: value => this.setValue(convert[schema.type] ? convert[schema.type](value) : value),
             ...options.viewModel
         };
     }
 
-    getPointer() {
-        return this.viewModel?.pointer;
-    }
-
-    // update display value in view
     update(event: EditorUpdateEvent) {
         if (this.viewModel == null) {
-            console.log("error - notification of destroyed editor", this);
+            console.log("%c abort update VALUE", "background: yellow;", event);
             return;
         }
 
         switch (event.type) {
             case "pointer":
                 const pointer = event.value;
-                this.dom.setAttribute("name", `editor-${pointer}`);
-                this.pointer = pointer;
+                // this.dom.setAttribute("name", `editor-${pointer}`);
                 this.viewModel.pointer = pointer;
-                this.viewModel.id = getId(pointer);
                 this.viewModel.onfocus = () => this.controller.service("location").setCurrent(pointer);
 
             case "data:update":
@@ -180,7 +154,6 @@ export default class AbstractValueEditor implements Editor {
         this.render();
     }
 
-    // updates value in data-store
     // do not trigger rendering here. data-observer will notify change event
     setValue(value) {
         this.controller.service("data").set(this.getPointer(), value);
@@ -189,6 +162,10 @@ export default class AbstractValueEditor implements Editor {
     // update view
     render() {
         m.render(this.dom, m("b", "Overwrite AbstractValueEditor.render() to generate view"));
+    }
+
+    getPointer() {
+        return this.pointer;
     }
 
     // return main dom element

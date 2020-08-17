@@ -94,7 +94,6 @@ export default class MinimapEditor extends AbstractEditor {
         LocationService.on(LocationService.TARGET_EVENT, this.onLocationChange);
 
         this.render();
-        // this.update();
     }
 
     update(event: EditorUpdateEvent) {
@@ -137,14 +136,9 @@ export default class MinimapEditor extends AbstractEditor {
 
     destroy() {
         if (this.viewModel) {
-            super.destroy();
             this.viewModel = null;
             m.render(this.dom, m("i"));
             this.controller.service("location").off(LocationEvent.TARGET, this.onLocationChange);
         }
-    }
-
-    toElement() {
-        return this.dom;
     }
 }

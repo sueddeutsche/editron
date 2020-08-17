@@ -25,11 +25,10 @@ function getInputType(schema): InputType {
 const Component: m.Component<Attrs> = {
 
     view(vnode) {
-        const { schema, options = {}, onblur, onfocus, onchange, errors, value, id, pointer } = vnode.attrs;
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer } = vnode.attrs;
 
         if (schema.enum && schema.enum.length > 0) {
             const selectFormModel: SelectAttrs = {
-                id,
                 title: options.title,
                 description: options.description,
                 disabled: options.disabled,
@@ -46,7 +45,6 @@ const Component: m.Component<Attrs> = {
 
         if (schema.type === "boolean") {
             const checkBoxModel: CheckboxAttrs = {
-                id,
                 title: options.title,
                 description: options.description,
                 disabled: options.disabled,
@@ -63,7 +61,6 @@ const Component: m.Component<Attrs> = {
 
         if (schema.type === "string" && schema.format === "html") {
             const textareaModel: TextareaAttrs = {
-                id,
                 title: options.title,
                 description: options.description,
                 placeholder: options.placeholder,
@@ -80,7 +77,6 @@ const Component: m.Component<Attrs> = {
 
         if (schema.type === "string" && schema.format === "textarea") {
             const textareaModel: TextareaAttrs = {
-                id,
                 title: options.title,
                 description: options.description,
                 placeholder: options.placeholder,
@@ -97,7 +93,6 @@ const Component: m.Component<Attrs> = {
         }
 
         const inputModel: InputAttrs = {
-            id,
             title: options.title,
             description: options.description,
             placeholder: options.placeholder,

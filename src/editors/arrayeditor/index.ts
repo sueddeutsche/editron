@@ -4,7 +4,7 @@ import diffpatch from "../../services/utils/diffpatch";
 import m from "mithril";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONSchema } from "../../types";
-import { Editor } from "../Editor";
+import { Editor, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { ValidationError } from "../../types";
 import { Patch } from "../../services/utils/createDiff";
@@ -96,31 +96,30 @@ export default class ArrayEditor extends AbstractEditor {
         this.updateControls();
     }
 
-    update(event) {
+    update(event: EditorUpdateEvent) {
         if (this.viewModel == null) {
             // @ts-ignore
             console.log("%c abort update ARRAY", "background: yellow;", event);
             return;
         }
 
-        const { value } = event;
         switch (event.type) {
             case "data:update":
-                this.applyPatches(value.patch);
+                this.applyPatches(event.value.patch);
                 this.updateControls();
                 break;
 
             case "validation:errors":
-                this.viewModel.errors = value as Array<ValidationError>;
+                this.viewModel.errors = event.value as Array<ValidationError>;
                 break;
 
             case "pointer":
-                this.viewModel.pointer = value;
-                this.children.forEach((child, index) => child.updatePointer(`${value}/${index}`));
+                this.viewModel.pointer = event.value;
+                this.children.forEach((child, index) => child.updatePointer(`${event.value}/${index}`));
                 break;
 
             case "active":
-                const disabled = value === false;
+                const disabled = event.value === false;
                 this.viewModel.disabled = disabled;
                 this.viewModel.controls.disabled = disabled;
                 this.children.forEach(child => child.disable(disabled));

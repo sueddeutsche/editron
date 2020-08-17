@@ -7,6 +7,7 @@ import UISchema from "../../utils/UISchema";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { Editor, EditorUpdateEvent } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
+import AbstractEditor from "../AbstractEditor";
 
 const { UI_PROPERTY } = UISchema;
 
@@ -14,7 +15,6 @@ const { UI_PROPERTY } = UISchema;
 export type ViewModel = {
     description?: string;
     disabled?: boolean;
-    id: string;
     onchange: (value: string) => void;
     options: Array<Option>;
     pointer: JSONPointer;
@@ -28,14 +28,14 @@ export type Options = {
 };
 
 
-export default class OneOfEditor implements Editor {
+export default class OneOfEditor extends AbstractEditor {
     /** catch inner changes (changes are compared by a diff which may not notify parent pointer) */
-    notifyNestedChanges = true;
     $childContainer: HTMLElement;
-    dom: HTMLElement;
-    childEditor: any;
+    childEditor: Editor;
     childSchema: JSONSchema;
-    controller;
+    controller: Controller;
+    dom: HTMLElement;
+    notifyNestedChanges = true;
     pointer: JSONPointer;
     schema: JSONSchema;
     viewModel: ViewModel;
@@ -47,22 +47,18 @@ export default class OneOfEditor implements Editor {
     }
 
     constructor(pointer: JSONPointer, controller: Controller, options: Options) {
-        const childSchema = controller.service("schema").get(pointer);
+        super(pointer, controller, options);
+        this.dom.classList.add("editron-container--oneof");
+
+        const childSchema = this.getSchema();
         // @special case. Our options lie in `schema.oneOfSchema`
         const schema = childSchema.oneOfSchema;
-        const attrs = gp.get(schema, `#/${UI_PROPERTY}/attrs`);
-
-        this.schema = schema;
-        this.childSchema = childSchema;
-
         // ensure requried titles are set
         schema.oneOf.forEach((oneOfSchema, index) => (oneOfSchema.title = oneOfSchema.title || `${index}.`));
 
-        this.dom = controller.createElement(".editron-container.editron-container--oneof", attrs);
-        this.controller = controller;
-        this.pointer = pointer;
+        this.schema = schema;
+        this.childSchema = childSchema;
         this.viewModel = {
-            id: getId(pointer),
             pointer,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
             onchange: (oneOfIndex: string) => this.changeChild(schema.oneOf[oneOfIndex]),
@@ -95,22 +91,18 @@ export default class OneOfEditor implements Editor {
     update(event: EditorUpdateEvent): void {
         switch(event.type) {
             case "data:update":
-                const currentSchema = this.controller.service("schema").get(this.pointer);
+                const currentSchema = this.getSchema();
                 delete currentSchema.oneOfSchema; // is recreated each time
                 if (currentSchema.title === this.childSchema.title) {
                     return;
                 }
-
                 this.viewModel.value = this.getIndexOf(currentSchema);
                 this.childSchema = currentSchema;
                 this.rebuild();
                 break;
 
             case "pointer":
-                const newPointer = event.value;
-                this.pointer = newPointer;
-                this.viewModel.id = getId(newPointer);
-                this.viewModel.pointer = newPointer;
+                this.viewModel.pointer = event.value;
                 break;
 
             case "active":
@@ -122,7 +114,7 @@ export default class OneOfEditor implements Editor {
     }
 
     rebuild(): void {
-        this.controller.destroy(this.childEditor);
+        this.controller.destroyEditor(this.childEditor);
         this.$childContainer.innerHTML = "";
         this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
             // @attention this is very important or else we create an infinite loop through selectEditor
@@ -136,14 +128,6 @@ export default class OneOfEditor implements Editor {
                 m(Select, this.viewModel)
             )
         ));
-    }
-
-    toElement(): HTMLElement {
-        return this.dom;
-    }
-
-    getPointer(): JSONPointer {
-        return this.pointer;
     }
 
     destroy(): void {
