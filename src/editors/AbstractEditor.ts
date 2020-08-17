@@ -1,7 +1,7 @@
 import { JSONData, JSONPointer, JSONSchema, ValidationError, UpdateEvent } from "../types";
 import Controller from "../Controller";
-import { Editor } from "./Editor";
-import { Observer, EventType as ValidationEvent } from "../services/ValidationService";
+import { Editor, EditorUpdateEvent } from "./Editor";
+import { Observer } from "../services/ValidationService";
 
 
 function getTypeClass(schema: JSONSchema): string {
@@ -70,7 +70,7 @@ export default class AbstractEditor implements Editor {
             .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
     }
 
-    update<T>(event: UpdateEvent<T>) {
+    update(event: EditorUpdateEvent) {
         throw new Error("Missing implemented of method 'update' in custom editor");
     }
 

@@ -8,56 +8,11 @@ import gp from "gson-pointer";
 import isRootPointer from "./utils/isRootPointer";
 import State from "./State";
 import { ActionTypes, ActionCreators } from "./reducers/actions";
-import { createNanoEvents, Unsubscribe } from "nanoevents";
-import { JSONData, JSONPointer, UpdateEvent } from "../types";
+import { JSONData, JSONPointer } from "../types";
 import { isPointer } from "../utils/UISchema";
 
 const DEBUG = false;
 
-
-export enum EventType {
-    /** called before starting data update */
-    BEFORE_UPDATE = "beforeUpdate",
-    /** called for changes array items order, receiving a list of move, add and delete operations */
-    UPDATE_CONTAINER = "updateContainer",
-    /** called after data udpate was performed */
-    AFTER_UPDATE = "afterUpdate",
-    /** called after all updates with a list of patches */
-    FINAL_UPDATE = "finalUpdate"
-}
-
-export type DataServiceEvent = {
-    pointer: string;
-    parentPointer: string;
-    [p: string]: any;
-}
-
-export type ContainerEventValue = {
-    pointer: JSONPointer;
-    changes: Array<Change>;
-}
-
-export type DataEventValue = {
-    pointer: JSONPointer;
-    patch: Patch;
-}
-
-
-export interface Events {
-    /** called before starting data update */
-    [EventType.BEFORE_UPDATE]: (pointer: JSONPointer, eventObject: DataServiceEvent) => void;
-    /** called for changes array items order, receiving a list of move, add and delete operations */
-    [EventType.UPDATE_CONTAINER]: (event: UpdateEvent<ContainerEventValue>) => void;
-    /** called after data udpate was performed */
-    [EventType.AFTER_UPDATE]: (event: UpdateEvent<DataEventValue>) => void;
-    /** called after all updates with a list of patches */
-    [EventType.FINAL_UPDATE]: (patches: Array<DataServiceEvent>) => void;
-}
-
-export type Observer = {
-    (event: DataServiceEvent): void;
-    bubbleEvents?: boolean;
-}
 
 type AddChange = {
     type: "add";
@@ -81,6 +36,40 @@ export type Change = AddChange|DeleteChange|MoveChange;
 export const isAddChange = (change): change is AddChange => change?.type === "add";
 export const isDeleteChange = (change): change is DeleteChange => change?.type === "delete";
 export const isMoveChange = (change): change is MoveChange => change?.type === "move";
+
+
+type BeforeUpdateEvent = {
+    type: "data:update:before";
+    value: { pointer: JSONPointer; action: string; };
+}
+
+type AfterUpdateEvent = {
+    type: "data:update:after";
+    value: { pointer: JSONPointer; patch: Patch };
+}
+
+type ContainerUpdateEvent = {
+    type: "data:update:container";
+    value: { pointer: JSONPointer; changes: Array<Change> };
+}
+
+type UpdateDoneEvent = {
+    type: "data:update:done";
+    value: Array<PatchResult>;
+}
+
+export type Event = BeforeUpdateEvent|ContainerUpdateEvent|AfterUpdateEvent|UpdateDoneEvent;
+
+export type UpdateDataEvent = {
+    type: "data:update";
+    value: { pointer: JSONPointer; patch: Patch };
+}
+
+export type Observer = {
+    (event: UpdateDataEvent): void;
+    bubbleEvents?: boolean;
+}
+
 
 /** converts a patch to a list of simple changes for add, delete and move operations */
 function getArrayChangeList(patchResult: PatchResult, originalData: any): Array<Change> {
@@ -149,13 +138,11 @@ export default class DataService {
     /** current state */
     state: State;
     /** current observers on json-pointer changes */
-    observers: {
-        [pointer: string]: Array<Observer>;
-    };
-    /** event emitter */
-    emitter = createNanoEvents<Events>();
+    observers: { [pointer: string]: Array<Observer> } = {};
     /** internal value to track previous data */
     lastUpdate = {};
+    /** list of active watchers on update-lifecycle events */
+    watcher = [];
 
     /**
      * Read and modify form data and notify observers
@@ -167,7 +154,6 @@ export default class DataService {
             throw new Error("Given state in DataService must be of instance 'State'");
         }
 
-        this.observers = {};
         this.state = state;
         this.state.register(this.id, dataReducer);
         this.onStateChanged = this.onStateChanged.bind(this);
@@ -195,43 +181,20 @@ export default class DataService {
             // build simple patch-information and notify about changes in pointer for move-instance support
             // this is a major performance improvement for array-item movements
             if (parentDataType === "array") {
-                const dataUpdateArrayEvent = {
-                    type: "data:update:array",
-                    value: {
-                        pointer: eventLocation,
-                        changes: getArrayChangeList(patches[i], this.lastUpdate)
-                    }
-                }
-                this.emitter.emit(EventType.UPDATE_CONTAINER, dataUpdateArrayEvent);
+                const changes = getArrayChangeList(patches[i], this.lastUpdate);
+                this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
 
             } else if (parentDataType === "object") {
-                const dataUpdateObjectEvent = {
-                    type: "data:update:object",
-                    value: {
-                        pointer: eventLocation,
-                        changes: getObjectChangeList(patches[i])
-                    }
-                }
-                this.emitter.emit(EventType.UPDATE_CONTAINER, dataUpdateObjectEvent);
+                const changes = getObjectChangeList(patches[i]);
+                this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
             }
 
-            const dataUpdateEvent = {
-                type: "data:update",
-                value: {
-                    pointer: eventLocation,
-                    patch: patches[i].patch
-                }
-            }
-            this.emitter.emit(EventType.AFTER_UPDATE, dataUpdateEvent);
-            // this.emit(EventType.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
-            this.bubbleObservers(eventLocation, dataUpdateEvent);
+            const payload = { pointer: eventLocation, patch: patches[i].patch };
+            this.notifyWatcher({ type: "data:update:after", value: payload });
+            this.bubbleObservers(eventLocation, { type: "data:update", value: payload });
         }
 
-        const dataUpdatedEvent = {
-            type: "data:update:done"
-        }
-
-        this.emitter.emit(EventType.FINAL_UPDATE, patches);
+        this.notifyWatcher({ type: "data:update:done", value: patches });
         this.lastUpdate = current.data.present;
     }
 
@@ -276,7 +239,7 @@ export default class DataService {
             return;
         }
 
-        this.emit(EventType.BEFORE_UPDATE, pointer, { action: ActionTypes.DATA_SET, isSynched });
+        this.notifyWatcher({ type: "data:update:before", value: { pointer, action: ActionTypes.DATA_SET }});
         this.state.dispatch(ActionCreators.setData(pointer, value, currentValue, isSynched));
 
         if (pointer === "#" && isSynched === false) {
@@ -314,30 +277,29 @@ export default class DataService {
 
     /** undo last change */
     undo() {
-        this.emit(EventType.BEFORE_UPDATE, "#", { action: ActionTypes.UNDO });
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: ActionTypes.UNDO }});
         this.state.dispatch(ActionCreators.undo());
     }
 
     /** redo last undo */
     redo() {
-        this.emit(EventType.BEFORE_UPDATE, "#", { action: ActionTypes.REDO });
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: ActionTypes.REDO }});
         this.state.dispatch(ActionCreators.redo());
     }
 
-    /** add an event listener to update events */
-    on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe {
-        return this.emitter.on(eventType, callback);
+    notifyWatcher(event: Event) {
+        this.watcher.forEach(watcher => watcher(event));
     }
 
-    /** remove an event listener from update events */
-    off<T extends keyof Events>(eventType: T, callback: Function): void {
-        // @ts-ignore
-        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+    watch(callback: (event: Event) => void ) {
+        if (this.watcher.includes(callback) === false) {
+            this.watcher.push(callback);
+        }
+        return callback;
     }
 
-    emit<T extends keyof Events>(eventType: T, pointer: JSONPointer, data: JSONData) {
-        // @ts-ignore
-        this.emitter.emit(eventType, createEventObject(pointer, data));
+    removeWatcher(callback: (event: Event) => void) {
+        this.watcher = this.watcher.filter(watcher => watcher !== callback);
     }
 
     /**
@@ -362,19 +324,19 @@ export default class DataService {
     }
 
     /** send an event to all json-pointer observers */
-    notify(pointer: JSONPointer, event) {
+    notify(pointer: JSONPointer, event: UpdateDataEvent) {
         if (this.observers[pointer] == null || this.observers[pointer].length === 0) {
             return;
         }
         const observers = this.observers[pointer];
         for (let i = 0, l = observers.length; i < l; i += 1) {
-            if (observers[i].bubbleEvents === true || event.pointer === pointer) {
+            if (observers[i].bubbleEvents === true || event.value.pointer === pointer) {
                 observers[i](event);
             }
         }
     }
 
-    bubbleObservers(pointer: JSONPointer, event) {
+    bubbleObservers(pointer: JSONPointer, event: UpdateDataEvent) {
         const frags = gp.split(pointer);
         while (frags.length) {
             this.notify(gp.join(frags, true), event);
@@ -395,11 +357,3 @@ export default class DataService {
     }
 }
 
-
-function createEventObject(pointer: JSONPointer, data: object): DataServiceEvent {
-    return {
-        ...data,
-        pointer,
-        parentPointer: getParentPointer(pointer)
-    };
-}

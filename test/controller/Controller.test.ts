@@ -15,7 +15,7 @@ describe("Controller", () => {
             }
         });
 
-        assert.ok(editron.data().get("#/title") === "default-title");
+        assert.ok(editron.service("data").get("#/title") === "default-title");
     });
 
     describe("dataService", () => {
@@ -39,12 +39,12 @@ describe("Controller", () => {
         });
 
         it("should have independent data services", () => {
-            const controller2 = new Controller(controller.schema().get(), controller.data().get());
+            const controller2 = new Controller(controller.service("schema").get(), controller.service("data").get());
 
-            controller2.data().set("#/list/0", { title: "new" });
+            controller2.service("data").set("#/list/0", { title: "new" });
 
-            assert.equal(controller.data().get("#/list/0/title"), "first", "controllers should not share same data");
-            assert.equal(controller2.data().get("#/list/0/title"), "new", "controllers should not share same data");
+            assert.equal(controller.service("data").get("#/list/0/title"), "first", "controllers should not share same data");
+            assert.equal(controller2.service("data").get("#/list/0/title"), "new", "controllers should not share same data");
         });
     })
 });

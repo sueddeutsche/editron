@@ -1,9 +1,9 @@
 import m from "mithril";
 import gp from "gson-pointer";
 import View, { buildTree, Node } from "./View";
-import { Editor } from "../Editor";
+import { Editor, EditorUpdateEvent } from "../Editor";
 import Controller from "../../Controller";
-import { JSONPointer } from "../../types";
+import { JSONPointer, ValidationError } from "../../types";
 import { EventType as LocationEvent } from "../../services/LocationService";
 import "./minimap-editor.scss";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
@@ -12,7 +12,7 @@ import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 export type ViewModel = {
     controller: Controller,
     currentSelection: JSONPointer;
-    errors: [];
+    errors: Array<ValidationError>;
     /** minimap tree structure of input-data */
     node: Node;
     /** called, when a minimap-item is selected */
@@ -97,23 +97,22 @@ export default class MinimapEditor extends AbstractEditor {
         // this.update();
     }
 
-    update({ type, value }) {
-        console.log("update minimap", type, value);
-        switch (type) {
+    update(event: EditorUpdateEvent) {
+        switch (event.type) {
             case "pointer":
-                this.pointer = value;
+                this.pointer = event.value;
                 // run data update on pointer change // break;
-            case "data":
+            case "data:update":
                 const data = this.getData();
                 this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
                 break;
 
-            case "error":
-                this.viewModel.errors = value.filter(error => error.severity !== "warning");
+            case "validation:errors":
+                this.viewModel.errors = event.value.filter(error => error.severity !== "warning");
                 break;
 
             case "active":
-                if (value === false) {
+                if (event.value === false) {
                     console.log("minimap currently not deactivatable");
                 }
                 break;

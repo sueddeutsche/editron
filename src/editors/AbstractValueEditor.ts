@@ -2,7 +2,7 @@ import m from "mithril";
 import getId from "../utils/getID";
 import { JSONPointer, JSONSchema, ValidationError } from "../types";
 import Controller from "../Controller";
-import { Editor } from "./Editor";
+import { Editor, EditorUpdateEvent } from "./Editor";
 
 
 const convert = {
@@ -74,6 +74,7 @@ export default class AbstractValueEditor implements Editor {
     viewModel: ViewModel;
     notifyNestedChanges = false;
     options;
+    pointer: JSONPointer;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.service("schema").get(pointer);
@@ -93,6 +94,7 @@ export default class AbstractValueEditor implements Editor {
     constructor(pointer: JSONPointer, controller: Controller, options) {
         this.controller = controller;
         this.options = options;
+        this.pointer = pointer;
         this.notifyNestedChanges = options.notifyNestedChanges || this.notifyNestedChanges;
 
         const schema = controller.service("schema").get(pointer);
@@ -140,32 +142,32 @@ export default class AbstractValueEditor implements Editor {
     }
 
     // update display value in view
-    // @ts-ignore
-    update({ type, value }) {
+    update(event: EditorUpdateEvent) {
         if (this.viewModel == null) {
             console.log("error - notification of destroyed editor", this);
             return;
         }
 
-        switch (type) {
+        switch (event.type) {
             case "pointer":
-                const pointer = <string>value;
+                const pointer = event.value;
                 this.$element.setAttribute("name", `editor-${pointer}`);
+                this.pointer = pointer;
                 this.viewModel.pointer = pointer;
                 this.viewModel.id = getId(pointer);
                 this.viewModel.onfocus = () => this.controller.service("location").setCurrent(pointer);
 
-            case "data":
+            case "data:update":
                 this.viewModel.value = this.controller.service("data").get(this.getPointer());
                 this.viewModel.disabled = !this.controller.isActive();
                 break;
 
-            case "error":
-                const errors = value as Array<ValidationError>;
+            case "validation:errors":
+                this.viewModel.errors = event.value;
                 break;
 
             case "active":
-                const active = value;
+                const active = event.value;
                 this.viewModel.disabled = active === false;
                 if (this.viewModel.options) {
                     this.viewModel.options.disabled = this.viewModel.disabled;
@@ -173,7 +175,7 @@ export default class AbstractValueEditor implements Editor {
                 break;
 
             default:
-                console.log("unknown event type", type, event);
+                console.log("unknown event type", event);
         }
 
         this.render();

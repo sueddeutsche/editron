@@ -34,12 +34,12 @@ describe("ValidationService observe", () => {
         assert.equal(called, false);
     });
 
-    it("should also pass type of modified data", () => {
+    it("should also send with type 'data:update' ", () => {
         let event;
         service.observe("#/item/id", e => (event = e));
         service.set("#/item/id", "modified");
 
-        assert.equal(event.type, "string");
+        assert.equal(event.type, "data:update");
     });
 
     it("should notify all parents of change", () => {

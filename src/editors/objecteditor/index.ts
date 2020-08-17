@@ -4,7 +4,7 @@ import OverlayService from "../../services/OverlayService";
 import Container, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
-import { Editor } from "../Editor";
+import { Editor, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { ValidationError } from "../../types";
 
@@ -92,18 +92,16 @@ export default class ObjectEditor extends AbstractEditor {
 
         this.render();
         this.$children = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
-        this.update({ type: "data", value: null });
+        this.update({ type: "data:update", value: null });
     }
 
-    update({ type, value }) {
+    update(event: EditorUpdateEvent) {
         if (this.viewModel == null) {
-            console.log("ABROT update object");
             return;
         }
-        console.log("update object");
 
-        switch (type) {
-            case "data":
+        switch (event.type) {
+            case "data:update":
                 const data = this.getData();
                 // destroy child editor
                 this.childEditors.forEach(editor => this.controller.destroyEditor(editor));
@@ -119,8 +117,8 @@ export default class ObjectEditor extends AbstractEditor {
                 });
                 break;
 
-            case "error":
-                const errors = value as Array<ValidationError>;
+            case "validation:errors":
+                const errors = event.value;
                 // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
                 // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
                 // arrays this should come per default, as the may insert in add items...
@@ -142,12 +140,12 @@ export default class ObjectEditor extends AbstractEditor {
                 break;
 
             case "pointer":
-                this.viewModel.pointer = value as string;
+                this.viewModel.pointer = event.value;
                 break;
 
             case "active":
                 /** de/activate this editors user-interaction */
-                this.viewModel.disabled = value === false;
+                this.viewModel.disabled = !event.value;
                 break;
         }
 

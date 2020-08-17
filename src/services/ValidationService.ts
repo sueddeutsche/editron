@@ -4,7 +4,6 @@ import jlib from "json-schema-library";
 import State from "./State";
 import Validation, { ValidationErrorMapper } from "./utils/Validation";
 import { ActionCreators } from "./reducers/actions";
-import { createNanoEvents, Unsubscribe } from "nanoevents";
 import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
 
 const { JsonEditor: Core } = jlib.cores;
@@ -13,29 +12,11 @@ const { JsonEditor: Core } = jlib.cores;
 export { Observer };
 
 
-
-export enum EventType {
-    BEFORE_VALIDATION = "beforeValidation",
-    AFTER_VALIDATION = "afterValidation",
-    ON_ERROR = "onError"
-};
-
-export interface Events {
-    /** called right before a new validation is starting */
-    [EventType.BEFORE_VALIDATION]: () => void;
-    /** called for each validation error occuring durint validation */
-    [EventType.ON_ERROR]: (error: ValidationError) => void;
-    /** called after finished validation, passing all occured validation-errors */
-    [EventType.AFTER_VALIDATION]: (errors: Array<ValidationError>) => void;
-}
-
-
 export default class ValidationService {
     /** state store-id of service */
     id = "errors";
     core;
     currentValidation: Validation;
-    emitter = createNanoEvents<Events>();
     errorHandler: ValidationErrorMapper;
     observer = new BubblingCollectionObservable();
     schema: JSONSchema;
@@ -69,8 +50,6 @@ export default class ValidationService {
             this.currentValidation.cancel();
         }
 
-        this.emit(EventType.BEFORE_VALIDATION);
-
         // @feature selective-validation
         this.observer.clearEvents(pointer);
         // reset stored list of events
@@ -88,17 +67,13 @@ export default class ValidationService {
             (newError, currentErrors) => {
                 // @feature selective-validation
                 const completeListOfErrors = remainingErrors.concat(currentErrors);
-
                 this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
                 this.observer.notify(newError.data.pointer, newError);
-                this.emit(EventType.ON_ERROR, newError);
             },
             validationErrors => {
                 // @feature selective-validation
                 const completeListOfErrors = remainingErrors.concat(validationErrors);
-
                 this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
-                this.emit(EventType.AFTER_VALIDATION, completeListOfErrors);
                 this.currentValidation = null;
             }
         );
@@ -113,28 +88,6 @@ export default class ValidationService {
     /** returns the current json-schema */
     get(): JSONSchema {
         return this.schema;
-    }
-
-    /**
-     * add an event listener to update events
-     * @returns the callback
-     */
-    on<T extends keyof Events>(eventType: T, callback: Events[T]): Events[T] {
-        if (eventType === undefined) {
-            throw new Error("Missing `eventType` in ValidationService.on");
-        }
-        this.emitter.on(eventType, callback);
-        return callback;
-    }
-
-    /** remove an event listener from update events */
-    off<T extends keyof Events>(eventType: T, callback: Function): void {
-        // @ts-ignore
-        this.emitter.events[eventType] = this.emitter.events[eventType]?.filter(func => func !== callback) ?? [];
-    }
-
-    emit(eventType, event = {}) {
-        this.emitter.emit(eventType, event);
     }
 
     observe(pointer: JSONPointer, observer: Observer, bubbledEvents = false): Observer {
@@ -173,7 +126,6 @@ export default class ValidationService {
 
     destroy() {
         this.set(null);
-        this.emitter = null;
         this.observer = null;
         this.state.unregister(this.id);
         // this.state.unregister(this.id, errorReducer);

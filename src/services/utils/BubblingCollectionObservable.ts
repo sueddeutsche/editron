@@ -1,10 +1,11 @@
 /* eslint arrow-parens: 0 */
 const gp = require("gson-pointer");
 import { JSONPointer, JSONData, JSONSchema, ValidationError } from "../../types";
+import { UpdateErrorsEvent } from "../../editors/Editor";
 
 
 export type Observer = {
-    (event: Array<ValidationError>): void;
+    (event: UpdateErrorsEvent): void;
     receiveChildEvents?: boolean;
 }
 
@@ -208,13 +209,13 @@ class BubblingCollectionObservable {
         this._notifyAll(pointer, this.eventCollection[pointer]);
     }
 
-    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, event: Array<ValidationError>) {
+    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, errors: Array<ValidationError> = []) {
         if (this.observers[observerPointer] == null) {
             return;
         }
         this.observers[observerPointer].forEach(observer => {
             if (observer.receiveChildEvents === false && observerPointer === sourcePointer) {
-                observer(event);
+                observer({ type: "validation:errors", value: errors });
                 return;
             }
             if (observer.receiveChildEvents === false && observerPointer !== sourcePointer) {
@@ -225,7 +226,7 @@ class BubblingCollectionObservable {
             const map = this.bubbleCollection[observerPointer];
             map[sourcePointer] = event;
             const events = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
-            observer(events);
+            observer({ type: "validation:errors", value: errors });
         });
     }
 }

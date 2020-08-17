@@ -3,7 +3,7 @@ import { strict as assert } from "assert";
 import Controller from "../../src/Controller";
 
 
-describe("Controller", () => {
+describe("Controller.addValidator", () => {
     let controller;
 
     beforeEach(() => {
@@ -34,7 +34,7 @@ describe("Controller", () => {
             return undefined;
         });
 
-        return controller.validator()
+        return controller.service("validation")
             .validate({ customFormat: "custom-format-error" })
             .then(result => {
                 assert.equal(result.length, 1);
@@ -51,7 +51,7 @@ describe("Controller", () => {
             return undefined;
         });
 
-        return controller.validator()
+        return controller.service("validation")
             .validate({ customAttribute: "custom-attribute-error" })
             .then(result => {
                 assert.equal(result.length, 1);

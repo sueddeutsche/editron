@@ -7,6 +7,7 @@ import { JSONPointer, JSONSchema } from "../../types";
 import { Editor } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { ValidationError } from "../../types";
+import { Patch } from "../../services/utils/createDiff";
 
 
 export type Controls = {
@@ -89,20 +90,15 @@ export default class ArrayEditor extends AbstractEditor {
         this.updateControls();
     }
 
-    update({ type, value }) {
-        switch (type) {
-            case "data":
-                console.log("ARRAY DATA UPDATE", value);
-                const changeEvent = value;
-                if (changeEvent?.patch) {
-                    this.applyPatches(changeEvent.patch);
-                } else {
-                    this.rebuildChildren();
-                }
+    update(event) {
+        const { value } = event;
+        switch (event.type) {
+            case "data:update":
+                this.applyPatches(value.patch);
                 this.updateControls();
                 break;
 
-            case "error":
+            case "validation:errors":
                 this.viewModel.errors = value as Array<ValidationError>;
                 break;
 
@@ -119,11 +115,10 @@ export default class ArrayEditor extends AbstractEditor {
                 break;
         }
 
-        console.log("update array", type, value);
         this.render();
     }
 
-    applyPatches(patch): void {
+    applyPatches(patch: Patch): void {
         // fetch a copy of the original list
         const originalChildren = Array.from(this.children);
         // and patch the current list

@@ -2,7 +2,7 @@ import gp from "gson-pointer";
 import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
 import jsonSchemaLibrary from "json-schema-library";
 import addValidator from "json-schema-library/lib/addValidator";
-import DataService, { EventType as DataServiceEvent, Change, isMoveChange, isDeleteChange } from "./services/DataService";
+import DataService, { Event as DataUpdateEvents, Change, isMoveChange, isDeleteChange } from "./services/DataService";
 import SchemaService from "./services/SchemaService";
 import ValidationService from "./services/ValidationService";
 import InstanceService from "./services/InstanceService";
@@ -106,6 +106,7 @@ export default class Controller {
     plugins: Array<Plugin> = [];
     services: Services;
 
+
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, options: Options = {}) {
         schema = UISchema.extendSchema(schema);
 
@@ -158,14 +159,21 @@ export default class Controller {
         // enable i18n error-translations
         this.service("validation").setErrorHandler(error => i18n.translateError(this, error));
 
-        // update container will be called before any editor change-notification
-        // this gives us time, to manage update-pointer and destory events of
-        // known editors
-        this.service("data").on(DataServiceEvent.UPDATE_CONTAINER,
-            ({ value }) => this.services.instances.updateContainer(value.pointer, this, value.changes));
+        this.service("data").watch(event => {
+            switch (event.type) {
+                case "data:update:container":
+                    // update container will be called before any editor change-notification
+                    // this gives us time, to manage update-pointer and destory events of
+                    // known editors
+                    this.services.instances.updateContainer(event.value.pointer, this, event.value.changes);
+                    break;
 
-        // start validation after data has been updated
-        this.service("data").on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+                case "data:update:after":
+                    // start validation after data has been updated
+                    this.onAfterDataUpdate(event.value);
+                    break;
+            }
+        });
 
         // run initial validation
         this.validateAll();
@@ -377,9 +385,8 @@ export default class Controller {
         this.service("schema").setData(this.service("data").get());
     }
 
-    onAfterDataUpdate({ type, value }): void {
+    onAfterDataUpdate({ pointer }): void {
         this.update();
-        let { pointer } = value;
 
         // @feature selective-validation
         if (pointer.includes("/")) {
@@ -405,7 +412,6 @@ export default class Controller {
 
     /** Destroy the editor, its widgets and services */
     destroy(): void {
-        this.service("data").off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
         this.destroyed = true;
         Object.keys(this.services).forEach(id => this.services[id].destroy());
     }

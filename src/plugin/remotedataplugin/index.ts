@@ -7,7 +7,6 @@ import { Button } from "mithril-material-forms/index";
 import { Plugin } from "../index";
 import gp from "gson-pointer";
 import render from "json-schema-library/lib/utils/render";
-import { EventType as DataEvent } from "../../services/DataService";
 
 
 type Options = {
