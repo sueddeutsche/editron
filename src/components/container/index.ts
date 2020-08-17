@@ -17,7 +17,7 @@ export type Attrs = HeaderAttrs & DescriptionAttrs & ErrorAttrs;
  */
 export default {
 
-    getChildContainer($element) {
+    getChildContainer($element: HTMLElement) {
         const $childContainer = $element.querySelector(CHILD_CONTAINER_SELECTOR);
         if ($childContainer == null) {
             throw new Error("Container-Component hast not yet been rendered");

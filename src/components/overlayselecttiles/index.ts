@@ -25,10 +25,9 @@ function getDataValue(node) {
     return node.getAttribute("data-value");
 }
 
+
 /**
- * @View mithril
  * Overlay content to pick options. Displayed as tiles
- * @type {Object}
  */
 export default {
     view(vnode) {
