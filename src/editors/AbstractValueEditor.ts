@@ -7,17 +7,16 @@ import { Editor, EditorUpdateEvent } from "./Editor";
 
 const convert = {
 
-    boolean(value): boolean {
+    boolean(value: any): boolean {
         if (value === "true") {
             return true;
-        }
-        if (value === "false") {
+        } else if (value === "false") {
             return false;
         }
         return value;
     },
 
-    integer(value): number {
+    integer(value: any): number {
         const converted = parseInt(value);
         if (isNaN(converted) === false) {
             return converted;
@@ -25,7 +24,7 @@ const convert = {
         return value;
     },
 
-    number(value): number {
+    number(value: any): number {
         const converted = parseFloat(value);
         if (isNaN(converted) === false) {
             return converted;
@@ -63,18 +62,18 @@ export type ViewModel = {
  *              this.render();
  *          }
  *          render() {
- *              m.render(this.$element, m(MyView, this.viewModel));
+ *              m.render(this.dom, m(MyView, this.viewModel));
  *          }
  *      }
  * ```
  */
 export default class AbstractValueEditor implements Editor {
+    dom: HTMLElement;
     controller: Controller;
-    $element: HTMLElement;
-    viewModel: ViewModel;
     notifyNestedChanges = false;
     options;
     pointer: JSONPointer;
+    viewModel: ViewModel;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.service("schema").get(pointer);
@@ -109,7 +108,7 @@ export default class AbstractValueEditor implements Editor {
         };
 
         // create main DOM-element for view-generation
-        this.$element = controller.createElement(
+        this.dom = controller.createElement(
             `.editron-value.editron-value--${options.editorValueType}`,
             { name: getId(pointer), ...options.attrs }
         );
@@ -151,7 +150,7 @@ export default class AbstractValueEditor implements Editor {
         switch (event.type) {
             case "pointer":
                 const pointer = event.value;
-                this.$element.setAttribute("name", `editor-${pointer}`);
+                this.dom.setAttribute("name", `editor-${pointer}`);
                 this.pointer = pointer;
                 this.viewModel.pointer = pointer;
                 this.viewModel.id = getId(pointer);
@@ -189,12 +188,12 @@ export default class AbstractValueEditor implements Editor {
 
     // update view
     render() {
-        m.render(this.$element, m("b", "Overwrite AbstractValueEditor.render() to generate view"));
+        m.render(this.dom, m("b", "Overwrite AbstractValueEditor.render() to generate view"));
     }
 
     // return main dom element
     toElement() {
-        return this.$element;
+        return this.dom;
     }
 
     // destroy this editor
@@ -203,8 +202,8 @@ export default class AbstractValueEditor implements Editor {
             return;
         }
         // destroy this editor only once
-        m.render(this.$element, m("i"));
+        m.render(this.dom, m("i"));
         this.viewModel = null;
-        this.$element = null;
+        this.dom = null;
     }
 }

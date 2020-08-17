@@ -10,7 +10,6 @@ export type SetEnabledEvent = {
     value: boolean
 };
 
-
 export type ChangePointerEvent = {
     type: "pointer",
     /** new json-pointer value */
@@ -32,20 +31,21 @@ export interface EditorPlugin {
 
 
 export interface Editor {
+    dom: HTMLElement;
     pointer: JSONPointer;
     notifyNestedChanges?: boolean;
 
     /** update is used as a convention, not enforced, nor required */
     update(event: EditorUpdateEvent): void;
 
+    /** returns current json-pointer of editor */
+    getPointer(): JSONPointer;
+
     /** returns the editors root element */
     toElement(): HTMLElement;
 
     /** destroy editor-instance */
     destroy(): void;
-
-    /** returns current json-pointer of editor */
-    getPointer(): JSONPointer;
 
     // render is used as a convention, not enforced, nor required
     // render(): void;

@@ -91,6 +91,12 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     update(event) {
+        if (this.viewModel == null) {
+            // @ts-ignore
+            console.log("%c abort update ARRAY", "background: yellow;", event);
+            return;
+        }
+
         const { value } = event;
         switch (event.type) {
             case "data:update":
@@ -111,7 +117,7 @@ export default class ArrayEditor extends AbstractEditor {
                 const disabled = value === false;
                 this.viewModel.disabled = disabled;
                 this.viewModel.controls.disabled = disabled;
-                this.rebuildChildren();
+                this.children.forEach(child => child.disable(disabled));
                 break;
         }
 

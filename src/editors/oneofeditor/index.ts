@@ -5,7 +5,7 @@ import m from "mithril";
 import Select, { Option } from "mithril-material-forms/components/select";
 import UISchema from "../../utils/UISchema";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
-import { Editor } from "../Editor";
+import { Editor, EditorUpdateEvent } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
 
 const { UI_PROPERTY } = UISchema;
@@ -29,6 +29,8 @@ export type Options = {
 
 
 export default class OneOfEditor implements Editor {
+    /** catch inner changes (changes are compared by a diff which may not notify parent pointer) */
+    notifyNestedChanges = true;
     $childContainer: HTMLElement;
     dom: HTMLElement;
     childEditor: any;
@@ -69,16 +71,9 @@ export default class OneOfEditor implements Editor {
             description: schema.description
         };
 
-        // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
-        this.update = controller.service("data").observe(pointer, this.update.bind(this), true);
-
         this.render();
         this.$childContainer = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
         this.rebuild();
-    }
-
-    setActive(active = true): void {
-        this.viewModel.disabled = active === false;
         this.render();
     }
 
@@ -97,32 +92,33 @@ export default class OneOfEditor implements Editor {
         return 0;
     }
 
-    updatePointer(newPointer: JSONPointer): void {
-        const oldPointer = this.getPointer();
-        if (oldPointer === newPointer) {
-            return;
-        }
+    update(event: EditorUpdateEvent): void {
+        switch(event.type) {
+            case "data:update":
+                const currentSchema = this.controller.service("schema").get(this.pointer);
+                delete currentSchema.oneOfSchema; // is recreated each time
+                if (currentSchema.title === this.childSchema.title) {
+                    return;
+                }
 
-        this.pointer = newPointer;
-        this.viewModel.id = getId(newPointer);
-        this.viewModel.pointer = newPointer;
-        this.dom.id = newPointer;
-        this.controller.service("data").removeObserver(oldPointer, this.update);
-        this.controller.service("data").observe(newPointer, this.update, true);
+                this.viewModel.value = this.getIndexOf(currentSchema);
+                this.childSchema = currentSchema;
+                this.rebuild();
+                break;
+
+            case "pointer":
+                const newPointer = event.value;
+                this.pointer = newPointer;
+                this.viewModel.id = getId(newPointer);
+                this.viewModel.pointer = newPointer;
+                break;
+
+            case "active":
+                this.viewModel.disabled = event.value === false;
+                break;
+        }
 
         this.render();
-    }
-
-    update(): void {
-        const currentSchema = this.controller.service("schema").get(this.pointer);
-        delete currentSchema.oneOfSchema; // is recreated each time
-        if (currentSchema.title === this.childSchema.title) {
-            return;
-        }
-
-        this.viewModel.value = this.getIndexOf(currentSchema);
-        this.childSchema = currentSchema;
-        this.rebuild();
     }
 
     rebuild(): void {
@@ -132,8 +128,6 @@ export default class OneOfEditor implements Editor {
             // @attention this is very important or else we create an infinite loop through selectEditor
             renderOneOf: true
         });
-
-        this.render();
     }
 
     render(): void {

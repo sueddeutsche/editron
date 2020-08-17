@@ -58,11 +58,11 @@
             }
         }
 
-        &:hover {
+        &.is-enabled:hover {
             background: #fff;
         }
 
-        &:hover ul {
+        &.is-enabled:hover ul {
             display: block;
             @include elevation(2);
         }

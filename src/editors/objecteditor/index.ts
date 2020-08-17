@@ -97,6 +97,8 @@ export default class ObjectEditor extends AbstractEditor {
 
     update(event: EditorUpdateEvent) {
         if (this.viewModel == null) {
+            // @ts-ignore
+            console.log("%c abort update OBJECT", "background: yellow;", event.value?.pointer);
             return;
         }
 

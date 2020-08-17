@@ -18,6 +18,6 @@ export default class ValueEditor extends AbstractValueEditor {
     }
 
     render() {
-        m.render(this.$element, m(View, this.viewModel));
+        m.render(this.dom, m(View, this.viewModel));
     }
 }

@@ -67,6 +67,13 @@ export default class ArrayItemEditor {
         this.updatePointer(pointer);
     }
 
+    disable(isDisabled = false) {
+        if (this.viewModel.disabled !== isDisabled) {
+            this.viewModel.disabled = isDisabled;
+            this.render();
+        }
+    }
+
     render(): void {
         m.render(this.$element, m(ArrayItemView, this.viewModel));
     }

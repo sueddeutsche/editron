@@ -41,7 +41,7 @@ export default {
             // ARRAY-CONTROLS
             m(".editron-container__controls.editron-container__controls--child",
                 {
-                    "class": disabled ? "is-disabled" : undefined
+                    "class": disabled ? "is-disabled" : "is-enabled"
                 },
                 m("i.mmf-icon", "more_vert"),
                 m("ul",

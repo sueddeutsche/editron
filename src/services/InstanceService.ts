@@ -1,23 +1,19 @@
-import { Editor } from "../editors/Editor";
+import { Editor, ChangePointerEvent, SetEnabledEvent } from "../editors/Editor";
 import { JSONPointer } from "../types";
 import { Change, isMoveChange, isDeleteChange } from "./DataService";
 import Controller from "../Controller";
 
 
-interface ManagedEditor extends Editor {
-}
-
-
 export default class InstanceService {
-    instances: Array<ManagedEditor> = [];
-    watcher: Array<ManagedEditor> = [];
+    instances: Array<Editor> = [];
+    watcher: Array<Editor> = [];
     controller: Controller;
 
     constructor(controller) {
         this.controller = controller;
     }
 
-    add(editor: ManagedEditor) {
+    add(editor: Editor) {
         const ctrl = this.controller;
         const pointer = editor.getPointer();
         editor.toElement().setAttribute("data-point", pointer);
@@ -34,7 +30,7 @@ export default class InstanceService {
         return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer))
     }
 
-    remove(editor: ManagedEditor) {
+    remove(editor: Editor) {
         this.controller.service("data").removeObserver(editor.pointer, editor.update);
         this.controller.service("validation").removeObserver(editor.pointer, editor.update);
         this.instances = this.instances.filter(ed => ed !== editor);
@@ -64,7 +60,7 @@ export default class InstanceService {
         // change pointer of instances
         changePointers.forEach(change => {
             const { old: prevPtr, next: nextPtr, editors } = change;
-            editors.forEach((instance: ManagedEditor) => {
+            editors.forEach((instance: Editor) => {
                 const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);
 
                 this.controller.service("data").removeObserver(instance.pointer, instance.update);
@@ -74,7 +70,8 @@ export default class InstanceService {
                 this.controller.service("validation")
                     .observe(instance.pointer, instance.update, instance.notifyNestedChanges);
 
-                instance.update({ type: "pointer", value: newPointer });
+                instance.update(<ChangePointerEvent>{ type: "pointer", value: newPointer });
+
                 instance.pointer = newPointer;
                 instance.toElement().setAttribute("data-point", newPointer);
             });
@@ -101,7 +98,7 @@ export default class InstanceService {
     }
 
     setActive(active) {
-        this.instances.forEach(ed => ed.update({ type: "active", value: active }));
+        this.instances.forEach(ed => ed.update(<SetEnabledEvent>{ type: "active", value: active }));
     }
 
     destroy() {

@@ -1,38 +1,31 @@
-import gp from "gson-pointer";
-import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
-import jsonSchemaLibrary from "json-schema-library";
-import addValidator from "json-schema-library/lib/addValidator";
-import DataService, { Event as DataUpdateEvents, Change, isMoveChange, isDeleteChange } from "./services/DataService";
-import SchemaService from "./services/SchemaService";
-import ValidationService from "./services/ValidationService";
-import InstanceService from "./services/InstanceService";
-import LocationService, { EventType as LocationEvent } from "./services/LocationService";
-import State from "./services/State";
-import selectEditor from "./utils/selectEditor";
 import _createElement from "./utils/createElement";
 import addItem from "./utils/addItem";
-import UISchema from "./utils/UISchema";
-import getID from "./utils/getID";
-import plugin, { Plugin } from "./plugin";
-import i18n from "./utils/i18n";
+import addValidator from "json-schema-library/lib/addValidator";
 import createProxy from "./utils/createProxy";
-import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
+import DataService, { Event as DataUpdateEvents, Change, isMoveChange, isDeleteChange } from "./services/DataService";
+import getID from "./utils/getID";
+import gp from "gson-pointer";
+import i18n from "./utils/i18n";
+import InstanceService from "./services/InstanceService";
+import jsonSchemaLibrary from "json-schema-library";
+import LocationService, { EventType as LocationEvent } from "./services/LocationService";
+import plugin, { Plugin } from "./plugin";
+import SchemaService from "./services/SchemaService";
+import selectEditor from "./utils/selectEditor";
+import State from "./services/State";
+import UISchema from "./utils/UISchema";
+import ValidationService from "./services/ValidationService";
 import { Editor, EditorPlugin } from "./editors/Editor";
+import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
+import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
 
 import oneOfEditor from "./editors/oneofeditor";
 import arrayEditor from "./editors/arrayeditor";
 import objectEditor from "./editors/objecteditor";
 import valueEditor from "./editors/valueeditor";
 
+
 const { JsonEditor: Core } = jsonSchemaLibrary.cores;
-
-
-/** throws an error, when given pointer is not a valid jons-pointer */
-function assertValidPointer(pointer: JSONPointer): void {
-    if (pointer[0] !== "#") {
-        throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
-    }
-}
 
 
 export type Options = {
@@ -102,10 +95,9 @@ export default class Controller {
     disabled = false;
     editors: Array<EditorPlugin>;
     options: Options;
-    state: State;
     plugins: Array<Plugin> = [];
     services: Services;
-
+    state: State;
 
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, options: Options = {}) {
         schema = UISchema.extendSchema(schema);
@@ -156,31 +148,37 @@ export default class Controller {
            validation: new ValidationService(this.state, schema, this.core)
         };
 
-        // enable i18n error-translations
-        this.service("validation").setErrorHandler(error => i18n.translateError(this, error));
-
         this.service("data").watch(event => {
+
             switch (event.type) {
+                // update container will be called before any editor change-notification this gives us time,
+                // to manage update-pointer and destory events of known editors
                 case "data:update:container":
-                    // update container will be called before any editor change-notification
-                    // this gives us time, to manage update-pointer and destory events of
-                    // known editors
                     this.services.instances.updateContainer(event.value.pointer, this, event.value.changes);
                     break;
 
                 case "data:update:after":
-                    // start validation after data has been updated
-                    this.onAfterDataUpdate(event.value);
+                    let { pointer } = event.value;
+                    this.service("schema").setData(this.service("data").get());
+                    // @feature selective-validation
+                    if (pointer.includes("/")) {
+                        // @attention validate parent-object or array, in order to support parent-validators.
+                        // Any higher validators will still be ignore
+                        pointer = pointer.replace(/\/[^/]+$/, "");
+                    }
+                    setTimeout(() => {
+                        // start validation in next tick
+                        const data = this.service("data").getDataByReference();
+                        this.destroyed !== true && this.service("validation").validate(data, pointer);
+                    });
                     break;
             }
         });
 
+        // enable i18n error-translations
+        this.service("validation").setErrorHandler(error => i18n.translateError(this, error));
         // run initial validation
         this.validateAll();
-
-        this.service("location").on(LocationEvent.FOCUS, (pointer: JSONPointer) => {
-            console.log("focus", pointer, this.service("schema").get(pointer));
-        });
 
         // @lifecycle hook initialize on controller ready
         if (Array.isArray(options.plugins)) {
@@ -194,6 +192,27 @@ export default class Controller {
 
     getPlugin(pluginId: string) {
         return this.plugins.find(plugin => plugin.id === pluginId);
+    }
+
+    /**
+     * @param format - value of _format_
+     * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
+     *      als return a promise
+     */
+    addFormatValidator(format: string, validator: FormatValidator): void {
+        addValidator.format(this.core, format, validator);
+    }
+
+    /**
+     * @param datatype - JSON-Schema datatype to register attribute, e.g. "string" or "object"
+     * @param keyword - custom keyword
+     * @param validator - validator function receiving (core, schema, value, pointer). Return `undefined`
+     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
+     *      als return a promise
+     */
+    addKeywordValidator(datatype: string, keyword: string, validator: KeywordValidator): void {
+        addValidator.keyword(this.core, datatype, keyword, validator);
     }
 
     /** reset undo history */
@@ -294,15 +313,13 @@ export default class Controller {
         if (!editor) {
             return;
         }
-        this.services.instances.remove(editor);
-
-        // remove observers
-        // @ts-ignore
-        editor.__events?.remove();
 
         // @lifecycle hook destroy widget
         this.plugins.filter(plugin => plugin.onDestroyEditor)
             .forEach(plugin => plugin.onDestroyEditor(editor.getPointer(), editor));
+
+        this.services.instances.remove(editor);
+
         // controller inserted child and removes it here again
         const $element = editor.toElement();
         $element?.parentNode?.removeChild($element);
@@ -326,13 +343,6 @@ export default class Controller {
     proxy(): Foxy { return this.#proxy; }
 
     /**
-     * validates data based on a json-schema and register to generated error events:
-     * start validation, get your current errors at `pointer`, hook into validation
-     * to receive your errors at `pointer`
-     */
-    validator(): ValidationService { return this.service("validation"); }
-
-    /**
      * Set the application data
      * @param data - json data matching registered json-schema
      */
@@ -350,27 +360,6 @@ export default class Controller {
     }
 
     /**
-     * @param format - value of _format_
-     * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
-     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
-     *      als return a promise
-     */
-    addFormatValidator(format: string, validator: FormatValidator): void {
-        addValidator.format(this.core, format, validator);
-    }
-
-    /**
-     * @param datatype - JSON-Schema datatype to register attribute, e.g. "string" or "object"
-     * @param keyword - custom keyword
-     * @param validator - validator function receiving (core, schema, value, pointer). Return `undefined`
-     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
-     *      als return a promise
-     */
-    addKeywordValidator(datatype: string, keyword: string, validator: KeywordValidator): void {
-        addValidator.keyword(this.core, datatype, keyword, validator);
-    }
-
-    /**
      * Change the new schema for the current data
      * @param schema   - a valid json-schema
      */
@@ -378,27 +367,6 @@ export default class Controller {
         schema = UISchema.extendSchema(schema);
         this.service("validation").set(schema);
         this.service("schema").setSchema(schema);
-    }
-
-    // update data in schema service
-    update(): void {
-        this.service("schema").setData(this.service("data").get());
-    }
-
-    onAfterDataUpdate({ pointer }): void {
-        this.update();
-
-        // @feature selective-validation
-        if (pointer.includes("/")) {
-            // @attention validate parent-object or array, in order to support parent-validators.
-            // Any higher validators will still be ignore
-            pointer = pointer.replace(/\/[^/]+$/, "");
-        }
-
-        setTimeout(() => {
-            const data = this.service("data").getDataByReference();
-            this.destroyed !== true && this.service("validation").validate(data, pointer);
-        });
     }
 
     /**
@@ -414,5 +382,13 @@ export default class Controller {
     destroy(): void {
         this.destroyed = true;
         Object.keys(this.services).forEach(id => this.services[id].destroy());
+    }
+}
+
+
+/** throws an error, when given pointer is not a valid jons-pointer */
+function assertValidPointer(pointer: JSONPointer): void {
+    if (pointer[0] !== "#") {
+        throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
     }
 }
