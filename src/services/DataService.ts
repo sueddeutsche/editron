@@ -10,22 +10,23 @@ import State from "./State";
 import { ActionTypes, ActionCreators } from "./reducers/actions";
 import { JSONData, JSONPointer } from "../types";
 import { isPointer } from "../utils/UISchema";
+import { UpdateDataEvent } from "../editors/Editor";
 
 const DEBUG = false;
 
 
-type AddChange = {
+export type AddChange = {
     type: "add";
     next: JSONPointer;
     data?: any;
 }
 
-type DeleteChange = {
+export type DeleteChange = {
     type: "delete";
     old: JSONPointer;
 }
 
-type MoveChange = {
+export type MoveChange = {
     type: "move";
     old: JSONPointer;
     next: JSONPointer;
@@ -36,7 +37,6 @@ export type Change = AddChange|DeleteChange|MoveChange;
 export const isAddChange = (change): change is AddChange => change?.type === "add";
 export const isDeleteChange = (change): change is DeleteChange => change?.type === "delete";
 export const isMoveChange = (change): change is MoveChange => change?.type === "move";
-
 
 type BeforeUpdateEvent = {
     type: "data:update:before";
@@ -60,10 +60,7 @@ type UpdateDoneEvent = {
 
 export type Event = BeforeUpdateEvent|ContainerUpdateEvent|AfterUpdateEvent|UpdateDoneEvent;
 
-export type UpdateDataEvent = {
-    type: "data:update";
-    value: { pointer: JSONPointer; patch: Patch };
-}
+export type Watcher = (event: Event) => void;
 
 export type Observer = {
     (event: UpdateDataEvent): void;
@@ -291,14 +288,15 @@ export default class DataService {
         this.watcher.forEach(watcher => watcher(event));
     }
 
-    watch(callback: (event: Event) => void ) {
+    /** watch DataService lifecycle events */
+    watch(callback: Watcher) {
         if (this.watcher.includes(callback) === false) {
             this.watcher.push(callback);
         }
         return callback;
     }
 
-    removeWatcher(callback: (event: Event) => void) {
+    removeWatcher(callback: Watcher) {
         this.watcher = this.watcher.filter(watcher => watcher !== callback);
     }
 
@@ -321,6 +319,7 @@ export default class DataService {
         if (this.observers[pointer] && this.observers[pointer].length > 0) {
             this.observers[pointer] = this.observers[pointer].filter(cb => cb !== callback);
         }
+        return this;
     }
 
     /** send an event to all json-pointer observers */

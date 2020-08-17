@@ -1,7 +1,6 @@
 import Controller from "../Controller";
 import { JSONPointer, JSONData, ValidationError } from "../types";
-import AbstractEditor from "./AbstractEditor";
-import { UpdateDataEvent } from "../services/DataService";
+import { Patch } from "../services/utils/createDiff";
 
 
 /** Editor Constructor API */
@@ -25,6 +24,12 @@ export type ChangePointerEvent = {
     /** new json-pointer value */
     value: JSONPointer
 };
+
+
+export type UpdateDataEvent = {
+    type: "data:update";
+    value: { pointer: JSONPointer; patch: Patch };
+}
 
 
 export type UpdateErrorsEvent = { type: "validation:errors", value: Array<ValidationError> }
