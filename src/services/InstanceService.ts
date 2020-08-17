@@ -4,24 +4,28 @@ import { Change, isMoveChange, isDeleteChange } from "./DataService";
 import Controller from "../Controller";
 
 
+/**
+ * manages editor instance events -
+ * tracks and notifies instances over their lifetime on changes
+ */
 export default class InstanceService {
-    instances: Array<Editor> = [];
-    watcher: Array<Editor> = [];
     controller: Controller;
+    /** active editor instances */
+    instances: Array<Editor> = [];
+
 
     constructor(controller) {
         this.controller = controller;
     }
 
     add(editor: Editor) {
-        const ctrl = this.controller;
         const pointer = editor.getPointer();
         editor.toElement().setAttribute("data-point", pointer);
         editor.update = editor.update.bind(editor);
 
         editor.pointer = pointer;
-        ctrl.service("data").observe(pointer, editor.update, editor.notifyNestedChanges);
-        ctrl.service("validation").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.controller.service("data").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.controller.service("validation").observe(pointer, editor.update, editor.notifyNestedChanges);
 
         this.instances.push(editor);
     }
@@ -36,7 +40,11 @@ export default class InstanceService {
         this.instances = this.instances.filter(ed => ed !== editor);
     }
 
-    /** changepointer on update container data (array or object) before upcoming editor updates */
+    /**
+     *  move or delete properties/items before upcoming editor updates
+     *  - changes pointers and observers and
+     *  - notifies editors
+     */
     updateContainer(pointer: JSONPointer, controller, changes: Array<Change>) {
         const changePointers = [];
 
@@ -63,19 +71,29 @@ export default class InstanceService {
             editors.forEach((instance: Editor) => {
                 const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);
 
-                this.controller.service("data").removeObserver(instance.pointer, instance.update);
                 this.controller.service("data")
-                    .observe(instance.pointer, instance.update, instance.notifyNestedChanges);
-                this.controller.service("validation").removeObserver(instance.pointer, instance.update);
+                    .removeObserver(instance.pointer, instance.update)
+                    .observe(newPointer, instance.update, instance.notifyNestedChanges);
+
                 this.controller.service("validation")
-                    .observe(instance.pointer, instance.update, instance.notifyNestedChanges);
+                    .removeObserver(instance.pointer, instance.update)
+                    .observe(newPointer, instance.update, instance.notifyNestedChanges);
 
                 instance.update(<ChangePointerEvent>{ type: "pointer", value: newPointer });
-
                 instance.pointer = newPointer;
                 instance.toElement().setAttribute("data-point", newPointer);
             });
         })
+    }
+
+    /** change all editors active-state */
+    setActive(active: boolean) {
+        this.instances.forEach(ed => ed.update(<SetEnabledEvent>{ type: "active", value: active }));
+    }
+
+    destroy() {
+        this.instances.forEach(instance => instance.destroy());
+        this.instances.length = 0;
     }
 
     /**
@@ -95,14 +113,5 @@ export default class InstanceService {
 
         });
         return map;
-    }
-
-    setActive(active) {
-        this.instances.forEach(ed => ed.update(<SetEnabledEvent>{ type: "active", value: active }));
-    }
-
-    destroy() {
-        this.instances.forEach(instance => instance.destroy());
-        this.instances.length = 0;
     }
 }
