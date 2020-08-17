@@ -58,7 +58,7 @@ describe("BubblingCollectionObservable", () => {
     it("should collect events occuring on the same pointer", () => {
         const events = [];
         const b = new Bubbles();
-        b.observe("#/child/item", (event) => events.push(cp(event)), false);
+        b.observe("#/child/item", (event) => events.push(cp(event.value)), false);
 
         b.notify("#/child/item", createValidationError({ id: 1 }));
         b.notify("#/child/item", createValidationError({ id: 2 }));
@@ -71,7 +71,7 @@ describe("BubblingCollectionObservable", () => {
     it("should collect events occuring within parent-pointer", () => {
         const events = [];
         const b = new Bubbles();
-        b.observe("#", (event) => events.push(cp(event)), true);
+        b.observe("#", (event) => events.push(cp(event.value)), true);
 
         b.notify("#/child/item", createValidationError({ id: 1 }));
         b.notify("#/child/item", createValidationError({ id: 2 }));
@@ -86,7 +86,7 @@ describe("BubblingCollectionObservable", () => {
     it("should collect events occuring within parent-pointer and itself", () => {
         const events = [];
         const b = new Bubbles();
-        b.observe("#/child", (event) => events.push(cp(event)), true);
+        b.observe("#/child", (event) => events.push(cp(event.value)), true);
 
         b.notify("#/child/item", createValidationError({ id: 1 }));
         b.notify("#/child/item", createValidationError({ id: 2 }));
@@ -105,8 +105,8 @@ describe("BubblingCollectionObservable", () => {
         const targetEvents = [];
         const parentEvents = [];
         const b = new Bubbles();
-        b.observe("#/parent/target", e => targetEvents.push(e));
-        b.observe("#/parent", e => parentEvents.push(e), true);
+        b.observe("#/parent/target", e => targetEvents.push(e.value));
+        b.observe("#/parent", e => parentEvents.push(e.value), true);
 
         b.notify("#/parent/target", createValidationError({ id: 1 }));
         b.notify("#/parent", createValidationError({ id: 2 }));
@@ -117,8 +117,10 @@ describe("BubblingCollectionObservable", () => {
 
         b.clearEvents("#/parent/target");
 
-        assert.deepEqual(parentEvents, [[{ id: 2 }]], "should have notified parent with removed event");
-        assert.deepEqual(targetEvents, [[]], "should have notified target with empty event-list");
+        assert.deepEqual(parentEvents, [[{ id: 2 }]],
+            "should have notified parent with removed event");
+        assert.deepEqual(targetEvents, [[]],
+            "should have notified target with empty event-list");
     });
 
     it("should clear events of children", () => {
@@ -134,8 +136,8 @@ describe("BubblingCollectionObservable", () => {
 
         b.clearEvents("#/parent");
 
-        assert.deepEqual(parentEvents, [[]], "should have cleared target-events");
-        assert.deepEqual(targetEvents, [[]], "should have cleared child-events");
+        assert.deepEqual(parentEvents, [{ type: "validation:errors", value: []}], "should have cleared target-events");
+        assert.deepEqual(targetEvents, [{ type: "validation:errors", value: []}], "should have cleared child-events");
     });
 
 
@@ -145,7 +147,7 @@ describe("BubblingCollectionObservable", () => {
         const events = [];
         const b = new Bubbles();
         // ignore reset event (empty array)
-        b.observe("#/child", (event) => event.length !== 0 && events.push(cp(event)), true);
+        b.observe("#/child", (event) => event.value.length !== 0 && events.push(cp(event.value)), true);
 
         b.notify("#/child/item", createValidationError({ id: 1 }));
         b.notify("#/child/item", createValidationError({ id: 2 }));
@@ -161,7 +163,7 @@ describe("BubblingCollectionObservable", () => {
     it("should notify observers on reset", () => {
         const events = [];
         const b = new Bubbles();
-        b.observe("#/child", (event) => events.push(cp(event)), true);
+        b.observe("#/child", (event) => events.push(cp(event.value)), true);
         b.notify("#/child/item", createValidationError({ id: 1 }));
         b.reset();
 

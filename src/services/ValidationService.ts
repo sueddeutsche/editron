@@ -98,6 +98,7 @@ export default class ValidationService {
 
     removeObserver(pointer: JSONPointer, observer: Observer) {
         this.observer.removeObserver(pointer, observer);
+        return this;
     }
 
     notify(pointer: JSONPointer, event: ValidationError) {

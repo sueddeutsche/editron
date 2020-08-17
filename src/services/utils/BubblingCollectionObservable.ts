@@ -224,9 +224,9 @@ class BubblingCollectionObservable {
 
             this.bubbleCollection[observerPointer] = this.bubbleCollection[observerPointer] || {};
             const map = this.bubbleCollection[observerPointer];
-            map[sourcePointer] = event;
-            const events = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
-            observer({ type: "validation:errors", value: errors });
+            map[sourcePointer] = errors;
+            const combinedErrors = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
+            observer({ type: "validation:errors", value: combinedErrors });
         });
     }
 }
