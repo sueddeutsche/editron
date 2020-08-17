@@ -8,6 +8,7 @@ import { Button } from "mithril-material-forms/index";
 import { Plugin } from "../index";
 import Sortable, { SortableEvent } from 'sortablejs';
 import arrayUtils from "../../utils/array";
+import gp from "gson-pointer";
 
 
 export type Options = {
@@ -23,7 +24,7 @@ interface SortableEditor extends Editor {
 export function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
     console.log("on add");
     const { from, newIndex, item } = event;
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
 
     // always remove node - we create it from data
     item.parentNode.removeChild(item);
@@ -34,16 +35,16 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
         try {
             data = JSON.parse(item.dataset.content);
             // for convinience, add missing data
-            data = controller.schema().core.getTemplate([data], schema)[0];
+            data = controller.service("schema").core.getTemplate([data], schema)[0];
 
         } catch (e) {
             console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
             return;
         }
 
-        const toList = controller.data().get(pointer);
+        const toList = controller.service("data").get(pointer);
         toList.splice(newIndex, 0, data);
-        controller.data().set(pointer, toList);
+        controller.service("data").set(pointer, toList);
     }
 }
 
@@ -76,14 +77,18 @@ export function onEndSortable(pointer: JSONPointer, controller: Controller, even
             return;
         }
 
-        const toList = controller.data().get(toPointer);
-        const fromList = controller.data().get(fromPointer);
+        const toList = controller.service("data").get(toPointer);
+        const fromList = controller.service("data").get(fromPointer);
         toList.splice(newIndex, 0, fromList[oldIndex]);
         fromList.splice(oldIndex, 1);
 
-        // console.log("set", fromList, toList);
-        controller.data().set(fromPointer, fromList);
-        controller.data().set(toPointer, toList);
+        // join data to make one change request (for undo)
+        const rootData = controller.service("data").get();
+        gp.set(rootData, fromPointer, fromList);
+        gp.set(rootData, toPointer, toList);
+        controller.service("data").set("#", rootData);
+        // controller.service("data").set(fromPointer, fromList);
+        // controller.service("data").set(toPointer, toList);
     }
 }
 
@@ -113,7 +118,7 @@ export default class SortablePlugin implements Plugin {
             return;
         }
 
-        const schema = this.controller.schema().get(pointer);
+        const schema = this.controller.service("schema").get(pointer);
         if (schema?.type !== "array") {
             return;
         }
@@ -144,7 +149,7 @@ export default class SortablePlugin implements Plugin {
                     // console.log(event);
                     // selectionService.toggle(`${this.pointer}/${oldIndex}`);
                     console.log("update location", `${pointer}/${oldIndex}`);
-                    controller.location().setCurrent(`${pointer}/${oldIndex}`);
+                    controller.service("location").setCurrent(`${pointer}/${oldIndex}`);
                 }
                 hasMoved = false;
             },

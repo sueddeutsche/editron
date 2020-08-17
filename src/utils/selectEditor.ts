@@ -24,7 +24,7 @@ function select(editors: Array<EditorPlugin>, pointer: JSONPointer, controller: 
         return false; // abort if it is an internal value
     }
 
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
     if (schema.type === "error") {
         // data-pointer could not be found in schema
         // @todo find a better solution for additional data: maybe an 'additional data'-editor

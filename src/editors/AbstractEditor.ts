@@ -1,4 +1,4 @@
-import { JSONData, JSONPointer, JSONSchema, ValidationError } from "../types";
+import { JSONData, JSONPointer, JSONSchema, ValidationError, UpdateEvent } from "../types";
 import Controller from "../Controller";
 import { Editor } from "./Editor";
 import { Observer, EventType as ValidationEvent } from "../services/ValidationService";
@@ -48,7 +48,7 @@ export type Options = {
  * @param controller - editron controller instance
  * @param options - resolved options object
  */
-export default class AbstractEditor {
+export default class AbstractEditor implements Editor {
     pointer: JSONPointer;
     controller: Controller;
     options: Options;
@@ -68,48 +68,26 @@ export default class AbstractEditor {
 
         this.dom = this.controller
             .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
-
-        this.update = controller.data()
-            .observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
-
-        this.setErrors = controller.validator()
-            .observe(pointer, this.setErrors.bind(this), options.notifyNestedErrors === true);
-
-        this.errors = this.controller.validator()
-            .getErrorsAndWarnings(pointer);
     }
 
-    update(changeEvent) {
+    update<T>(event: UpdateEvent<T>) {
         throw new Error("Missing implemented of method 'update' in custom editor");
     }
 
-    updatePointer(newPointer: JSONPointer) {
-        const oldPointer = this.pointer;
-        this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.validator().removeObserver(oldPointer, this.setErrors);
-        this.pointer = newPointer;
-        this.controller.data().observe(newPointer, this.update, this.options.notifyNestedChanges === true);
-        this.setErrors = this.controller.validator().observe(newPointer, this.setErrors);
-    }
-
     getData(): any {
-        return this.controller.data().get(this.pointer);
+        return this.controller.service("data").get(this.pointer);
     }
 
     setData(data: JSONData) {
-        return this.controller.data().set(this.pointer, data);
-    }
-
-    setActive(active = true) {
-        throw new Error(`Missing implementation of method 'setActive' in custom editor ${this}`);
+        return this.controller.service("data").set(this.pointer, data);
     }
 
     getErrors() {
-        return this.errors;
+        return this.controller.service("validation").getErrorsAndWarnings(this.pointer);
     }
 
     getSchema(): JSONSchema {
-        return this.controller.schema().get(this.pointer);
+        return this.controller.service("schema").get(this.pointer);
     }
 
     getPointer(): JSONPointer {
@@ -117,11 +95,11 @@ export default class AbstractEditor {
     }
 
     focus(): void {
-        this.controller.location().setCurrent(this.pointer);
+        this.controller.service("location").setCurrent(this.pointer);
     }
 
     blur(): void {
-        this.controller.location().blur(this.pointer);
+        this.controller.service("location").blur(this.pointer);
     }
 
     toElement(): HTMLElement {
@@ -129,16 +107,7 @@ export default class AbstractEditor {
     }
 
     destroy(): void {
-        this.controller.data().removeObserver(this.pointer, this.update);
-        this.controller.validator().removeObserver(this.pointer, this._addError);
+        // this.controller.service("data").removeObserver(this.pointer, this.update);
+        // this.controller.service("validation").removeObserver(this.pointer, this._addError);
     }
-
-    setErrors(errors: Array<ValidationError>): void {
-        this.errors = errors;
-        if (this.updateErrors) {
-            this.updateErrors(this.errors);
-        }
-    }
-
-    updateErrors(errors: Array<ValidationError>): void {}
 }

@@ -4,6 +4,7 @@ import ArrayItemView, { EditorTarget } from "./ArrayItemView";
 import arrayUtils from "../../utils/array";
 import { JSONPointer, EditronConfigAttrs } from "../../types";
 import Controller from "../../Controller";
+import { Editor } from "../Editor";
 
 
 export type Options = {
@@ -35,7 +36,7 @@ export type ViewModel = {
 export default class ArrayItemEditor {
     $element: HTMLElement;
     controller: Controller;
-    editor;
+    editor: Editor;
     parentPointer: JSONPointer;
     viewModel: ViewModel;
 
@@ -90,7 +91,7 @@ export default class ArrayItemEditor {
         this.parentPointer = gp.join(newPointer, "..", true);
         this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
         this.viewModel.pointer = newPointer;
-        this.viewModel.length = this.controller.data().get(this.parentPointer).length;
+        this.viewModel.length = this.controller.service("data").get(this.parentPointer).length;
         this.render();
     }
 

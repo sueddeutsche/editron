@@ -5,6 +5,7 @@ import addValidator from "json-schema-library/lib/addValidator";
 import DataService, { EventType as DataServiceEvent, Change, isMoveChange, isDeleteChange } from "./services/DataService";
 import SchemaService from "./services/SchemaService";
 import ValidationService from "./services/ValidationService";
+import InstanceService from "./services/InstanceService";
 import LocationService, { EventType as LocationEvent } from "./services/LocationService";
 import State from "./services/State";
 import selectEditor from "./utils/selectEditor";
@@ -40,6 +41,15 @@ export type Options = {
     proxy?: ProxyOptions|Foxy;
     plugins?;
 };
+
+
+export type Services = {
+    instances: InstanceService;
+    data: DataService;
+    validation: ValidationService;
+    schema: SchemaService;
+    location: LocationService;
+}
 
 
 /**
@@ -88,18 +98,13 @@ export type Options = {
 export default class Controller {
     #proxy: Foxy;
     core;
-    dataService: DataService;
     destroyed = false;
     disabled = false;
     editors: Array<EditorPlugin>;
-    editorInstances: Array<Editor> = [];
-    locationService: LocationService;
     options: Options;
-    schemaService: SchemaService;
     state: State;
-    validationService: ValidationService;
     plugins: Array<Plugin> = [];
-
+    services: Services;
 
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, options: Options = {}) {
         schema = UISchema.extendSchema(schema);
@@ -138,28 +143,35 @@ export default class Controller {
             return false;
         });
 
-        this.schemaService = new SchemaService(schema, data, this.core);
-        this.validationService = new ValidationService(this.state, schema, this.core);
-        // enable i18n error-translations
-        this.validationService.setErrorHandler(error => i18n.translateError(this, error));
         // merge given data with template data
-        data = this.schemaService.addDefaultData(data, schema);
+        const schemaService = new SchemaService(schema, data, this.core)
+        data = schemaService.addDefaultData(data, schema);
 
-        this.dataService = new DataService(this.state, data);
+        this.services = {
+           instances: new InstanceService(this),
+           location: new LocationService(),
+           data: new DataService(this.state, data),
+           schema: schemaService,
+           validation: new ValidationService(this.state, schema, this.core)
+        };
+
+        // enable i18n error-translations
+        this.service("validation").setErrorHandler(error => i18n.translateError(this, error));
+
         // update container will be called before any editor change-notification
         // this gives us time, to manage update-pointer and destory events of
         // known editors
-        this.onUpdateContainer = this.onUpdateContainer.bind(this);
-        this.dataService.on(DataServiceEvent.UPDATE_CONTAINER, this.onUpdateContainer);
+        this.service("data").on(DataServiceEvent.UPDATE_CONTAINER,
+            ({ value }) => this.services.instances.updateContainer(value.pointer, this, value.changes));
+
         // start validation after data has been updated
-        this.onAfterDataUpdate = this.dataService.on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+        this.service("data").on(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
 
         // run initial validation
         this.validateAll();
 
-        this.locationService = new LocationService();
-        this.locationService.on(LocationEvent.FOCUS, (pointer: JSONPointer) => {
-            console.log("focus", pointer, this.schemaService.get(pointer));
+        this.service("location").on(LocationEvent.FOCUS, (pointer: JSONPointer) => {
+            console.log("focus", pointer, this.service("schema").get(pointer));
         });
 
         // @lifecycle hook initialize on controller ready
@@ -168,13 +180,17 @@ export default class Controller {
         }
     }
 
+    service<T extends keyof Services>(serviceName: T): Services[T] {
+        return this.services[serviceName];
+    }
+
     getPlugin(pluginId: string) {
         return this.plugins.find(plugin => plugin.id === pluginId);
     }
 
     /** reset undo history */
     resetUndoRedo(): void {
-        this.dataService.resetUndoRedo();
+        this.service("data").resetUndoRedo();
     }
 
     /**
@@ -187,7 +203,7 @@ export default class Controller {
             return;
         }
         this.disabled = disabled;
-        this.editorInstances.forEach(ed => ed.setActive(!this.disabled))
+        this.service("instances").setActive(!this.disabled);
     }
 
     /** returns the editors active state */
@@ -220,7 +236,6 @@ export default class Controller {
         if (pointer == null || element == null) {
             throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
         }
-
         assertValidPointer(pointer);
 
         // merge schema["editron:ui"] object with options. options precede
@@ -244,7 +259,7 @@ export default class Controller {
         }
 
         if (EditorConstructor === undefined) {
-            this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
+            this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.service("schema").get(pointer));
             return undefined;
         }
 
@@ -252,9 +267,9 @@ export default class Controller {
         const editor = new EditorConstructor(pointer, this, instanceOptions);
         const dom = editor.toElement();
         element.appendChild(dom);
-        editor.setActive(!instanceOptions.disabled);
-        dom.setAttribute("data-point", pointer);
-        this.addInstance(editor);
+
+        this.services.instances.add(editor);
+        editor.update({ type: "active", value: !instanceOptions.disabled });
 
         // @lifecycle hook create widget
         this.plugins.filter(plugin => plugin.onCreateEditor)
@@ -271,7 +286,12 @@ export default class Controller {
         if (!editor) {
             return;
         }
-        this.removeInstance(editor);
+        this.services.instances.remove(editor);
+
+        // remove observers
+        // @ts-ignore
+        editor.__events?.remove();
+
         // @lifecycle hook destroy widget
         this.plugins.filter(plugin => plugin.onDestroyEditor)
             .forEach(plugin => plugin.onDestroyEditor(editor.getPointer(), editor));
@@ -288,21 +308,9 @@ export default class Controller {
      * @param index - index within array, where the child should be inserted (does not replace). Default: 0
      */
     addItemTo(pointer: JSONPointer, index = 0) {
-        addItem(this.data(), this.schema(), this.locationService, pointer, index);
-        this.locationService.goto(gp.join(pointer, index, true));
+        addItem(this.service("data"), this.service("schema"), this.services.location, pointer, index);
+        this.services.location.goto(gp.join(pointer, index, true));
     }
-
-    /**
-     * Get or update data from a pointer
-     * @returns DataService instance
-     */
-    data(): DataService { return this.dataService; }
-
-    /**
-     * Get the json schema from a pointer or replace the schema
-     * @returns SchemaService instance
-     */
-    schema(): SchemaService { return this.schemaService; }
 
     /**
      * @returns proxy instance
@@ -314,23 +322,15 @@ export default class Controller {
      * start validation, get your current errors at `pointer`, hook into validation
      * to receive your errors at `pointer`
      */
-    validator(): ValidationService { return this.validationService; }
-
-    /**
-     * ## Usage
-     *  goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
-     *  setCurrent(pointer) - Update current pointer, but do not jump to target
-     * @returns LocationService-Singleton
-     */
-    location(): LocationService { return this.locationService; }
+    validator(): ValidationService { return this.service("validation"); }
 
     /**
      * Set the application data
      * @param data - json data matching registered json-schema
      */
     setData(data: JSONData) {
-        data = this.schemaService.addDefaultData(data);
-        this.data().set("#", data);
+        data = this.service("schema").addDefaultData(data);
+        this.service("data").set("#", data);
     }
 
     /**
@@ -338,7 +338,7 @@ export default class Controller {
      * @returns data at the given location
      */
     getData(pointer: JSONPointer = "#"): JSONData {
-        return this.data().get(pointer);
+        return this.service("data").get(pointer);
     }
 
     /**
@@ -368,17 +368,18 @@ export default class Controller {
      */
     setSchema(schema: JSONSchema): void {
         schema = UISchema.extendSchema(schema);
-        this.validationService.set(schema);
-        this.schemaService.setSchema(schema);
+        this.service("validation").set(schema);
+        this.service("schema").setSchema(schema);
     }
 
     // update data in schema service
     update(): void {
-        this.schemaService.setData(this.dataService.get());
+        this.service("schema").setData(this.service("data").get());
     }
 
-    onAfterDataUpdate({ pointer }): void {
+    onAfterDataUpdate({ type, value }): void {
         this.update();
+        let { pointer } = value;
 
         // @feature selective-validation
         if (pointer.includes("/")) {
@@ -388,8 +389,8 @@ export default class Controller {
         }
 
         setTimeout(() => {
-            const data = this.dataService.getDataByReference();
-            this.destroyed !== true && this.validationService.validate(data, pointer);
+            const data = this.service("data").getDataByReference();
+            this.destroyed !== true && this.service("validation").validate(data, pointer);
         });
     }
 
@@ -398,83 +399,14 @@ export default class Controller {
      */
     validateAll(): void {
         setTimeout(() =>
-            this.destroyed !== true && this.validationService.validate(this.dataService.getDataByReference())
+            this.destroyed !== true && this.service("validation").validate(this.service("data").getDataByReference())
         );
-    }
-
-    /** management tasks before upcoming editor updates */
-    onUpdateContainer(pointer: JSONPointer, changes: Array<Change>) {
-        const changePointers = [];
-
-        for (let i = 0, l = changes.length; i < l; i += 1) {
-            const change = changes[i];
-
-            // we have to collect editors up front or patch-sequences get mangled
-            // between update and not yet udpated editor
-            if (isMoveChange(change)) {
-                changePointers.push({
-                    ...change,
-                    editors: this.findInstancesFrom(change.old)
-                });
-
-            // destroy editor instances
-            } else if (isDeleteChange(change)) {
-                this.findInstancesFrom(change.old).forEach(ed => this.destroyEditor(ed));
-            }
-        }
-
-        // change pointer of instances
-        changePointers.forEach(change => {
-            const { old: prevPtr, next: nextPtr, editors } = change;
-            editors.forEach((instance: Editor) => {
-                const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);
-                // console.log("C", instance.getPointer(), "=>", newPointer);
-                instance.updatePointer(newPointer)
-                instance.toElement().setAttribute("data-point", newPointer);
-            });
-        })
-    }
-
-    addInstance(editor: Editor) {
-        this.editorInstances.push(editor);
-    }
-
-    findInstancesFrom(parentPointer: JSONPointer) {
-        return this.editorInstances.filter(editor => editor.getPointer().startsWith(parentPointer))
-    }
-
-    removeInstance(editor: Editor) {
-        this.editorInstances = this.editorInstances.filter(ed => ed !== editor);
-    }
-
-    /**
-     * @debug
-     * @returns currently active editor/widget instances sorted by pointer
-     */
-    getInstancesPerPointer() {
-        const map = {};
-        this.editorInstances.forEach(editor => {
-            const pointer = editor.getPointer();
-            map[pointer] = map[pointer] || [];
-            if (map[pointer].includes(editor) === false) {
-                map[pointer].push(editor);
-            } else {
-                console.log("multiple instances on", editor.getPointer(), editor);
-            }
-
-        });
-        return map;
     }
 
     /** Destroy the editor, its widgets and services */
     destroy(): void {
-        this.editorInstances.forEach(instance => instance.destroy());
-
+        this.service("data").off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
         this.destroyed = true;
-        this.editorInstances.length = 0;
-        this.schemaService.destroy();
-        this.validationService.destroy();
-        this.dataService.destroy();
-        this.dataService.off(DataServiceEvent.AFTER_UPDATE, this.onAfterDataUpdate);
+        Object.keys(this.services).forEach(id => this.services[id].destroy());
     }
 }

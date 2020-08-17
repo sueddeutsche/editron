@@ -18,11 +18,8 @@ function showJSON(controller: Controller, data: JSONData, title: string) {
 
 
 export type Options = {
-    id?: string;
-    attrs?: {
-        id?: string;
-        [p: string]: any
-    };
+    attrs?: { [p: string]: any };
+    /** icon to display in object-header */
     icon?: string;
     /** hide the title */
     hideTitle?: boolean;
@@ -40,16 +37,15 @@ export type ViewModel = {
     attrs: {
         [p: string]: any
     };
-    errors: Array<any>;
-    pointer: JSONPointer;
     collapsed?: boolean;
     description?: string;
     disabled?: boolean;
+    errors: Array<any>;
     hideTitle?: boolean;
     icon?: string;
-    id?: string;
     oncollapse?: Function;
     ondelete?: Function;
+    pointer: JSONPointer;
     title?: string;
 }
 
@@ -61,7 +57,7 @@ export default class ObjectEditor extends AbstractEditor {
     $children: HTMLElement;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type === "object";
     }
 
@@ -96,93 +92,84 @@ export default class ObjectEditor extends AbstractEditor {
 
         this.render();
         this.$children = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
-        this.update();
+        this.update({ type: "data", value: null });
     }
 
-    updatePointer(pointer: JSONPointer) {
-        if (this.viewModel == null || this.pointer === pointer) {
-            return;
-        }
-
-        super.updatePointer(pointer);
-        this.viewModel.pointer = pointer;
-        this.render();
-    }
-
-    /** de/activate this editors user-interaction */
-    setActive(active = true): void {
-        this.viewModel.disabled = active === false;
-        this.render();
-    }
-
-    update(): void {
+    update({ type, value }) {
         if (this.viewModel == null) {
-            console.error(`destroyed ObjectEditor receives an update event
-                - this may be invoked through oneOf-Editor`, this);
+            console.log("ABROT update object");
             return;
         }
+        console.log("update object");
 
-        // fetch latest data
-        const data = this.getData();
-        // destroy child editor
-        this.childEditors.forEach(editor => this.controller.destroyEditor(editor));
-        this.childEditors.length = 0;
-        // clear html
-        this.$children.innerHTML = "";
+        switch (type) {
+            case "data":
+                const data = this.getData();
+                // destroy child editor
+                this.childEditors.forEach(editor => this.controller.destroyEditor(editor));
+                this.childEditors.length = 0;
+                // clear html
+                this.$children.innerHTML = "";
+                if (data == null) {
+                    break;
+                }
+                // rebuild children
+                Object.keys(data).forEach(property => {
+                    this.childEditors.push(this.controller.createEditor(`${this.pointer}/${property}`, this.$children));
+                });
+                break;
 
-        if (data == null) {
-            this.render();
-            return;
+            case "error":
+                const errors = value as Array<ValidationError>;
+                // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
+                // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
+                // arrays this should come per default, as the may insert in add items...
+                this.viewModel.errors = errors.map(error => {
+                    if (error.code === "no-additional-properties-error") {
+                        const message = error.message;
+                        const property = error.data.property;
+                        return {
+                            severity: error.type || "error",
+                            message: m(".editron-error.editron-error--object-property",
+                                m("span", m.trust(message)),
+                                m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
+                                m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
+                            )
+                        };
+                    }
+                    return error;
+                });
+                break;
+
+            case "pointer":
+                this.viewModel.pointer = value as string;
+                break;
+
+            case "active":
+                /** de/activate this editors user-interaction */
+                this.viewModel.disabled = value === false;
+                break;
         }
 
-        // rebuild children
-        Object.keys(data).forEach(property => {
-            this.childEditors.push(this.controller.createEditor(`${this.pointer}/${property}`, this.$children));
-        });
         this.render();
     }
 
     /** deletes this object from data */
     delete() {
-        this.controller.data().delete(this.pointer)
+        this.controller.service("data").delete(this.pointer)
     }
 
     /** deletes a property from this object */
     deleteProperty(property: string): void {
-        const data = this.controller.data().get(this.pointer);
+        const data = this.controller.service("data").get(this.pointer);
         delete data[property];
-        this.controller.data().set(this.pointer, data);
+        this.controller.service("data").set(this.pointer, data);
     }
 
     /** displays the properties json-value */
     showProperty(property: string): void {
-        const propertyData = this.controller.data().get(`${this.pointer}/${property}`);
+        const propertyData = this.controller.service("data").get(`${this.pointer}/${property}`);
         showJSON(this.controller, propertyData, property);
-    }
-
-    updateErrors(errors: Array<ValidationError> = []) {
-        if (this.viewModel == null) {
-            return;
-        }
-        // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
-        // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
-        // arrays this should come per default, as the may insert in add items...
-        this.viewModel.errors = errors.map(error => {
-            if (error.code === "no-additional-properties-error") {
-                const message = error.message;
-                const property = error.data.property;
-                return {
-                    severity: error.type || "error",
-                    message: m(".editron-error.editron-error--object-property",
-                        m("span", m.trust(message)),
-                        m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
-                        m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
-                    )
-                };
-            }
-            return error;
-        });
-        this.render();
     }
 
     render(): void {

@@ -40,12 +40,12 @@ export default class OneOfEditor implements Editor {
 
 
     static editorOf(pointer: JSONPointer, controller: Controller, options: Options) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.oneOfSchema && !schema.items && !options.renderOneOf;
     }
 
     constructor(pointer: JSONPointer, controller: Controller, options: Options) {
-        const childSchema = controller.schema().get(pointer);
+        const childSchema = controller.service("schema").get(pointer);
         // @special case. Our options lie in `schema.oneOfSchema`
         const schema = childSchema.oneOfSchema;
         const attrs = gp.get(schema, `#/${UI_PROPERTY}/attrs`);
@@ -70,7 +70,7 @@ export default class OneOfEditor implements Editor {
         };
 
         // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
-        this.update = controller.data().observe(pointer, this.update.bind(this), true);
+        this.update = controller.service("data").observe(pointer, this.update.bind(this), true);
 
         this.render();
         this.$childContainer = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
@@ -84,8 +84,8 @@ export default class OneOfEditor implements Editor {
 
     changeChild(schema): void {
         this.controller.destroyEditor(this.childEditor)
-        const data = this.controller.schema().getTemplate(schema);
-        this.controller.data().set(this.pointer, data);
+        const data = this.controller.service("schema").getTemplate(schema);
+        this.controller.service("data").set(this.pointer, data);
     }
 
     getIndexOf(currentSchema): number {
@@ -107,14 +107,14 @@ export default class OneOfEditor implements Editor {
         this.viewModel.id = getId(newPointer);
         this.viewModel.pointer = newPointer;
         this.dom.id = newPointer;
-        this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.data().observe(newPointer, this.update, true);
+        this.controller.service("data").removeObserver(oldPointer, this.update);
+        this.controller.service("data").observe(newPointer, this.update, true);
 
         this.render();
     }
 
     update(): void {
-        const currentSchema = this.controller.schema().get(this.pointer);
+        const currentSchema = this.controller.service("schema").get(this.pointer);
         delete currentSchema.oneOfSchema; // is recreated each time
         if (currentSchema.title === this.childSchema.title) {
             return;
@@ -159,6 +159,6 @@ export default class OneOfEditor implements Editor {
         this.viewModel = null;
         m.render(this.dom, "i");
         this.controller.destroyEditor(this.childEditor);
-        this.controller.data().removeObserver(this.pointer, this.update);
+        this.controller.service("data").removeObserver(this.pointer, this.update);
     }
 }

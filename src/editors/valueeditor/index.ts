@@ -8,7 +8,7 @@ import { JSONPointer } from "../../types";
 export default class ValueEditor extends AbstractValueEditor {
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type !== "object" && schema.type !== "array";
     }
 

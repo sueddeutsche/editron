@@ -33,6 +33,7 @@ export type Options = EditorOptions & {
 export default class MinimapEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
+    notifyNestedChanges = true;
 
 
     static editorOf(pointer: JSONPointer, controller: Controller, options?: Options) {
@@ -40,8 +41,8 @@ export default class MinimapEditor extends AbstractEditor {
     }
 
     constructor(pointer, controller, options) {
-        options.notifyNestedChanges = true;
         super(pointer, controller, options);
+        options.notifyNestedChanges = true;
 
         this.dom.classList.add("editron-minimap-editor");
         const { minimap } = options;
@@ -50,27 +51,27 @@ export default class MinimapEditor extends AbstractEditor {
             controller,
             node: buildTree(this.pointer, this.getData(), this.controller, minimap.depth ?? 2),
             errors: [],
-            currentSelection: controller.location().getCurrent(),
-            onSelect: pointer => controller.location().goto(pointer),
+            currentSelection: controller.service("location").getCurrent(),
+            onSelect: pointer => controller.service("location").goto(pointer),
 
             onAdd: (item) => controller.addItemTo(item.pointer),
             onChange(pointerToList, reorderedList, targetIndex) {
                 // update data
-                const data = controller.data().get(pointerToList);
+                const data = controller.service("data").get(pointerToList);
                 const sorted = [];
                 for (let i = 0, l = data.length; i < l; i += 1) {
                     sorted.push(data[reorderedList[i]]);
                 }
-                controller.data().set(pointerToList, sorted);
+                controller.service("data").set(pointerToList, sorted);
 
                 // refocus
                 // controller.location().goto(`${pointerToList}/${targetIndex}`);
-                const currentPointer = controller.location().getCurrent();
+                const currentPointer = controller.service("location").getCurrent();
                 const localPointer = currentPointer.replace(pointerToList, "");
 
                 if (localPointer === currentPointer) {
                     // console.log("current focus is outside of reordered list - keep focus");
-                    return controller.location().focus();
+                    return controller.service("location").focus();
                 }
 
                 const currentIndex = parseInt(localPointer.replace(/^\//, ""));
@@ -78,17 +79,17 @@ export default class MinimapEditor extends AbstractEditor {
 
                 if (nextIndex === currentIndex) {
                     // console.log("current index has not changed - keep focus");
-                    return controller.location().focus();
+                    return controller.service("location").focus();
                 }
 
                 // console.log("change focus pointer - editor has moved", currentIndex, "->", nextIndex);
                 const updatedPointer = gp.join(pointerToList, nextIndex, localPointer.replace(/^\/[0-9]+\//, ""));
                 // console.log(currentPointer, "->", updatedPointer);
-                return controller.location().setCurrent(updatedPointer);
+                return controller.service("location").setCurrent(updatedPointer);
             }
         };
 
-        const LocationService = controller.location();
+        const LocationService = controller.service("location");
         this.onLocationChange = this.onLocationChange.bind(this);
         LocationService.on(LocationService.TARGET_EVENT, this.onLocationChange);
 
@@ -96,15 +97,29 @@ export default class MinimapEditor extends AbstractEditor {
         // this.update();
     }
 
-    updateErrors(errors) {
-        console.log("index errors", errors);
-        this.viewModel.errors = errors.filter(error => error.severity !== "warning");
-        this.render();
-    }
+    update({ type, value }) {
+        console.log("update minimap", type, value);
+        switch (type) {
+            case "pointer":
+                this.pointer = value;
+                // run data update on pointer change // break;
+            case "data":
+                const data = this.getData();
+                this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
+                break;
 
-    update() {
-        const data = this.getData();
-        this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
+            case "error":
+                this.viewModel.errors = value.filter(error => error.severity !== "warning");
+                break;
+
+            case "active":
+                if (value === false) {
+                    console.log("minimap currently not deactivatable");
+                }
+                break;
+
+        }
+
         this.render();
     }
 
@@ -116,19 +131,9 @@ export default class MinimapEditor extends AbstractEditor {
         m.render(this.dom, m(View, this.viewModel));
     }
 
-    // @todo
-    setActive() {}
-
     onLocationChange(targetPointer) {
         this.viewModel.currentSelection = targetPointer;
-        this.update();
-    }
-
-    // @validate not necessary or extend for inline use?
-    updatePointer(newPointer: JSONPointer) {
-        const res = super.updatePointer(newPointer);
-        this.update();
-        return res;
+        this.render();
     }
 
     destroy() {
@@ -136,7 +141,7 @@ export default class MinimapEditor extends AbstractEditor {
             super.destroy();
             this.viewModel = null;
             m.render(this.dom, m("i"));
-            this.controller.location().off(LocationEvent.TARGET, this.onLocationChange);
+            this.controller.service("location").off(LocationEvent.TARGET, this.onLocationChange);
         }
     }
 

@@ -67,7 +67,7 @@ function mayBlur(element: FocusableElement|Blurable, direction: Direction): bool
 
 /** returns the current active (editron) input element or false */
 function getActiveInput(controller: Controller, parent: HTMLElement = document.body): FocusableElement|false {
-    const currentPointer = controller.location().getCurrent();
+    const currentPointer = controller.service("location").getCurrent();
     const currentId = `#${getID(currentPointer)}`;
     if (currentId === "#") {
         console.log("abort empty selection", currentPointer, "active element", document.activeElement);

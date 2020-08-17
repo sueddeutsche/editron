@@ -25,8 +25,8 @@ class AbstractDelegationEditor extends AbstractEditor {
         this.render();
     }
 
-    updatePointer(newPointer: JSONPointer) {
-        return super.updatePointer(newPointer);
+    update(event) {
+        console.log("update delegation pliugin", event);
     }
 
     delegate(pointer: JSONPointer) {
@@ -38,9 +38,6 @@ class AbstractDelegationEditor extends AbstractEditor {
             m(Button, { onclick: () => this.delegate(this.pointer) }, "edit")
         ));
     }
-
-    update() { /* required */ }
-    setActive() { /* always active */ }
 }
 
 

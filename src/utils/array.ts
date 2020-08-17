@@ -9,16 +9,16 @@ export default {
     },
 
     removeItem(pointer: JSONPointer, controller: Controller, index: number): void {
-        const nextList = controller.data().get(pointer);
+        const nextList = controller.service("data").get(pointer);
         nextList.splice(index, 1);
-        controller.data().set(pointer, nextList);
+        controller.service("data").set(pointer, nextList);
     },
 
     cloneItem(pointer: JSONPointer, controller: Controller, index: number): void {
-        const nextList = controller.data().get(pointer);
+        const nextList = controller.service("data").get(pointer);
         const item = nextList[index];
         nextList.splice(index, 0, JSON.parse(JSON.stringify(item)));
-        controller.data().set(pointer, nextList);
+        controller.service("data").set(pointer, nextList);
     },
 
     moveItem(pointer: JSONPointer, controller: Controller, index: number, destinationIndex: number): void {
@@ -26,13 +26,13 @@ export default {
             return;
         }
 
-        const list = controller.data().get(pointer);
+        const list = controller.service("data").get(pointer);
         if (list[index] == null || list[destinationIndex] == null) {
             return;
         }
 
         list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
-        controller.data().set(pointer, list);
+        controller.service("data").set(pointer, list);
     },
 
     moveElement(list: Array<any>, index: number, destinationIndex: number): void {

@@ -9,7 +9,7 @@ import isRootPointer from "./utils/isRootPointer";
 import State from "./State";
 import { ActionTypes, ActionCreators } from "./reducers/actions";
 import { createNanoEvents, Unsubscribe } from "nanoevents";
-import { JSONData, JSONPointer } from "../types";
+import { JSONData, JSONPointer, UpdateEvent } from "../types";
 import { isPointer } from "../utils/UISchema";
 
 const DEBUG = false;
@@ -32,14 +32,24 @@ export type DataServiceEvent = {
     [p: string]: any;
 }
 
+export type ContainerEventValue = {
+    pointer: JSONPointer;
+    changes: Array<Change>;
+}
+
+export type DataEventValue = {
+    pointer: JSONPointer;
+    patch: Patch;
+}
+
 
 export interface Events {
     /** called before starting data update */
     [EventType.BEFORE_UPDATE]: (pointer: JSONPointer, eventObject: DataServiceEvent) => void;
     /** called for changes array items order, receiving a list of move, add and delete operations */
-    [EventType.UPDATE_CONTAINER]: (pointer: JSONPointer, change: Array<Change>) => void;
+    [EventType.UPDATE_CONTAINER]: (event: UpdateEvent<ContainerEventValue>) => void;
     /** called after data udpate was performed */
-    [EventType.AFTER_UPDATE]: (pointer: JSONPointer, eventObject: DataServiceEvent) => void;
+    [EventType.AFTER_UPDATE]: (event: UpdateEvent<DataEventValue>) => void;
     /** called after all updates with a list of patches */
     [EventType.FINAL_UPDATE]: (patches: Array<DataServiceEvent>) => void;
 }
@@ -185,18 +195,40 @@ export default class DataService {
             // build simple patch-information and notify about changes in pointer for move-instance support
             // this is a major performance improvement for array-item movements
             if (parentDataType === "array") {
-                const changes = getArrayChangeList(patches[i], this.lastUpdate);
-                // console.log("changed array", changes);
-                this.emitter.emit(EventType.UPDATE_CONTAINER, eventLocation, changes);
+                const dataUpdateArrayEvent = {
+                    type: "data:update:array",
+                    value: {
+                        pointer: eventLocation,
+                        changes: getArrayChangeList(patches[i], this.lastUpdate)
+                    }
+                }
+                this.emitter.emit(EventType.UPDATE_CONTAINER, dataUpdateArrayEvent);
 
             } else if (parentDataType === "object") {
-                const changes = getObjectChangeList(patches[i]);
-                // console.log("changed object", changes);
-                this.emitter.emit(EventType.UPDATE_CONTAINER, eventLocation, changes);
+                const dataUpdateObjectEvent = {
+                    type: "data:update:object",
+                    value: {
+                        pointer: eventLocation,
+                        changes: getObjectChangeList(patches[i])
+                    }
+                }
+                this.emitter.emit(EventType.UPDATE_CONTAINER, dataUpdateObjectEvent);
             }
 
-            this.emit(EventType.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
-            this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
+            const dataUpdateEvent = {
+                type: "data:update",
+                value: {
+                    pointer: eventLocation,
+                    patch: patches[i].patch
+                }
+            }
+            this.emitter.emit(EventType.AFTER_UPDATE, dataUpdateEvent);
+            // this.emit(EventType.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
+            this.bubbleObservers(eventLocation, dataUpdateEvent);
+        }
+
+        const dataUpdatedEvent = {
+            type: "data:update:done"
         }
 
         this.emitter.emit(EventType.FINAL_UPDATE, patches);
@@ -342,14 +374,13 @@ export default class DataService {
         }
     }
 
-    bubbleObservers(pointer: JSONPointer, data: { type: string, patch: Patch }) {
-        const eventObject = createEventObject(pointer, data);
+    bubbleObservers(pointer: JSONPointer, event) {
         const frags = gp.split(pointer);
         while (frags.length) {
-            this.notify(gp.join(frags, true), eventObject);
+            this.notify(gp.join(frags, true), event);
             frags.length -= 1;
         }
-        this.notify("#", eventObject);
+        this.notify("#", event);
     }
 
     /** Test the pointer for existing data */

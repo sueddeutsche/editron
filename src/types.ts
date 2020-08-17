@@ -7,6 +7,13 @@ export type JSONSchema = {
 
 export type JSONData = Array<any>|any|number|string|boolean|null;
 
+
+export interface UpdateEvent<T> {
+    type: string;
+    value: T;
+}
+
+
 export type EditronConfigAttrs = {
     id?: string;
     class?: string;

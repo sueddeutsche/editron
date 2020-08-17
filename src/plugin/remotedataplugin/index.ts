@@ -43,11 +43,11 @@ export default class RemoteDataPlugin implements Plugin {
 
     async setData(pointer, remote) {
         const { controller } = this;
-        const currentData = controller.data().getDataByReference();
+        const currentData = controller.service("data").getDataByReference();
         const source = Object.keys(remote.set);
         const sourcePointer = gp.join(pointer, remote.source);
 
-        let sourceData = controller.data().get(sourcePointer);
+        let sourceData = controller.service("data").get(sourcePointer);
         if (sourceData == null || sourceData === "") {
             return;
         }
@@ -67,7 +67,7 @@ export default class RemoteDataPlugin implements Plugin {
 
             const targetValue = gp.get(json, key);
             // console.log("set", targetPointer, targetValue, "//", key, remote.set);
-            controller.data().set(targetPointer, targetValue);
+            controller.service("data").set(targetPointer, targetValue);
         });
     }
 
@@ -78,10 +78,10 @@ export default class RemoteDataPlugin implements Plugin {
             const source = Object.keys(remote.set);
 
             const sourcePointer = gp.join(pointer, remote.source);
-            let sourceData = controller.data().get(sourcePointer);
+            let sourceData = controller.service("data").get(sourcePointer);
             let remoteUrl = render(remote.url, sourceData);
 
-            controller.data().observe(sourcePointer, async () => {
+            controller.service("data").observe(sourcePointer, async () => {
                 this.setData(pointer, remote);
             }, true);
 

@@ -72,10 +72,11 @@ export default class AbstractValueEditor implements Editor {
     controller: Controller;
     $element: HTMLElement;
     viewModel: ViewModel;
+    notifyNestedChanges = false;
     options;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type !== "object" && schema.type !== "array";
     }
 
@@ -92,8 +93,9 @@ export default class AbstractValueEditor implements Editor {
     constructor(pointer: JSONPointer, controller: Controller, options) {
         this.controller = controller;
         this.options = options;
+        this.notifyNestedChanges = options.notifyNestedChanges || this.notifyNestedChanges;
 
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
 
         options = {
             viewModel: null,
@@ -116,13 +118,13 @@ export default class AbstractValueEditor implements Editor {
             id: getId(pointer),
             title: options.title,
             description: options.description,
-            value: controller.data().get(pointer),
+            value: controller.service("data").get(pointer),
             instantUpdate: options.instantUpdate,
             schema,
             options,
-            errors: controller.validator().getErrorsAndWarnings(pointer),
-            onfocus: () => controller.location().setCurrent(pointer),
-            onblur: () => controller.location().blur(pointer),
+            errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            onfocus: () => controller.service("location").setCurrent(pointer),
+            onblur: () => controller.service("location").blur(pointer),
             onchange: value => {
                 if (convert[schema.type]) {
                     value = convert[schema.type](value);
@@ -131,65 +133,60 @@ export default class AbstractValueEditor implements Editor {
             },
             ...options.viewModel
         };
-
-        // in order to deregister callbacks in destroy(), bind all callbacks to this class
-        this.update = controller.data().observe(pointer, this.update.bind(this));
-        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-        // this.render();
     }
 
     getPointer() {
         return this.viewModel?.pointer;
     }
 
-    updatePointer(pointer) {
-        if (pointer === this.viewModel.pointer) {
+    // update display value in view
+    // @ts-ignore
+    update({ type, value }) {
+        if (this.viewModel == null) {
+            console.log("error - notification of destroyed editor", this);
             return;
         }
 
-        const oldPointer = this.getPointer();
-        this.$element.setAttribute("name", `editor-${pointer}`);
-        this.viewModel.pointer = pointer;
-        this.viewModel.id = getId(pointer);
-        this.viewModel.onfocus = () => this.controller.location().setCurrent(pointer);
-        this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.validator().removeObserver(oldPointer, this.setErrors);
-        this.controller.data().observe(pointer, this.update);
-        this.controller.validator().observe(pointer, this.setErrors);
+        switch (type) {
+            case "pointer":
+                const pointer = <string>value;
+                this.$element.setAttribute("name", `editor-${pointer}`);
+                this.viewModel.pointer = pointer;
+                this.viewModel.id = getId(pointer);
+                this.viewModel.onfocus = () => this.controller.service("location").setCurrent(pointer);
 
-        this.update();
-    }
+            case "data":
+                this.viewModel.value = this.controller.service("data").get(this.getPointer());
+                this.viewModel.disabled = !this.controller.isActive();
+                break;
 
-    setActive(active = true) {
-        this.viewModel.disabled = active === false;
-        if (this.viewModel.options) {
-            this.viewModel.options.disabled = this.viewModel.disabled;
+            case "error":
+                const errors = value as Array<ValidationError>;
+                break;
+
+            case "active":
+                const active = value;
+                this.viewModel.disabled = active === false;
+                if (this.viewModel.options) {
+                    this.viewModel.options.disabled = this.viewModel.disabled;
+                }
+                break;
+
+            default:
+                console.log("unknown event type", type, event);
         }
-        this.render();
-    }
 
-    // update display value in view
-    update() {
-        this.viewModel.value = this.controller.data().get(this.getPointer());
-        this.viewModel.disabled = !this.controller.isActive();
         this.render();
     }
 
     // updates value in data-store
+    // do not trigger rendering here. data-observer will notify change event
     setValue(value) {
-        this.controller.data().set(this.getPointer(), value);
-        // do not trigger rendering here. data-observer will notify change event
-    }
-
-    // adds an error to view
-    setErrors(errors: Array<ValidationError>) {
-        this.viewModel.errors = errors;
-        this.render();
+        this.controller.service("data").set(this.getPointer(), value);
     }
 
     // update view
     render() {
-        // this.$element.innerHTML = "<b>Overwrite AbstractValueEditor.render() to generate your view</b>";
         m.render(this.$element, m("b", "Overwrite AbstractValueEditor.render() to generate view"));
     }
 
@@ -205,8 +202,6 @@ export default class AbstractValueEditor implements Editor {
         }
         // destroy this editor only once
         m.render(this.$element, m("i"));
-        this.controller.data().removeObserver(this.getPointer(), this.update);
-        this.controller.validator().removeObserver(this.getPointer(), this.setErrors);
         this.viewModel = null;
         this.$element = null;
     }

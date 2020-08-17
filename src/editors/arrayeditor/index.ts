@@ -45,7 +45,7 @@ export default class ArrayEditor extends AbstractEditor {
     onAdd: Function;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type === "array";
     }
 
@@ -63,7 +63,7 @@ export default class ArrayEditor extends AbstractEditor {
         this.viewModel = {
             pointer,
             attrs: {},
-            errors: controller.validator().getErrorsAndWarnings(pointer),
+            errors: controller.service("validation").getErrorsAndWarnings(pointer),
             onadd: this.onAdd,
             length: data.length,
             maxItems: schema.maxItems || Infinity,
@@ -89,32 +89,38 @@ export default class ArrayEditor extends AbstractEditor {
         this.updateControls();
     }
 
-    setActive(active = true): void {
-        const disabled = active === false;
-        this.viewModel.disabled = disabled;
-        this.viewModel.controls.disabled = disabled;
-        this.rebuildChildren();
-        this.render();
-    }
+    update({ type, value }) {
+        switch (type) {
+            case "data":
+                console.log("ARRAY DATA UPDATE", value);
+                const changeEvent = value;
+                if (changeEvent?.patch) {
+                    this.applyPatches(changeEvent.patch);
+                } else {
+                    this.rebuildChildren();
+                }
+                this.updateControls();
+                break;
 
-    updatePointer(newPointer: JSONPointer): void {
-        if (this.pointer === newPointer) {
-            return;
+            case "error":
+                this.viewModel.errors = value as Array<ValidationError>;
+                break;
+
+            case "pointer":
+                this.viewModel.pointer = value;
+                this.children.forEach((child, index) => child.updatePointer(`${value}/${index}`));
+                break;
+
+            case "active":
+                const disabled = value === false;
+                this.viewModel.disabled = disabled;
+                this.viewModel.controls.disabled = disabled;
+                this.rebuildChildren();
+                break;
         }
 
-        super.updatePointer(newPointer);
-        this.viewModel.pointer = newPointer;
-        this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
+        console.log("update array", type, value);
         this.render();
-    }
-
-    update(changeEvent): void {
-        if (changeEvent?.patch) {
-            this.applyPatches(changeEvent.patch);
-        } else {
-            this.rebuildChildren();
-        }
-        this.updateControls();
     }
 
     applyPatches(patch): void {
@@ -141,7 +147,7 @@ export default class ArrayEditor extends AbstractEditor {
         });
 
         // update view: move and inserts nodes
-        const currentLocation = this.controller.location().getCurrent();
+        const currentLocation = this.controller.service("location").getCurrent();
         const changePointer = {};
 
         for (let i = 0, l = this.children.length; i < l; i += 1) {
@@ -151,7 +157,7 @@ export default class ArrayEditor extends AbstractEditor {
             // update current location
             if (currentLocation.indexOf(previousPointer) === 0) {
                 const editorLocation = currentLocation.replace(previousPointer, currentPointer);
-                this.controller.location().setCurrent(editorLocation);
+                this.controller.service("location").setCurrent(editorLocation);
             }
 
             // update child views to match patched list
@@ -177,12 +183,10 @@ export default class ArrayEditor extends AbstractEditor {
 
     rebuildChildren(): void {
         const data = this.getData();
-
         // delete all child editors
         this.children.forEach(editor => editor.destroy());
         this.children.length = 0;
         this.$items.innerHTML = "";
-
         // recreate child editors
         data.forEach((item, index) => {
             const childPointer = `${this.pointer}/${index}`;
@@ -201,11 +205,6 @@ export default class ArrayEditor extends AbstractEditor {
 
     getPointer(): JSONPointer {
         return this.pointer;
-    }
-
-    updateErrors(errors): void {
-        this.viewModel.errors = errors;
-        this.render();
     }
 
     render(): void {

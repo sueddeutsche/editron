@@ -37,7 +37,7 @@ export function buildTree(pointer: JSONPointer, data, controller: Controller, de
     }
 
     // @todo this is one step in rebuilding UISchema
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
     const schemaOptions = schema[EDITRON_OPTION_PROPERTY] || {};
     const skipTo = schemaOptions.minimap?.skipTo;
 
@@ -58,7 +58,7 @@ export function buildTree(pointer: JSONPointer, data, controller: Controller, de
 
     if (schemaOptions.minimap?.titlePointer) {
         const titlePointer = gp.join(pointer, schemaOptions.minimap?.titlePointer);
-        const value = controller.data().get(titlePointer);
+        const value = controller.service("data").get(titlePointer);
         if (!(value == null || value == "")) {
             node.title = value;
         }

@@ -66,7 +66,7 @@ function resolveReference(pointer: JSONPointer, controller: Controller, pointerT
         targetPointer = gp.join(pointer, targetPointer);
     }
 
-    const result = controller.data().get(targetPointer);
+    const result = controller.service("data").get(targetPointer);
     return populated(result, result, null);
 }
 
@@ -85,7 +85,7 @@ export type EditorSettings = {
  * @return a resolved copy of the editron:ui settings
  */
 function copyOptions(pointer: JSONPointer, controller: Controller): EditorSettings {
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
 
     const settings = {
         hidden: false,
@@ -171,7 +171,7 @@ function getOption(pointer: JSONPointer, controller: Controller, ...options: Arr
         throw new Error("Expected at least one options property to be given in getOption");
     }
 
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
     const editronOptions = schema[UI_PROPERTY] || {};
 
     for (let i = 0; i < options.length; i += 1) {
@@ -191,7 +191,7 @@ function getOption(pointer: JSONPointer, controller: Controller, ...options: Arr
 
 
 function getTitle(pointer: JSONPointer, controller: Controller) {
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
     const title = getOption(pointer, controller, "title") || "";
     return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
