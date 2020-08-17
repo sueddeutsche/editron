@@ -53,7 +53,7 @@ export type ViewModel = {
 export default class ObjectEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
-    childEditors: Array<Editor>;
+    childEditors: Array<Editor> = [];
     $children: HTMLElement;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -64,16 +64,11 @@ export default class ObjectEditor extends AbstractEditor {
     constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
         super(pointer, controller, options);
 
-        // add id to element, since no other input-form is associated with this editor...
-        // @todo ...except another editron-instance
-        options.attrs = { ...options.attrs };
-
-        this.childEditors = [];
         this.viewModel = {
             pointer,
             errors: [],
             ...options,
-            attrs: options.attrs || {},
+            attrs: options.attrs || {}
         };
 
         if (options.collapsed != null) {
@@ -87,7 +82,7 @@ export default class ObjectEditor extends AbstractEditor {
         }
 
         if (options.addDelete) {
-            this.viewModel.ondelete = this.delete;
+            this.viewModel.ondelete = this.deleteObject.bind(this);
         }
 
         this.render();
@@ -97,49 +92,49 @@ export default class ObjectEditor extends AbstractEditor {
 
     update(event: EditorUpdateEvent) {
         if (this.viewModel == null) {
-            // @ts-ignore
-            console.log("%c abort update OBJECT", "background: yellow;", event.value?.pointer);
+            console.log("%c abort update OBJECT", "background: yellow;", event);
             return;
         }
 
         switch (event.type) {
-            case "data:update":
+            case "data:update": {
+                const { pointer, controller, childEditors, $children } = this;
                 const data = this.getData();
-                // destroy child editor
-                this.childEditors.forEach(editor => this.controller.destroyEditor(editor));
-                this.childEditors.length = 0;
-                // clear html
-                this.$children.innerHTML = "";
+                childEditors.forEach(editor => controller.destroyEditor(editor));
+                childEditors.length = 0;
+                $children.innerHTML = "";
                 if (data == null) {
                     break;
                 }
                 // rebuild children
-                Object.keys(data).forEach(property => {
-                    this.childEditors.push(this.controller.createEditor(`${this.pointer}/${property}`, this.$children));
-                });
+                Object.keys(data)
+                    .forEach(property =>
+                        childEditors.push(controller.createEditor(`${pointer}/${property}`, $children))
+                    );
                 break;
+            }
 
-            case "validation:errors":
-                const errors = event.value;
-                // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
-                // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
-                // arrays this should come per default, as the may insert in add items...
-                this.viewModel.errors = errors.map(error => {
-                    if (error.code === "no-additional-properties-error") {
-                        const message = error.message;
-                        const property = error.data.property;
-                        return {
-                            severity: error.type || "error",
-                            message: m(".editron-error.editron-error--object-property",
-                                m("span", m.trust(message)),
-                                m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
-                                m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
-                            )
-                        };
+            // if we receive errors here, a property may be missing (which should go to schema.getTemplate)
+            // or additional, but prohibited properties exist. For the latter, add an option to show and/or
+            // delete the property
+            case "validation:errors": {
+                this.viewModel.errors = event.value.map(error => {
+                    if (error.code !== "no-additional-properties-error") {
+                        return error;
                     }
-                    return error;
+                    const message = error.message;
+                    const property = error.data.property;
+                    return {
+                        severity: error.type || "error",
+                        message: m(".editron-error.editron-error--object-property",
+                            m("span", m.trust(message)),
+                            m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
+                            m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
+                        )
+                    };
                 });
                 break;
+            }
 
             case "pointer":
                 this.viewModel.pointer = event.value;
@@ -155,15 +150,13 @@ export default class ObjectEditor extends AbstractEditor {
     }
 
     /** deletes this object from data */
-    delete() {
-        this.controller.service("data").delete(this.pointer)
+    deleteObject() {
+        this.controller.service("data").delete(this.pointer);
     }
 
     /** deletes a property from this object */
     deleteProperty(property: string): void {
-        const data = this.controller.service("data").get(this.pointer);
-        delete data[property];
-        this.controller.service("data").set(this.pointer, data);
+        this.controller.service("data").delete(`${this.pointer}/${property}`);
     }
 
     /** displays the properties json-value */
@@ -182,7 +175,6 @@ export default class ObjectEditor extends AbstractEditor {
             return;
         }
 
-        super.destroy();
         m.render(this.dom, m("i"));
         this.childEditors.forEach(ed => this.controller.destroyEditor(ed));
         this.childEditors.length = 0;

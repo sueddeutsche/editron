@@ -15,7 +15,7 @@ import selectEditor from "./utils/selectEditor";
 import State from "./services/State";
 import UISchema from "./utils/UISchema";
 import ValidationService from "./services/ValidationService";
-import { Editor, EditorPlugin } from "./editors/Editor";
+import { Editor, EditorPlugin, SetEnabledEvent } from "./editors/Editor";
 import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
 import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
 
@@ -258,10 +258,10 @@ export default class Controller {
      * @returns created editor-instance or undefined;
      */
     createEditor(pointer: JSONPointer, element: HTMLElement, options?): Editor|undefined {
-        if (pointer == null || element == null) {
+        assertValidPointer(pointer);
+        if (element == null) {
             throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
         }
-        assertValidPointer(pointer);
 
         // merge schema["editron:ui"] object with options. options precede
         const instanceOptions = {
@@ -288,13 +288,12 @@ export default class Controller {
             return undefined;
         }
 
-        // iniitialize editor and save editor in list
+        // iniitialize editor and notify instance manager
         const editor = new EditorConstructor(pointer, this, instanceOptions);
         const dom = editor.toElement();
         element.appendChild(dom);
-
         this.services.instances.add(editor);
-        editor.update({ type: "active", value: !instanceOptions.disabled });
+        editor.update(<SetEnabledEvent>{ type: "active", value: !instanceOptions.disabled });
 
         // @lifecycle hook create widget
         this.plugins.filter(plugin => plugin.onCreateEditor)
@@ -386,7 +385,7 @@ export default class Controller {
 
 /** throws an error, when given pointer is not a valid jons-pointer */
 function assertValidPointer(pointer: JSONPointer): void {
-    if (pointer[0] !== "#") {
+    if (pointer == null || pointer[0] !== "#") {
         throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
     }
 }

@@ -217,7 +217,6 @@ export default class ArrayEditor extends AbstractEditor {
             return;
         }
 
-        super.destroy();
         this.children.forEach(editor => editor.destroy());
         this.viewModel = null;
         m.render(this.dom, m("i"));

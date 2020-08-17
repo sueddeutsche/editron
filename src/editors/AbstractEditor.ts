@@ -46,10 +46,7 @@ export default class AbstractEditor implements Editor {
     pointer: JSONPointer;
     controller: Controller;
     options: Options;
-    errors: Array<ValidationError>;
     dom: HTMLElement;
-    _addError: Observer;
-    _clearErrors: Function;
 
     static editorOf(pointer: JSONPointer, controller: Controller, options?) { // eslint-disable-line
         throw new Error("Missing editorOf-method in custom editor");
@@ -59,13 +56,12 @@ export default class AbstractEditor implements Editor {
         this.pointer = pointer;
         this.controller = controller;
         this.options = options;
-
         this.dom = this.controller
             .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
     }
 
     update(event: EditorUpdateEvent) {
-        throw new Error("Missing implemented of method 'update' in custom editor");
+        throw new Error("Missing implementation of method 'update' in custom editor");
     }
 
     getData(): any {
@@ -101,7 +97,6 @@ export default class AbstractEditor implements Editor {
     }
 
     destroy(): void {
-        // this.controller.service("data").removeObserver(this.pointer, this.update);
-        // this.controller.service("validation").removeObserver(this.pointer, this._addError);
+        throw new Error("Missing implementation of method 'destroy' in custom editor");
     }
 }
