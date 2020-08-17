@@ -149,7 +149,6 @@ export default class Controller {
         };
 
         this.service("data").watch(event => {
-
             switch (event.type) {
                 // update container will be called before any editor change-notification this gives us time,
                 // to manage update-pointer and destory events of known editors
@@ -157,17 +156,17 @@ export default class Controller {
                     this.services.instances.updateContainer(event.value.pointer, this, event.value.changes);
                     break;
 
+                // sync latest data and start validation
                 case "data:update:after":
                     let { pointer } = event.value;
                     this.service("schema").setData(this.service("data").get());
                     // @feature selective-validation
                     if (pointer.includes("/")) {
                         // @attention validate parent-object or array, in order to support parent-validators.
-                        // Any higher validators will still be ignore
+                        // any higher validators will still be ignore
                         pointer = pointer.replace(/\/[^/]+$/, "");
                     }
                     setTimeout(() => {
-                        // start validation in next tick
                         const data = this.service("data").getDataByReference();
                         this.destroyed !== true && this.service("validation").validate(data, pointer);
                     });
@@ -240,9 +239,8 @@ export default class Controller {
 
     /**
      * Helper to create dom elements via mithril syntax
-     *
-     * @param  {String} selector    - a css selector describing the desired element
-     * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
+     * @param selector - a css selector describing the desired element
+     * @param attributes - a map of dom attribute:value of the element (reminder className = class)
      * @returns the resulting dom-element (not attached)
      */
     createElement(selector: string, attributes?: object): HTMLElement { // eslint-disable-line class-methods-use-this
@@ -254,9 +252,9 @@ export default class Controller {
      * The only entry point to create editors.
      * Use in application and from editors to create (delegate) child editors
      *
-     * @param  pointer - data pointer to editor in current state
-     * @param  element - parent element of create editor. Will be appended automatically
-     * @param  [options] - individual editor options
+     * @param pointer - data pointer to editor in current state
+     * @param element - parent element of create editor. Will be appended automatically
+     * @param [options] - individual editor options
      * @returns created editor-instance or undefined;
      */
     createEditor(pointer: JSONPointer, element: HTMLElement, options?): Editor|undefined {
