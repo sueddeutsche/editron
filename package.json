@@ -86,7 +86,7 @@
     "json-schema-library": "^4.1.1",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
-    "mithril-material-forms": "^3.2.2",
+    "mithril-material-forms": "3.2.3",
     "mitt": "^1.2.0",
     "ospec": "^4.0.1",
     "redux": "^3.6.0",
