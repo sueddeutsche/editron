@@ -1,22 +1,19 @@
 import { JSONData } from "../types";
 
 
-/**
- * Simple session service to store and retrieve user-specific data
- */
+/** Simple session service to store and retrieve user-specific data */
 export default {
 
     get(key: string, defaultValue?: any): JSONData {
         if (window.localStorage == null) {
             return defaultValue;
         }
-
         if (localStorage.getItem(key) == null) {
             this.set(key, defaultValue);
         }
         try {
             return JSON.parse(localStorage.getItem(key));
-        } catch(error) {
+        } catch (error) {
             return defaultValue;
         }
     },

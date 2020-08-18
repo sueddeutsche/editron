@@ -38,7 +38,6 @@ export default class SchemaService {
     /**
      * Create the template data object based on the json-schema, which fullfills the schemas structure as much as
      * possible
-     * @param  schema
      * @return data corresponding to json-schema
      */
     getTemplate(schema: JSONSchema): JSONData {
@@ -46,7 +45,7 @@ export default class SchemaService {
     }
 
     /**
-     * @returns list of valid items to insert at the given position
+     * @return list of valid items to insert at the given position
      */
     getChildSchemaSelection(pointer: JSONPointer, property: number|string): Array<JSONSchema> {
         const parentSchema = this.get(pointer);
@@ -63,10 +62,7 @@ export default class SchemaService {
         this.resetCache();
     }
 
-    /**
-     * Set or change the application schema
-     * @param {Object} schema
-     */
+    /** Set or change the application schema */
     setSchema(schema: JSONSchema): void {
         this.core.setSchema(schema);
         this.schema = this.core.getSchema();
