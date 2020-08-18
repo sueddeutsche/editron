@@ -1,17 +1,12 @@
 import { JSONPointer } from "../../types";
 import Controller from "../../Controller";
-import { Editor } from "../Editor";
+import { Editor, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
-import { ValidationError } from "../../types";
-declare type ModifiedEditor = Editor & {
-    _property?: string;
-};
 export declare type Options = {
-    id?: string;
     attrs?: {
-        id?: string;
         [p: string]: any;
     };
+    /** icon to display in object-header */
     icon?: string;
     /** hide the title */
     hideTitle?: boolean;
@@ -26,41 +21,34 @@ export declare type Options = {
 };
 export declare type ViewModel = {
     attrs: {
-        id?: string;
         [p: string]: any;
     };
-    errors: Array<any>;
-    pointer: JSONPointer;
     collapsed?: boolean;
     description?: string;
     disabled?: boolean;
+    errors: Array<any>;
     hideTitle?: boolean;
     icon?: string;
-    id?: string;
-    oncollapse?: Function;
-    ondelete?: Function;
+    oncollapse?: () => void;
+    ondelete?: () => void;
+    pointer: JSONPointer;
     title?: string;
 };
 export default class ObjectEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
-    childEditors: Array<ModifiedEditor>;
+    childEditors: Array<Editor>;
     $children: HTMLElement;
     static editorOf(pointer: JSONPointer, controller: Controller): boolean;
     constructor(pointer: JSONPointer, controller: Controller, options?: Options);
-    updatePointer(pointer: JSONPointer): [string, string];
-    /** de/activate this editors user-interaction */
-    setActive(active?: boolean): void;
-    update(): void;
+    update(event: EditorUpdateEvent): void;
     /** deletes this object from data */
-    delete(): void;
+    deleteObject(): void;
     /** deletes a property from this object */
     deleteProperty(property: string): void;
     /** displays the properties json-value */
     showProperty(property: string): void;
-    updateErrors(errors?: Array<ValidationError>): void;
     render(): void;
     /** destroy editor, view and event-listeners */
     destroy(): void;
 }
-export {};

@@ -1,6 +1,7 @@
 import { JSONPointer, ValidationError } from "../../types";
+import { UpdateErrorsEvent } from "../../editors/Editor";
 export declare type Observer = {
-    (event: Array<ValidationError>): void;
+    (event: UpdateErrorsEvent): void;
     receiveChildEvents?: boolean;
 };
 /**
@@ -80,7 +81,6 @@ declare class BubblingCollectionObservable {
     observers: {};
     eventCollection: {};
     bubbleCollection: {};
-    constructor();
     /**
      * Observe events on the _pointer_ (`#/observe/location`). May also observe
      * events of _child-pointers_ (`#/observe/location/child/item`) with the
@@ -127,6 +127,6 @@ declare class BubblingCollectionObservable {
      * etc, until `reset()` ist called by the observable.
      */
     notify(pointer: JSONPointer, event: ValidationError): void;
-    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, event: Array<ValidationError>): void;
+    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, errors?: Array<ValidationError>): void;
 }
 export default BubblingCollectionObservable;

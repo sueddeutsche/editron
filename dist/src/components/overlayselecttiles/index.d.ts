@@ -1,7 +1,7 @@
 import m from "mithril";
 export declare type Attrs = {
     value?: number;
-    onchange?: Function;
+    onchange?: (value: string) => void;
     options?: Array<{
         value?: number;
         title?: string;
@@ -11,8 +11,6 @@ export declare type Attrs = {
 };
 declare const _default: m.Component<Attrs, {}>;
 /**
- * @View mithril
  * Overlay content to pick options. Displayed as tiles
- * @type {Object}
  */
 export default _default;

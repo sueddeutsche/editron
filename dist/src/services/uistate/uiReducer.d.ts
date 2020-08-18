@@ -1,2 +1,2 @@
-declare const _default: any;
+declare const _default: import("redux").Reducer<unknown>;
 export default _default;

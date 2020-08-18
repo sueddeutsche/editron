@@ -87,7 +87,7 @@
             }, { list: ["1", "2", "3"] });
             controller.createEditor("#", document.querySelector(".editor"));
             controller.setActive(true);
-            controller.data().observe("#", (pointer, value) => {
+            controller.service("data").observe("#", (pointer, value) => {
                 console.log("changed", controller.getData());
             }, true);
         </script>

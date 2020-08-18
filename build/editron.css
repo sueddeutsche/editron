@@ -36,6 +36,14 @@ button.mmf-button {
       background-color: inherit;
       color: rgba(0, 200, 83, 0.38);
       cursor: default; }
+  button.mmf-button .mmf-icon {
+    width: 0;
+    height: 0;
+    position: relative;
+    top: 0.2em;
+    line-height: 0;
+    padding-right: 1.5em;
+    font-size: 1.5em; }
 
 button.mmf-button--raised {
   z-index: 10;
@@ -521,11 +529,9 @@ ul.mmf-form__errors {
   user-select: none;
   text-align: center; }
   .editron-container__child .editron-container__button--add .mmf-icon {
-    color: rgba(255, 255, 255, 0.87);
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+    color: rgba(255, 255, 255, 0.87); }
   .editron-container__child .editron-container__button--add:not(.is-disabled):hover .mmf-icon {
-    color: #fff;
-    text-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); }
+    color: #fff; }
   .editron-container__child .editron-container__button--add.is-disabled:hover {
     cursor: default; }
     .editron-container__child .editron-container__button--add.is-disabled:hover .mmf-icon {
@@ -619,11 +625,30 @@ ul.mmf-form__errors {
 .editron-container__controls--child {
   position: absolute;
   top: 0;
-  right: -32px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  max-height: 64px; }
+  right: 0;
+  transform: translateX(100%);
+  z-index: 999; }
+  .editron-container__controls--child ul {
+    margin: 0;
+    padding: 0;
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 1.5em;
+    list-style: none; }
+    .editron-container__controls--child ul li button {
+      width: 100%;
+      margin: 0;
+      white-space: nowrap;
+      text-align: left; }
+      .editron-container__controls--child ul li button:hover {
+        cursor: pointer; }
+  .editron-container__controls--child.is-enabled:hover {
+    background: #fff; }
+  .editron-container__controls--child.is-enabled:hover ul {
+    display: block;
+    z-index: 20;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
 
 .editron-container__header {
   color: inherit;
@@ -648,15 +673,6 @@ ul.mmf-form__errors {
 
 .editron-container {
   color: inherit; }
-
-.editron-container__controls--child i.mmf-icon {
-  color: rgba(255, 255, 255, 0.54);
-  font-size: 18px;
-  line-height: 1.5em;
-  width: 24px;
-  height: 24px; }
-  .editron-container__controls--child i.mmf-icon:hover {
-    color: rgba(255, 255, 255, 0.87); }
 
 .ui-overlay {
   z-index: 1002;

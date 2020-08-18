@@ -1,49 +1,49 @@
+import ArrayItemWrapper from "./ArrayItemWrapper";
 import Controller from "../../Controller";
 import { JSONPointer } from "../../types";
-import { Editor } from "../Editor";
+import { EditorUpdateEvent } from "../Editor";
+import AbstractEditor from "../AbstractEditor";
+import { ValidationError } from "../../types";
+import { Patch } from "../../services/utils/createDiff";
 export declare type Controls = {
     add?: boolean;
-    remove?: boolean;
-    move?: boolean;
+    clone?: boolean;
+    disabled: boolean;
     insert?: boolean;
     maxItems?: number;
     minItems?: number;
+    move?: boolean;
+    remove?: boolean;
+    showIndex: boolean;
 };
 export declare type ViewModel = {
-    pointer: string;
-    attrs: object;
-    errors: Array<any>;
-    onAdd: Function;
+    attrs: any;
+    controls: Controls;
+    disabled: boolean;
+    errors: Array<ValidationError>;
     length: number;
     maxItems: number;
     minItems: number;
-    controls: Controls;
+    onadd?: (index?: number) => void;
+    pointer: string;
 };
 export declare type Options = {
-    id?: string;
-    attrs?: object;
+    attrs?: any;
     controls?: Controls;
 };
-export default class ArrayEditor implements Editor {
-    viewModel: any;
-    $element: HTMLElement;
-    controller: Controller;
-    pointer: string;
-    children: Array<any>;
+export default class ArrayEditor extends AbstractEditor {
     $items: HTMLElement;
-    onAdd: Function;
+    children: Array<ArrayItemWrapper>;
+    controller: Controller;
+    onAdd: (index: number) => void;
+    pointer: JSONPointer;
+    viewModel: ViewModel;
     static editorOf(pointer: JSONPointer, controller: Controller): boolean;
     constructor(pointer: JSONPointer, controller: Controller, options?: Options);
-    setActive(active?: boolean): void;
-    update(): void;
-    updatePointer(newPointer: JSONPointer): void;
-    updateView(changeEvent: any): void;
-    applyPatches(patch: any): void;
+    update(event: EditorUpdateEvent): void;
+    applyPatches(patch: Patch): void;
     rebuildChildren(): void;
     updateControls(): void;
-    getPointer(): JSONPointer;
-    setErrors(errors: any): void;
     render(): void;
-    toElement(): HTMLElement;
     destroy(): void;
 }

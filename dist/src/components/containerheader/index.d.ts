@@ -5,11 +5,11 @@ export declare type Attrs = {
     hideTitle?: boolean;
     icon?: string;
     collapsed?: boolean;
-    oncollapse?: Function;
-    onadd?: Function;
-    ondelete?: Function;
-    onmovedown?: Function;
-    onmoveup?: Function;
+    oncollapse?: () => void;
+    onadd?: () => void;
+    ondelete?: () => void;
+    onmovedown?: () => void;
+    onmoveup?: () => void;
     title?: string;
 };
 declare const _default: m.Component<Attrs, {}>;

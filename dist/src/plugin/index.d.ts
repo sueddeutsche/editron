@@ -1,8 +1,14 @@
-import { Editor } from "../editors/Editor";
-import { FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
+import { EditorPlugin, Editor } from "../editors/Editor";
+import { JSONPointer, FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
+export interface Plugin {
+    id: string;
+    initialize(controller: any): Plugin;
+    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: any) => void;
+    onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
+}
 declare const _default: {
     /** register an editor (widget) to use in editron-controller */
-    editor(constructor: Editor): void;
+    editor(constructor: EditorPlugin): void;
     /**
      * add a custom json-schema format-validator for a specific format value
      * @param _ - unused...

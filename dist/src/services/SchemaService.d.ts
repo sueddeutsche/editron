@@ -1,18 +1,18 @@
 import { JSONSchema, JSONData, JSONPointer } from "../types";
-/**
- * Manages json-schema interactions and adds caching of reoccuring json-schema requests
- * @param schema - json-schema
- * @param [data={}] - data corresponding to json-schema
- * @param [core={}] - instance of json-schema-library Core
- */
 export default class SchemaService {
     core: any;
     data: JSONData;
     schema: JSONSchema;
     /** cache for resolved json-pointer */
     cache: {
-        [p: string]: any;
+        [p: string]: JSONSchema;
     };
+    /**
+     * Manages json-schema interactions and adds caching of reoccuring json-schema requests
+     * @param schema - json-schema
+     * @param [data] - data corresponding to json-schema
+     * @param [core] - instance of json-schema-library Core
+     */
     constructor(schema?: JSONSchema, data?: JSONData, core?: any);
     /**
      * Update data by any missing (default) values specified in the json-schema
@@ -24,12 +24,11 @@ export default class SchemaService {
     /**
      * Create the template data object based on the json-schema, which fullfills the schemas structure as much as
      * possible
-     * @param  schema
      * @return data corresponding to json-schema
      */
     getTemplate(schema: JSONSchema): JSONData;
     /**
-     * @returns list of valid items to insert at the given position
+     * @return list of valid items to insert at the given position
      */
     getChildSchemaSelection(pointer: JSONPointer, property: number | string): Array<JSONSchema>;
     /**
@@ -38,10 +37,7 @@ export default class SchemaService {
      * @param data - latest root data corresponding to stored json-schema
      */
     setData(data: JSONData): void;
-    /**
-     * Set or change the application schema
-     * @param {Object} schema
-     */
+    /** Set or change the application schema */
     setSchema(schema: JSONSchema): void;
     resetCache(): void;
     /**

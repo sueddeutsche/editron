@@ -15,8 +15,7 @@ const editronModulesConfig = {
         path.resolve("./node_modules/json-schema-library"),
         path.resolve("./node_modules/gson-pointer"),
         path.resolve("./node_modules/nanoevents"),
-        path.resolve("./node_modules/jsondiffpatch"),
-        path.resolve("./node_modules/diff_match_patch")
+        path.resolve("./node_modules/jsondiffpatch")
     ],
     output: {
         filename: "editron-modules.js",

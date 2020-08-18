@@ -1,11 +1,5 @@
 import m from "mithril";
-import { JSONSchema } from "../../types";
-export declare type Attrs = {
-    schema: JSONSchema;
-    options?: any;
-    onblur?: Function;
-    onfocus?: Function;
-    onchange?: Function;
-};
+import { ViewModel } from "../AbstractValueEditor";
+export declare type Attrs = ViewModel;
 declare const Component: m.Component<Attrs>;
 export default Component;

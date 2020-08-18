@@ -1,5 +1,8 @@
 import { JSONPointer, JSONSchema } from "../types";
 import Controller from "../Controller";
+/** property on a schema-definition, containing editron-options */
+export declare const EDITRON_OPTION_PROPERTY = "editron:ui";
+export declare function isPointer(string: JSONPointer): boolean;
 declare function getBreadcrumps(pointer: JSONPointer, controller: Controller): Array<string>;
 declare function enumOptions(schema: JSONSchema): Array<any>;
 export declare type EditorSettings = {
@@ -29,7 +32,7 @@ declare function extendSchema<T extends JSONSchema>(rootSchema: T): T;
  * @param options - a list of option properties. The first non-empty option will be returned
  * @return the first non-empty option
  */
-declare function getOption(pointer: any, controller: any, ...options: Array<string>): any;
+declare function getOption(pointer: JSONPointer, controller: Controller, ...options: Array<string>): any;
 declare function getTitle(pointer: JSONPointer, controller: Controller): any;
 declare function getDefaultOption(schema: JSONSchema, option: string): "" | any;
 declare const _default: {

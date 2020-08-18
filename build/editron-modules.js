@@ -103,7 +103,7 @@ module.exports = __webpack_require__.p + "editron.css";
 /*!********************!*\
   !*** ./editron.ts ***!
   \********************/
-/*! exports provided: default, components, editors, services, utils, plugin */
+/*! exports provided: default, components, services, utils, AbstractEditor, AbstractValueEditor, ArrayEditor, ObjectEditor, OneOfEditor, ValueEditor, plugin, DelegationPlugin, RemoteDataPlugin, SelectionPlugin, SortablePlugin, SyncPlugin */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -112,15 +112,45 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_Controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/Controller */ "./src/Controller.ts");
 /* harmony import */ var _src_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/components */ "./src/components/index.ts");
 /* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "components", function() { return _src_components__WEBPACK_IMPORTED_MODULE_1__; });
-/* harmony import */ var _src_editors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/editors */ "./src/editors/index.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "editors", function() { return _src_editors__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+/* harmony import */ var _src_services__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/services */ "./src/services/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "services", function() { return _src_services__WEBPACK_IMPORTED_MODULE_2__; });
+/* harmony import */ var _src_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/utils */ "./src/utils/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "utils", function() { return _src_utils__WEBPACK_IMPORTED_MODULE_3__; });
+/* harmony import */ var _src_editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/editors/AbstractEditor */ "./src/editors/AbstractEditor.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AbstractEditor", function() { return _src_editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default"]; });
 
-/* harmony import */ var _src_services__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/services */ "./src/services/index.ts");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "services", function() { return _src_services__WEBPACK_IMPORTED_MODULE_3__; });
-/* harmony import */ var _src_utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/utils */ "./src/utils/index.ts");
-/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "utils", function() { return _src_utils__WEBPACK_IMPORTED_MODULE_4__; });
-/* harmony import */ var _src_plugin__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/plugin */ "./src/plugin/index.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plugin", function() { return _src_plugin__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony import */ var _src_editors_AbstractValueEditor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/editors/AbstractValueEditor */ "./src/editors/AbstractValueEditor.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AbstractValueEditor", function() { return _src_editors_AbstractValueEditor__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _src_editors_arrayeditor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./src/editors/arrayeditor */ "./src/editors/arrayeditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ArrayEditor", function() { return _src_editors_arrayeditor__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _src_editors_objecteditor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./src/editors/objecteditor */ "./src/editors/objecteditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ObjectEditor", function() { return _src_editors_objecteditor__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _src_editors_oneofeditor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./src/editors/oneofeditor */ "./src/editors/oneofeditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "OneOfEditor", function() { return _src_editors_oneofeditor__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+/* harmony import */ var _src_editors_valueeditor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./src/editors/valueeditor */ "./src/editors/valueeditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ValueEditor", function() { return _src_editors_valueeditor__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+/* harmony import */ var _src_plugin__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./src/plugin */ "./src/plugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plugin", function() { return _src_plugin__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+
+/* harmony import */ var _src_plugin_delegationplugin__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./src/plugin/delegationplugin */ "./src/plugin/delegationplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DelegationPlugin", function() { return _src_plugin_delegationplugin__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+
+/* harmony import */ var _src_plugin_remotedataplugin__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./src/plugin/remotedataplugin */ "./src/plugin/remotedataplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RemoteDataPlugin", function() { return _src_plugin_remotedataplugin__WEBPACK_IMPORTED_MODULE_12__["default"]; });
+
+/* harmony import */ var _src_plugin_selectionplugin__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./src/plugin/selectionplugin */ "./src/plugin/selectionplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SelectionPlugin", function() { return _src_plugin_selectionplugin__WEBPACK_IMPORTED_MODULE_13__["default"]; });
+
+/* harmony import */ var _src_plugin_sortableplugin__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./src/plugin/sortableplugin */ "./src/plugin/sortableplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SortablePlugin", function() { return _src_plugin_sortableplugin__WEBPACK_IMPORTED_MODULE_14__["default"]; });
+
+/* harmony import */ var _src_plugin_syncplugin__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./src/plugin/syncplugin */ "./src/plugin/syncplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SyncPlugin", function() { return _src_plugin_syncplugin__WEBPACK_IMPORTED_MODULE_15__["default"]; });
 
 /**
  * Editron-Core. Depending on your build setup, use
@@ -143,6 +173,16 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 /* harmony default export */ __webpack_exports__["default"] = (_src_Controller__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -408,2324 +448,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }]);
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
-
-/***/ }),
-
-/***/ "./node_modules/diff_match_patch/lib/diff_match_patch.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/diff_match_patch/lib/diff_match_patch.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-/**
- * Diff Match and Patch
- *
- * Copyright 2006 Google Inc.
- * http://code.google.com/p/google-diff-match-patch/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @fileoverview Computes the difference between two texts to create a patch.
- * Applies the patch onto another text, allowing for errors.
- * @author fraser@google.com (Neil Fraser)
- */
-
-/**
- * Class containing the diff, match and patch methods.
- * @constructor
- */
-function diff_match_patch() {
-  // Defaults.
-  // Redefine these in your program to override the defaults.
-  // Number of seconds to map a diff before giving up (0 for infinity).
-  this.Diff_Timeout = 1.0; // Cost of an empty edit operation in terms of edit characters.
-
-  this.Diff_EditCost = 4; // The size beyond which the double-ended diff activates.
-  // Double-ending is twice as fast, but less accurate.
-
-  this.Diff_DualThreshold = 32; // At what point is no match declared (0.0 = perfection, 1.0 = very loose).
-
-  this.Match_Threshold = 0.5; // How far to search for a match (0 = exact location, 1000+ = broad match).
-  // A match this many characters away from the expected location will add
-  // 1.0 to the score (0.0 is a perfect match).
-
-  this.Match_Distance = 1000; // When deleting a large block of text (over ~64 characters), how close does
-  // the contents have to match the expected contents. (0.0 = perfection,
-  // 1.0 = very loose).  Note that Match_Threshold controls how closely the
-  // end points of a delete need to match.
-
-  this.Patch_DeleteThreshold = 0.5; // Chunk size for context length.
-
-  this.Patch_Margin = 4;
-  /**
-   * Compute the number of bits in an int.
-   * The normal answer for JavaScript is 32.
-   * @return {number} Max bits
-   */
-
-  function getMaxBits() {
-    var maxbits = 0;
-    var oldi = 1;
-    var newi = 2;
-
-    while (oldi != newi) {
-      maxbits++;
-      oldi = newi;
-      newi = newi << 1;
-    }
-
-    return maxbits;
-  } // How many bits in a number?
-
-
-  this.Match_MaxBits = getMaxBits();
-} //  DIFF FUNCTIONS
-
-/**
- * The data structure representing a diff is an array of tuples:
- * [[DIFF_DELETE, 'Hello'], [DIFF_INSERT, 'Goodbye'], [DIFF_EQUAL, ' world.']]
- * which means: delete 'Hello', add 'Goodbye' and keep ' world.'
- */
-
-
-var DIFF_DELETE = -1;
-var DIFF_INSERT = 1;
-var DIFF_EQUAL = 0;
-/**
- * Find the differences between two texts.  Simplifies the problem by stripping
- * any common prefix or suffix off the texts before diffing.
- * @param {string} text1 Old string to be diffed.
- * @param {string} text2 New string to be diffed.
- * @param {boolean} opt_checklines Optional speedup flag.  If present and false,
- *     then don't run a line-level diff first to identify the changed areas.
- *     Defaults to true, which does a faster, slightly less optimal diff
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- */
-
-diff_match_patch.prototype.diff_main = function (text1, text2, opt_checklines) {
-  // Check for null inputs.
-  if (text1 == null || text2 == null) {
-    throw new Error('Null input. (diff_main)');
-  } // Check for equality (speedup).
-
-
-  if (text1 == text2) {
-    return [[DIFF_EQUAL, text1]];
-  }
-
-  if (typeof opt_checklines == 'undefined') {
-    opt_checklines = true;
-  }
-
-  var checklines = opt_checklines; // Trim off common prefix (speedup).
-
-  var commonlength = this.diff_commonPrefix(text1, text2);
-  var commonprefix = text1.substring(0, commonlength);
-  text1 = text1.substring(commonlength);
-  text2 = text2.substring(commonlength); // Trim off common suffix (speedup).
-
-  commonlength = this.diff_commonSuffix(text1, text2);
-  var commonsuffix = text1.substring(text1.length - commonlength);
-  text1 = text1.substring(0, text1.length - commonlength);
-  text2 = text2.substring(0, text2.length - commonlength); // Compute the diff on the middle block.
-
-  var diffs = this.diff_compute(text1, text2, checklines); // Restore the prefix and suffix.
-
-  if (commonprefix) {
-    diffs.unshift([DIFF_EQUAL, commonprefix]);
-  }
-
-  if (commonsuffix) {
-    diffs.push([DIFF_EQUAL, commonsuffix]);
-  }
-
-  this.diff_cleanupMerge(diffs);
-  return diffs;
-};
-/**
- * Find the differences between two texts.  Assumes that the texts do not
- * have any common prefix or suffix.
- * @param {string} text1 Old string to be diffed.
- * @param {string} text2 New string to be diffed.
- * @param {boolean} checklines Speedup flag.  If false, then don't run a
- *     line-level diff first to identify the changed areas.
- *     If true, then run a faster, slightly less optimal diff
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_compute = function (text1, text2, checklines) {
-  var diffs;
-
-  if (!text1) {
-    // Just add some text (speedup).
-    return [[DIFF_INSERT, text2]];
-  }
-
-  if (!text2) {
-    // Just delete some text (speedup).
-    return [[DIFF_DELETE, text1]];
-  }
-
-  var longtext = text1.length > text2.length ? text1 : text2;
-  var shorttext = text1.length > text2.length ? text2 : text1;
-  var i = longtext.indexOf(shorttext);
-
-  if (i != -1) {
-    // Shorter text is inside the longer text (speedup).
-    diffs = [[DIFF_INSERT, longtext.substring(0, i)], [DIFF_EQUAL, shorttext], [DIFF_INSERT, longtext.substring(i + shorttext.length)]]; // Swap insertions for deletions if diff is reversed.
-
-    if (text1.length > text2.length) {
-      diffs[0][0] = diffs[2][0] = DIFF_DELETE;
-    }
-
-    return diffs;
-  }
-
-  longtext = shorttext = null; // Garbage collect.
-  // Check to see if the problem can be split in two.
-
-  var hm = this.diff_halfMatch(text1, text2);
-
-  if (hm) {
-    // A half-match was found, sort out the return data.
-    var text1_a = hm[0];
-    var text1_b = hm[1];
-    var text2_a = hm[2];
-    var text2_b = hm[3];
-    var mid_common = hm[4]; // Send both pairs off for separate processing.
-
-    var diffs_a = this.diff_main(text1_a, text2_a, checklines);
-    var diffs_b = this.diff_main(text1_b, text2_b, checklines); // Merge the results.
-
-    return diffs_a.concat([[DIFF_EQUAL, mid_common]], diffs_b);
-  } // Perform a real diff.
-
-
-  if (checklines && (text1.length < 100 || text2.length < 100)) {
-    // Too trivial for the overhead.
-    checklines = false;
-  }
-
-  var linearray;
-
-  if (checklines) {
-    // Scan the text on a line-by-line basis first.
-    var a = this.diff_linesToChars(text1, text2);
-    text1 = a[0];
-    text2 = a[1];
-    linearray = a[2];
-  }
-
-  diffs = this.diff_map(text1, text2);
-
-  if (!diffs) {
-    // No acceptable result.
-    diffs = [[DIFF_DELETE, text1], [DIFF_INSERT, text2]];
-  }
-
-  if (checklines) {
-    // Convert the diff back to original text.
-    this.diff_charsToLines(diffs, linearray); // Eliminate freak matches (e.g. blank lines)
-
-    this.diff_cleanupSemantic(diffs); // Rediff any replacement blocks, this time character-by-character.
-    // Add a dummy entry at the end.
-
-    diffs.push([DIFF_EQUAL, '']);
-    var pointer = 0;
-    var count_delete = 0;
-    var count_insert = 0;
-    var text_delete = '';
-    var text_insert = '';
-
-    while (pointer < diffs.length) {
-      switch (diffs[pointer][0]) {
-        case DIFF_INSERT:
-          count_insert++;
-          text_insert += diffs[pointer][1];
-          break;
-
-        case DIFF_DELETE:
-          count_delete++;
-          text_delete += diffs[pointer][1];
-          break;
-
-        case DIFF_EQUAL:
-          // Upon reaching an equality, check for prior redundancies.
-          if (count_delete >= 1 && count_insert >= 1) {
-            // Delete the offending records and add the merged ones.
-            var a = this.diff_main(text_delete, text_insert, false);
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert);
-            pointer = pointer - count_delete - count_insert;
-
-            for (var j = a.length - 1; j >= 0; j--) {
-              diffs.splice(pointer, 0, a[j]);
-            }
-
-            pointer = pointer + a.length;
-          }
-
-          count_insert = 0;
-          count_delete = 0;
-          text_delete = '';
-          text_insert = '';
-          break;
-      }
-
-      pointer++;
-    }
-
-    diffs.pop(); // Remove the dummy entry at the end.
-  }
-
-  return diffs;
-};
-/**
- * Split two texts into an array of strings.  Reduce the texts to a string of
- * hashes where each Unicode character represents one line.
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {Array.<string|Array.<string>>} Three element Array, containing the
- *     encoded text1, the encoded text2 and the array of unique strings.  The
- *     zeroth element of the array of unique strings is intentionally blank.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_linesToChars = function (text1, text2) {
-  var lineArray = []; // e.g. lineArray[4] == 'Hello\n'
-
-  var lineHash = {}; // e.g. lineHash['Hello\n'] == 4
-  // '\x00' is a valid character, but various debuggers don't like it.
-  // So we'll insert a junk entry to avoid generating a null character.
-
-  lineArray[0] = '';
-  /**
-   * Split a text into an array of strings.  Reduce the texts to a string of
-   * hashes where each Unicode character represents one line.
-   * Modifies linearray and linehash through being a closure.
-   * @param {string} text String to encode.
-   * @return {string} Encoded string.
-   * @private
-   */
-
-  function diff_linesToCharsMunge(text) {
-    var chars = ''; // Walk the text, pulling out a substring for each line.
-    // text.split('\n') would would temporarily double our memory footprint.
-    // Modifying text would create many large strings to garbage collect.
-
-    var lineStart = 0;
-    var lineEnd = -1; // Keeping our own length variable is faster than looking it up.
-
-    var lineArrayLength = lineArray.length;
-
-    while (lineEnd < text.length - 1) {
-      lineEnd = text.indexOf('\n', lineStart);
-
-      if (lineEnd == -1) {
-        lineEnd = text.length - 1;
-      }
-
-      var line = text.substring(lineStart, lineEnd + 1);
-      lineStart = lineEnd + 1;
-
-      if (lineHash.hasOwnProperty ? lineHash.hasOwnProperty(line) : lineHash[line] !== undefined) {
-        chars += String.fromCharCode(lineHash[line]);
-      } else {
-        chars += String.fromCharCode(lineArrayLength);
-        lineHash[line] = lineArrayLength;
-        lineArray[lineArrayLength++] = line;
-      }
-    }
-
-    return chars;
-  }
-
-  var chars1 = diff_linesToCharsMunge(text1);
-  var chars2 = diff_linesToCharsMunge(text2);
-  return [chars1, chars2, lineArray];
-};
-/**
- * Rehydrate the text in a diff from a string of line hashes to real lines of
- * text.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @param {Array.<string>} lineArray Array of unique strings.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_charsToLines = function (diffs, lineArray) {
-  for (var x = 0; x < diffs.length; x++) {
-    var chars = diffs[x][1];
-    var text = [];
-
-    for (var y = 0; y < chars.length; y++) {
-      text[y] = lineArray[chars.charCodeAt(y)];
-    }
-
-    diffs[x][1] = text.join('');
-  }
-};
-/**
- * Explore the intersection points between the two texts.
- * @param {string} text1 Old string to be diffed.
- * @param {string} text2 New string to be diffed.
- * @return {?Array.<Array.<number|string>>} Array of diff tuples or null if no
- *     diff available.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_map = function (text1, text2) {
-  // Don't run for too long.
-  var ms_end = new Date().getTime() + this.Diff_Timeout * 1000; // Cache the text lengths to prevent multiple calls.
-
-  var text1_length = text1.length;
-  var text2_length = text2.length;
-  var max_d = text1_length + text2_length - 1;
-  var doubleEnd = this.Diff_DualThreshold * 2 < max_d; // JavaScript efficiency note: (x << 32) + y doesn't work since numbers are
-  // only 32 bit.  Use x + ',' + y to create a hash instead.
-
-  var v_map1 = [];
-  var v_map2 = [];
-  var v1 = {};
-  var v2 = {};
-  v1[1] = 0;
-  v2[1] = 0;
-  var x, y;
-  var footstep; // Used to track overlapping paths.
-
-  var footsteps = {};
-  var done = false; // If the total number of characters is odd, then the front path will collide
-  // with the reverse path.
-
-  var front = (text1_length + text2_length) % 2;
-
-  for (var d = 0; d < max_d; d++) {
-    // Bail out if timeout reached.
-    if (this.Diff_Timeout > 0 && new Date().getTime() > ms_end) {
-      return null;
-    } // Walk the front path one step.
-
-
-    v_map1[d] = {};
-
-    for (var k = -d; k <= d; k += 2) {
-      if (k == -d || k != d && v1[k - 1] < v1[k + 1]) {
-        x = v1[k + 1];
-      } else {
-        x = v1[k - 1] + 1;
-      }
-
-      y = x - k;
-
-      if (doubleEnd) {
-        footstep = x + ',' + y;
-
-        if (front && footsteps[footstep] !== undefined) {
-          done = true;
-        }
-
-        if (!front) {
-          footsteps[footstep] = d;
-        }
-      }
-
-      while (!done && x < text1_length && y < text2_length && text1.charAt(x) == text2.charAt(y)) {
-        x++;
-        y++;
-
-        if (doubleEnd) {
-          footstep = x + ',' + y;
-
-          if (front && footsteps[footstep] !== undefined) {
-            done = true;
-          }
-
-          if (!front) {
-            footsteps[footstep] = d;
-          }
-        }
-      }
-
-      v1[k] = x;
-      v_map1[d][x + ',' + y] = true;
-
-      if (x == text1_length && y == text2_length) {
-        // Reached the end in single-path mode.
-        return this.diff_path1(v_map1, text1, text2);
-      } else if (done) {
-        // Front path ran over reverse path.
-        v_map2 = v_map2.slice(0, footsteps[footstep] + 1);
-        var a = this.diff_path1(v_map1, text1.substring(0, x), text2.substring(0, y));
-        return a.concat(this.diff_path2(v_map2, text1.substring(x), text2.substring(y)));
-      }
-    }
-
-    if (doubleEnd) {
-      // Walk the reverse path one step.
-      v_map2[d] = {};
-
-      for (var k = -d; k <= d; k += 2) {
-        if (k == -d || k != d && v2[k - 1] < v2[k + 1]) {
-          x = v2[k + 1];
-        } else {
-          x = v2[k - 1] + 1;
-        }
-
-        y = x - k;
-        footstep = text1_length - x + ',' + (text2_length - y);
-
-        if (!front && footsteps[footstep] !== undefined) {
-          done = true;
-        }
-
-        if (front) {
-          footsteps[footstep] = d;
-        }
-
-        while (!done && x < text1_length && y < text2_length && text1.charAt(text1_length - x - 1) == text2.charAt(text2_length - y - 1)) {
-          x++;
-          y++;
-          footstep = text1_length - x + ',' + (text2_length - y);
-
-          if (!front && footsteps[footstep] !== undefined) {
-            done = true;
-          }
-
-          if (front) {
-            footsteps[footstep] = d;
-          }
-        }
-
-        v2[k] = x;
-        v_map2[d][x + ',' + y] = true;
-
-        if (done) {
-          // Reverse path ran over front path.
-          v_map1 = v_map1.slice(0, footsteps[footstep] + 1);
-          var a = this.diff_path1(v_map1, text1.substring(0, text1_length - x), text2.substring(0, text2_length - y));
-          return a.concat(this.diff_path2(v_map2, text1.substring(text1_length - x), text2.substring(text2_length - y)));
-        }
-      }
-    }
-  } // Number of diffs equals number of characters, no commonality at all.
-
-
-  return null;
-};
-/**
- * Work from the middle back to the start to determine the path.
- * @param {Array.<Object>} v_map Array of paths.
- * @param {string} text1 Old string fragment to be diffed.
- * @param {string} text2 New string fragment to be diffed.
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_path1 = function (v_map, text1, text2) {
-  var path = [];
-  var x = text1.length;
-  var y = text2.length;
-  /** @type {?number} */
-
-  var last_op = null;
-
-  for (var d = v_map.length - 2; d >= 0; d--) {
-    while (1) {
-      if (v_map[d][x - 1 + ',' + y] !== undefined) {
-        x--;
-
-        if (last_op === DIFF_DELETE) {
-          path[0][1] = text1.charAt(x) + path[0][1];
-        } else {
-          path.unshift([DIFF_DELETE, text1.charAt(x)]);
-        }
-
-        last_op = DIFF_DELETE;
-        break;
-      } else if (v_map[d][x + ',' + (y - 1)] !== undefined) {
-        y--;
-
-        if (last_op === DIFF_INSERT) {
-          path[0][1] = text2.charAt(y) + path[0][1];
-        } else {
-          path.unshift([DIFF_INSERT, text2.charAt(y)]);
-        }
-
-        last_op = DIFF_INSERT;
-        break;
-      } else {
-        x--;
-        y--;
-
-        if (text1.charAt(x) != text2.charAt(y)) {
-          throw new Error('No diagonal.  Can\'t happen. (diff_path1)');
-        }
-
-        if (last_op === DIFF_EQUAL) {
-          path[0][1] = text1.charAt(x) + path[0][1];
-        } else {
-          path.unshift([DIFF_EQUAL, text1.charAt(x)]);
-        }
-
-        last_op = DIFF_EQUAL;
-      }
-    }
-  }
-
-  return path;
-};
-/**
- * Work from the middle back to the end to determine the path.
- * @param {Array.<Object>} v_map Array of paths.
- * @param {string} text1 Old string fragment to be diffed.
- * @param {string} text2 New string fragment to be diffed.
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_path2 = function (v_map, text1, text2) {
-  var path = [];
-  var pathLength = 0;
-  var x = text1.length;
-  var y = text2.length;
-  /** @type {?number} */
-
-  var last_op = null;
-
-  for (var d = v_map.length - 2; d >= 0; d--) {
-    while (1) {
-      if (v_map[d][x - 1 + ',' + y] !== undefined) {
-        x--;
-
-        if (last_op === DIFF_DELETE) {
-          path[pathLength - 1][1] += text1.charAt(text1.length - x - 1);
-        } else {
-          path[pathLength++] = [DIFF_DELETE, text1.charAt(text1.length - x - 1)];
-        }
-
-        last_op = DIFF_DELETE;
-        break;
-      } else if (v_map[d][x + ',' + (y - 1)] !== undefined) {
-        y--;
-
-        if (last_op === DIFF_INSERT) {
-          path[pathLength - 1][1] += text2.charAt(text2.length - y - 1);
-        } else {
-          path[pathLength++] = [DIFF_INSERT, text2.charAt(text2.length - y - 1)];
-        }
-
-        last_op = DIFF_INSERT;
-        break;
-      } else {
-        x--;
-        y--;
-
-        if (text1.charAt(text1.length - x - 1) != text2.charAt(text2.length - y - 1)) {
-          throw new Error('No diagonal.  Can\'t happen. (diff_path2)');
-        }
-
-        if (last_op === DIFF_EQUAL) {
-          path[pathLength - 1][1] += text1.charAt(text1.length - x - 1);
-        } else {
-          path[pathLength++] = [DIFF_EQUAL, text1.charAt(text1.length - x - 1)];
-        }
-
-        last_op = DIFF_EQUAL;
-      }
-    }
-  }
-
-  return path;
-};
-/**
- * Determine the common prefix of two strings
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {number} The number of characters common to the start of each
- *     string.
- */
-
-
-diff_match_patch.prototype.diff_commonPrefix = function (text1, text2) {
-  // Quick check for common null cases.
-  if (!text1 || !text2 || text1.charAt(0) != text2.charAt(0)) {
-    return 0;
-  } // Binary search.
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
-
-
-  var pointermin = 0;
-  var pointermax = Math.min(text1.length, text2.length);
-  var pointermid = pointermax;
-  var pointerstart = 0;
-
-  while (pointermin < pointermid) {
-    if (text1.substring(pointerstart, pointermid) == text2.substring(pointerstart, pointermid)) {
-      pointermin = pointermid;
-      pointerstart = pointermin;
-    } else {
-      pointermax = pointermid;
-    }
-
-    pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
-  }
-
-  return pointermid;
-};
-/**
- * Determine the common suffix of two strings
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {number} The number of characters common to the end of each string.
- */
-
-
-diff_match_patch.prototype.diff_commonSuffix = function (text1, text2) {
-  // Quick check for common null cases.
-  if (!text1 || !text2 || text1.charAt(text1.length - 1) != text2.charAt(text2.length - 1)) {
-    return 0;
-  } // Binary search.
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
-
-
-  var pointermin = 0;
-  var pointermax = Math.min(text1.length, text2.length);
-  var pointermid = pointermax;
-  var pointerend = 0;
-
-  while (pointermin < pointermid) {
-    if (text1.substring(text1.length - pointermid, text1.length - pointerend) == text2.substring(text2.length - pointermid, text2.length - pointerend)) {
-      pointermin = pointermid;
-      pointerend = pointermin;
-    } else {
-      pointermax = pointermid;
-    }
-
-    pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
-  }
-
-  return pointermid;
-};
-/**
- * Do the two texts share a substring which is at least half the length of the
- * longer text?
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {?Array.<string>} Five element Array, containing the prefix of
- *     text1, the suffix of text1, the prefix of text2, the suffix of
- *     text2 and the common middle.  Or null if there was no match.
- */
-
-
-diff_match_patch.prototype.diff_halfMatch = function (text1, text2) {
-  var longtext = text1.length > text2.length ? text1 : text2;
-  var shorttext = text1.length > text2.length ? text2 : text1;
-
-  if (longtext.length < 10 || shorttext.length < 1) {
-    return null; // Pointless.
-  }
-
-  var dmp = this; // 'this' becomes 'window' in a closure.
-
-  /**
-   * Does a substring of shorttext exist within longtext such that the substring
-   * is at least half the length of longtext?
-   * Closure, but does not reference any external variables.
-   * @param {string} longtext Longer string.
-   * @param {string} shorttext Shorter string.
-   * @param {number} i Start index of quarter length substring within longtext
-   * @return {?Array.<string>} Five element Array, containing the prefix of
-   *     longtext, the suffix of longtext, the prefix of shorttext, the suffix
-   *     of shorttext and the common middle.  Or null if there was no match.
-   * @private
-   */
-
-  function diff_halfMatchI(longtext, shorttext, i) {
-    // Start with a 1/4 length substring at position i as a seed.
-    var seed = longtext.substring(i, i + Math.floor(longtext.length / 4));
-    var j = -1;
-    var best_common = '';
-    var best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b;
-
-    while ((j = shorttext.indexOf(seed, j + 1)) != -1) {
-      var prefixLength = dmp.diff_commonPrefix(longtext.substring(i), shorttext.substring(j));
-      var suffixLength = dmp.diff_commonSuffix(longtext.substring(0, i), shorttext.substring(0, j));
-
-      if (best_common.length < suffixLength + prefixLength) {
-        best_common = shorttext.substring(j - suffixLength, j) + shorttext.substring(j, j + prefixLength);
-        best_longtext_a = longtext.substring(0, i - suffixLength);
-        best_longtext_b = longtext.substring(i + prefixLength);
-        best_shorttext_a = shorttext.substring(0, j - suffixLength);
-        best_shorttext_b = shorttext.substring(j + prefixLength);
-      }
-    }
-
-    if (best_common.length >= longtext.length / 2) {
-      return [best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b, best_common];
-    } else {
-      return null;
-    }
-  } // First check if the second quarter is the seed for a half-match.
-
-
-  var hm1 = diff_halfMatchI(longtext, shorttext, Math.ceil(longtext.length / 4)); // Check again based on the third quarter.
-
-  var hm2 = diff_halfMatchI(longtext, shorttext, Math.ceil(longtext.length / 2));
-  var hm;
-
-  if (!hm1 && !hm2) {
-    return null;
-  } else if (!hm2) {
-    hm = hm1;
-  } else if (!hm1) {
-    hm = hm2;
-  } else {
-    // Both matched.  Select the longest.
-    hm = hm1[4].length > hm2[4].length ? hm1 : hm2;
-  } // A half-match was found, sort out the return data.
-
-
-  var text1_a, text1_b, text2_a, text2_b;
-
-  if (text1.length > text2.length) {
-    text1_a = hm[0];
-    text1_b = hm[1];
-    text2_a = hm[2];
-    text2_b = hm[3];
-  } else {
-    text2_a = hm[0];
-    text2_b = hm[1];
-    text1_a = hm[2];
-    text1_b = hm[3];
-  }
-
-  var mid_common = hm[4];
-  return [text1_a, text1_b, text2_a, text2_b, mid_common];
-};
-/**
- * Reduce the number of edits by eliminating semantically trivial equalities.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupSemantic = function (diffs) {
-  var changes = false;
-  var equalities = []; // Stack of indices where equalities are found.
-
-  var equalitiesLength = 0; // Keeping our own length var is faster in JS.
-
-  var lastequality = null; // Always equal to equalities[equalitiesLength-1][1]
-
-  var pointer = 0; // Index of current position.
-  // Number of characters that changed prior to the equality.
-
-  var length_changes1 = 0; // Number of characters that changed after the equality.
-
-  var length_changes2 = 0;
-
-  while (pointer < diffs.length) {
-    if (diffs[pointer][0] == DIFF_EQUAL) {
-      // equality found
-      equalities[equalitiesLength++] = pointer;
-      length_changes1 = length_changes2;
-      length_changes2 = 0;
-      lastequality = diffs[pointer][1];
-    } else {
-      // an insertion or deletion
-      length_changes2 += diffs[pointer][1].length;
-
-      if (lastequality !== null && lastequality.length <= length_changes1 && lastequality.length <= length_changes2) {
-        // Duplicate record
-        diffs.splice(equalities[equalitiesLength - 1], 0, [DIFF_DELETE, lastequality]); // Change second copy to insert.
-
-        diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT; // Throw away the equality we just deleted.
-
-        equalitiesLength--; // Throw away the previous equality (it needs to be reevaluated).
-
-        equalitiesLength--;
-        pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
-        length_changes1 = 0; // Reset the counters.
-
-        length_changes2 = 0;
-        lastequality = null;
-        changes = true;
-      }
-    }
-
-    pointer++;
-  }
-
-  if (changes) {
-    this.diff_cleanupMerge(diffs);
-  }
-
-  this.diff_cleanupSemanticLossless(diffs);
-};
-/**
- * Look for single edits surrounded on both sides by equalities
- * which can be shifted sideways to align the edit to a word boundary.
- * e.g: The c<ins>at c</ins>ame. -> The <ins>cat </ins>came.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupSemanticLossless = function (diffs) {
-  // Define some regex patterns for matching boundaries.
-  var punctuation = /[^a-zA-Z0-9]/;
-  var whitespace = /\s/;
-  var linebreak = /[\r\n]/;
-  var blanklineEnd = /\n\r?\n$/;
-  var blanklineStart = /^\r?\n\r?\n/;
-  /**
-   * Given two strings, compute a score representing whether the internal
-   * boundary falls on logical boundaries.
-   * Scores range from 5 (best) to 0 (worst).
-   * Closure, makes reference to regex patterns defined above.
-   * @param {string} one First string.
-   * @param {string} two Second string.
-   * @return {number} The score.
-   */
-
-  function diff_cleanupSemanticScore(one, two) {
-    if (!one || !two) {
-      // Edges are the best.
-      return 5;
-    } // Each port of this function behaves slightly differently due to
-    // subtle differences in each language's definition of things like
-    // 'whitespace'.  Since this function's purpose is largely cosmetic,
-    // the choice has been made to use each language's native features
-    // rather than force total conformity.
-
-
-    var score = 0; // One point for non-alphanumeric.
-
-    if (one.charAt(one.length - 1).match(punctuation) || two.charAt(0).match(punctuation)) {
-      score++; // Two points for whitespace.
-
-      if (one.charAt(one.length - 1).match(whitespace) || two.charAt(0).match(whitespace)) {
-        score++; // Three points for line breaks.
-
-        if (one.charAt(one.length - 1).match(linebreak) || two.charAt(0).match(linebreak)) {
-          score++; // Four points for blank lines.
-
-          if (one.match(blanklineEnd) || two.match(blanklineStart)) {
-            score++;
-          }
-        }
-      }
-    }
-
-    return score;
-  }
-
-  var pointer = 1; // Intentionally ignore the first and last element (don't need checking).
-
-  while (pointer < diffs.length - 1) {
-    if (diffs[pointer - 1][0] == DIFF_EQUAL && diffs[pointer + 1][0] == DIFF_EQUAL) {
-      // This is a single edit surrounded by equalities.
-      var equality1 = diffs[pointer - 1][1];
-      var edit = diffs[pointer][1];
-      var equality2 = diffs[pointer + 1][1]; // First, shift the edit as far left as possible.
-
-      var commonOffset = this.diff_commonSuffix(equality1, edit);
-
-      if (commonOffset) {
-        var commonString = edit.substring(edit.length - commonOffset);
-        equality1 = equality1.substring(0, equality1.length - commonOffset);
-        edit = commonString + edit.substring(0, edit.length - commonOffset);
-        equality2 = commonString + equality2;
-      } // Second, step character by character right, looking for the best fit.
-
-
-      var bestEquality1 = equality1;
-      var bestEdit = edit;
-      var bestEquality2 = equality2;
-      var bestScore = diff_cleanupSemanticScore(equality1, edit) + diff_cleanupSemanticScore(edit, equality2);
-
-      while (edit.charAt(0) === equality2.charAt(0)) {
-        equality1 += edit.charAt(0);
-        edit = edit.substring(1) + equality2.charAt(0);
-        equality2 = equality2.substring(1);
-        var score = diff_cleanupSemanticScore(equality1, edit) + diff_cleanupSemanticScore(edit, equality2); // The >= encourages trailing rather than leading whitespace on edits.
-
-        if (score >= bestScore) {
-          bestScore = score;
-          bestEquality1 = equality1;
-          bestEdit = edit;
-          bestEquality2 = equality2;
-        }
-      }
-
-      if (diffs[pointer - 1][1] != bestEquality1) {
-        // We have an improvement, save it back to the diff.
-        if (bestEquality1) {
-          diffs[pointer - 1][1] = bestEquality1;
-        } else {
-          diffs.splice(pointer - 1, 1);
-          pointer--;
-        }
-
-        diffs[pointer][1] = bestEdit;
-
-        if (bestEquality2) {
-          diffs[pointer + 1][1] = bestEquality2;
-        } else {
-          diffs.splice(pointer + 1, 1);
-          pointer--;
-        }
-      }
-    }
-
-    pointer++;
-  }
-};
-/**
- * Reduce the number of edits by eliminating operationally trivial equalities.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupEfficiency = function (diffs) {
-  var changes = false;
-  var equalities = []; // Stack of indices where equalities are found.
-
-  var equalitiesLength = 0; // Keeping our own length var is faster in JS.
-
-  var lastequality = ''; // Always equal to equalities[equalitiesLength-1][1]
-
-  var pointer = 0; // Index of current position.
-  // Is there an insertion operation before the last equality.
-
-  var pre_ins = false; // Is there a deletion operation before the last equality.
-
-  var pre_del = false; // Is there an insertion operation after the last equality.
-
-  var post_ins = false; // Is there a deletion operation after the last equality.
-
-  var post_del = false;
-
-  while (pointer < diffs.length) {
-    if (diffs[pointer][0] == DIFF_EQUAL) {
-      // equality found
-      if (diffs[pointer][1].length < this.Diff_EditCost && (post_ins || post_del)) {
-        // Candidate found.
-        equalities[equalitiesLength++] = pointer;
-        pre_ins = post_ins;
-        pre_del = post_del;
-        lastequality = diffs[pointer][1];
-      } else {
-        // Not a candidate, and can never become one.
-        equalitiesLength = 0;
-        lastequality = '';
-      }
-
-      post_ins = post_del = false;
-    } else {
-      // an insertion or deletion
-      if (diffs[pointer][0] == DIFF_DELETE) {
-        post_del = true;
-      } else {
-        post_ins = true;
-      }
-      /*
-       * Five types to be split:
-       * <ins>A</ins><del>B</del>XY<ins>C</ins><del>D</del>
-       * <ins>A</ins>X<ins>C</ins><del>D</del>
-       * <ins>A</ins><del>B</del>X<ins>C</ins>
-       * <ins>A</del>X<ins>C</ins><del>D</del>
-       * <ins>A</ins><del>B</del>X<del>C</del>
-       */
-
-
-      if (lastequality && (pre_ins && pre_del && post_ins && post_del || lastequality.length < this.Diff_EditCost / 2 && pre_ins + pre_del + post_ins + post_del == 3)) {
-        // Duplicate record
-        diffs.splice(equalities[equalitiesLength - 1], 0, [DIFF_DELETE, lastequality]); // Change second copy to insert.
-
-        diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT;
-        equalitiesLength--; // Throw away the equality we just deleted;
-
-        lastequality = '';
-
-        if (pre_ins && pre_del) {
-          // No changes made which could affect previous entry, keep going.
-          post_ins = post_del = true;
-          equalitiesLength = 0;
-        } else {
-          equalitiesLength--; // Throw away the previous equality;
-
-          pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
-          post_ins = post_del = false;
-        }
-
-        changes = true;
-      }
-    }
-
-    pointer++;
-  }
-
-  if (changes) {
-    this.diff_cleanupMerge(diffs);
-  }
-};
-/**
- * Reorder and merge like edit sections.  Merge equalities.
- * Any edit section can move as long as it doesn't cross an equality.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupMerge = function (diffs) {
-  diffs.push([DIFF_EQUAL, '']); // Add a dummy entry at the end.
-
-  var pointer = 0;
-  var count_delete = 0;
-  var count_insert = 0;
-  var text_delete = '';
-  var text_insert = '';
-  var commonlength;
-
-  while (pointer < diffs.length) {
-    switch (diffs[pointer][0]) {
-      case DIFF_INSERT:
-        count_insert++;
-        text_insert += diffs[pointer][1];
-        pointer++;
-        break;
-
-      case DIFF_DELETE:
-        count_delete++;
-        text_delete += diffs[pointer][1];
-        pointer++;
-        break;
-
-      case DIFF_EQUAL:
-        // Upon reaching an equality, check for prior redundancies.
-        if (count_delete !== 0 || count_insert !== 0) {
-          if (count_delete !== 0 && count_insert !== 0) {
-            // Factor out any common prefixies.
-            commonlength = this.diff_commonPrefix(text_insert, text_delete);
-
-            if (commonlength !== 0) {
-              if (pointer - count_delete - count_insert > 0 && diffs[pointer - count_delete - count_insert - 1][0] == DIFF_EQUAL) {
-                diffs[pointer - count_delete - count_insert - 1][1] += text_insert.substring(0, commonlength);
-              } else {
-                diffs.splice(0, 0, [DIFF_EQUAL, text_insert.substring(0, commonlength)]);
-                pointer++;
-              }
-
-              text_insert = text_insert.substring(commonlength);
-              text_delete = text_delete.substring(commonlength);
-            } // Factor out any common suffixies.
-
-
-            commonlength = this.diff_commonSuffix(text_insert, text_delete);
-
-            if (commonlength !== 0) {
-              diffs[pointer][1] = text_insert.substring(text_insert.length - commonlength) + diffs[pointer][1];
-              text_insert = text_insert.substring(0, text_insert.length - commonlength);
-              text_delete = text_delete.substring(0, text_delete.length - commonlength);
-            }
-          } // Delete the offending records and add the merged ones.
-
-
-          if (count_delete === 0) {
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert, [DIFF_INSERT, text_insert]);
-          } else if (count_insert === 0) {
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert, [DIFF_DELETE, text_delete]);
-          } else {
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert, [DIFF_DELETE, text_delete], [DIFF_INSERT, text_insert]);
-          }
-
-          pointer = pointer - count_delete - count_insert + (count_delete ? 1 : 0) + (count_insert ? 1 : 0) + 1;
-        } else if (pointer !== 0 && diffs[pointer - 1][0] == DIFF_EQUAL) {
-          // Merge this equality with the previous one.
-          diffs[pointer - 1][1] += diffs[pointer][1];
-          diffs.splice(pointer, 1);
-        } else {
-          pointer++;
-        }
-
-        count_insert = 0;
-        count_delete = 0;
-        text_delete = '';
-        text_insert = '';
-        break;
-    }
-  }
-
-  if (diffs[diffs.length - 1][1] === '') {
-    diffs.pop(); // Remove the dummy entry at the end.
-  } // Second pass: look for single edits surrounded on both sides by equalities
-  // which can be shifted sideways to eliminate an equality.
-  // e.g: A<ins>BA</ins>C -> <ins>AB</ins>AC
-
-
-  var changes = false;
-  pointer = 1; // Intentionally ignore the first and last element (don't need checking).
-
-  while (pointer < diffs.length - 1) {
-    if (diffs[pointer - 1][0] == DIFF_EQUAL && diffs[pointer + 1][0] == DIFF_EQUAL) {
-      // This is a single edit surrounded by equalities.
-      if (diffs[pointer][1].substring(diffs[pointer][1].length - diffs[pointer - 1][1].length) == diffs[pointer - 1][1]) {
-        // Shift the edit over the previous equality.
-        diffs[pointer][1] = diffs[pointer - 1][1] + diffs[pointer][1].substring(0, diffs[pointer][1].length - diffs[pointer - 1][1].length);
-        diffs[pointer + 1][1] = diffs[pointer - 1][1] + diffs[pointer + 1][1];
-        diffs.splice(pointer - 1, 1);
-        changes = true;
-      } else if (diffs[pointer][1].substring(0, diffs[pointer + 1][1].length) == diffs[pointer + 1][1]) {
-        // Shift the edit over the next equality.
-        diffs[pointer - 1][1] += diffs[pointer + 1][1];
-        diffs[pointer][1] = diffs[pointer][1].substring(diffs[pointer + 1][1].length) + diffs[pointer + 1][1];
-        diffs.splice(pointer + 1, 1);
-        changes = true;
-      }
-    }
-
-    pointer++;
-  } // If shifts were made, the diff needs reordering and another shift sweep.
-
-
-  if (changes) {
-    this.diff_cleanupMerge(diffs);
-  }
-};
-/**
- * loc is a location in text1, compute and return the equivalent location in
- * text2.
- * e.g. 'The cat' vs 'The big cat', 1->1, 5->8
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @param {number} loc Location within text1.
- * @return {number} Location within text2.
- */
-
-
-diff_match_patch.prototype.diff_xIndex = function (diffs, loc) {
-  var chars1 = 0;
-  var chars2 = 0;
-  var last_chars1 = 0;
-  var last_chars2 = 0;
-  var x;
-
-  for (x = 0; x < diffs.length; x++) {
-    if (diffs[x][0] !== DIFF_INSERT) {
-      // Equality or deletion.
-      chars1 += diffs[x][1].length;
-    }
-
-    if (diffs[x][0] !== DIFF_DELETE) {
-      // Equality or insertion.
-      chars2 += diffs[x][1].length;
-    }
-
-    if (chars1 > loc) {
-      // Overshot the location.
-      break;
-    }
-
-    last_chars1 = chars1;
-    last_chars2 = chars2;
-  } // Was the location was deleted?
-
-
-  if (diffs.length != x && diffs[x][0] === DIFF_DELETE) {
-    return last_chars2;
-  } // Add the remaining character length.
-
-
-  return last_chars2 + (loc - last_chars1);
-};
-/**
- * Convert a diff array into a pretty HTML report.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} HTML representation.
- */
-
-
-diff_match_patch.prototype.diff_prettyHtml = function (diffs) {
-  var html = [];
-  var i = 0;
-
-  for (var x = 0; x < diffs.length; x++) {
-    var op = diffs[x][0]; // Operation (insert, delete, equal)
-
-    var data = diffs[x][1]; // Text of change.
-
-    var text = data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '&para;<BR>');
-
-    switch (op) {
-      case DIFF_INSERT:
-        html[x] = '<INS STYLE="background:#E6FFE6;" TITLE="i=' + i + '">' + text + '</INS>';
-        break;
-
-      case DIFF_DELETE:
-        html[x] = '<DEL STYLE="background:#FFE6E6;" TITLE="i=' + i + '">' + text + '</DEL>';
-        break;
-
-      case DIFF_EQUAL:
-        html[x] = '<SPAN TITLE="i=' + i + '">' + text + '</SPAN>';
-        break;
-    }
-
-    if (op !== DIFF_DELETE) {
-      i += data.length;
-    }
-  }
-
-  return html.join('');
-};
-/**
- * Compute and return the source text (all equalities and deletions).
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} Source text.
- */
-
-
-diff_match_patch.prototype.diff_text1 = function (diffs) {
-  var text = [];
-
-  for (var x = 0; x < diffs.length; x++) {
-    if (diffs[x][0] !== DIFF_INSERT) {
-      text[x] = diffs[x][1];
-    }
-  }
-
-  return text.join('');
-};
-/**
- * Compute and return the destination text (all equalities and insertions).
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} Destination text.
- */
-
-
-diff_match_patch.prototype.diff_text2 = function (diffs) {
-  var text = [];
-
-  for (var x = 0; x < diffs.length; x++) {
-    if (diffs[x][0] !== DIFF_DELETE) {
-      text[x] = diffs[x][1];
-    }
-  }
-
-  return text.join('');
-};
-/**
- * Compute the Levenshtein distance; the number of inserted, deleted or
- * substituted characters.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {number} Number of changes.
- */
-
-
-diff_match_patch.prototype.diff_levenshtein = function (diffs) {
-  var levenshtein = 0;
-  var insertions = 0;
-  var deletions = 0;
-
-  for (var x = 0; x < diffs.length; x++) {
-    var op = diffs[x][0];
-    var data = diffs[x][1];
-
-    switch (op) {
-      case DIFF_INSERT:
-        insertions += data.length;
-        break;
-
-      case DIFF_DELETE:
-        deletions += data.length;
-        break;
-
-      case DIFF_EQUAL:
-        // A deletion and an insertion is one substitution.
-        levenshtein += Math.max(insertions, deletions);
-        insertions = 0;
-        deletions = 0;
-        break;
-    }
-  }
-
-  levenshtein += Math.max(insertions, deletions);
-  return levenshtein;
-};
-/**
- * Crush the diff into an encoded string which describes the operations
- * required to transform text1 into text2.
- * E.g. =3\t-2\t+ing  -> Keep 3 chars, delete 2 chars, insert 'ing'.
- * Operations are tab-separated.  Inserted text is escaped using %xx notation.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} Delta text.
- */
-
-
-diff_match_patch.prototype.diff_toDelta = function (diffs) {
-  var text = [];
-
-  for (var x = 0; x < diffs.length; x++) {
-    switch (diffs[x][0]) {
-      case DIFF_INSERT:
-        text[x] = '+' + encodeURI(diffs[x][1]);
-        break;
-
-      case DIFF_DELETE:
-        text[x] = '-' + diffs[x][1].length;
-        break;
-
-      case DIFF_EQUAL:
-        text[x] = '=' + diffs[x][1].length;
-        break;
-    }
-  } // Opera doesn't know how to encode char 0.
-
-
-  return text.join('\t').replace(/\x00/g, '%00').replace(/%20/g, ' ');
-};
-/**
- * Given the original text1, and an encoded string which describes the
- * operations required to transform text1 into text2, compute the full diff.
- * @param {string} text1 Source string for the diff.
- * @param {string} delta Delta text.
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @throws {Error} If invalid input.
- */
-
-
-diff_match_patch.prototype.diff_fromDelta = function (text1, delta) {
-  var diffs = [];
-  var diffsLength = 0; // Keeping our own length var is faster in JS.
-
-  var pointer = 0; // Cursor in text1
-  // Opera doesn't know how to decode char 0.
-
-  delta = delta.replace(/%00/g, '\0');
-  var tokens = delta.split(/\t/g);
-
-  for (var x = 0; x < tokens.length; x++) {
-    // Each token begins with a one character parameter which specifies the
-    // operation of this token (delete, insert, equality).
-    var param = tokens[x].substring(1);
-
-    switch (tokens[x].charAt(0)) {
-      case '+':
-        try {
-          diffs[diffsLength++] = [DIFF_INSERT, decodeURI(param)];
-        } catch (ex) {
-          // Malformed URI sequence.
-          throw new Error('Illegal escape in diff_fromDelta: ' + param);
-        }
-
-        break;
-
-      case '-': // Fall through.
-
-      case '=':
-        var n = parseInt(param, 10);
-
-        if (isNaN(n) || n < 0) {
-          throw new Error('Invalid number in diff_fromDelta: ' + param);
-        }
-
-        var text = text1.substring(pointer, pointer += n);
-
-        if (tokens[x].charAt(0) == '=') {
-          diffs[diffsLength++] = [DIFF_EQUAL, text];
-        } else {
-          diffs[diffsLength++] = [DIFF_DELETE, text];
-        }
-
-        break;
-
-      default:
-        // Blank tokens are ok (from a trailing \t).
-        // Anything else is an error.
-        if (tokens[x]) {
-          throw new Error('Invalid diff operation in diff_fromDelta: ' + tokens[x]);
-        }
-
-    }
-  }
-
-  if (pointer != text1.length) {
-    throw new Error('Delta length (' + pointer + ') does not equal source text length (' + text1.length + ').');
-  }
-
-  return diffs;
-}; //  MATCH FUNCTIONS
-
-/**
- * Locate the best instance of 'pattern' in 'text' near 'loc'.
- * @param {string} text The text to search.
- * @param {string} pattern The pattern to search for.
- * @param {number} loc The location to search around.
- * @return {number} Best match index or -1.
- */
-
-
-diff_match_patch.prototype.match_main = function (text, pattern, loc) {
-  // Check for null inputs.
-  if (text == null || pattern == null || loc == null) {
-    throw new Error('Null input. (match_main)');
-  }
-
-  loc = Math.max(0, Math.min(loc, text.length));
-
-  if (text == pattern) {
-    // Shortcut (potentially not guaranteed by the algorithm)
-    return 0;
-  } else if (!text.length) {
-    // Nothing to match.
-    return -1;
-  } else if (text.substring(loc, loc + pattern.length) == pattern) {
-    // Perfect match at the perfect spot!  (Includes case of null pattern)
-    return loc;
-  } else {
-    // Do a fuzzy compare.
-    return this.match_bitap(text, pattern, loc);
-  }
-};
-/**
- * Locate the best instance of 'pattern' in 'text' near 'loc' using the
- * Bitap algorithm.
- * @param {string} text The text to search.
- * @param {string} pattern The pattern to search for.
- * @param {number} loc The location to search around.
- * @return {number} Best match index or -1.
- * @private
- */
-
-
-diff_match_patch.prototype.match_bitap = function (text, pattern, loc) {
-  if (pattern.length > this.Match_MaxBits) {
-    throw new Error('Pattern too long for this browser.');
-  } // Initialise the alphabet.
-
-
-  var s = this.match_alphabet(pattern);
-  var dmp = this; // 'this' becomes 'window' in a closure.
-
-  /**
-   * Compute and return the score for a match with e errors and x location.
-   * Accesses loc and pattern through being a closure.
-   * @param {number} e Number of errors in match.
-   * @param {number} x Location of match.
-   * @return {number} Overall score for match (0.0 = good, 1.0 = bad).
-   * @private
-   */
-
-  function match_bitapScore(e, x) {
-    var accuracy = e / pattern.length;
-    var proximity = Math.abs(loc - x);
-
-    if (!dmp.Match_Distance) {
-      // Dodge divide by zero error.
-      return proximity ? 1.0 : accuracy;
-    }
-
-    return accuracy + proximity / dmp.Match_Distance;
-  } // Highest score beyond which we give up.
-
-
-  var score_threshold = this.Match_Threshold; // Is there a nearby exact match? (speedup)
-
-  var best_loc = text.indexOf(pattern, loc);
-
-  if (best_loc != -1) {
-    score_threshold = Math.min(match_bitapScore(0, best_loc), score_threshold); // What about in the other direction? (speedup)
-
-    best_loc = text.lastIndexOf(pattern, loc + pattern.length);
-
-    if (best_loc != -1) {
-      score_threshold = Math.min(match_bitapScore(0, best_loc), score_threshold);
-    }
-  } // Initialise the bit arrays.
-
-
-  var matchmask = 1 << pattern.length - 1;
-  best_loc = -1;
-  var bin_min, bin_mid;
-  var bin_max = pattern.length + text.length;
-  var last_rd;
-
-  for (var d = 0; d < pattern.length; d++) {
-    // Scan for the best match; each iteration allows for one more error.
-    // Run a binary search to determine how far from 'loc' we can stray at this
-    // error level.
-    bin_min = 0;
-    bin_mid = bin_max;
-
-    while (bin_min < bin_mid) {
-      if (match_bitapScore(d, loc + bin_mid) <= score_threshold) {
-        bin_min = bin_mid;
-      } else {
-        bin_max = bin_mid;
-      }
-
-      bin_mid = Math.floor((bin_max - bin_min) / 2 + bin_min);
-    } // Use the result from this iteration as the maximum for the next.
-
-
-    bin_max = bin_mid;
-    var start = Math.max(1, loc - bin_mid + 1);
-    var finish = Math.min(loc + bin_mid, text.length) + pattern.length;
-    var rd = Array(finish + 2);
-    rd[finish + 1] = (1 << d) - 1;
-
-    for (var j = finish; j >= start; j--) {
-      // The alphabet (s) is a sparse hash, so the following line generates
-      // warnings.
-      var charMatch = s[text.charAt(j - 1)];
-
-      if (d === 0) {
-        // First pass: exact match.
-        rd[j] = (rd[j + 1] << 1 | 1) & charMatch;
-      } else {
-        // Subsequent passes: fuzzy match.
-        rd[j] = (rd[j + 1] << 1 | 1) & charMatch | ((last_rd[j + 1] | last_rd[j]) << 1 | 1) | last_rd[j + 1];
-      }
-
-      if (rd[j] & matchmask) {
-        var score = match_bitapScore(d, j - 1); // This match will almost certainly be better than any existing match.
-        // But check anyway.
-
-        if (score <= score_threshold) {
-          // Told you so.
-          score_threshold = score;
-          best_loc = j - 1;
-
-          if (best_loc > loc) {
-            // When passing loc, don't exceed our current distance from loc.
-            start = Math.max(1, 2 * loc - best_loc);
-          } else {
-            // Already passed loc, downhill from here on in.
-            break;
-          }
-        }
-      }
-    } // No hope for a (better) match at greater error levels.
-
-
-    if (match_bitapScore(d + 1, loc) > score_threshold) {
-      break;
-    }
-
-    last_rd = rd;
-  }
-
-  return best_loc;
-};
-/**
- * Initialise the alphabet for the Bitap algorithm.
- * @param {string} pattern The text to encode.
- * @return {Object} Hash of character locations.
- * @private
- */
-
-
-diff_match_patch.prototype.match_alphabet = function (pattern) {
-  var s = {};
-
-  for (var i = 0; i < pattern.length; i++) {
-    s[pattern.charAt(i)] = 0;
-  }
-
-  for (var i = 0; i < pattern.length; i++) {
-    s[pattern.charAt(i)] |= 1 << pattern.length - i - 1;
-  }
-
-  return s;
-}; //  PATCH FUNCTIONS
-
-/**
- * Increase the context until it is unique,
- * but don't let the pattern expand beyond Match_MaxBits.
- * @param {patch_obj} patch The patch to grow.
- * @param {string} text Source text.
- * @private
- */
-
-
-diff_match_patch.prototype.patch_addContext = function (patch, text) {
-  if (text.length == 0) {
-    return;
-  }
-
-  var pattern = text.substring(patch.start2, patch.start2 + patch.length1);
-  var padding = 0; // Look for the first and last matches of pattern in text.  If two different
-  // matches are found, increase the pattern length.
-
-  while (text.indexOf(pattern) != text.lastIndexOf(pattern) && pattern.length < this.Match_MaxBits - this.Patch_Margin - this.Patch_Margin) {
-    padding += this.Patch_Margin;
-    pattern = text.substring(patch.start2 - padding, patch.start2 + patch.length1 + padding);
-  } // Add one chunk for good luck.
-
-
-  padding += this.Patch_Margin; // Add the prefix.
-
-  var prefix = text.substring(patch.start2 - padding, patch.start2);
-
-  if (prefix) {
-    patch.diffs.unshift([DIFF_EQUAL, prefix]);
-  } // Add the suffix.
-
-
-  var suffix = text.substring(patch.start2 + patch.length1, patch.start2 + patch.length1 + padding);
-
-  if (suffix) {
-    patch.diffs.push([DIFF_EQUAL, suffix]);
-  } // Roll back the start points.
-
-
-  patch.start1 -= prefix.length;
-  patch.start2 -= prefix.length; // Extend the lengths.
-
-  patch.length1 += prefix.length + suffix.length;
-  patch.length2 += prefix.length + suffix.length;
-};
-/**
- * Compute a list of patches to turn text1 into text2.
- * Use diffs if provided, otherwise compute it ourselves.
- * There are four ways to call this function, depending on what data is
- * available to the caller:
- * Method 1:
- * a = text1, b = text2
- * Method 2:
- * a = diffs
- * Method 3 (optimal):
- * a = text1, b = diffs
- * Method 4 (deprecated, use method 3):
- * a = text1, b = text2, c = diffs
- *
- * @param {string|Array.<Array.<number|string>>} a text1 (methods 1,3,4) or
- * Array of diff tuples for text1 to text2 (method 2).
- * @param {string|Array.<Array.<number|string>>} opt_b text2 (methods 1,4) or
- * Array of diff tuples for text1 to text2 (method 3) or undefined (method 2).
- * @param {string|Array.<Array.<number|string>>} opt_c Array of diff tuples for
- * text1 to text2 (method 4) or undefined (methods 1,2,3).
- * @return {Array.<patch_obj>} Array of patch objects.
- */
-
-
-diff_match_patch.prototype.patch_make = function (a, opt_b, opt_c) {
-  var text1, diffs;
-
-  if (typeof a == 'string' && typeof opt_b == 'string' && typeof opt_c == 'undefined') {
-    // Method 1: text1, text2
-    // Compute diffs from text1 and text2.
-    text1 = a;
-    diffs = this.diff_main(text1, opt_b, true);
-
-    if (diffs.length > 2) {
-      this.diff_cleanupSemantic(diffs);
-      this.diff_cleanupEfficiency(diffs);
-    }
-  } else if (a && _typeof(a) == 'object' && typeof opt_b == 'undefined' && typeof opt_c == 'undefined') {
-    // Method 2: diffs
-    // Compute text1 from diffs.
-    diffs = a;
-    text1 = this.diff_text1(diffs);
-  } else if (typeof a == 'string' && opt_b && _typeof(opt_b) == 'object' && typeof opt_c == 'undefined') {
-    // Method 3: text1, diffs
-    text1 = a;
-    diffs = opt_b;
-  } else if (typeof a == 'string' && typeof opt_b == 'string' && opt_c && _typeof(opt_c) == 'object') {
-    // Method 4: text1, text2, diffs
-    // text2 is not used.
-    text1 = a;
-    diffs = opt_c;
-  } else {
-    throw new Error('Unknown call format to patch_make.');
-  }
-
-  if (diffs.length === 0) {
-    return []; // Get rid of the null case.
-  }
-
-  var patches = [];
-  var patch = new patch_obj();
-  var patchDiffLength = 0; // Keeping our own length var is faster in JS.
-
-  var char_count1 = 0; // Number of characters into the text1 string.
-
-  var char_count2 = 0; // Number of characters into the text2 string.
-  // Start with text1 (prepatch_text) and apply the diffs until we arrive at
-  // text2 (postpatch_text).  We recreate the patches one by one to determine
-  // context info.
-
-  var prepatch_text = text1;
-  var postpatch_text = text1;
-
-  for (var x = 0; x < diffs.length; x++) {
-    var diff_type = diffs[x][0];
-    var diff_text = diffs[x][1];
-
-    if (!patchDiffLength && diff_type !== DIFF_EQUAL) {
-      // A new patch starts here.
-      patch.start1 = char_count1;
-      patch.start2 = char_count2;
-    }
-
-    switch (diff_type) {
-      case DIFF_INSERT:
-        patch.diffs[patchDiffLength++] = diffs[x];
-        patch.length2 += diff_text.length;
-        postpatch_text = postpatch_text.substring(0, char_count2) + diff_text + postpatch_text.substring(char_count2);
-        break;
-
-      case DIFF_DELETE:
-        patch.length1 += diff_text.length;
-        patch.diffs[patchDiffLength++] = diffs[x];
-        postpatch_text = postpatch_text.substring(0, char_count2) + postpatch_text.substring(char_count2 + diff_text.length);
-        break;
-
-      case DIFF_EQUAL:
-        if (diff_text.length <= 2 * this.Patch_Margin && patchDiffLength && diffs.length != x + 1) {
-          // Small equality inside a patch.
-          patch.diffs[patchDiffLength++] = diffs[x];
-          patch.length1 += diff_text.length;
-          patch.length2 += diff_text.length;
-        } else if (diff_text.length >= 2 * this.Patch_Margin) {
-          // Time for a new patch.
-          if (patchDiffLength) {
-            this.patch_addContext(patch, prepatch_text);
-            patches.push(patch);
-            patch = new patch_obj();
-            patchDiffLength = 0; // Unlike Unidiff, our patch lists have a rolling context.
-            // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
-            // Update prepatch text & pos to reflect the application of the
-            // just completed patch.
-
-            prepatch_text = postpatch_text;
-            char_count1 = char_count2;
-          }
-        }
-
-        break;
-    } // Update the current character count.
-
-
-    if (diff_type !== DIFF_INSERT) {
-      char_count1 += diff_text.length;
-    }
-
-    if (diff_type !== DIFF_DELETE) {
-      char_count2 += diff_text.length;
-    }
-  } // Pick up the leftover patch if not empty.
-
-
-  if (patchDiffLength) {
-    this.patch_addContext(patch, prepatch_text);
-    patches.push(patch);
-  }
-
-  return patches;
-};
-/**
- * Given an array of patches, return another array that is identical.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @return {Array.<patch_obj>} Array of patch objects.
- */
-
-
-diff_match_patch.prototype.patch_deepCopy = function (patches) {
-  // Making deep copies is hard in JavaScript.
-  var patchesCopy = [];
-
-  for (var x = 0; x < patches.length; x++) {
-    var patch = patches[x];
-    var patchCopy = new patch_obj();
-    patchCopy.diffs = [];
-
-    for (var y = 0; y < patch.diffs.length; y++) {
-      patchCopy.diffs[y] = patch.diffs[y].slice();
-    }
-
-    patchCopy.start1 = patch.start1;
-    patchCopy.start2 = patch.start2;
-    patchCopy.length1 = patch.length1;
-    patchCopy.length2 = patch.length2;
-    patchesCopy[x] = patchCopy;
-  }
-
-  return patchesCopy;
-};
-/**
- * Merge a set of patches onto the text.  Return a patched text, as well
- * as a list of true/false values indicating which patches were applied.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @param {string} text Old text.
- * @return {Array.<string|Array.<boolean>>} Two element Array, containing the
- *      new text and an array of boolean values.
- */
-
-
-diff_match_patch.prototype.patch_apply = function (patches, text) {
-  if (patches.length == 0) {
-    return [text, []];
-  } // Deep copy the patches so that no changes are made to originals.
-
-
-  patches = this.patch_deepCopy(patches);
-  var nullPadding = this.patch_addPadding(patches);
-  text = nullPadding + text + nullPadding;
-  this.patch_splitMax(patches); // delta keeps track of the offset between the expected and actual location
-  // of the previous patch.  If there are patches expected at positions 10 and
-  // 20, but the first patch was found at 12, delta is 2 and the second patch
-  // has an effective expected position of 22.
-
-  var delta = 0;
-  var results = [];
-
-  for (var x = 0; x < patches.length; x++) {
-    var expected_loc = patches[x].start2 + delta;
-    var text1 = this.diff_text1(patches[x].diffs);
-    var start_loc;
-    var end_loc = -1;
-
-    if (text1.length > this.Match_MaxBits) {
-      // patch_splitMax will only provide an oversized pattern in the case of
-      // a monster delete.
-      start_loc = this.match_main(text, text1.substring(0, this.Match_MaxBits), expected_loc);
-
-      if (start_loc != -1) {
-        end_loc = this.match_main(text, text1.substring(text1.length - this.Match_MaxBits), expected_loc + text1.length - this.Match_MaxBits);
-
-        if (end_loc == -1 || start_loc >= end_loc) {
-          // Can't find valid trailing context.  Drop this patch.
-          start_loc = -1;
-        }
-      }
-    } else {
-      start_loc = this.match_main(text, text1, expected_loc);
-    }
-
-    if (start_loc == -1) {
-      // No match found.  :(
-      results[x] = false; // Subtract the delta for this failed patch from subsequent patches.
-
-      delta -= patches[x].length2 - patches[x].length1;
-    } else {
-      // Found a match.  :)
-      results[x] = true;
-      delta = start_loc - expected_loc;
-      var text2;
-
-      if (end_loc == -1) {
-        text2 = text.substring(start_loc, start_loc + text1.length);
-      } else {
-        text2 = text.substring(start_loc, end_loc + this.Match_MaxBits);
-      }
-
-      if (text1 == text2) {
-        // Perfect match, just shove the replacement text in.
-        text = text.substring(0, start_loc) + this.diff_text2(patches[x].diffs) + text.substring(start_loc + text1.length);
-      } else {
-        // Imperfect match.  Run a diff to get a framework of equivalent
-        // indices.
-        var diffs = this.diff_main(text1, text2, false);
-
-        if (text1.length > this.Match_MaxBits && this.diff_levenshtein(diffs) / text1.length > this.Patch_DeleteThreshold) {
-          // The end points match, but the content is unacceptably bad.
-          results[x] = false;
-        } else {
-          this.diff_cleanupSemanticLossless(diffs);
-          var index1 = 0;
-          var index2;
-
-          for (var y = 0; y < patches[x].diffs.length; y++) {
-            var mod = patches[x].diffs[y];
-
-            if (mod[0] !== DIFF_EQUAL) {
-              index2 = this.diff_xIndex(diffs, index1);
-            }
-
-            if (mod[0] === DIFF_INSERT) {
-              // Insertion
-              text = text.substring(0, start_loc + index2) + mod[1] + text.substring(start_loc + index2);
-            } else if (mod[0] === DIFF_DELETE) {
-              // Deletion
-              text = text.substring(0, start_loc + index2) + text.substring(start_loc + this.diff_xIndex(diffs, index1 + mod[1].length));
-            }
-
-            if (mod[0] !== DIFF_DELETE) {
-              index1 += mod[1].length;
-            }
-          }
-        }
-      }
-    }
-  } // Strip the padding off.
-
-
-  text = text.substring(nullPadding.length, text.length - nullPadding.length);
-  return [text, results];
-};
-/**
- * Add some padding on text start and end so that edges can match something.
- * Intended to be called only from within patch_apply.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @return {string} The padding string added to each side.
- */
-
-
-diff_match_patch.prototype.patch_addPadding = function (patches) {
-  var paddingLength = this.Patch_Margin;
-  var nullPadding = '';
-
-  for (var x = 1; x <= paddingLength; x++) {
-    nullPadding += String.fromCharCode(x);
-  } // Bump all the patches forward.
-
-
-  for (var x = 0; x < patches.length; x++) {
-    patches[x].start1 += paddingLength;
-    patches[x].start2 += paddingLength;
-  } // Add some padding on start of first diff.
-
-
-  var patch = patches[0];
-  var diffs = patch.diffs;
-
-  if (diffs.length == 0 || diffs[0][0] != DIFF_EQUAL) {
-    // Add nullPadding equality.
-    diffs.unshift([DIFF_EQUAL, nullPadding]);
-    patch.start1 -= paddingLength; // Should be 0.
-
-    patch.start2 -= paddingLength; // Should be 0.
-
-    patch.length1 += paddingLength;
-    patch.length2 += paddingLength;
-  } else if (paddingLength > diffs[0][1].length) {
-    // Grow first equality.
-    var extraLength = paddingLength - diffs[0][1].length;
-    diffs[0][1] = nullPadding.substring(diffs[0][1].length) + diffs[0][1];
-    patch.start1 -= extraLength;
-    patch.start2 -= extraLength;
-    patch.length1 += extraLength;
-    patch.length2 += extraLength;
-  } // Add some padding on end of last diff.
-
-
-  patch = patches[patches.length - 1];
-  diffs = patch.diffs;
-
-  if (diffs.length == 0 || diffs[diffs.length - 1][0] != DIFF_EQUAL) {
-    // Add nullPadding equality.
-    diffs.push([DIFF_EQUAL, nullPadding]);
-    patch.length1 += paddingLength;
-    patch.length2 += paddingLength;
-  } else if (paddingLength > diffs[diffs.length - 1][1].length) {
-    // Grow last equality.
-    var extraLength = paddingLength - diffs[diffs.length - 1][1].length;
-    diffs[diffs.length - 1][1] += nullPadding.substring(0, extraLength);
-    patch.length1 += extraLength;
-    patch.length2 += extraLength;
-  }
-
-  return nullPadding;
-};
-/**
- * Look through the patches and break up any which are longer than the maximum
- * limit of the match algorithm.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- */
-
-
-diff_match_patch.prototype.patch_splitMax = function (patches) {
-  for (var x = 0; x < patches.length; x++) {
-    if (patches[x].length1 > this.Match_MaxBits) {
-      var bigpatch = patches[x]; // Remove the big old patch.
-
-      patches.splice(x--, 1);
-      var patch_size = this.Match_MaxBits;
-      var start1 = bigpatch.start1;
-      var start2 = bigpatch.start2;
-      var precontext = '';
-
-      while (bigpatch.diffs.length !== 0) {
-        // Create one of several smaller patches.
-        var patch = new patch_obj();
-        var empty = true;
-        patch.start1 = start1 - precontext.length;
-        patch.start2 = start2 - precontext.length;
-
-        if (precontext !== '') {
-          patch.length1 = patch.length2 = precontext.length;
-          patch.diffs.push([DIFF_EQUAL, precontext]);
-        }
-
-        while (bigpatch.diffs.length !== 0 && patch.length1 < patch_size - this.Patch_Margin) {
-          var diff_type = bigpatch.diffs[0][0];
-          var diff_text = bigpatch.diffs[0][1];
-
-          if (diff_type === DIFF_INSERT) {
-            // Insertions are harmless.
-            patch.length2 += diff_text.length;
-            start2 += diff_text.length;
-            patch.diffs.push(bigpatch.diffs.shift());
-            empty = false;
-          } else if (diff_type === DIFF_DELETE && patch.diffs.length == 1 && patch.diffs[0][0] == DIFF_EQUAL && diff_text.length > 2 * patch_size) {
-            // This is a large deletion.  Let it pass in one chunk.
-            patch.length1 += diff_text.length;
-            start1 += diff_text.length;
-            empty = false;
-            patch.diffs.push([diff_type, diff_text]);
-            bigpatch.diffs.shift();
-          } else {
-            // Deletion or equality.  Only take as much as we can stomach.
-            diff_text = diff_text.substring(0, patch_size - patch.length1 - this.Patch_Margin);
-            patch.length1 += diff_text.length;
-            start1 += diff_text.length;
-
-            if (diff_type === DIFF_EQUAL) {
-              patch.length2 += diff_text.length;
-              start2 += diff_text.length;
-            } else {
-              empty = false;
-            }
-
-            patch.diffs.push([diff_type, diff_text]);
-
-            if (diff_text == bigpatch.diffs[0][1]) {
-              bigpatch.diffs.shift();
-            } else {
-              bigpatch.diffs[0][1] = bigpatch.diffs[0][1].substring(diff_text.length);
-            }
-          }
-        } // Compute the head context for the next patch.
-
-
-        precontext = this.diff_text2(patch.diffs);
-        precontext = precontext.substring(precontext.length - this.Patch_Margin); // Append the end context for this patch.
-
-        var postcontext = this.diff_text1(bigpatch.diffs).substring(0, this.Patch_Margin);
-
-        if (postcontext !== '') {
-          patch.length1 += postcontext.length;
-          patch.length2 += postcontext.length;
-
-          if (patch.diffs.length !== 0 && patch.diffs[patch.diffs.length - 1][0] === DIFF_EQUAL) {
-            patch.diffs[patch.diffs.length - 1][1] += postcontext;
-          } else {
-            patch.diffs.push([DIFF_EQUAL, postcontext]);
-          }
-        }
-
-        if (!empty) {
-          patches.splice(++x, 0, patch);
-        }
-      }
-    }
-  }
-};
-/**
- * Take a list of patches and return a textual representation.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @return {string} Text representation of patches.
- */
-
-
-diff_match_patch.prototype.patch_toText = function (patches) {
-  var text = [];
-
-  for (var x = 0; x < patches.length; x++) {
-    text[x] = patches[x];
-  }
-
-  return text.join('');
-};
-/**
- * Parse a textual representation of patches and return a list of patch objects.
- * @param {string} textline Text representation of patches.
- * @return {Array.<patch_obj>} Array of patch objects.
- * @throws {Error} If invalid input.
- */
-
-
-diff_match_patch.prototype.patch_fromText = function (textline) {
-  var patches = [];
-
-  if (!textline) {
-    return patches;
-  } // Opera doesn't know how to decode char 0.
-
-
-  textline = textline.replace(/%00/g, '\0');
-  var text = textline.split('\n');
-  var textPointer = 0;
-
-  while (textPointer < text.length) {
-    var m = text[textPointer].match(/^@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@$/);
-
-    if (!m) {
-      throw new Error('Invalid patch string: ' + text[textPointer]);
-    }
-
-    var patch = new patch_obj();
-    patches.push(patch);
-    patch.start1 = parseInt(m[1], 10);
-
-    if (m[2] === '') {
-      patch.start1--;
-      patch.length1 = 1;
-    } else if (m[2] == '0') {
-      patch.length1 = 0;
-    } else {
-      patch.start1--;
-      patch.length1 = parseInt(m[2], 10);
-    }
-
-    patch.start2 = parseInt(m[3], 10);
-
-    if (m[4] === '') {
-      patch.start2--;
-      patch.length2 = 1;
-    } else if (m[4] == '0') {
-      patch.length2 = 0;
-    } else {
-      patch.start2--;
-      patch.length2 = parseInt(m[4], 10);
-    }
-
-    textPointer++;
-
-    while (textPointer < text.length) {
-      var sign = text[textPointer].charAt(0);
-
-      try {
-        var line = decodeURI(text[textPointer].substring(1));
-      } catch (ex) {
-        // Malformed URI sequence.
-        throw new Error('Illegal escape in patch_fromText: ' + line);
-      }
-
-      if (sign == '-') {
-        // Deletion.
-        patch.diffs.push([DIFF_DELETE, line]);
-      } else if (sign == '+') {
-        // Insertion.
-        patch.diffs.push([DIFF_INSERT, line]);
-      } else if (sign == ' ') {
-        // Minor equality.
-        patch.diffs.push([DIFF_EQUAL, line]);
-      } else if (sign == '@') {
-        // Start of next patch.
-        break;
-      } else if (sign === '') {// Blank line?  Whatever.
-      } else {
-        // WTF?
-        throw new Error('Invalid patch mode "' + sign + '" in: ' + line);
-      }
-
-      textPointer++;
-    }
-  }
-
-  return patches;
-};
-/**
- * Class representing one patch operation.
- * @constructor
- */
-
-
-function patch_obj() {
-  /** @type {Array.<Array.<number|string>>} */
-  this.diffs = [];
-  /** @type {?number} */
-
-  this.start1 = null;
-  /** @type {?number} */
-
-  this.start2 = null;
-  /** @type {number} */
-
-  this.length1 = 0;
-  /** @type {number} */
-
-  this.length2 = 0;
-}
-/**
- * Emmulate GNU diff's format.
- * Header: @@ -382,8 +481,9 @@
- * Indicies are printed as 1-based, not 0-based.
- * @return {string} The GNU diff string.
- */
-
-
-patch_obj.prototype.toString = function () {
-  var coords1, coords2;
-
-  if (this.length1 === 0) {
-    coords1 = this.start1 + ',0';
-  } else if (this.length1 == 1) {
-    coords1 = this.start1 + 1;
-  } else {
-    coords1 = this.start1 + 1 + ',' + this.length1;
-  }
-
-  if (this.length2 === 0) {
-    coords2 = this.start2 + ',0';
-  } else if (this.length2 == 1) {
-    coords2 = this.start2 + 1;
-  } else {
-    coords2 = this.start2 + 1 + ',' + this.length2;
-  }
-
-  var text = ['@@ -' + coords1 + ' +' + coords2 + ' @@\n'];
-  var op; // Escape the body of the patch with %xx notation.
-
-  for (var x = 0; x < this.diffs.length; x++) {
-    switch (this.diffs[x][0]) {
-      case DIFF_INSERT:
-        op = '+';
-        break;
-
-      case DIFF_DELETE:
-        op = '-';
-        break;
-
-      case DIFF_EQUAL:
-        op = ' ';
-        break;
-    }
-
-    text[x + 1] = op + encodeURI(this.diffs[x][1]) + '\n';
-  } // Opera doesn't know how to encode char 0.
-
-
-  return text.join('').replace(/\x00/g, '%00').replace(/%20/g, ' ');
-}; // Export these global variables so that they survive Google's JS compiler.
-
-/*changed by lfborjas: changed `window` for `exports` to make it suitable for the node.js module conventions*/
-
-
-exports['diff_match_patch'] = diff_match_patch;
-exports['patch_obj'] = patch_obj;
-exports['DIFF_DELETE'] = DIFF_DELETE;
-exports['DIFF_INSERT'] = DIFF_INSERT;
-exports['DIFF_EQUAL'] = DIFF_EQUAL;
 
 /***/ }),
 
@@ -4252,7 +1974,9 @@ module.exports = function getChildSchemaSelection(core, property) {
 
   if (result.type === "error") {
     if (result.code === "one-of-error") {
-      return result.data.oneOf;
+      return result.data.oneOf.map(function (item) {
+        return core.resolveRef(item);
+      });
     }
 
     return result;
@@ -13280,6 +11004,43 @@ function isPlainObject(value) {
 
 /***/ }),
 
+/***/ "./node_modules/mithril-material-forms/components/button/index.ts":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/button/index.ts ***!
+  \************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    getClassNames(attrs) {
+        const classNames = [];
+        classNames.push(attrs.raised ? "mmf-button--raised" : "mmf-button--flat");
+        classNames.push(attrs.disabled ? "is-disabled" : "is-enabled");
+        if (attrs.class) {
+            classNames.push(attrs.class);
+        }
+        return classNames.join(" ");
+    },
+    view(vnode) {
+        const attrs = {
+            disabled: false,
+            // onclick is assigned via mithril
+            ...vnode.attrs,
+            class: this.getClassNames(vnode.attrs)
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("button.mmf-button", attrs, vnode.children);
+    }
+});
+
+
+/***/ }),
+
 /***/ "./node_modules/mithril-material-forms/components/checkbox/index.ts":
 /*!**************************************************************************!*\
   !*** ./node_modules/mithril-material-forms/components/checkbox/index.ts ***!
@@ -13296,12 +11057,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
     view({ attrs }) {
         return mithril__WEBPACK_IMPORTED_MODULE_0___default()("input.mmf-checkbox", {
-            ...attrs,
+            "data-id": attrs.id,
             type: "checkbox",
             disabled: attrs.disabled === true,
             checked: attrs.value,
-            value: undefined,
-            onchange: e => attrs.onchange(e.target.checked)
+            onchange: e => attrs.onchange(e.target.checked),
+            onfocus: attrs.onfocus,
+            onblur: attrs.onblur
         });
     }
 });
@@ -13445,6 +11207,102 @@ function isError(object) {
 
 /***/ }),
 
+/***/ "./node_modules/mithril-material-forms/components/imagepreview/index.ts":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/imagepreview/index.ts ***!
+  \******************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _isEmpty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../isEmpty */ "./node_modules/mithril-material-forms/components/isEmpty.ts");
+
+
+const RATIO_DEFAULT = [16, 9];
+/** returns ratio as css-property */
+const getRatioStyleProperty = (ratio) => `padding-bottom: ${getRatio(ratio).toFixed(2)}%;`;
+function getRatio(ratio) {
+    let dim = ratio.split(":").map(parseFloat);
+    dim = dim.length === 2 ? dim : RATIO_DEFAULT;
+    return (100 * dim[1] / dim[0]);
+}
+const MetaDescription = {
+    view(vnode) {
+        const { attrs } = vnode;
+        return [
+            Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) ?
+                mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__placeholder", attrs.placeholder) : [
+                attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__description", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(attrs.description)),
+                mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__overflow-indicator")
+            ],
+            vnode.children
+        ];
+    }
+};
+const InlineImage = {
+    view(vnode) {
+        const { attrs } = vnode;
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__content", {
+            style: !Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) && getRatioStyleProperty(attrs.maxRatio),
+            oncreate: attrs.oncreate
+        }, Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) ?
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__placeholder", attrs.placeholder) : [
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()("img", {
+                src: attrs.url,
+                onload: attrs.onload
+            }),
+            attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__description", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(attrs.description)),
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__overflow-indicator")
+        ], vnode.children);
+    }
+};
+const ImagePreview = {
+    updateRatio(maxRatio, image) {
+        if (this.overflowContainer != null && image.naturalWidth) {
+            const ratioMax = getRatio(maxRatio);
+            const ratioImg = getRatio(`${image.naturalWidth}:${image.naturalHeight}`);
+            if (ratioMax >= ratioImg) {
+                this.overflowContainer.style.paddingBottom = `${ratioImg.toFixed(2)}%`;
+                this.overflowContainer.classList.remove("with-overflow");
+                this.hasOverflow = false;
+            }
+            else {
+                this.overflowContainer.style.paddingBottom = `${ratioMax.toFixed(2)}%`;
+                this.overflowContainer.classList.add("with-overflow");
+                this.hasOverflow = true;
+            }
+        }
+    },
+    view(vnode) {
+        const attrs = {
+            url: null,
+            "class": "",
+            asBackgroundImage: false,
+            description: null,
+            placeholder: null,
+            onclick: null,
+            maxRatio: "16:9",
+            // "private"
+            onload: event => this.updateRatio(vnode.attrs.maxRatio, event.currentTarget),
+            oncreate: content => { this.overflowContainer = content.dom; },
+            ...vnode.attrs
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview.mmf-preview--image", {
+            "class": attrs.class + (Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) ? "" : " with-image"),
+            style: (attrs.asBackgroundImage && !Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url)) &&
+                `background-image: url(${attrs.url});`
+        }, attrs.asBackgroundImage ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(MetaDescription, attrs, vnode.children) : mithril__WEBPACK_IMPORTED_MODULE_0___default()(InlineImage, attrs, vnode.children));
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (ImagePreview);
+
+
+/***/ }),
+
 /***/ "./node_modules/mithril-material-forms/components/input/index.ts":
 /*!***********************************************************************!*\
   !*** ./node_modules/mithril-material-forms/components/input/index.ts ***!
@@ -13461,25 +11319,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ __webpack_exports__["default"] = ({
     value: null,
     hasFocus: false,
-    onupdate(vnode) {
-        // @prevent redraw of input
-        vnode.dom.id = vnode.attrs.id; // updating the pointer dependend attributes outside of mithril
-    },
     view({ attrs }) {
         let { value } = attrs;
-        // prevent any changes applied from "outside"
         if (this.hasFocus && this.value != null) {
-            value = this.value;
+            value = this.value; // this will remove any changes applied to this data from "outside"
         }
         this.value = value;
         const inputAttributes = {
-            // id: attrs.id -- if the element is pointer sensitive it will be rebuild on pointer updates, loosing focus
-            ...attrs,
             value,
+            type: attrs.type,
+            class: attrs.class,
+            // id: attrs.id -- if the element is pointer sensitive it will be rebuild on pointer updates, loosing focus
+            "data-id": attrs.id,
+            placeholder: attrs.placeholder,
             disabled: attrs.disabled === true,
             oninput: e => (this.value = e.target.value),
-            // @fixme this might trigger updates, but ensures the property is always set (on initial rendering)
-            oncreate: vnode => (vnode.dom.id = attrs.id),
             onfocus: event => {
                 this.hasFocus = true;
                 attrs.onfocus && attrs.onfocus(event);
@@ -13547,7 +11401,7 @@ const InputForm = {
     },
     view(vnode) {
         const inputType = TYPES[vnode.attrs.type] || vnode.attrs.type || "text";
-        const attrs = Object.assign({
+        const attrs = {
             id: null,
             title: "",
             value: "",
@@ -13557,8 +11411,9 @@ const InputForm = {
             instantUpdate: false,
             onblur: Function.prototype,
             onfocus: Function.prototype,
-            onchange: Function.prototype
-        }, vnode.attrs);
+            onchange: Function.prototype,
+            ...vnode.attrs
+        };
         const focusClass = this.hasFocus() ? "hasFocus" : "hasNoFocus";
         const errorClass = Object(_errors__WEBPACK_IMPORTED_MODULE_4__["getErrorClass"])(attrs.errors);
         const emptyClass = attrs.value === "" ? "isEmpty" : "isNotEmpty";
@@ -13657,12 +11512,12 @@ __webpack_require__.r(__webpack_exports__);
             return mithril__WEBPACK_IMPORTED_MODULE_0___default()("label.order--label-last", {
                 "for": id,
                 "class": classNames
-            }, vnode.children, mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title));
+            }, vnode.children, title && mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title));
         }
         return mithril__WEBPACK_IMPORTED_MODULE_0___default()("label.order--label-first", {
             "for": id,
             "class": classNames
-        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title), vnode.children);
+        }, title && mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title), vnode.children);
     }
 });
 
@@ -13685,26 +11540,26 @@ __webpack_require__.r(__webpack_exports__);
 const isOptionValue = (option) => option && option.value !== undefined;
 /* harmony default export */ __webpack_exports__["default"] = ({
     view(vnode) {
-        const { attrs } = vnode;
         return mithril__WEBPACK_IMPORTED_MODULE_0___default()("div.mmf-select__wrapper", {
-            "class": attrs.disabled === true ? "is-disabled" : "is-enabled",
+            "class": vnode.attrs.disabled === true ? "is-disabled" : "is-enabled",
             oncreate: _vnode => (this.$wrapper = _vnode.dom)
         }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("select.mmf-select", {
-            ...attrs,
-            type: undefined,
-            options: undefined,
+            "data-id": vnode.attrs.id,
+            value: vnode.attrs.value,
+            disabled: vnode.attrs.disabled,
+            "class": vnode.attrs.class,
             onfocus: () => {
                 this.$wrapper && this.$wrapper.classList.add("has-focus");
-                attrs.onfocus && attrs.onfocus(vnode);
+                vnode.attrs.onfocus && vnode.attrs.onfocus(vnode);
             },
             onblur: () => {
                 this.$wrapper && this.$wrapper.classList.remove("has-focus");
-                attrs.onblur && attrs.onblur(vnode);
+                vnode.attrs.onblur && vnode.attrs.onblur(vnode);
             },
             // @reminder will always be string, which must be specified in json-schema or else datatype must
             // be passed to select-component
-            onchange: e => attrs.onchange(e.target.value)
-        }, attrs.options.map(value => {
+            onchange: e => vnode.attrs.onchange(e.target.value)
+        }, vnode.attrs.options.map(value => {
             if (isOptionValue(value)) {
                 // value must be a string or else is discarded
                 return mithril__WEBPACK_IMPORTED_MODULE_0___default()("option", { value: `${value.value}` }, value.title || value.value);
@@ -13743,6 +11598,7 @@ __webpack_require__.r(__webpack_exports__);
             value: "",
             options: [{ title: "-", value: false }],
             errors: [],
+            invertOrder: false,
             description: "",
             placeholder: "",
             onchange: Function.prototype,
@@ -13752,7 +11608,8 @@ __webpack_require__.r(__webpack_exports__);
             "class": Object(_errors__WEBPACK_IMPORTED_MODULE_3__["getErrorClass"])(attrs.errors)
         }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], {
             "class": "mmf-grow-2",
-            ...attrs
+            ...attrs,
+            invertOrder: attrs.invertOrder !== true
         }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_select__WEBPACK_IMPORTED_MODULE_1__["default"], attrs)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(_errors__WEBPACK_IMPORTED_MODULE_3__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-meta", attrs.description), vnode.children);
     }
 });
@@ -13785,7 +11642,11 @@ const emptyFunction = Function.prototype;
     },
     view(vnode) {
         const attrs = {
+            value: "",
             rows: 1,
+            placeholder: "",
+            disabled: false,
+            instantUpdate: false,
             onblur: emptyFunction,
             onfocus: emptyFunction,
             onchange: emptyFunction,
@@ -13794,18 +11655,19 @@ const emptyFunction = Function.prototype;
             ...vnode.attrs
         };
         const disabled = attrs.disabled === true;
-        let { value } = attrs;
         if (this.focus) {
             // keep current value, while input is being active this prevents
             // jumps in cursor, caused by race conditions
             // @attention - this may produce other problems
-            value = this.textarea.value;
+            attrs.value = this.textarea.value;
         }
         const textareaAttributes = {
-            ...attrs,
-            value,
+            "data-id": attrs.id,
+            value: attrs.value,
+            class: attrs.class,
+            rows: attrs.rows,
             disabled,
-            type: undefined,
+            placeholder: attrs.placeholder,
             onblur: e => {
                 this.focus = false;
                 attrs.onblur && attrs.onblur(e);
@@ -14592,6 +12454,68 @@ var MMF = function (e) {
     }
   };
 }]);
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/index.ts":
+/*!******************************************************!*\
+  !*** ./node_modules/mithril-material-forms/index.ts ***!
+  \******************************************************/
+/*! exports provided: Button, Checkbox, CheckboxForm, Errors, Input, InputForm, Label, Select, SelectForm, Textarea, TextareaForm, ImagePreview */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_button__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/button */ "./node_modules/mithril-material-forms/components/button/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Button", function() { return _components_button__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _components_checkbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Checkbox", function() { return _components_checkbox__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _components_checkboxform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CheckboxForm", function() { return _components_checkboxform__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _components_errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Errors", function() { return _components_errors__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _components_input__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/input */ "./node_modules/mithril-material-forms/components/input/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Input", function() { return _components_input__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _components_inputform__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "InputForm", function() { return _components_inputform__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _components_label__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Label", function() { return _components_label__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _components_select__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/select */ "./node_modules/mithril-material-forms/components/select/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Select", function() { return _components_select__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _components_selectform__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SelectForm", function() { return _components_selectform__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+/* harmony import */ var _components_textarea__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/textarea */ "./node_modules/mithril-material-forms/components/textarea/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Textarea", function() { return _components_textarea__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+/* harmony import */ var _components_textareaform__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextareaForm", function() { return _components_textareaform__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+
+/* harmony import */ var _components_imagepreview__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/imagepreview */ "./node_modules/mithril-material-forms/components/imagepreview/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ImagePreview", function() { return _components_imagepreview__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /***/ }),
 
@@ -16265,6 +14189,3718 @@ function warning(message) {
 
 /***/ }),
 
+/***/ "./node_modules/sortablejs/modular/sortable.esm.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/sortablejs/modular/sortable.esm.js ***!
+  \*********************************************************/
+/*! exports provided: default, MultiDrag, Sortable, Swap */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MultiDrag", function() { return MultiDragPlugin; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Sortable", function() { return Sortable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Swap", function() { return SwapPlugin; });
+function _typeof2(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
+
+/**!
+ * Sortable 1.10.2
+ * @author	RubaXa   <trash@rubaxa.org>
+ * @author	owenm    <owen23355@gmail.com>
+ * @license MIT
+ */
+function _typeof(obj) {
+  if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
+    _typeof = function _typeof(obj) {
+      return _typeof2(obj);
+    };
+  } else {
+    _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
+    };
+  }
+
+  return _typeof(obj);
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+}
+
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
+
+var version = "1.10.2";
+
+function userAgent(pattern) {
+  if (typeof window !== 'undefined' && window.navigator) {
+    return !! /*@__PURE__*/navigator.userAgent.match(pattern);
+  }
+}
+
+var IE11OrLess = userAgent(/(?:Trident.*rv[ :]?11\.|msie|iemobile|Windows Phone)/i);
+var Edge = userAgent(/Edge/i);
+var FireFox = userAgent(/firefox/i);
+var Safari = userAgent(/safari/i) && !userAgent(/chrome/i) && !userAgent(/android/i);
+var IOS = userAgent(/iP(ad|od|hone)/i);
+var ChromeForAndroid = userAgent(/chrome/i) && userAgent(/android/i);
+var captureMode = {
+  capture: false,
+  passive: false
+};
+
+function on(el, event, fn) {
+  el.addEventListener(event, fn, !IE11OrLess && captureMode);
+}
+
+function off(el, event, fn) {
+  el.removeEventListener(event, fn, !IE11OrLess && captureMode);
+}
+
+function matches(
+/**HTMLElement*/
+el,
+/**String*/
+selector) {
+  if (!selector) return;
+  selector[0] === '>' && (selector = selector.substring(1));
+
+  if (el) {
+    try {
+      if (el.matches) {
+        return el.matches(selector);
+      } else if (el.msMatchesSelector) {
+        return el.msMatchesSelector(selector);
+      } else if (el.webkitMatchesSelector) {
+        return el.webkitMatchesSelector(selector);
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+function getParentOrHost(el) {
+  return el.host && el !== document && el.host.nodeType ? el.host : el.parentNode;
+}
+
+function closest(
+/**HTMLElement*/
+el,
+/**String*/
+selector,
+/**HTMLElement*/
+ctx, includeCTX) {
+  if (el) {
+    ctx = ctx || document;
+
+    do {
+      if (selector != null && (selector[0] === '>' ? el.parentNode === ctx && matches(el, selector) : matches(el, selector)) || includeCTX && el === ctx) {
+        return el;
+      }
+
+      if (el === ctx) break;
+      /* jshint boss:true */
+    } while (el = getParentOrHost(el));
+  }
+
+  return null;
+}
+
+var R_SPACE = /\s+/g;
+
+function toggleClass(el, name, state) {
+  if (el && name) {
+    if (el.classList) {
+      el.classList[state ? 'add' : 'remove'](name);
+    } else {
+      var className = (' ' + el.className + ' ').replace(R_SPACE, ' ').replace(' ' + name + ' ', ' ');
+      el.className = (className + (state ? ' ' + name : '')).replace(R_SPACE, ' ');
+    }
+  }
+}
+
+function css(el, prop, val) {
+  var style = el && el.style;
+
+  if (style) {
+    if (val === void 0) {
+      if (document.defaultView && document.defaultView.getComputedStyle) {
+        val = document.defaultView.getComputedStyle(el, '');
+      } else if (el.currentStyle) {
+        val = el.currentStyle;
+      }
+
+      return prop === void 0 ? val : val[prop];
+    } else {
+      if (!(prop in style) && prop.indexOf('webkit') === -1) {
+        prop = '-webkit-' + prop;
+      }
+
+      style[prop] = val + (typeof val === 'string' ? '' : 'px');
+    }
+  }
+}
+
+function matrix(el, selfOnly) {
+  var appliedTransforms = '';
+
+  if (typeof el === 'string') {
+    appliedTransforms = el;
+  } else {
+    do {
+      var transform = css(el, 'transform');
+
+      if (transform && transform !== 'none') {
+        appliedTransforms = transform + ' ' + appliedTransforms;
+      }
+      /* jshint boss:true */
+
+    } while (!selfOnly && (el = el.parentNode));
+  }
+
+  var matrixFn = window.DOMMatrix || window.WebKitCSSMatrix || window.CSSMatrix || window.MSCSSMatrix;
+  /*jshint -W056 */
+
+  return matrixFn && new matrixFn(appliedTransforms);
+}
+
+function find(ctx, tagName, iterator) {
+  if (ctx) {
+    var list = ctx.getElementsByTagName(tagName),
+        i = 0,
+        n = list.length;
+
+    if (iterator) {
+      for (; i < n; i++) {
+        iterator(list[i], i);
+      }
+    }
+
+    return list;
+  }
+
+  return [];
+}
+
+function getWindowScrollingElement() {
+  var scrollingElement = document.scrollingElement;
+
+  if (scrollingElement) {
+    return scrollingElement;
+  } else {
+    return document.documentElement;
+  }
+}
+/**
+ * Returns the "bounding client rect" of given element
+ * @param  {HTMLElement} el                       The element whose boundingClientRect is wanted
+ * @param  {[Boolean]} relativeToContainingBlock  Whether the rect should be relative to the containing block of (including) the container
+ * @param  {[Boolean]} relativeToNonStaticParent  Whether the rect should be relative to the relative parent of (including) the contaienr
+ * @param  {[Boolean]} undoScale                  Whether the container's scale() should be undone
+ * @param  {[HTMLElement]} container              The parent the element will be placed in
+ * @return {Object}                               The boundingClientRect of el, with specified adjustments
+ */
+
+
+function getRect(el, relativeToContainingBlock, relativeToNonStaticParent, undoScale, container) {
+  if (!el.getBoundingClientRect && el !== window) return;
+  var elRect, top, left, bottom, right, height, width;
+
+  if (el !== window && el !== getWindowScrollingElement()) {
+    elRect = el.getBoundingClientRect();
+    top = elRect.top;
+    left = elRect.left;
+    bottom = elRect.bottom;
+    right = elRect.right;
+    height = elRect.height;
+    width = elRect.width;
+  } else {
+    top = 0;
+    left = 0;
+    bottom = window.innerHeight;
+    right = window.innerWidth;
+    height = window.innerHeight;
+    width = window.innerWidth;
+  }
+
+  if ((relativeToContainingBlock || relativeToNonStaticParent) && el !== window) {
+    // Adjust for translate()
+    container = container || el.parentNode; // solves #1123 (see: https://stackoverflow.com/a/37953806/6088312)
+    // Not needed on <= IE11
+
+    if (!IE11OrLess) {
+      do {
+        if (container && container.getBoundingClientRect && (css(container, 'transform') !== 'none' || relativeToNonStaticParent && css(container, 'position') !== 'static')) {
+          var containerRect = container.getBoundingClientRect(); // Set relative to edges of padding box of container
+
+          top -= containerRect.top + parseInt(css(container, 'border-top-width'));
+          left -= containerRect.left + parseInt(css(container, 'border-left-width'));
+          bottom = top + elRect.height;
+          right = left + elRect.width;
+          break;
+        }
+        /* jshint boss:true */
+
+      } while (container = container.parentNode);
+    }
+  }
+
+  if (undoScale && el !== window) {
+    // Adjust for scale()
+    var elMatrix = matrix(container || el),
+        scaleX = elMatrix && elMatrix.a,
+        scaleY = elMatrix && elMatrix.d;
+
+    if (elMatrix) {
+      top /= scaleY;
+      left /= scaleX;
+      width /= scaleX;
+      height /= scaleY;
+      bottom = top + height;
+      right = left + width;
+    }
+  }
+
+  return {
+    top: top,
+    left: left,
+    bottom: bottom,
+    right: right,
+    width: width,
+    height: height
+  };
+}
+/**
+ * Checks if a side of an element is scrolled past a side of its parents
+ * @param  {HTMLElement}  el           The element who's side being scrolled out of view is in question
+ * @param  {String}       elSide       Side of the element in question ('top', 'left', 'right', 'bottom')
+ * @param  {String}       parentSide   Side of the parent in question ('top', 'left', 'right', 'bottom')
+ * @return {HTMLElement}               The parent scroll element that the el's side is scrolled past, or null if there is no such element
+ */
+
+
+function isScrolledPast(el, elSide, parentSide) {
+  var parent = getParentAutoScrollElement(el, true),
+      elSideVal = getRect(el)[elSide];
+  /* jshint boss:true */
+
+  while (parent) {
+    var parentSideVal = getRect(parent)[parentSide],
+        visible = void 0;
+
+    if (parentSide === 'top' || parentSide === 'left') {
+      visible = elSideVal >= parentSideVal;
+    } else {
+      visible = elSideVal <= parentSideVal;
+    }
+
+    if (!visible) return parent;
+    if (parent === getWindowScrollingElement()) break;
+    parent = getParentAutoScrollElement(parent, false);
+  }
+
+  return false;
+}
+/**
+ * Gets nth child of el, ignoring hidden children, sortable's elements (does not ignore clone if it's visible)
+ * and non-draggable elements
+ * @param  {HTMLElement} el       The parent element
+ * @param  {Number} childNum      The index of the child
+ * @param  {Object} options       Parent Sortable's options
+ * @return {HTMLElement}          The child at index childNum, or null if not found
+ */
+
+
+function getChild(el, childNum, options) {
+  var currentChild = 0,
+      i = 0,
+      children = el.children;
+
+  while (i < children.length) {
+    if (children[i].style.display !== 'none' && children[i] !== Sortable.ghost && children[i] !== Sortable.dragged && closest(children[i], options.draggable, el, false)) {
+      if (currentChild === childNum) {
+        return children[i];
+      }
+
+      currentChild++;
+    }
+
+    i++;
+  }
+
+  return null;
+}
+/**
+ * Gets the last child in the el, ignoring ghostEl or invisible elements (clones)
+ * @param  {HTMLElement} el       Parent element
+ * @param  {selector} selector    Any other elements that should be ignored
+ * @return {HTMLElement}          The last child, ignoring ghostEl
+ */
+
+
+function lastChild(el, selector) {
+  var last = el.lastElementChild;
+
+  while (last && (last === Sortable.ghost || css(last, 'display') === 'none' || selector && !matches(last, selector))) {
+    last = last.previousElementSibling;
+  }
+
+  return last || null;
+}
+/**
+ * Returns the index of an element within its parent for a selected set of
+ * elements
+ * @param  {HTMLElement} el
+ * @param  {selector} selector
+ * @return {number}
+ */
+
+
+function index(el, selector) {
+  var index = 0;
+
+  if (!el || !el.parentNode) {
+    return -1;
+  }
+  /* jshint boss:true */
+
+
+  while (el = el.previousElementSibling) {
+    if (el.nodeName.toUpperCase() !== 'TEMPLATE' && el !== Sortable.clone && (!selector || matches(el, selector))) {
+      index++;
+    }
+  }
+
+  return index;
+}
+/**
+ * Returns the scroll offset of the given element, added with all the scroll offsets of parent elements.
+ * The value is returned in real pixels.
+ * @param  {HTMLElement} el
+ * @return {Array}             Offsets in the format of [left, top]
+ */
+
+
+function getRelativeScrollOffset(el) {
+  var offsetLeft = 0,
+      offsetTop = 0,
+      winScroller = getWindowScrollingElement();
+
+  if (el) {
+    do {
+      var elMatrix = matrix(el),
+          scaleX = elMatrix.a,
+          scaleY = elMatrix.d;
+      offsetLeft += el.scrollLeft * scaleX;
+      offsetTop += el.scrollTop * scaleY;
+    } while (el !== winScroller && (el = el.parentNode));
+  }
+
+  return [offsetLeft, offsetTop];
+}
+/**
+ * Returns the index of the object within the given array
+ * @param  {Array} arr   Array that may or may not hold the object
+ * @param  {Object} obj  An object that has a key-value pair unique to and identical to a key-value pair in the object you want to find
+ * @return {Number}      The index of the object in the array, or -1
+ */
+
+
+function indexOfObject(arr, obj) {
+  for (var i in arr) {
+    if (!arr.hasOwnProperty(i)) continue;
+
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key) && obj[key] === arr[i][key]) return Number(i);
+    }
+  }
+
+  return -1;
+}
+
+function getParentAutoScrollElement(el, includeSelf) {
+  // skip to window
+  if (!el || !el.getBoundingClientRect) return getWindowScrollingElement();
+  var elem = el;
+  var gotSelf = false;
+
+  do {
+    // we don't need to get elem css if it isn't even overflowing in the first place (performance)
+    if (elem.clientWidth < elem.scrollWidth || elem.clientHeight < elem.scrollHeight) {
+      var elemCSS = css(elem);
+
+      if (elem.clientWidth < elem.scrollWidth && (elemCSS.overflowX == 'auto' || elemCSS.overflowX == 'scroll') || elem.clientHeight < elem.scrollHeight && (elemCSS.overflowY == 'auto' || elemCSS.overflowY == 'scroll')) {
+        if (!elem.getBoundingClientRect || elem === document.body) return getWindowScrollingElement();
+        if (gotSelf || includeSelf) return elem;
+        gotSelf = true;
+      }
+    }
+    /* jshint boss:true */
+
+  } while (elem = elem.parentNode);
+
+  return getWindowScrollingElement();
+}
+
+function extend(dst, src) {
+  if (dst && src) {
+    for (var key in src) {
+      if (src.hasOwnProperty(key)) {
+        dst[key] = src[key];
+      }
+    }
+  }
+
+  return dst;
+}
+
+function isRectEqual(rect1, rect2) {
+  return Math.round(rect1.top) === Math.round(rect2.top) && Math.round(rect1.left) === Math.round(rect2.left) && Math.round(rect1.height) === Math.round(rect2.height) && Math.round(rect1.width) === Math.round(rect2.width);
+}
+
+var _throttleTimeout;
+
+function throttle(callback, ms) {
+  return function () {
+    if (!_throttleTimeout) {
+      var args = arguments,
+          _this = this;
+
+      if (args.length === 1) {
+        callback.call(_this, args[0]);
+      } else {
+        callback.apply(_this, args);
+      }
+
+      _throttleTimeout = setTimeout(function () {
+        _throttleTimeout = void 0;
+      }, ms);
+    }
+  };
+}
+
+function cancelThrottle() {
+  clearTimeout(_throttleTimeout);
+  _throttleTimeout = void 0;
+}
+
+function scrollBy(el, x, y) {
+  el.scrollLeft += x;
+  el.scrollTop += y;
+}
+
+function clone(el) {
+  var Polymer = window.Polymer;
+  var $ = window.jQuery || window.Zepto;
+
+  if (Polymer && Polymer.dom) {
+    return Polymer.dom(el).cloneNode(true);
+  } else if ($) {
+    return $(el).clone(true)[0];
+  } else {
+    return el.cloneNode(true);
+  }
+}
+
+function setRect(el, rect) {
+  css(el, 'position', 'absolute');
+  css(el, 'top', rect.top);
+  css(el, 'left', rect.left);
+  css(el, 'width', rect.width);
+  css(el, 'height', rect.height);
+}
+
+function unsetRect(el) {
+  css(el, 'position', '');
+  css(el, 'top', '');
+  css(el, 'left', '');
+  css(el, 'width', '');
+  css(el, 'height', '');
+}
+
+var expando = 'Sortable' + new Date().getTime();
+
+function AnimationStateManager() {
+  var animationStates = [],
+      animationCallbackId;
+  return {
+    captureAnimationState: function captureAnimationState() {
+      animationStates = [];
+      if (!this.options.animation) return;
+      var children = [].slice.call(this.el.children);
+      children.forEach(function (child) {
+        if (css(child, 'display') === 'none' || child === Sortable.ghost) return;
+        animationStates.push({
+          target: child,
+          rect: getRect(child)
+        });
+
+        var fromRect = _objectSpread({}, animationStates[animationStates.length - 1].rect); // If animating: compensate for current animation
+
+
+        if (child.thisAnimationDuration) {
+          var childMatrix = matrix(child, true);
+
+          if (childMatrix) {
+            fromRect.top -= childMatrix.f;
+            fromRect.left -= childMatrix.e;
+          }
+        }
+
+        child.fromRect = fromRect;
+      });
+    },
+    addAnimationState: function addAnimationState(state) {
+      animationStates.push(state);
+    },
+    removeAnimationState: function removeAnimationState(target) {
+      animationStates.splice(indexOfObject(animationStates, {
+        target: target
+      }), 1);
+    },
+    animateAll: function animateAll(callback) {
+      var _this = this;
+
+      if (!this.options.animation) {
+        clearTimeout(animationCallbackId);
+        if (typeof callback === 'function') callback();
+        return;
+      }
+
+      var animating = false,
+          animationTime = 0;
+      animationStates.forEach(function (state) {
+        var time = 0,
+            target = state.target,
+            fromRect = target.fromRect,
+            toRect = getRect(target),
+            prevFromRect = target.prevFromRect,
+            prevToRect = target.prevToRect,
+            animatingRect = state.rect,
+            targetMatrix = matrix(target, true);
+
+        if (targetMatrix) {
+          // Compensate for current animation
+          toRect.top -= targetMatrix.f;
+          toRect.left -= targetMatrix.e;
+        }
+
+        target.toRect = toRect;
+
+        if (target.thisAnimationDuration) {
+          // Could also check if animatingRect is between fromRect and toRect
+          if (isRectEqual(prevFromRect, toRect) && !isRectEqual(fromRect, toRect) && // Make sure animatingRect is on line between toRect & fromRect
+          (animatingRect.top - toRect.top) / (animatingRect.left - toRect.left) === (fromRect.top - toRect.top) / (fromRect.left - toRect.left)) {
+            // If returning to same place as started from animation and on same axis
+            time = calculateRealTime(animatingRect, prevFromRect, prevToRect, _this.options);
+          }
+        } // if fromRect != toRect: animate
+
+
+        if (!isRectEqual(toRect, fromRect)) {
+          target.prevFromRect = fromRect;
+          target.prevToRect = toRect;
+
+          if (!time) {
+            time = _this.options.animation;
+          }
+
+          _this.animate(target, animatingRect, toRect, time);
+        }
+
+        if (time) {
+          animating = true;
+          animationTime = Math.max(animationTime, time);
+          clearTimeout(target.animationResetTimer);
+          target.animationResetTimer = setTimeout(function () {
+            target.animationTime = 0;
+            target.prevFromRect = null;
+            target.fromRect = null;
+            target.prevToRect = null;
+            target.thisAnimationDuration = null;
+          }, time);
+          target.thisAnimationDuration = time;
+        }
+      });
+      clearTimeout(animationCallbackId);
+
+      if (!animating) {
+        if (typeof callback === 'function') callback();
+      } else {
+        animationCallbackId = setTimeout(function () {
+          if (typeof callback === 'function') callback();
+        }, animationTime);
+      }
+
+      animationStates = [];
+    },
+    animate: function animate(target, currentRect, toRect, duration) {
+      if (duration) {
+        css(target, 'transition', '');
+        css(target, 'transform', '');
+        var elMatrix = matrix(this.el),
+            scaleX = elMatrix && elMatrix.a,
+            scaleY = elMatrix && elMatrix.d,
+            translateX = (currentRect.left - toRect.left) / (scaleX || 1),
+            translateY = (currentRect.top - toRect.top) / (scaleY || 1);
+        target.animatingX = !!translateX;
+        target.animatingY = !!translateY;
+        css(target, 'transform', 'translate3d(' + translateX + 'px,' + translateY + 'px,0)');
+        repaint(target); // repaint
+
+        css(target, 'transition', 'transform ' + duration + 'ms' + (this.options.easing ? ' ' + this.options.easing : ''));
+        css(target, 'transform', 'translate3d(0,0,0)');
+        typeof target.animated === 'number' && clearTimeout(target.animated);
+        target.animated = setTimeout(function () {
+          css(target, 'transition', '');
+          css(target, 'transform', '');
+          target.animated = false;
+          target.animatingX = false;
+          target.animatingY = false;
+        }, duration);
+      }
+    }
+  };
+}
+
+function repaint(target) {
+  return target.offsetWidth;
+}
+
+function calculateRealTime(animatingRect, fromRect, toRect, options) {
+  return Math.sqrt(Math.pow(fromRect.top - animatingRect.top, 2) + Math.pow(fromRect.left - animatingRect.left, 2)) / Math.sqrt(Math.pow(fromRect.top - toRect.top, 2) + Math.pow(fromRect.left - toRect.left, 2)) * options.animation;
+}
+
+var plugins = [];
+var defaults = {
+  initializeByDefault: true
+};
+var PluginManager = {
+  mount: function mount(plugin) {
+    // Set default static properties
+    for (var option in defaults) {
+      if (defaults.hasOwnProperty(option) && !(option in plugin)) {
+        plugin[option] = defaults[option];
+      }
+    }
+
+    plugins.push(plugin);
+  },
+  pluginEvent: function pluginEvent(eventName, sortable, evt) {
+    var _this = this;
+
+    this.eventCanceled = false;
+
+    evt.cancel = function () {
+      _this.eventCanceled = true;
+    };
+
+    var eventNameGlobal = eventName + 'Global';
+    plugins.forEach(function (plugin) {
+      if (!sortable[plugin.pluginName]) return; // Fire global events if it exists in this sortable
+
+      if (sortable[plugin.pluginName][eventNameGlobal]) {
+        sortable[plugin.pluginName][eventNameGlobal](_objectSpread({
+          sortable: sortable
+        }, evt));
+      } // Only fire plugin event if plugin is enabled in this sortable,
+      // and plugin has event defined
+
+
+      if (sortable.options[plugin.pluginName] && sortable[plugin.pluginName][eventName]) {
+        sortable[plugin.pluginName][eventName](_objectSpread({
+          sortable: sortable
+        }, evt));
+      }
+    });
+  },
+  initializePlugins: function initializePlugins(sortable, el, defaults, options) {
+    plugins.forEach(function (plugin) {
+      var pluginName = plugin.pluginName;
+      if (!sortable.options[pluginName] && !plugin.initializeByDefault) return;
+      var initialized = new plugin(sortable, el, sortable.options);
+      initialized.sortable = sortable;
+      initialized.options = sortable.options;
+      sortable[pluginName] = initialized; // Add default options from plugin
+
+      _extends(defaults, initialized.defaults);
+    });
+
+    for (var option in sortable.options) {
+      if (!sortable.options.hasOwnProperty(option)) continue;
+      var modified = this.modifyOption(sortable, option, sortable.options[option]);
+
+      if (typeof modified !== 'undefined') {
+        sortable.options[option] = modified;
+      }
+    }
+  },
+  getEventProperties: function getEventProperties(name, sortable) {
+    var eventProperties = {};
+    plugins.forEach(function (plugin) {
+      if (typeof plugin.eventProperties !== 'function') return;
+
+      _extends(eventProperties, plugin.eventProperties.call(sortable[plugin.pluginName], name));
+    });
+    return eventProperties;
+  },
+  modifyOption: function modifyOption(sortable, name, value) {
+    var modifiedValue;
+    plugins.forEach(function (plugin) {
+      // Plugin must exist on the Sortable
+      if (!sortable[plugin.pluginName]) return; // If static option listener exists for this option, call in the context of the Sortable's instance of this plugin
+
+      if (plugin.optionListeners && typeof plugin.optionListeners[name] === 'function') {
+        modifiedValue = plugin.optionListeners[name].call(sortable[plugin.pluginName], value);
+      }
+    });
+    return modifiedValue;
+  }
+};
+
+function dispatchEvent(_ref) {
+  var sortable = _ref.sortable,
+      rootEl = _ref.rootEl,
+      name = _ref.name,
+      targetEl = _ref.targetEl,
+      cloneEl = _ref.cloneEl,
+      toEl = _ref.toEl,
+      fromEl = _ref.fromEl,
+      oldIndex = _ref.oldIndex,
+      newIndex = _ref.newIndex,
+      oldDraggableIndex = _ref.oldDraggableIndex,
+      newDraggableIndex = _ref.newDraggableIndex,
+      originalEvent = _ref.originalEvent,
+      putSortable = _ref.putSortable,
+      extraEventProperties = _ref.extraEventProperties;
+  sortable = sortable || rootEl && rootEl[expando];
+  if (!sortable) return;
+  var evt,
+      options = sortable.options,
+      onName = 'on' + name.charAt(0).toUpperCase() + name.substr(1); // Support for new CustomEvent feature
+
+  if (window.CustomEvent && !IE11OrLess && !Edge) {
+    evt = new CustomEvent(name, {
+      bubbles: true,
+      cancelable: true
+    });
+  } else {
+    evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+  }
+
+  evt.to = toEl || rootEl;
+  evt.from = fromEl || rootEl;
+  evt.item = targetEl || rootEl;
+  evt.clone = cloneEl;
+  evt.oldIndex = oldIndex;
+  evt.newIndex = newIndex;
+  evt.oldDraggableIndex = oldDraggableIndex;
+  evt.newDraggableIndex = newDraggableIndex;
+  evt.originalEvent = originalEvent;
+  evt.pullMode = putSortable ? putSortable.lastPutMode : undefined;
+
+  var allEventProperties = _objectSpread({}, extraEventProperties, PluginManager.getEventProperties(name, sortable));
+
+  for (var option in allEventProperties) {
+    evt[option] = allEventProperties[option];
+  }
+
+  if (rootEl) {
+    rootEl.dispatchEvent(evt);
+  }
+
+  if (options[onName]) {
+    options[onName].call(sortable, evt);
+  }
+}
+
+var pluginEvent = function pluginEvent(eventName, sortable) {
+  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      originalEvent = _ref.evt,
+      data = _objectWithoutProperties(_ref, ["evt"]);
+
+  PluginManager.pluginEvent.bind(Sortable)(eventName, sortable, _objectSpread({
+    dragEl: dragEl,
+    parentEl: parentEl,
+    ghostEl: ghostEl,
+    rootEl: rootEl,
+    nextEl: nextEl,
+    lastDownEl: lastDownEl,
+    cloneEl: cloneEl,
+    cloneHidden: cloneHidden,
+    dragStarted: moved,
+    putSortable: putSortable,
+    activeSortable: Sortable.active,
+    originalEvent: originalEvent,
+    oldIndex: oldIndex,
+    oldDraggableIndex: oldDraggableIndex,
+    newIndex: newIndex,
+    newDraggableIndex: newDraggableIndex,
+    hideGhostForTarget: _hideGhostForTarget,
+    unhideGhostForTarget: _unhideGhostForTarget,
+    cloneNowHidden: function cloneNowHidden() {
+      cloneHidden = true;
+    },
+    cloneNowShown: function cloneNowShown() {
+      cloneHidden = false;
+    },
+    dispatchSortableEvent: function dispatchSortableEvent(name) {
+      _dispatchEvent({
+        sortable: sortable,
+        name: name,
+        originalEvent: originalEvent
+      });
+    }
+  }, data));
+};
+
+function _dispatchEvent(info) {
+  dispatchEvent(_objectSpread({
+    putSortable: putSortable,
+    cloneEl: cloneEl,
+    targetEl: dragEl,
+    rootEl: rootEl,
+    oldIndex: oldIndex,
+    oldDraggableIndex: oldDraggableIndex,
+    newIndex: newIndex,
+    newDraggableIndex: newDraggableIndex
+  }, info));
+}
+
+var dragEl,
+    parentEl,
+    ghostEl,
+    rootEl,
+    nextEl,
+    lastDownEl,
+    cloneEl,
+    cloneHidden,
+    oldIndex,
+    newIndex,
+    oldDraggableIndex,
+    newDraggableIndex,
+    activeGroup,
+    putSortable,
+    awaitingDragStarted = false,
+    ignoreNextClick = false,
+    sortables = [],
+    tapEvt,
+    touchEvt,
+    lastDx,
+    lastDy,
+    tapDistanceLeft,
+    tapDistanceTop,
+    moved,
+    lastTarget,
+    lastDirection,
+    pastFirstInvertThresh = false,
+    isCircumstantialInvert = false,
+    targetMoveDistance,
+    // For positioning ghost absolutely
+ghostRelativeParent,
+    ghostRelativeParentInitialScroll = [],
+    // (left, top)
+_silent = false,
+    savedInputChecked = [];
+/** @const */
+
+var documentExists = typeof document !== 'undefined',
+    PositionGhostAbsolutely = IOS,
+    CSSFloatProperty = Edge || IE11OrLess ? 'cssFloat' : 'float',
+    // This will not pass for IE9, because IE9 DnD only works on anchors
+supportDraggable = documentExists && !ChromeForAndroid && !IOS && 'draggable' in document.createElement('div'),
+    supportCssPointerEvents = function () {
+  if (!documentExists) return; // false when <= IE11
+
+  if (IE11OrLess) {
+    return false;
+  }
+
+  var el = document.createElement('x');
+  el.style.cssText = 'pointer-events:auto';
+  return el.style.pointerEvents === 'auto';
+}(),
+    _detectDirection = function _detectDirection(el, options) {
+  var elCSS = css(el),
+      elWidth = parseInt(elCSS.width) - parseInt(elCSS.paddingLeft) - parseInt(elCSS.paddingRight) - parseInt(elCSS.borderLeftWidth) - parseInt(elCSS.borderRightWidth),
+      child1 = getChild(el, 0, options),
+      child2 = getChild(el, 1, options),
+      firstChildCSS = child1 && css(child1),
+      secondChildCSS = child2 && css(child2),
+      firstChildWidth = firstChildCSS && parseInt(firstChildCSS.marginLeft) + parseInt(firstChildCSS.marginRight) + getRect(child1).width,
+      secondChildWidth = secondChildCSS && parseInt(secondChildCSS.marginLeft) + parseInt(secondChildCSS.marginRight) + getRect(child2).width;
+
+  if (elCSS.display === 'flex') {
+    return elCSS.flexDirection === 'column' || elCSS.flexDirection === 'column-reverse' ? 'vertical' : 'horizontal';
+  }
+
+  if (elCSS.display === 'grid') {
+    return elCSS.gridTemplateColumns.split(' ').length <= 1 ? 'vertical' : 'horizontal';
+  }
+
+  if (child1 && firstChildCSS["float"] && firstChildCSS["float"] !== 'none') {
+    var touchingSideChild2 = firstChildCSS["float"] === 'left' ? 'left' : 'right';
+    return child2 && (secondChildCSS.clear === 'both' || secondChildCSS.clear === touchingSideChild2) ? 'vertical' : 'horizontal';
+  }
+
+  return child1 && (firstChildCSS.display === 'block' || firstChildCSS.display === 'flex' || firstChildCSS.display === 'table' || firstChildCSS.display === 'grid' || firstChildWidth >= elWidth && elCSS[CSSFloatProperty] === 'none' || child2 && elCSS[CSSFloatProperty] === 'none' && firstChildWidth + secondChildWidth > elWidth) ? 'vertical' : 'horizontal';
+},
+    _dragElInRowColumn = function _dragElInRowColumn(dragRect, targetRect, vertical) {
+  var dragElS1Opp = vertical ? dragRect.left : dragRect.top,
+      dragElS2Opp = vertical ? dragRect.right : dragRect.bottom,
+      dragElOppLength = vertical ? dragRect.width : dragRect.height,
+      targetS1Opp = vertical ? targetRect.left : targetRect.top,
+      targetS2Opp = vertical ? targetRect.right : targetRect.bottom,
+      targetOppLength = vertical ? targetRect.width : targetRect.height;
+  return dragElS1Opp === targetS1Opp || dragElS2Opp === targetS2Opp || dragElS1Opp + dragElOppLength / 2 === targetS1Opp + targetOppLength / 2;
+},
+
+/**
+ * Detects first nearest empty sortable to X and Y position using emptyInsertThreshold.
+ * @param  {Number} x      X position
+ * @param  {Number} y      Y position
+ * @return {HTMLElement}   Element of the first found nearest Sortable
+ */
+_detectNearestEmptySortable = function _detectNearestEmptySortable(x, y) {
+  var ret;
+  sortables.some(function (sortable) {
+    if (lastChild(sortable)) return;
+    var rect = getRect(sortable),
+        threshold = sortable[expando].options.emptyInsertThreshold,
+        insideHorizontally = x >= rect.left - threshold && x <= rect.right + threshold,
+        insideVertically = y >= rect.top - threshold && y <= rect.bottom + threshold;
+
+    if (threshold && insideHorizontally && insideVertically) {
+      return ret = sortable;
+    }
+  });
+  return ret;
+},
+    _prepareGroup = function _prepareGroup(options) {
+  function toFn(value, pull) {
+    return function (to, from, dragEl, evt) {
+      var sameGroup = to.options.group.name && from.options.group.name && to.options.group.name === from.options.group.name;
+
+      if (value == null && (pull || sameGroup)) {
+        // Default pull value
+        // Default pull and put value if same group
+        return true;
+      } else if (value == null || value === false) {
+        return false;
+      } else if (pull && value === 'clone') {
+        return value;
+      } else if (typeof value === 'function') {
+        return toFn(value(to, from, dragEl, evt), pull)(to, from, dragEl, evt);
+      } else {
+        var otherGroup = (pull ? to : from).options.group.name;
+        return value === true || typeof value === 'string' && value === otherGroup || value.join && value.indexOf(otherGroup) > -1;
+      }
+    };
+  }
+
+  var group = {};
+  var originalGroup = options.group;
+
+  if (!originalGroup || _typeof(originalGroup) != 'object') {
+    originalGroup = {
+      name: originalGroup
+    };
+  }
+
+  group.name = originalGroup.name;
+  group.checkPull = toFn(originalGroup.pull, true);
+  group.checkPut = toFn(originalGroup.put);
+  group.revertClone = originalGroup.revertClone;
+  options.group = group;
+},
+    _hideGhostForTarget = function _hideGhostForTarget() {
+  if (!supportCssPointerEvents && ghostEl) {
+    css(ghostEl, 'display', 'none');
+  }
+},
+    _unhideGhostForTarget = function _unhideGhostForTarget() {
+  if (!supportCssPointerEvents && ghostEl) {
+    css(ghostEl, 'display', '');
+  }
+}; // #1184 fix - Prevent click event on fallback if dragged but item not changed position
+
+
+if (documentExists) {
+  document.addEventListener('click', function (evt) {
+    if (ignoreNextClick) {
+      evt.preventDefault();
+      evt.stopPropagation && evt.stopPropagation();
+      evt.stopImmediatePropagation && evt.stopImmediatePropagation();
+      ignoreNextClick = false;
+      return false;
+    }
+  }, true);
+}
+
+var nearestEmptyInsertDetectEvent = function nearestEmptyInsertDetectEvent(evt) {
+  if (dragEl) {
+    evt = evt.touches ? evt.touches[0] : evt;
+
+    var nearest = _detectNearestEmptySortable(evt.clientX, evt.clientY);
+
+    if (nearest) {
+      // Create imitation event
+      var event = {};
+
+      for (var i in evt) {
+        if (evt.hasOwnProperty(i)) {
+          event[i] = evt[i];
+        }
+      }
+
+      event.target = event.rootEl = nearest;
+      event.preventDefault = void 0;
+      event.stopPropagation = void 0;
+
+      nearest[expando]._onDragOver(event);
+    }
+  }
+};
+
+var _checkOutsideTargetEl = function _checkOutsideTargetEl(evt) {
+  if (dragEl) {
+    dragEl.parentNode[expando]._isOutsideThisEl(evt.target);
+  }
+};
+/**
+ * @class  Sortable
+ * @param  {HTMLElement}  el
+ * @param  {Object}       [options]
+ */
+
+
+function Sortable(el, options) {
+  if (!(el && el.nodeType && el.nodeType === 1)) {
+    throw "Sortable: `el` must be an HTMLElement, not ".concat({}.toString.call(el));
+  }
+
+  this.el = el; // root element
+
+  this.options = options = _extends({}, options); // Export instance
+
+  el[expando] = this;
+  var defaults = {
+    group: null,
+    sort: true,
+    disabled: false,
+    store: null,
+    handle: null,
+    draggable: /^[uo]l$/i.test(el.nodeName) ? '>li' : '>*',
+    swapThreshold: 1,
+    // percentage; 0 <= x <= 1
+    invertSwap: false,
+    // invert always
+    invertedSwapThreshold: null,
+    // will be set to same as swapThreshold if default
+    removeCloneOnHide: true,
+    direction: function direction() {
+      return _detectDirection(el, this.options);
+    },
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    ignore: 'a, img',
+    filter: null,
+    preventOnFilter: true,
+    animation: 0,
+    easing: null,
+    setData: function setData(dataTransfer, dragEl) {
+      dataTransfer.setData('Text', dragEl.textContent);
+    },
+    dropBubble: false,
+    dragoverBubble: false,
+    dataIdAttr: 'data-id',
+    delay: 0,
+    delayOnTouchOnly: false,
+    touchStartThreshold: (Number.parseInt ? Number : window).parseInt(window.devicePixelRatio, 10) || 1,
+    forceFallback: false,
+    fallbackClass: 'sortable-fallback',
+    fallbackOnBody: false,
+    fallbackTolerance: 0,
+    fallbackOffset: {
+      x: 0,
+      y: 0
+    },
+    supportPointer: Sortable.supportPointer !== false && 'PointerEvent' in window,
+    emptyInsertThreshold: 5
+  };
+  PluginManager.initializePlugins(this, el, defaults); // Set default options
+
+  for (var name in defaults) {
+    !(name in options) && (options[name] = defaults[name]);
+  }
+
+  _prepareGroup(options); // Bind all private methods
+
+
+  for (var fn in this) {
+    if (fn.charAt(0) === '_' && typeof this[fn] === 'function') {
+      this[fn] = this[fn].bind(this);
+    }
+  } // Setup drag mode
+
+
+  this.nativeDraggable = options.forceFallback ? false : supportDraggable;
+
+  if (this.nativeDraggable) {
+    // Touch start threshold cannot be greater than the native dragstart threshold
+    this.options.touchStartThreshold = 1;
+  } // Bind events
+
+
+  if (options.supportPointer) {
+    on(el, 'pointerdown', this._onTapStart);
+  } else {
+    on(el, 'mousedown', this._onTapStart);
+    on(el, 'touchstart', this._onTapStart);
+  }
+
+  if (this.nativeDraggable) {
+    on(el, 'dragover', this);
+    on(el, 'dragenter', this);
+  }
+
+  sortables.push(this.el); // Restore sorting
+
+  options.store && options.store.get && this.sort(options.store.get(this) || []); // Add animation state manager
+
+  _extends(this, AnimationStateManager());
+}
+
+Sortable.prototype =
+/** @lends Sortable.prototype */
+{
+  constructor: Sortable,
+  _isOutsideThisEl: function _isOutsideThisEl(target) {
+    if (!this.el.contains(target) && target !== this.el) {
+      lastTarget = null;
+    }
+  },
+  _getDirection: function _getDirection(evt, target) {
+    return typeof this.options.direction === 'function' ? this.options.direction.call(this, evt, target, dragEl) : this.options.direction;
+  },
+  _onTapStart: function _onTapStart(
+  /** Event|TouchEvent */
+  evt) {
+    if (!evt.cancelable) return;
+
+    var _this = this,
+        el = this.el,
+        options = this.options,
+        preventOnFilter = options.preventOnFilter,
+        type = evt.type,
+        touch = evt.touches && evt.touches[0] || evt.pointerType && evt.pointerType === 'touch' && evt,
+        target = (touch || evt).target,
+        originalTarget = evt.target.shadowRoot && (evt.path && evt.path[0] || evt.composedPath && evt.composedPath()[0]) || target,
+        filter = options.filter;
+
+    _saveInputCheckedState(el); // Don't trigger start event when an element is been dragged, otherwise the evt.oldindex always wrong when set option.group.
+
+
+    if (dragEl) {
+      return;
+    }
+
+    if (/mousedown|pointerdown/.test(type) && evt.button !== 0 || options.disabled) {
+      return; // only left button and enabled
+    } // cancel dnd if original target is content editable
+
+
+    if (originalTarget.isContentEditable) {
+      return;
+    }
+
+    target = closest(target, options.draggable, el, false);
+
+    if (target && target.animated) {
+      return;
+    }
+
+    if (lastDownEl === target) {
+      // Ignoring duplicate `down`
+      return;
+    } // Get the index of the dragged element within its parent
+
+
+    oldIndex = index(target);
+    oldDraggableIndex = index(target, options.draggable); // Check filter
+
+    if (typeof filter === 'function') {
+      if (filter.call(this, evt, target, this)) {
+        _dispatchEvent({
+          sortable: _this,
+          rootEl: originalTarget,
+          name: 'filter',
+          targetEl: target,
+          toEl: el,
+          fromEl: el
+        });
+
+        pluginEvent('filter', _this, {
+          evt: evt
+        });
+        preventOnFilter && evt.cancelable && evt.preventDefault();
+        return; // cancel dnd
+      }
+    } else if (filter) {
+      filter = filter.split(',').some(function (criteria) {
+        criteria = closest(originalTarget, criteria.trim(), el, false);
+
+        if (criteria) {
+          _dispatchEvent({
+            sortable: _this,
+            rootEl: criteria,
+            name: 'filter',
+            targetEl: target,
+            fromEl: el,
+            toEl: el
+          });
+
+          pluginEvent('filter', _this, {
+            evt: evt
+          });
+          return true;
+        }
+      });
+
+      if (filter) {
+        preventOnFilter && evt.cancelable && evt.preventDefault();
+        return; // cancel dnd
+      }
+    }
+
+    if (options.handle && !closest(originalTarget, options.handle, el, false)) {
+      return;
+    } // Prepare `dragstart`
+
+
+    this._prepareDragStart(evt, touch, target);
+  },
+  _prepareDragStart: function _prepareDragStart(
+  /** Event */
+  evt,
+  /** Touch */
+  touch,
+  /** HTMLElement */
+  target) {
+    var _this = this,
+        el = _this.el,
+        options = _this.options,
+        ownerDocument = el.ownerDocument,
+        dragStartFn;
+
+    if (target && !dragEl && target.parentNode === el) {
+      var dragRect = getRect(target);
+      rootEl = el;
+      dragEl = target;
+      parentEl = dragEl.parentNode;
+      nextEl = dragEl.nextSibling;
+      lastDownEl = target;
+      activeGroup = options.group;
+      Sortable.dragged = dragEl;
+      tapEvt = {
+        target: dragEl,
+        clientX: (touch || evt).clientX,
+        clientY: (touch || evt).clientY
+      };
+      tapDistanceLeft = tapEvt.clientX - dragRect.left;
+      tapDistanceTop = tapEvt.clientY - dragRect.top;
+      this._lastX = (touch || evt).clientX;
+      this._lastY = (touch || evt).clientY;
+      dragEl.style['will-change'] = 'all';
+
+      dragStartFn = function dragStartFn() {
+        pluginEvent('delayEnded', _this, {
+          evt: evt
+        });
+
+        if (Sortable.eventCanceled) {
+          _this._onDrop();
+
+          return;
+        } // Delayed drag has been triggered
+        // we can re-enable the events: touchmove/mousemove
+
+
+        _this._disableDelayedDragEvents();
+
+        if (!FireFox && _this.nativeDraggable) {
+          dragEl.draggable = true;
+        } // Bind the events: dragstart/dragend
+
+
+        _this._triggerDragStart(evt, touch); // Drag start event
+
+
+        _dispatchEvent({
+          sortable: _this,
+          name: 'choose',
+          originalEvent: evt
+        }); // Chosen item
+
+
+        toggleClass(dragEl, options.chosenClass, true);
+      }; // Disable "draggable"
+
+
+      options.ignore.split(',').forEach(function (criteria) {
+        find(dragEl, criteria.trim(), _disableDraggable);
+      });
+      on(ownerDocument, 'dragover', nearestEmptyInsertDetectEvent);
+      on(ownerDocument, 'mousemove', nearestEmptyInsertDetectEvent);
+      on(ownerDocument, 'touchmove', nearestEmptyInsertDetectEvent);
+      on(ownerDocument, 'mouseup', _this._onDrop);
+      on(ownerDocument, 'touchend', _this._onDrop);
+      on(ownerDocument, 'touchcancel', _this._onDrop); // Make dragEl draggable (must be before delay for FireFox)
+
+      if (FireFox && this.nativeDraggable) {
+        this.options.touchStartThreshold = 4;
+        dragEl.draggable = true;
+      }
+
+      pluginEvent('delayStart', this, {
+        evt: evt
+      }); // Delay is impossible for native DnD in Edge or IE
+
+      if (options.delay && (!options.delayOnTouchOnly || touch) && (!this.nativeDraggable || !(Edge || IE11OrLess))) {
+        if (Sortable.eventCanceled) {
+          this._onDrop();
+
+          return;
+        } // If the user moves the pointer or let go the click or touch
+        // before the delay has been reached:
+        // disable the delayed drag
+
+
+        on(ownerDocument, 'mouseup', _this._disableDelayedDrag);
+        on(ownerDocument, 'touchend', _this._disableDelayedDrag);
+        on(ownerDocument, 'touchcancel', _this._disableDelayedDrag);
+        on(ownerDocument, 'mousemove', _this._delayedDragTouchMoveHandler);
+        on(ownerDocument, 'touchmove', _this._delayedDragTouchMoveHandler);
+        options.supportPointer && on(ownerDocument, 'pointermove', _this._delayedDragTouchMoveHandler);
+        _this._dragStartTimer = setTimeout(dragStartFn, options.delay);
+      } else {
+        dragStartFn();
+      }
+    }
+  },
+  _delayedDragTouchMoveHandler: function _delayedDragTouchMoveHandler(
+  /** TouchEvent|PointerEvent **/
+  e) {
+    var touch = e.touches ? e.touches[0] : e;
+
+    if (Math.max(Math.abs(touch.clientX - this._lastX), Math.abs(touch.clientY - this._lastY)) >= Math.floor(this.options.touchStartThreshold / (this.nativeDraggable && window.devicePixelRatio || 1))) {
+      this._disableDelayedDrag();
+    }
+  },
+  _disableDelayedDrag: function _disableDelayedDrag() {
+    dragEl && _disableDraggable(dragEl);
+    clearTimeout(this._dragStartTimer);
+
+    this._disableDelayedDragEvents();
+  },
+  _disableDelayedDragEvents: function _disableDelayedDragEvents() {
+    var ownerDocument = this.el.ownerDocument;
+    off(ownerDocument, 'mouseup', this._disableDelayedDrag);
+    off(ownerDocument, 'touchend', this._disableDelayedDrag);
+    off(ownerDocument, 'touchcancel', this._disableDelayedDrag);
+    off(ownerDocument, 'mousemove', this._delayedDragTouchMoveHandler);
+    off(ownerDocument, 'touchmove', this._delayedDragTouchMoveHandler);
+    off(ownerDocument, 'pointermove', this._delayedDragTouchMoveHandler);
+  },
+  _triggerDragStart: function _triggerDragStart(
+  /** Event */
+  evt,
+  /** Touch */
+  touch) {
+    touch = touch || evt.pointerType == 'touch' && evt;
+
+    if (!this.nativeDraggable || touch) {
+      if (this.options.supportPointer) {
+        on(document, 'pointermove', this._onTouchMove);
+      } else if (touch) {
+        on(document, 'touchmove', this._onTouchMove);
+      } else {
+        on(document, 'mousemove', this._onTouchMove);
+      }
+    } else {
+      on(dragEl, 'dragend', this);
+      on(rootEl, 'dragstart', this._onDragStart);
+    }
+
+    try {
+      if (document.selection) {
+        // Timeout neccessary for IE9
+        _nextTick(function () {
+          document.selection.empty();
+        });
+      } else {
+        window.getSelection().removeAllRanges();
+      }
+    } catch (err) {}
+  },
+  _dragStarted: function _dragStarted(fallback, evt) {
+    awaitingDragStarted = false;
+
+    if (rootEl && dragEl) {
+      pluginEvent('dragStarted', this, {
+        evt: evt
+      });
+
+      if (this.nativeDraggable) {
+        on(document, 'dragover', _checkOutsideTargetEl);
+      }
+
+      var options = this.options; // Apply effect
+
+      !fallback && toggleClass(dragEl, options.dragClass, false);
+      toggleClass(dragEl, options.ghostClass, true);
+      Sortable.active = this;
+      fallback && this._appendGhost(); // Drag start event
+
+      _dispatchEvent({
+        sortable: this,
+        name: 'start',
+        originalEvent: evt
+      });
+    } else {
+      this._nulling();
+    }
+  },
+  _emulateDragOver: function _emulateDragOver() {
+    if (touchEvt) {
+      this._lastX = touchEvt.clientX;
+      this._lastY = touchEvt.clientY;
+
+      _hideGhostForTarget();
+
+      var target = document.elementFromPoint(touchEvt.clientX, touchEvt.clientY);
+      var parent = target;
+
+      while (target && target.shadowRoot) {
+        target = target.shadowRoot.elementFromPoint(touchEvt.clientX, touchEvt.clientY);
+        if (target === parent) break;
+        parent = target;
+      }
+
+      dragEl.parentNode[expando]._isOutsideThisEl(target);
+
+      if (parent) {
+        do {
+          if (parent[expando]) {
+            var inserted = void 0;
+            inserted = parent[expando]._onDragOver({
+              clientX: touchEvt.clientX,
+              clientY: touchEvt.clientY,
+              target: target,
+              rootEl: parent
+            });
+
+            if (inserted && !this.options.dragoverBubble) {
+              break;
+            }
+          }
+
+          target = parent; // store last element
+        }
+        /* jshint boss:true */
+        while (parent = parent.parentNode);
+      }
+
+      _unhideGhostForTarget();
+    }
+  },
+  _onTouchMove: function _onTouchMove(
+  /**TouchEvent*/
+  evt) {
+    if (tapEvt) {
+      var options = this.options,
+          fallbackTolerance = options.fallbackTolerance,
+          fallbackOffset = options.fallbackOffset,
+          touch = evt.touches ? evt.touches[0] : evt,
+          ghostMatrix = ghostEl && matrix(ghostEl, true),
+          scaleX = ghostEl && ghostMatrix && ghostMatrix.a,
+          scaleY = ghostEl && ghostMatrix && ghostMatrix.d,
+          relativeScrollOffset = PositionGhostAbsolutely && ghostRelativeParent && getRelativeScrollOffset(ghostRelativeParent),
+          dx = (touch.clientX - tapEvt.clientX + fallbackOffset.x) / (scaleX || 1) + (relativeScrollOffset ? relativeScrollOffset[0] - ghostRelativeParentInitialScroll[0] : 0) / (scaleX || 1),
+          dy = (touch.clientY - tapEvt.clientY + fallbackOffset.y) / (scaleY || 1) + (relativeScrollOffset ? relativeScrollOffset[1] - ghostRelativeParentInitialScroll[1] : 0) / (scaleY || 1); // only set the status to dragging, when we are actually dragging
+
+      if (!Sortable.active && !awaitingDragStarted) {
+        if (fallbackTolerance && Math.max(Math.abs(touch.clientX - this._lastX), Math.abs(touch.clientY - this._lastY)) < fallbackTolerance) {
+          return;
+        }
+
+        this._onDragStart(evt, true);
+      }
+
+      if (ghostEl) {
+        if (ghostMatrix) {
+          ghostMatrix.e += dx - (lastDx || 0);
+          ghostMatrix.f += dy - (lastDy || 0);
+        } else {
+          ghostMatrix = {
+            a: 1,
+            b: 0,
+            c: 0,
+            d: 1,
+            e: dx,
+            f: dy
+          };
+        }
+
+        var cssMatrix = "matrix(".concat(ghostMatrix.a, ",").concat(ghostMatrix.b, ",").concat(ghostMatrix.c, ",").concat(ghostMatrix.d, ",").concat(ghostMatrix.e, ",").concat(ghostMatrix.f, ")");
+        css(ghostEl, 'webkitTransform', cssMatrix);
+        css(ghostEl, 'mozTransform', cssMatrix);
+        css(ghostEl, 'msTransform', cssMatrix);
+        css(ghostEl, 'transform', cssMatrix);
+        lastDx = dx;
+        lastDy = dy;
+        touchEvt = touch;
+      }
+
+      evt.cancelable && evt.preventDefault();
+    }
+  },
+  _appendGhost: function _appendGhost() {
+    // Bug if using scale(): https://stackoverflow.com/questions/2637058
+    // Not being adjusted for
+    if (!ghostEl) {
+      var container = this.options.fallbackOnBody ? document.body : rootEl,
+          rect = getRect(dragEl, true, PositionGhostAbsolutely, true, container),
+          options = this.options; // Position absolutely
+
+      if (PositionGhostAbsolutely) {
+        // Get relatively positioned parent
+        ghostRelativeParent = container;
+
+        while (css(ghostRelativeParent, 'position') === 'static' && css(ghostRelativeParent, 'transform') === 'none' && ghostRelativeParent !== document) {
+          ghostRelativeParent = ghostRelativeParent.parentNode;
+        }
+
+        if (ghostRelativeParent !== document.body && ghostRelativeParent !== document.documentElement) {
+          if (ghostRelativeParent === document) ghostRelativeParent = getWindowScrollingElement();
+          rect.top += ghostRelativeParent.scrollTop;
+          rect.left += ghostRelativeParent.scrollLeft;
+        } else {
+          ghostRelativeParent = getWindowScrollingElement();
+        }
+
+        ghostRelativeParentInitialScroll = getRelativeScrollOffset(ghostRelativeParent);
+      }
+
+      ghostEl = dragEl.cloneNode(true);
+      toggleClass(ghostEl, options.ghostClass, false);
+      toggleClass(ghostEl, options.fallbackClass, true);
+      toggleClass(ghostEl, options.dragClass, true);
+      css(ghostEl, 'transition', '');
+      css(ghostEl, 'transform', '');
+      css(ghostEl, 'box-sizing', 'border-box');
+      css(ghostEl, 'margin', 0);
+      css(ghostEl, 'top', rect.top);
+      css(ghostEl, 'left', rect.left);
+      css(ghostEl, 'width', rect.width);
+      css(ghostEl, 'height', rect.height);
+      css(ghostEl, 'opacity', '0.8');
+      css(ghostEl, 'position', PositionGhostAbsolutely ? 'absolute' : 'fixed');
+      css(ghostEl, 'zIndex', '100000');
+      css(ghostEl, 'pointerEvents', 'none');
+      Sortable.ghost = ghostEl;
+      container.appendChild(ghostEl); // Set transform-origin
+
+      css(ghostEl, 'transform-origin', tapDistanceLeft / parseInt(ghostEl.style.width) * 100 + '% ' + tapDistanceTop / parseInt(ghostEl.style.height) * 100 + '%');
+    }
+  },
+  _onDragStart: function _onDragStart(
+  /**Event*/
+  evt,
+  /**boolean*/
+  fallback) {
+    var _this = this;
+
+    var dataTransfer = evt.dataTransfer;
+    var options = _this.options;
+    pluginEvent('dragStart', this, {
+      evt: evt
+    });
+
+    if (Sortable.eventCanceled) {
+      this._onDrop();
+
+      return;
+    }
+
+    pluginEvent('setupClone', this);
+
+    if (!Sortable.eventCanceled) {
+      cloneEl = clone(dragEl);
+      cloneEl.draggable = false;
+      cloneEl.style['will-change'] = '';
+
+      this._hideClone();
+
+      toggleClass(cloneEl, this.options.chosenClass, false);
+      Sortable.clone = cloneEl;
+    } // #1143: IFrame support workaround
+
+
+    _this.cloneId = _nextTick(function () {
+      pluginEvent('clone', _this);
+      if (Sortable.eventCanceled) return;
+
+      if (!_this.options.removeCloneOnHide) {
+        rootEl.insertBefore(cloneEl, dragEl);
+      }
+
+      _this._hideClone();
+
+      _dispatchEvent({
+        sortable: _this,
+        name: 'clone'
+      });
+    });
+    !fallback && toggleClass(dragEl, options.dragClass, true); // Set proper drop events
+
+    if (fallback) {
+      ignoreNextClick = true;
+      _this._loopId = setInterval(_this._emulateDragOver, 50);
+    } else {
+      // Undo what was set in _prepareDragStart before drag started
+      off(document, 'mouseup', _this._onDrop);
+      off(document, 'touchend', _this._onDrop);
+      off(document, 'touchcancel', _this._onDrop);
+
+      if (dataTransfer) {
+        dataTransfer.effectAllowed = 'move';
+        options.setData && options.setData.call(_this, dataTransfer, dragEl);
+      }
+
+      on(document, 'drop', _this); // #1276 fix:
+
+      css(dragEl, 'transform', 'translateZ(0)');
+    }
+
+    awaitingDragStarted = true;
+    _this._dragStartId = _nextTick(_this._dragStarted.bind(_this, fallback, evt));
+    on(document, 'selectstart', _this);
+    moved = true;
+
+    if (Safari) {
+      css(document.body, 'user-select', 'none');
+    }
+  },
+  // Returns true - if no further action is needed (either inserted or another condition)
+  _onDragOver: function _onDragOver(
+  /**Event*/
+  evt) {
+    var el = this.el,
+        target = evt.target,
+        dragRect,
+        targetRect,
+        revert,
+        options = this.options,
+        group = options.group,
+        activeSortable = Sortable.active,
+        isOwner = activeGroup === group,
+        canSort = options.sort,
+        fromSortable = putSortable || activeSortable,
+        vertical,
+        _this = this,
+        completedFired = false;
+
+    if (_silent) return;
+
+    function dragOverEvent(name, extra) {
+      pluginEvent(name, _this, _objectSpread({
+        evt: evt,
+        isOwner: isOwner,
+        axis: vertical ? 'vertical' : 'horizontal',
+        revert: revert,
+        dragRect: dragRect,
+        targetRect: targetRect,
+        canSort: canSort,
+        fromSortable: fromSortable,
+        target: target,
+        completed: completed,
+        onMove: function onMove(target, after) {
+          return _onMove(rootEl, el, dragEl, dragRect, target, getRect(target), evt, after);
+        },
+        changed: changed
+      }, extra));
+    } // Capture animation state
+
+
+    function capture() {
+      dragOverEvent('dragOverAnimationCapture');
+
+      _this.captureAnimationState();
+
+      if (_this !== fromSortable) {
+        fromSortable.captureAnimationState();
+      }
+    } // Return invocation when dragEl is inserted (or completed)
+
+
+    function completed(insertion) {
+      dragOverEvent('dragOverCompleted', {
+        insertion: insertion
+      });
+
+      if (insertion) {
+        // Clones must be hidden before folding animation to capture dragRectAbsolute properly
+        if (isOwner) {
+          activeSortable._hideClone();
+        } else {
+          activeSortable._showClone(_this);
+        }
+
+        if (_this !== fromSortable) {
+          // Set ghost class to new sortable's ghost class
+          toggleClass(dragEl, putSortable ? putSortable.options.ghostClass : activeSortable.options.ghostClass, false);
+          toggleClass(dragEl, options.ghostClass, true);
+        }
+
+        if (putSortable !== _this && _this !== Sortable.active) {
+          putSortable = _this;
+        } else if (_this === Sortable.active && putSortable) {
+          putSortable = null;
+        } // Animation
+
+
+        if (fromSortable === _this) {
+          _this._ignoreWhileAnimating = target;
+        }
+
+        _this.animateAll(function () {
+          dragOverEvent('dragOverAnimationComplete');
+          _this._ignoreWhileAnimating = null;
+        });
+
+        if (_this !== fromSortable) {
+          fromSortable.animateAll();
+          fromSortable._ignoreWhileAnimating = null;
+        }
+      } // Null lastTarget if it is not inside a previously swapped element
+
+
+      if (target === dragEl && !dragEl.animated || target === el && !target.animated) {
+        lastTarget = null;
+      } // no bubbling and not fallback
+
+
+      if (!options.dragoverBubble && !evt.rootEl && target !== document) {
+        dragEl.parentNode[expando]._isOutsideThisEl(evt.target); // Do not detect for empty insert if already inserted
+
+
+        !insertion && nearestEmptyInsertDetectEvent(evt);
+      }
+
+      !options.dragoverBubble && evt.stopPropagation && evt.stopPropagation();
+      return completedFired = true;
+    } // Call when dragEl has been inserted
+
+
+    function changed() {
+      newIndex = index(dragEl);
+      newDraggableIndex = index(dragEl, options.draggable);
+
+      _dispatchEvent({
+        sortable: _this,
+        name: 'change',
+        toEl: el,
+        newIndex: newIndex,
+        newDraggableIndex: newDraggableIndex,
+        originalEvent: evt
+      });
+    }
+
+    if (evt.preventDefault !== void 0) {
+      evt.cancelable && evt.preventDefault();
+    }
+
+    target = closest(target, options.draggable, el, true);
+    dragOverEvent('dragOver');
+    if (Sortable.eventCanceled) return completedFired;
+
+    if (dragEl.contains(evt.target) || target.animated && target.animatingX && target.animatingY || _this._ignoreWhileAnimating === target) {
+      return completed(false);
+    }
+
+    ignoreNextClick = false;
+
+    if (activeSortable && !options.disabled && (isOwner ? canSort || (revert = !rootEl.contains(dragEl)) // Reverting item into the original list
+    : putSortable === this || (this.lastPutMode = activeGroup.checkPull(this, activeSortable, dragEl, evt)) && group.checkPut(this, activeSortable, dragEl, evt))) {
+      vertical = this._getDirection(evt, target) === 'vertical';
+      dragRect = getRect(dragEl);
+      dragOverEvent('dragOverValid');
+      if (Sortable.eventCanceled) return completedFired;
+
+      if (revert) {
+        parentEl = rootEl; // actualization
+
+        capture();
+
+        this._hideClone();
+
+        dragOverEvent('revert');
+
+        if (!Sortable.eventCanceled) {
+          if (nextEl) {
+            rootEl.insertBefore(dragEl, nextEl);
+          } else {
+            rootEl.appendChild(dragEl);
+          }
+        }
+
+        return completed(true);
+      }
+
+      var elLastChild = lastChild(el, options.draggable);
+
+      if (!elLastChild || _ghostIsLast(evt, vertical, this) && !elLastChild.animated) {
+        // If already at end of list: Do not insert
+        if (elLastChild === dragEl) {
+          return completed(false);
+        } // assign target only if condition is true
+
+
+        if (elLastChild && el === evt.target) {
+          target = elLastChild;
+        }
+
+        if (target) {
+          targetRect = getRect(target);
+        }
+
+        if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
+          capture();
+          el.appendChild(dragEl);
+          parentEl = el; // actualization
+
+          changed();
+          return completed(true);
+        }
+      } else if (target.parentNode === el) {
+        targetRect = getRect(target);
+        var direction = 0,
+            targetBeforeFirstSwap,
+            differentLevel = dragEl.parentNode !== el,
+            differentRowCol = !_dragElInRowColumn(dragEl.animated && dragEl.toRect || dragRect, target.animated && target.toRect || targetRect, vertical),
+            side1 = vertical ? 'top' : 'left',
+            scrolledPastTop = isScrolledPast(target, 'top', 'top') || isScrolledPast(dragEl, 'top', 'top'),
+            scrollBefore = scrolledPastTop ? scrolledPastTop.scrollTop : void 0;
+
+        if (lastTarget !== target) {
+          targetBeforeFirstSwap = targetRect[side1];
+          pastFirstInvertThresh = false;
+          isCircumstantialInvert = !differentRowCol && options.invertSwap || differentLevel;
+        }
+
+        direction = _getSwapDirection(evt, target, targetRect, vertical, differentRowCol ? 1 : options.swapThreshold, options.invertedSwapThreshold == null ? options.swapThreshold : options.invertedSwapThreshold, isCircumstantialInvert, lastTarget === target);
+        var sibling;
+
+        if (direction !== 0) {
+          // Check if target is beside dragEl in respective direction (ignoring hidden elements)
+          var dragIndex = index(dragEl);
+
+          do {
+            dragIndex -= direction;
+            sibling = parentEl.children[dragIndex];
+          } while (sibling && (css(sibling, 'display') === 'none' || sibling === ghostEl));
+        } // If dragEl is already beside target: Do not insert
+
+
+        if (direction === 0 || sibling === target) {
+          return completed(false);
+        }
+
+        lastTarget = target;
+        lastDirection = direction;
+        var nextSibling = target.nextElementSibling,
+            after = false;
+        after = direction === 1;
+
+        var moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, after);
+
+        if (moveVector !== false) {
+          if (moveVector === 1 || moveVector === -1) {
+            after = moveVector === 1;
+          }
+
+          _silent = true;
+          setTimeout(_unsilent, 30);
+          capture();
+
+          if (after && !nextSibling) {
+            el.appendChild(dragEl);
+          } else {
+            target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
+          } // Undo chrome's scroll adjustment (has no effect on other browsers)
+
+
+          if (scrolledPastTop) {
+            scrollBy(scrolledPastTop, 0, scrollBefore - scrolledPastTop.scrollTop);
+          }
+
+          parentEl = dragEl.parentNode; // actualization
+          // must be done before animation
+
+          if (targetBeforeFirstSwap !== undefined && !isCircumstantialInvert) {
+            targetMoveDistance = Math.abs(targetBeforeFirstSwap - getRect(target)[side1]);
+          }
+
+          changed();
+          return completed(true);
+        }
+      }
+
+      if (el.contains(dragEl)) {
+        return completed(false);
+      }
+    }
+
+    return false;
+  },
+  _ignoreWhileAnimating: null,
+  _offMoveEvents: function _offMoveEvents() {
+    off(document, 'mousemove', this._onTouchMove);
+    off(document, 'touchmove', this._onTouchMove);
+    off(document, 'pointermove', this._onTouchMove);
+    off(document, 'dragover', nearestEmptyInsertDetectEvent);
+    off(document, 'mousemove', nearestEmptyInsertDetectEvent);
+    off(document, 'touchmove', nearestEmptyInsertDetectEvent);
+  },
+  _offUpEvents: function _offUpEvents() {
+    var ownerDocument = this.el.ownerDocument;
+    off(ownerDocument, 'mouseup', this._onDrop);
+    off(ownerDocument, 'touchend', this._onDrop);
+    off(ownerDocument, 'pointerup', this._onDrop);
+    off(ownerDocument, 'touchcancel', this._onDrop);
+    off(document, 'selectstart', this);
+  },
+  _onDrop: function _onDrop(
+  /**Event*/
+  evt) {
+    var el = this.el,
+        options = this.options; // Get the index of the dragged element within its parent
+
+    newIndex = index(dragEl);
+    newDraggableIndex = index(dragEl, options.draggable);
+    pluginEvent('drop', this, {
+      evt: evt
+    });
+    parentEl = dragEl && dragEl.parentNode; // Get again after plugin event
+
+    newIndex = index(dragEl);
+    newDraggableIndex = index(dragEl, options.draggable);
+
+    if (Sortable.eventCanceled) {
+      this._nulling();
+
+      return;
+    }
+
+    awaitingDragStarted = false;
+    isCircumstantialInvert = false;
+    pastFirstInvertThresh = false;
+    clearInterval(this._loopId);
+    clearTimeout(this._dragStartTimer);
+
+    _cancelNextTick(this.cloneId);
+
+    _cancelNextTick(this._dragStartId); // Unbind events
+
+
+    if (this.nativeDraggable) {
+      off(document, 'drop', this);
+      off(el, 'dragstart', this._onDragStart);
+    }
+
+    this._offMoveEvents();
+
+    this._offUpEvents();
+
+    if (Safari) {
+      css(document.body, 'user-select', '');
+    }
+
+    css(dragEl, 'transform', '');
+
+    if (evt) {
+      if (moved) {
+        evt.cancelable && evt.preventDefault();
+        !options.dropBubble && evt.stopPropagation();
+      }
+
+      ghostEl && ghostEl.parentNode && ghostEl.parentNode.removeChild(ghostEl);
+
+      if (rootEl === parentEl || putSortable && putSortable.lastPutMode !== 'clone') {
+        // Remove clone(s)
+        cloneEl && cloneEl.parentNode && cloneEl.parentNode.removeChild(cloneEl);
+      }
+
+      if (dragEl) {
+        if (this.nativeDraggable) {
+          off(dragEl, 'dragend', this);
+        }
+
+        _disableDraggable(dragEl);
+
+        dragEl.style['will-change'] = ''; // Remove classes
+        // ghostClass is added in dragStarted
+
+        if (moved && !awaitingDragStarted) {
+          toggleClass(dragEl, putSortable ? putSortable.options.ghostClass : this.options.ghostClass, false);
+        }
+
+        toggleClass(dragEl, this.options.chosenClass, false); // Drag stop event
+
+        _dispatchEvent({
+          sortable: this,
+          name: 'unchoose',
+          toEl: parentEl,
+          newIndex: null,
+          newDraggableIndex: null,
+          originalEvent: evt
+        });
+
+        if (rootEl !== parentEl) {
+          if (newIndex >= 0) {
+            // Add event
+            _dispatchEvent({
+              rootEl: parentEl,
+              name: 'add',
+              toEl: parentEl,
+              fromEl: rootEl,
+              originalEvent: evt
+            }); // Remove event
+
+
+            _dispatchEvent({
+              sortable: this,
+              name: 'remove',
+              toEl: parentEl,
+              originalEvent: evt
+            }); // drag from one list and drop into another
+
+
+            _dispatchEvent({
+              rootEl: parentEl,
+              name: 'sort',
+              toEl: parentEl,
+              fromEl: rootEl,
+              originalEvent: evt
+            });
+
+            _dispatchEvent({
+              sortable: this,
+              name: 'sort',
+              toEl: parentEl,
+              originalEvent: evt
+            });
+          }
+
+          putSortable && putSortable.save();
+        } else {
+          if (newIndex !== oldIndex) {
+            if (newIndex >= 0) {
+              // drag & drop within the same list
+              _dispatchEvent({
+                sortable: this,
+                name: 'update',
+                toEl: parentEl,
+                originalEvent: evt
+              });
+
+              _dispatchEvent({
+                sortable: this,
+                name: 'sort',
+                toEl: parentEl,
+                originalEvent: evt
+              });
+            }
+          }
+        }
+
+        if (Sortable.active) {
+          /* jshint eqnull:true */
+          if (newIndex == null || newIndex === -1) {
+            newIndex = oldIndex;
+            newDraggableIndex = oldDraggableIndex;
+          }
+
+          _dispatchEvent({
+            sortable: this,
+            name: 'end',
+            toEl: parentEl,
+            originalEvent: evt
+          }); // Save sorting
+
+
+          this.save();
+        }
+      }
+    }
+
+    this._nulling();
+  },
+  _nulling: function _nulling() {
+    pluginEvent('nulling', this);
+    rootEl = dragEl = parentEl = ghostEl = nextEl = cloneEl = lastDownEl = cloneHidden = tapEvt = touchEvt = moved = newIndex = newDraggableIndex = oldIndex = oldDraggableIndex = lastTarget = lastDirection = putSortable = activeGroup = Sortable.dragged = Sortable.ghost = Sortable.clone = Sortable.active = null;
+    savedInputChecked.forEach(function (el) {
+      el.checked = true;
+    });
+    savedInputChecked.length = lastDx = lastDy = 0;
+  },
+  handleEvent: function handleEvent(
+  /**Event*/
+  evt) {
+    switch (evt.type) {
+      case 'drop':
+      case 'dragend':
+        this._onDrop(evt);
+
+        break;
+
+      case 'dragenter':
+      case 'dragover':
+        if (dragEl) {
+          this._onDragOver(evt);
+
+          _globalDragOver(evt);
+        }
+
+        break;
+
+      case 'selectstart':
+        evt.preventDefault();
+        break;
+    }
+  },
+
+  /**
+   * Serializes the item into an array of string.
+   * @returns {String[]}
+   */
+  toArray: function toArray() {
+    var order = [],
+        el,
+        children = this.el.children,
+        i = 0,
+        n = children.length,
+        options = this.options;
+
+    for (; i < n; i++) {
+      el = children[i];
+
+      if (closest(el, options.draggable, this.el, false)) {
+        order.push(el.getAttribute(options.dataIdAttr) || _generateId(el));
+      }
+    }
+
+    return order;
+  },
+
+  /**
+   * Sorts the elements according to the array.
+   * @param  {String[]}  order  order of the items
+   */
+  sort: function sort(order) {
+    var items = {},
+        rootEl = this.el;
+    this.toArray().forEach(function (id, i) {
+      var el = rootEl.children[i];
+
+      if (closest(el, this.options.draggable, rootEl, false)) {
+        items[id] = el;
+      }
+    }, this);
+    order.forEach(function (id) {
+      if (items[id]) {
+        rootEl.removeChild(items[id]);
+        rootEl.appendChild(items[id]);
+      }
+    });
+  },
+
+  /**
+   * Save the current sorting
+   */
+  save: function save() {
+    var store = this.options.store;
+    store && store.set && store.set(this);
+  },
+
+  /**
+   * For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
+   * @param   {HTMLElement}  el
+   * @param   {String}       [selector]  default: `options.draggable`
+   * @returns {HTMLElement|null}
+   */
+  closest: function closest$1(el, selector) {
+    return closest(el, selector || this.options.draggable, this.el, false);
+  },
+
+  /**
+   * Set/get option
+   * @param   {string} name
+   * @param   {*}      [value]
+   * @returns {*}
+   */
+  option: function option(name, value) {
+    var options = this.options;
+
+    if (value === void 0) {
+      return options[name];
+    } else {
+      var modifiedValue = PluginManager.modifyOption(this, name, value);
+
+      if (typeof modifiedValue !== 'undefined') {
+        options[name] = modifiedValue;
+      } else {
+        options[name] = value;
+      }
+
+      if (name === 'group') {
+        _prepareGroup(options);
+      }
+    }
+  },
+
+  /**
+   * Destroy
+   */
+  destroy: function destroy() {
+    pluginEvent('destroy', this);
+    var el = this.el;
+    el[expando] = null;
+    off(el, 'mousedown', this._onTapStart);
+    off(el, 'touchstart', this._onTapStart);
+    off(el, 'pointerdown', this._onTapStart);
+
+    if (this.nativeDraggable) {
+      off(el, 'dragover', this);
+      off(el, 'dragenter', this);
+    } // Remove draggable attributes
+
+
+    Array.prototype.forEach.call(el.querySelectorAll('[draggable]'), function (el) {
+      el.removeAttribute('draggable');
+    });
+
+    this._onDrop();
+
+    this._disableDelayedDragEvents();
+
+    sortables.splice(sortables.indexOf(this.el), 1);
+    this.el = el = null;
+  },
+  _hideClone: function _hideClone() {
+    if (!cloneHidden) {
+      pluginEvent('hideClone', this);
+      if (Sortable.eventCanceled) return;
+      css(cloneEl, 'display', 'none');
+
+      if (this.options.removeCloneOnHide && cloneEl.parentNode) {
+        cloneEl.parentNode.removeChild(cloneEl);
+      }
+
+      cloneHidden = true;
+    }
+  },
+  _showClone: function _showClone(putSortable) {
+    if (putSortable.lastPutMode !== 'clone') {
+      this._hideClone();
+
+      return;
+    }
+
+    if (cloneHidden) {
+      pluginEvent('showClone', this);
+      if (Sortable.eventCanceled) return; // show clone at dragEl or original position
+
+      if (rootEl.contains(dragEl) && !this.options.group.revertClone) {
+        rootEl.insertBefore(cloneEl, dragEl);
+      } else if (nextEl) {
+        rootEl.insertBefore(cloneEl, nextEl);
+      } else {
+        rootEl.appendChild(cloneEl);
+      }
+
+      if (this.options.group.revertClone) {
+        this.animate(dragEl, cloneEl);
+      }
+
+      css(cloneEl, 'display', '');
+      cloneHidden = false;
+    }
+  }
+};
+
+function _globalDragOver(
+/**Event*/
+evt) {
+  if (evt.dataTransfer) {
+    evt.dataTransfer.dropEffect = 'move';
+  }
+
+  evt.cancelable && evt.preventDefault();
+}
+
+function _onMove(fromEl, toEl, dragEl, dragRect, targetEl, targetRect, originalEvent, willInsertAfter) {
+  var evt,
+      sortable = fromEl[expando],
+      onMoveFn = sortable.options.onMove,
+      retVal; // Support for new CustomEvent feature
+
+  if (window.CustomEvent && !IE11OrLess && !Edge) {
+    evt = new CustomEvent('move', {
+      bubbles: true,
+      cancelable: true
+    });
+  } else {
+    evt = document.createEvent('Event');
+    evt.initEvent('move', true, true);
+  }
+
+  evt.to = toEl;
+  evt.from = fromEl;
+  evt.dragged = dragEl;
+  evt.draggedRect = dragRect;
+  evt.related = targetEl || toEl;
+  evt.relatedRect = targetRect || getRect(toEl);
+  evt.willInsertAfter = willInsertAfter;
+  evt.originalEvent = originalEvent;
+  fromEl.dispatchEvent(evt);
+
+  if (onMoveFn) {
+    retVal = onMoveFn.call(sortable, evt, originalEvent);
+  }
+
+  return retVal;
+}
+
+function _disableDraggable(el) {
+  el.draggable = false;
+}
+
+function _unsilent() {
+  _silent = false;
+}
+
+function _ghostIsLast(evt, vertical, sortable) {
+  var rect = getRect(lastChild(sortable.el, sortable.options.draggable));
+  var spacer = 10;
+  return vertical ? evt.clientX > rect.right + spacer || evt.clientX <= rect.right && evt.clientY > rect.bottom && evt.clientX >= rect.left : evt.clientX > rect.right && evt.clientY > rect.top || evt.clientX <= rect.right && evt.clientY > rect.bottom + spacer;
+}
+
+function _getSwapDirection(evt, target, targetRect, vertical, swapThreshold, invertedSwapThreshold, invertSwap, isLastTarget) {
+  var mouseOnAxis = vertical ? evt.clientY : evt.clientX,
+      targetLength = vertical ? targetRect.height : targetRect.width,
+      targetS1 = vertical ? targetRect.top : targetRect.left,
+      targetS2 = vertical ? targetRect.bottom : targetRect.right,
+      invert = false;
+
+  if (!invertSwap) {
+    // Never invert or create dragEl shadow when target movemenet causes mouse to move past the end of regular swapThreshold
+    if (isLastTarget && targetMoveDistance < targetLength * swapThreshold) {
+      // multiplied only by swapThreshold because mouse will already be inside target by (1 - threshold) * targetLength / 2
+      // check if past first invert threshold on side opposite of lastDirection
+      if (!pastFirstInvertThresh && (lastDirection === 1 ? mouseOnAxis > targetS1 + targetLength * invertedSwapThreshold / 2 : mouseOnAxis < targetS2 - targetLength * invertedSwapThreshold / 2)) {
+        // past first invert threshold, do not restrict inverted threshold to dragEl shadow
+        pastFirstInvertThresh = true;
+      }
+
+      if (!pastFirstInvertThresh) {
+        // dragEl shadow (target move distance shadow)
+        if (lastDirection === 1 ? mouseOnAxis < targetS1 + targetMoveDistance // over dragEl shadow
+        : mouseOnAxis > targetS2 - targetMoveDistance) {
+          return -lastDirection;
+        }
+      } else {
+        invert = true;
+      }
+    } else {
+      // Regular
+      if (mouseOnAxis > targetS1 + targetLength * (1 - swapThreshold) / 2 && mouseOnAxis < targetS2 - targetLength * (1 - swapThreshold) / 2) {
+        return _getInsertDirection(target);
+      }
+    }
+  }
+
+  invert = invert || invertSwap;
+
+  if (invert) {
+    // Invert of regular
+    if (mouseOnAxis < targetS1 + targetLength * invertedSwapThreshold / 2 || mouseOnAxis > targetS2 - targetLength * invertedSwapThreshold / 2) {
+      return mouseOnAxis > targetS1 + targetLength / 2 ? 1 : -1;
+    }
+  }
+
+  return 0;
+}
+/**
+ * Gets the direction dragEl must be swapped relative to target in order to make it
+ * seem that dragEl has been "inserted" into that element's position
+ * @param  {HTMLElement} target       The target whose position dragEl is being inserted at
+ * @return {Number}                   Direction dragEl must be swapped
+ */
+
+
+function _getInsertDirection(target) {
+  if (index(dragEl) < index(target)) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+/**
+ * Generate id
+ * @param   {HTMLElement} el
+ * @returns {String}
+ * @private
+ */
+
+
+function _generateId(el) {
+  var str = el.tagName + el.className + el.src + el.href + el.textContent,
+      i = str.length,
+      sum = 0;
+
+  while (i--) {
+    sum += str.charCodeAt(i);
+  }
+
+  return sum.toString(36);
+}
+
+function _saveInputCheckedState(root) {
+  savedInputChecked.length = 0;
+  var inputs = root.getElementsByTagName('input');
+  var idx = inputs.length;
+
+  while (idx--) {
+    var el = inputs[idx];
+    el.checked && savedInputChecked.push(el);
+  }
+}
+
+function _nextTick(fn) {
+  return setTimeout(fn, 0);
+}
+
+function _cancelNextTick(id) {
+  return clearTimeout(id);
+} // Fixed #973:
+
+
+if (documentExists) {
+  on(document, 'touchmove', function (evt) {
+    if ((Sortable.active || awaitingDragStarted) && evt.cancelable) {
+      evt.preventDefault();
+    }
+  });
+} // Export utils
+
+
+Sortable.utils = {
+  on: on,
+  off: off,
+  css: css,
+  find: find,
+  is: function is(el, selector) {
+    return !!closest(el, selector, el, false);
+  },
+  extend: extend,
+  throttle: throttle,
+  closest: closest,
+  toggleClass: toggleClass,
+  clone: clone,
+  index: index,
+  nextTick: _nextTick,
+  cancelNextTick: _cancelNextTick,
+  detectDirection: _detectDirection,
+  getChild: getChild
+};
+/**
+ * Get the Sortable instance of an element
+ * @param  {HTMLElement} element The element
+ * @return {Sortable|undefined}         The instance of Sortable
+ */
+
+Sortable.get = function (element) {
+  return element[expando];
+};
+/**
+ * Mount a plugin to Sortable
+ * @param  {...SortablePlugin|SortablePlugin[]} plugins       Plugins being mounted
+ */
+
+
+Sortable.mount = function () {
+  for (var _len = arguments.length, plugins = new Array(_len), _key = 0; _key < _len; _key++) {
+    plugins[_key] = arguments[_key];
+  }
+
+  if (plugins[0].constructor === Array) plugins = plugins[0];
+  plugins.forEach(function (plugin) {
+    if (!plugin.prototype || !plugin.prototype.constructor) {
+      throw "Sortable: Mounted plugin must be a constructor function, not ".concat({}.toString.call(plugin));
+    }
+
+    if (plugin.utils) Sortable.utils = _objectSpread({}, Sortable.utils, plugin.utils);
+    PluginManager.mount(plugin);
+  });
+};
+/**
+ * Create sortable instance
+ * @param {HTMLElement}  el
+ * @param {Object}      [options]
+ */
+
+
+Sortable.create = function (el, options) {
+  return new Sortable(el, options);
+}; // Export
+
+
+Sortable.version = version;
+var autoScrolls = [],
+    scrollEl,
+    scrollRootEl,
+    scrolling = false,
+    lastAutoScrollX,
+    lastAutoScrollY,
+    touchEvt$1,
+    pointerElemChangedInterval;
+
+function AutoScrollPlugin() {
+  function AutoScroll() {
+    this.defaults = {
+      scroll: true,
+      scrollSensitivity: 30,
+      scrollSpeed: 10,
+      bubbleScroll: true
+    }; // Bind all private methods
+
+    for (var fn in this) {
+      if (fn.charAt(0) === '_' && typeof this[fn] === 'function') {
+        this[fn] = this[fn].bind(this);
+      }
+    }
+  }
+
+  AutoScroll.prototype = {
+    dragStarted: function dragStarted(_ref) {
+      var originalEvent = _ref.originalEvent;
+
+      if (this.sortable.nativeDraggable) {
+        on(document, 'dragover', this._handleAutoScroll);
+      } else {
+        if (this.options.supportPointer) {
+          on(document, 'pointermove', this._handleFallbackAutoScroll);
+        } else if (originalEvent.touches) {
+          on(document, 'touchmove', this._handleFallbackAutoScroll);
+        } else {
+          on(document, 'mousemove', this._handleFallbackAutoScroll);
+        }
+      }
+    },
+    dragOverCompleted: function dragOverCompleted(_ref2) {
+      var originalEvent = _ref2.originalEvent; // For when bubbling is canceled and using fallback (fallback 'touchmove' always reached)
+
+      if (!this.options.dragOverBubble && !originalEvent.rootEl) {
+        this._handleAutoScroll(originalEvent);
+      }
+    },
+    drop: function drop() {
+      if (this.sortable.nativeDraggable) {
+        off(document, 'dragover', this._handleAutoScroll);
+      } else {
+        off(document, 'pointermove', this._handleFallbackAutoScroll);
+        off(document, 'touchmove', this._handleFallbackAutoScroll);
+        off(document, 'mousemove', this._handleFallbackAutoScroll);
+      }
+
+      clearPointerElemChangedInterval();
+      clearAutoScrolls();
+      cancelThrottle();
+    },
+    nulling: function nulling() {
+      touchEvt$1 = scrollRootEl = scrollEl = scrolling = pointerElemChangedInterval = lastAutoScrollX = lastAutoScrollY = null;
+      autoScrolls.length = 0;
+    },
+    _handleFallbackAutoScroll: function _handleFallbackAutoScroll(evt) {
+      this._handleAutoScroll(evt, true);
+    },
+    _handleAutoScroll: function _handleAutoScroll(evt, fallback) {
+      var _this = this;
+
+      var x = (evt.touches ? evt.touches[0] : evt).clientX,
+          y = (evt.touches ? evt.touches[0] : evt).clientY,
+          elem = document.elementFromPoint(x, y);
+      touchEvt$1 = evt; // IE does not seem to have native autoscroll,
+      // Edge's autoscroll seems too conditional,
+      // MACOS Safari does not have autoscroll,
+      // Firefox and Chrome are good
+
+      if (fallback || Edge || IE11OrLess || Safari) {
+        autoScroll(evt, this.options, elem, fallback); // Listener for pointer element change
+
+        var ogElemScroller = getParentAutoScrollElement(elem, true);
+
+        if (scrolling && (!pointerElemChangedInterval || x !== lastAutoScrollX || y !== lastAutoScrollY)) {
+          pointerElemChangedInterval && clearPointerElemChangedInterval(); // Detect for pointer elem change, emulating native DnD behaviour
+
+          pointerElemChangedInterval = setInterval(function () {
+            var newElem = getParentAutoScrollElement(document.elementFromPoint(x, y), true);
+
+            if (newElem !== ogElemScroller) {
+              ogElemScroller = newElem;
+              clearAutoScrolls();
+            }
+
+            autoScroll(evt, _this.options, newElem, fallback);
+          }, 10);
+          lastAutoScrollX = x;
+          lastAutoScrollY = y;
+        }
+      } else {
+        // if DnD is enabled (and browser has good autoscrolling), first autoscroll will already scroll, so get parent autoscroll of first autoscroll
+        if (!this.options.bubbleScroll || getParentAutoScrollElement(elem, true) === getWindowScrollingElement()) {
+          clearAutoScrolls();
+          return;
+        }
+
+        autoScroll(evt, this.options, getParentAutoScrollElement(elem, false), false);
+      }
+    }
+  };
+  return _extends(AutoScroll, {
+    pluginName: 'scroll',
+    initializeByDefault: true
+  });
+}
+
+function clearAutoScrolls() {
+  autoScrolls.forEach(function (autoScroll) {
+    clearInterval(autoScroll.pid);
+  });
+  autoScrolls = [];
+}
+
+function clearPointerElemChangedInterval() {
+  clearInterval(pointerElemChangedInterval);
+}
+
+var autoScroll = throttle(function (evt, options, rootEl, isFallback) {
+  // Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+  if (!options.scroll) return;
+  var x = (evt.touches ? evt.touches[0] : evt).clientX,
+      y = (evt.touches ? evt.touches[0] : evt).clientY,
+      sens = options.scrollSensitivity,
+      speed = options.scrollSpeed,
+      winScroller = getWindowScrollingElement();
+  var scrollThisInstance = false,
+      scrollCustomFn; // New scroll root, set scrollEl
+
+  if (scrollRootEl !== rootEl) {
+    scrollRootEl = rootEl;
+    clearAutoScrolls();
+    scrollEl = options.scroll;
+    scrollCustomFn = options.scrollFn;
+
+    if (scrollEl === true) {
+      scrollEl = getParentAutoScrollElement(rootEl, true);
+    }
+  }
+
+  var layersOut = 0;
+  var currentParent = scrollEl;
+
+  do {
+    var el = currentParent,
+        rect = getRect(el),
+        top = rect.top,
+        bottom = rect.bottom,
+        left = rect.left,
+        right = rect.right,
+        width = rect.width,
+        height = rect.height,
+        canScrollX = void 0,
+        canScrollY = void 0,
+        scrollWidth = el.scrollWidth,
+        scrollHeight = el.scrollHeight,
+        elCSS = css(el),
+        scrollPosX = el.scrollLeft,
+        scrollPosY = el.scrollTop;
+
+    if (el === winScroller) {
+      canScrollX = width < scrollWidth && (elCSS.overflowX === 'auto' || elCSS.overflowX === 'scroll' || elCSS.overflowX === 'visible');
+      canScrollY = height < scrollHeight && (elCSS.overflowY === 'auto' || elCSS.overflowY === 'scroll' || elCSS.overflowY === 'visible');
+    } else {
+      canScrollX = width < scrollWidth && (elCSS.overflowX === 'auto' || elCSS.overflowX === 'scroll');
+      canScrollY = height < scrollHeight && (elCSS.overflowY === 'auto' || elCSS.overflowY === 'scroll');
+    }
+
+    var vx = canScrollX && (Math.abs(right - x) <= sens && scrollPosX + width < scrollWidth) - (Math.abs(left - x) <= sens && !!scrollPosX);
+    var vy = canScrollY && (Math.abs(bottom - y) <= sens && scrollPosY + height < scrollHeight) - (Math.abs(top - y) <= sens && !!scrollPosY);
+
+    if (!autoScrolls[layersOut]) {
+      for (var i = 0; i <= layersOut; i++) {
+        if (!autoScrolls[i]) {
+          autoScrolls[i] = {};
+        }
+      }
+    }
+
+    if (autoScrolls[layersOut].vx != vx || autoScrolls[layersOut].vy != vy || autoScrolls[layersOut].el !== el) {
+      autoScrolls[layersOut].el = el;
+      autoScrolls[layersOut].vx = vx;
+      autoScrolls[layersOut].vy = vy;
+      clearInterval(autoScrolls[layersOut].pid);
+
+      if (vx != 0 || vy != 0) {
+        scrollThisInstance = true;
+        /* jshint loopfunc:true */
+
+        autoScrolls[layersOut].pid = setInterval(function () {
+          // emulate drag over during autoscroll (fallback), emulating native DnD behaviour
+          if (isFallback && this.layer === 0) {
+            Sortable.active._onTouchMove(touchEvt$1); // To move ghost if it is positioned absolutely
+
+          }
+
+          var scrollOffsetY = autoScrolls[this.layer].vy ? autoScrolls[this.layer].vy * speed : 0;
+          var scrollOffsetX = autoScrolls[this.layer].vx ? autoScrolls[this.layer].vx * speed : 0;
+
+          if (typeof scrollCustomFn === 'function') {
+            if (scrollCustomFn.call(Sortable.dragged.parentNode[expando], scrollOffsetX, scrollOffsetY, evt, touchEvt$1, autoScrolls[this.layer].el) !== 'continue') {
+              return;
+            }
+          }
+
+          scrollBy(autoScrolls[this.layer].el, scrollOffsetX, scrollOffsetY);
+        }.bind({
+          layer: layersOut
+        }), 24);
+      }
+    }
+
+    layersOut++;
+  } while (options.bubbleScroll && currentParent !== winScroller && (currentParent = getParentAutoScrollElement(currentParent, false)));
+
+  scrolling = scrollThisInstance; // in case another function catches scrolling as false in between when it is not
+}, 30);
+
+var drop = function drop(_ref) {
+  var originalEvent = _ref.originalEvent,
+      putSortable = _ref.putSortable,
+      dragEl = _ref.dragEl,
+      activeSortable = _ref.activeSortable,
+      dispatchSortableEvent = _ref.dispatchSortableEvent,
+      hideGhostForTarget = _ref.hideGhostForTarget,
+      unhideGhostForTarget = _ref.unhideGhostForTarget;
+  if (!originalEvent) return;
+  var toSortable = putSortable || activeSortable;
+  hideGhostForTarget();
+  var touch = originalEvent.changedTouches && originalEvent.changedTouches.length ? originalEvent.changedTouches[0] : originalEvent;
+  var target = document.elementFromPoint(touch.clientX, touch.clientY);
+  unhideGhostForTarget();
+
+  if (toSortable && !toSortable.el.contains(target)) {
+    dispatchSortableEvent('spill');
+    this.onSpill({
+      dragEl: dragEl,
+      putSortable: putSortable
+    });
+  }
+};
+
+function Revert() {}
+
+Revert.prototype = {
+  startIndex: null,
+  dragStart: function dragStart(_ref2) {
+    var oldDraggableIndex = _ref2.oldDraggableIndex;
+    this.startIndex = oldDraggableIndex;
+  },
+  onSpill: function onSpill(_ref3) {
+    var dragEl = _ref3.dragEl,
+        putSortable = _ref3.putSortable;
+    this.sortable.captureAnimationState();
+
+    if (putSortable) {
+      putSortable.captureAnimationState();
+    }
+
+    var nextSibling = getChild(this.sortable.el, this.startIndex, this.options);
+
+    if (nextSibling) {
+      this.sortable.el.insertBefore(dragEl, nextSibling);
+    } else {
+      this.sortable.el.appendChild(dragEl);
+    }
+
+    this.sortable.animateAll();
+
+    if (putSortable) {
+      putSortable.animateAll();
+    }
+  },
+  drop: drop
+};
+
+_extends(Revert, {
+  pluginName: 'revertOnSpill'
+});
+
+function Remove() {}
+
+Remove.prototype = {
+  onSpill: function onSpill(_ref4) {
+    var dragEl = _ref4.dragEl,
+        putSortable = _ref4.putSortable;
+    var parentSortable = putSortable || this.sortable;
+    parentSortable.captureAnimationState();
+    dragEl.parentNode && dragEl.parentNode.removeChild(dragEl);
+    parentSortable.animateAll();
+  },
+  drop: drop
+};
+
+_extends(Remove, {
+  pluginName: 'removeOnSpill'
+});
+
+var lastSwapEl;
+
+function SwapPlugin() {
+  function Swap() {
+    this.defaults = {
+      swapClass: 'sortable-swap-highlight'
+    };
+  }
+
+  Swap.prototype = {
+    dragStart: function dragStart(_ref) {
+      var dragEl = _ref.dragEl;
+      lastSwapEl = dragEl;
+    },
+    dragOverValid: function dragOverValid(_ref2) {
+      var completed = _ref2.completed,
+          target = _ref2.target,
+          onMove = _ref2.onMove,
+          activeSortable = _ref2.activeSortable,
+          changed = _ref2.changed,
+          cancel = _ref2.cancel;
+      if (!activeSortable.options.swap) return;
+      var el = this.sortable.el,
+          options = this.options;
+
+      if (target && target !== el) {
+        var prevSwapEl = lastSwapEl;
+
+        if (onMove(target) !== false) {
+          toggleClass(target, options.swapClass, true);
+          lastSwapEl = target;
+        } else {
+          lastSwapEl = null;
+        }
+
+        if (prevSwapEl && prevSwapEl !== lastSwapEl) {
+          toggleClass(prevSwapEl, options.swapClass, false);
+        }
+      }
+
+      changed();
+      completed(true);
+      cancel();
+    },
+    drop: function drop(_ref3) {
+      var activeSortable = _ref3.activeSortable,
+          putSortable = _ref3.putSortable,
+          dragEl = _ref3.dragEl;
+      var toSortable = putSortable || this.sortable;
+      var options = this.options;
+      lastSwapEl && toggleClass(lastSwapEl, options.swapClass, false);
+
+      if (lastSwapEl && (options.swap || putSortable && putSortable.options.swap)) {
+        if (dragEl !== lastSwapEl) {
+          toSortable.captureAnimationState();
+          if (toSortable !== activeSortable) activeSortable.captureAnimationState();
+          swapNodes(dragEl, lastSwapEl);
+          toSortable.animateAll();
+          if (toSortable !== activeSortable) activeSortable.animateAll();
+        }
+      }
+    },
+    nulling: function nulling() {
+      lastSwapEl = null;
+    }
+  };
+  return _extends(Swap, {
+    pluginName: 'swap',
+    eventProperties: function eventProperties() {
+      return {
+        swapItem: lastSwapEl
+      };
+    }
+  });
+}
+
+function swapNodes(n1, n2) {
+  var p1 = n1.parentNode,
+      p2 = n2.parentNode,
+      i1,
+      i2;
+  if (!p1 || !p2 || p1.isEqualNode(n2) || p2.isEqualNode(n1)) return;
+  i1 = index(n1);
+  i2 = index(n2);
+
+  if (p1.isEqualNode(p2) && i1 < i2) {
+    i2++;
+  }
+
+  p1.insertBefore(n2, p1.children[i1]);
+  p2.insertBefore(n1, p2.children[i2]);
+}
+
+var multiDragElements = [],
+    multiDragClones = [],
+    lastMultiDragSelect,
+    // for selection with modifier key down (SHIFT)
+multiDragSortable,
+    initialFolding = false,
+    // Initial multi-drag fold when drag started
+folding = false,
+    // Folding any other time
+dragStarted = false,
+    dragEl$1,
+    clonesFromRect,
+    clonesHidden;
+
+function MultiDragPlugin() {
+  function MultiDrag(sortable) {
+    // Bind all private methods
+    for (var fn in this) {
+      if (fn.charAt(0) === '_' && typeof this[fn] === 'function') {
+        this[fn] = this[fn].bind(this);
+      }
+    }
+
+    if (sortable.options.supportPointer) {
+      on(document, 'pointerup', this._deselectMultiDrag);
+    } else {
+      on(document, 'mouseup', this._deselectMultiDrag);
+      on(document, 'touchend', this._deselectMultiDrag);
+    }
+
+    on(document, 'keydown', this._checkKeyDown);
+    on(document, 'keyup', this._checkKeyUp);
+    this.defaults = {
+      selectedClass: 'sortable-selected',
+      multiDragKey: null,
+      setData: function setData(dataTransfer, dragEl) {
+        var data = '';
+
+        if (multiDragElements.length && multiDragSortable === sortable) {
+          multiDragElements.forEach(function (multiDragElement, i) {
+            data += (!i ? '' : ', ') + multiDragElement.textContent;
+          });
+        } else {
+          data = dragEl.textContent;
+        }
+
+        dataTransfer.setData('Text', data);
+      }
+    };
+  }
+
+  MultiDrag.prototype = {
+    multiDragKeyDown: false,
+    isMultiDrag: false,
+    delayStartGlobal: function delayStartGlobal(_ref) {
+      var dragged = _ref.dragEl;
+      dragEl$1 = dragged;
+    },
+    delayEnded: function delayEnded() {
+      this.isMultiDrag = ~multiDragElements.indexOf(dragEl$1);
+    },
+    setupClone: function setupClone(_ref2) {
+      var sortable = _ref2.sortable,
+          cancel = _ref2.cancel;
+      if (!this.isMultiDrag) return;
+
+      for (var i = 0; i < multiDragElements.length; i++) {
+        multiDragClones.push(clone(multiDragElements[i]));
+        multiDragClones[i].sortableIndex = multiDragElements[i].sortableIndex;
+        multiDragClones[i].draggable = false;
+        multiDragClones[i].style['will-change'] = '';
+        toggleClass(multiDragClones[i], this.options.selectedClass, false);
+        multiDragElements[i] === dragEl$1 && toggleClass(multiDragClones[i], this.options.chosenClass, false);
+      }
+
+      sortable._hideClone();
+
+      cancel();
+    },
+    clone: function clone(_ref3) {
+      var sortable = _ref3.sortable,
+          rootEl = _ref3.rootEl,
+          dispatchSortableEvent = _ref3.dispatchSortableEvent,
+          cancel = _ref3.cancel;
+      if (!this.isMultiDrag) return;
+
+      if (!this.options.removeCloneOnHide) {
+        if (multiDragElements.length && multiDragSortable === sortable) {
+          insertMultiDragClones(true, rootEl);
+          dispatchSortableEvent('clone');
+          cancel();
+        }
+      }
+    },
+    showClone: function showClone(_ref4) {
+      var cloneNowShown = _ref4.cloneNowShown,
+          rootEl = _ref4.rootEl,
+          cancel = _ref4.cancel;
+      if (!this.isMultiDrag) return;
+      insertMultiDragClones(false, rootEl);
+      multiDragClones.forEach(function (clone) {
+        css(clone, 'display', '');
+      });
+      cloneNowShown();
+      clonesHidden = false;
+      cancel();
+    },
+    hideClone: function hideClone(_ref5) {
+      var _this = this;
+
+      var sortable = _ref5.sortable,
+          cloneNowHidden = _ref5.cloneNowHidden,
+          cancel = _ref5.cancel;
+      if (!this.isMultiDrag) return;
+      multiDragClones.forEach(function (clone) {
+        css(clone, 'display', 'none');
+
+        if (_this.options.removeCloneOnHide && clone.parentNode) {
+          clone.parentNode.removeChild(clone);
+        }
+      });
+      cloneNowHidden();
+      clonesHidden = true;
+      cancel();
+    },
+    dragStartGlobal: function dragStartGlobal(_ref6) {
+      var sortable = _ref6.sortable;
+
+      if (!this.isMultiDrag && multiDragSortable) {
+        multiDragSortable.multiDrag._deselectMultiDrag();
+      }
+
+      multiDragElements.forEach(function (multiDragElement) {
+        multiDragElement.sortableIndex = index(multiDragElement);
+      }); // Sort multi-drag elements
+
+      multiDragElements = multiDragElements.sort(function (a, b) {
+        return a.sortableIndex - b.sortableIndex;
+      });
+      dragStarted = true;
+    },
+    dragStarted: function dragStarted(_ref7) {
+      var _this2 = this;
+
+      var sortable = _ref7.sortable;
+      if (!this.isMultiDrag) return;
+
+      if (this.options.sort) {
+        // Capture rects,
+        // hide multi drag elements (by positioning them absolute),
+        // set multi drag elements rects to dragRect,
+        // show multi drag elements,
+        // animate to rects,
+        // unset rects & remove from DOM
+        sortable.captureAnimationState();
+
+        if (this.options.animation) {
+          multiDragElements.forEach(function (multiDragElement) {
+            if (multiDragElement === dragEl$1) return;
+            css(multiDragElement, 'position', 'absolute');
+          });
+          var dragRect = getRect(dragEl$1, false, true, true);
+          multiDragElements.forEach(function (multiDragElement) {
+            if (multiDragElement === dragEl$1) return;
+            setRect(multiDragElement, dragRect);
+          });
+          folding = true;
+          initialFolding = true;
+        }
+      }
+
+      sortable.animateAll(function () {
+        folding = false;
+        initialFolding = false;
+
+        if (_this2.options.animation) {
+          multiDragElements.forEach(function (multiDragElement) {
+            unsetRect(multiDragElement);
+          });
+        } // Remove all auxiliary multidrag items from el, if sorting enabled
+
+
+        if (_this2.options.sort) {
+          removeMultiDragElements();
+        }
+      });
+    },
+    dragOver: function dragOver(_ref8) {
+      var target = _ref8.target,
+          completed = _ref8.completed,
+          cancel = _ref8.cancel;
+
+      if (folding && ~multiDragElements.indexOf(target)) {
+        completed(false);
+        cancel();
+      }
+    },
+    revert: function revert(_ref9) {
+      var fromSortable = _ref9.fromSortable,
+          rootEl = _ref9.rootEl,
+          sortable = _ref9.sortable,
+          dragRect = _ref9.dragRect;
+
+      if (multiDragElements.length > 1) {
+        // Setup unfold animation
+        multiDragElements.forEach(function (multiDragElement) {
+          sortable.addAnimationState({
+            target: multiDragElement,
+            rect: folding ? getRect(multiDragElement) : dragRect
+          });
+          unsetRect(multiDragElement);
+          multiDragElement.fromRect = dragRect;
+          fromSortable.removeAnimationState(multiDragElement);
+        });
+        folding = false;
+        insertMultiDragElements(!this.options.removeCloneOnHide, rootEl);
+      }
+    },
+    dragOverCompleted: function dragOverCompleted(_ref10) {
+      var sortable = _ref10.sortable,
+          isOwner = _ref10.isOwner,
+          insertion = _ref10.insertion,
+          activeSortable = _ref10.activeSortable,
+          parentEl = _ref10.parentEl,
+          putSortable = _ref10.putSortable;
+      var options = this.options;
+
+      if (insertion) {
+        // Clones must be hidden before folding animation to capture dragRectAbsolute properly
+        if (isOwner) {
+          activeSortable._hideClone();
+        }
+
+        initialFolding = false; // If leaving sort:false root, or already folding - Fold to new location
+
+        if (options.animation && multiDragElements.length > 1 && (folding || !isOwner && !activeSortable.options.sort && !putSortable)) {
+          // Fold: Set all multi drag elements's rects to dragEl's rect when multi-drag elements are invisible
+          var dragRectAbsolute = getRect(dragEl$1, false, true, true);
+          multiDragElements.forEach(function (multiDragElement) {
+            if (multiDragElement === dragEl$1) return;
+            setRect(multiDragElement, dragRectAbsolute); // Move element(s) to end of parentEl so that it does not interfere with multi-drag clones insertion if they are inserted
+            // while folding, and so that we can capture them again because old sortable will no longer be fromSortable
+
+            parentEl.appendChild(multiDragElement);
+          });
+          folding = true;
+        } // Clones must be shown (and check to remove multi drags) after folding when interfering multiDragElements are moved out
+
+
+        if (!isOwner) {
+          // Only remove if not folding (folding will remove them anyways)
+          if (!folding) {
+            removeMultiDragElements();
+          }
+
+          if (multiDragElements.length > 1) {
+            var clonesHiddenBefore = clonesHidden;
+
+            activeSortable._showClone(sortable); // Unfold animation for clones if showing from hidden
+
+
+            if (activeSortable.options.animation && !clonesHidden && clonesHiddenBefore) {
+              multiDragClones.forEach(function (clone) {
+                activeSortable.addAnimationState({
+                  target: clone,
+                  rect: clonesFromRect
+                });
+                clone.fromRect = clonesFromRect;
+                clone.thisAnimationDuration = null;
+              });
+            }
+          } else {
+            activeSortable._showClone(sortable);
+          }
+        }
+      }
+    },
+    dragOverAnimationCapture: function dragOverAnimationCapture(_ref11) {
+      var dragRect = _ref11.dragRect,
+          isOwner = _ref11.isOwner,
+          activeSortable = _ref11.activeSortable;
+      multiDragElements.forEach(function (multiDragElement) {
+        multiDragElement.thisAnimationDuration = null;
+      });
+
+      if (activeSortable.options.animation && !isOwner && activeSortable.multiDrag.isMultiDrag) {
+        clonesFromRect = _extends({}, dragRect);
+        var dragMatrix = matrix(dragEl$1, true);
+        clonesFromRect.top -= dragMatrix.f;
+        clonesFromRect.left -= dragMatrix.e;
+      }
+    },
+    dragOverAnimationComplete: function dragOverAnimationComplete() {
+      if (folding) {
+        folding = false;
+        removeMultiDragElements();
+      }
+    },
+    drop: function drop(_ref12) {
+      var evt = _ref12.originalEvent,
+          rootEl = _ref12.rootEl,
+          parentEl = _ref12.parentEl,
+          sortable = _ref12.sortable,
+          dispatchSortableEvent = _ref12.dispatchSortableEvent,
+          oldIndex = _ref12.oldIndex,
+          putSortable = _ref12.putSortable;
+      var toSortable = putSortable || this.sortable;
+      if (!evt) return;
+      var options = this.options,
+          children = parentEl.children; // Multi-drag selection
+
+      if (!dragStarted) {
+        if (options.multiDragKey && !this.multiDragKeyDown) {
+          this._deselectMultiDrag();
+        }
+
+        toggleClass(dragEl$1, options.selectedClass, !~multiDragElements.indexOf(dragEl$1));
+
+        if (!~multiDragElements.indexOf(dragEl$1)) {
+          multiDragElements.push(dragEl$1);
+          dispatchEvent({
+            sortable: sortable,
+            rootEl: rootEl,
+            name: 'select',
+            targetEl: dragEl$1,
+            originalEvt: evt
+          }); // Modifier activated, select from last to dragEl
+
+          if (evt.shiftKey && lastMultiDragSelect && sortable.el.contains(lastMultiDragSelect)) {
+            var lastIndex = index(lastMultiDragSelect),
+                currentIndex = index(dragEl$1);
+
+            if (~lastIndex && ~currentIndex && lastIndex !== currentIndex) {
+              // Must include lastMultiDragSelect (select it), in case modified selection from no selection
+              // (but previous selection existed)
+              var n, i;
+
+              if (currentIndex > lastIndex) {
+                i = lastIndex;
+                n = currentIndex;
+              } else {
+                i = currentIndex;
+                n = lastIndex + 1;
+              }
+
+              for (; i < n; i++) {
+                if (~multiDragElements.indexOf(children[i])) continue;
+                toggleClass(children[i], options.selectedClass, true);
+                multiDragElements.push(children[i]);
+                dispatchEvent({
+                  sortable: sortable,
+                  rootEl: rootEl,
+                  name: 'select',
+                  targetEl: children[i],
+                  originalEvt: evt
+                });
+              }
+            }
+          } else {
+            lastMultiDragSelect = dragEl$1;
+          }
+
+          multiDragSortable = toSortable;
+        } else {
+          multiDragElements.splice(multiDragElements.indexOf(dragEl$1), 1);
+          lastMultiDragSelect = null;
+          dispatchEvent({
+            sortable: sortable,
+            rootEl: rootEl,
+            name: 'deselect',
+            targetEl: dragEl$1,
+            originalEvt: evt
+          });
+        }
+      } // Multi-drag drop
+
+
+      if (dragStarted && this.isMultiDrag) {
+        // Do not "unfold" after around dragEl if reverted
+        if ((parentEl[expando].options.sort || parentEl !== rootEl) && multiDragElements.length > 1) {
+          var dragRect = getRect(dragEl$1),
+              multiDragIndex = index(dragEl$1, ':not(.' + this.options.selectedClass + ')');
+          if (!initialFolding && options.animation) dragEl$1.thisAnimationDuration = null;
+          toSortable.captureAnimationState();
+
+          if (!initialFolding) {
+            if (options.animation) {
+              dragEl$1.fromRect = dragRect;
+              multiDragElements.forEach(function (multiDragElement) {
+                multiDragElement.thisAnimationDuration = null;
+
+                if (multiDragElement !== dragEl$1) {
+                  var rect = folding ? getRect(multiDragElement) : dragRect;
+                  multiDragElement.fromRect = rect; // Prepare unfold animation
+
+                  toSortable.addAnimationState({
+                    target: multiDragElement,
+                    rect: rect
+                  });
+                }
+              });
+            } // Multi drag elements are not necessarily removed from the DOM on drop, so to reinsert
+            // properly they must all be removed
+
+
+            removeMultiDragElements();
+            multiDragElements.forEach(function (multiDragElement) {
+              if (children[multiDragIndex]) {
+                parentEl.insertBefore(multiDragElement, children[multiDragIndex]);
+              } else {
+                parentEl.appendChild(multiDragElement);
+              }
+
+              multiDragIndex++;
+            }); // If initial folding is done, the elements may have changed position because they are now
+            // unfolding around dragEl, even though dragEl may not have his index changed, so update event
+            // must be fired here as Sortable will not.
+
+            if (oldIndex === index(dragEl$1)) {
+              var update = false;
+              multiDragElements.forEach(function (multiDragElement) {
+                if (multiDragElement.sortableIndex !== index(multiDragElement)) {
+                  update = true;
+                  return;
+                }
+              });
+
+              if (update) {
+                dispatchSortableEvent('update');
+              }
+            }
+          } // Must be done after capturing individual rects (scroll bar)
+
+
+          multiDragElements.forEach(function (multiDragElement) {
+            unsetRect(multiDragElement);
+          });
+          toSortable.animateAll();
+        }
+
+        multiDragSortable = toSortable;
+      } // Remove clones if necessary
+
+
+      if (rootEl === parentEl || putSortable && putSortable.lastPutMode !== 'clone') {
+        multiDragClones.forEach(function (clone) {
+          clone.parentNode && clone.parentNode.removeChild(clone);
+        });
+      }
+    },
+    nullingGlobal: function nullingGlobal() {
+      this.isMultiDrag = dragStarted = false;
+      multiDragClones.length = 0;
+    },
+    destroyGlobal: function destroyGlobal() {
+      this._deselectMultiDrag();
+
+      off(document, 'pointerup', this._deselectMultiDrag);
+      off(document, 'mouseup', this._deselectMultiDrag);
+      off(document, 'touchend', this._deselectMultiDrag);
+      off(document, 'keydown', this._checkKeyDown);
+      off(document, 'keyup', this._checkKeyUp);
+    },
+    _deselectMultiDrag: function _deselectMultiDrag(evt) {
+      if (typeof dragStarted !== "undefined" && dragStarted) return; // Only deselect if selection is in this sortable
+
+      if (multiDragSortable !== this.sortable) return; // Only deselect if target is not item in this sortable
+
+      if (evt && closest(evt.target, this.options.draggable, this.sortable.el, false)) return; // Only deselect if left click
+
+      if (evt && evt.button !== 0) return;
+
+      while (multiDragElements.length) {
+        var el = multiDragElements[0];
+        toggleClass(el, this.options.selectedClass, false);
+        multiDragElements.shift();
+        dispatchEvent({
+          sortable: this.sortable,
+          rootEl: this.sortable.el,
+          name: 'deselect',
+          targetEl: el,
+          originalEvt: evt
+        });
+      }
+    },
+    _checkKeyDown: function _checkKeyDown(evt) {
+      if (evt.key === this.options.multiDragKey) {
+        this.multiDragKeyDown = true;
+      }
+    },
+    _checkKeyUp: function _checkKeyUp(evt) {
+      if (evt.key === this.options.multiDragKey) {
+        this.multiDragKeyDown = false;
+      }
+    }
+  };
+  return _extends(MultiDrag, {
+    // Static methods & properties
+    pluginName: 'multiDrag',
+    utils: {
+      /**
+       * Selects the provided multi-drag item
+       * @param  {HTMLElement} el    The element to be selected
+       */
+      select: function select(el) {
+        var sortable = el.parentNode[expando];
+        if (!sortable || !sortable.options.multiDrag || ~multiDragElements.indexOf(el)) return;
+
+        if (multiDragSortable && multiDragSortable !== sortable) {
+          multiDragSortable.multiDrag._deselectMultiDrag();
+
+          multiDragSortable = sortable;
+        }
+
+        toggleClass(el, sortable.options.selectedClass, true);
+        multiDragElements.push(el);
+      },
+
+      /**
+       * Deselects the provided multi-drag item
+       * @param  {HTMLElement} el    The element to be deselected
+       */
+      deselect: function deselect(el) {
+        var sortable = el.parentNode[expando],
+            index = multiDragElements.indexOf(el);
+        if (!sortable || !sortable.options.multiDrag || !~index) return;
+        toggleClass(el, sortable.options.selectedClass, false);
+        multiDragElements.splice(index, 1);
+      }
+    },
+    eventProperties: function eventProperties() {
+      var _this3 = this;
+
+      var oldIndicies = [],
+          newIndicies = [];
+      multiDragElements.forEach(function (multiDragElement) {
+        oldIndicies.push({
+          multiDragElement: multiDragElement,
+          index: multiDragElement.sortableIndex
+        }); // multiDragElements will already be sorted if folding
+
+        var newIndex;
+
+        if (folding && multiDragElement !== dragEl$1) {
+          newIndex = -1;
+        } else if (folding) {
+          newIndex = index(multiDragElement, ':not(.' + _this3.options.selectedClass + ')');
+        } else {
+          newIndex = index(multiDragElement);
+        }
+
+        newIndicies.push({
+          multiDragElement: multiDragElement,
+          index: newIndex
+        });
+      });
+      return {
+        items: _toConsumableArray(multiDragElements),
+        clones: [].concat(multiDragClones),
+        oldIndicies: oldIndicies,
+        newIndicies: newIndicies
+      };
+    },
+    optionListeners: {
+      multiDragKey: function multiDragKey(key) {
+        key = key.toLowerCase();
+
+        if (key === 'ctrl') {
+          key = 'Control';
+        } else if (key.length > 1) {
+          key = key.charAt(0).toUpperCase() + key.substr(1);
+        }
+
+        return key;
+      }
+    }
+  });
+}
+
+function insertMultiDragElements(clonesInserted, rootEl) {
+  multiDragElements.forEach(function (multiDragElement, i) {
+    var target = rootEl.children[multiDragElement.sortableIndex + (clonesInserted ? Number(i) : 0)];
+
+    if (target) {
+      rootEl.insertBefore(multiDragElement, target);
+    } else {
+      rootEl.appendChild(multiDragElement);
+    }
+  });
+}
+/**
+ * Insert multi-drag clones
+ * @param  {[Boolean]} elementsInserted  Whether the multi-drag elements are inserted
+ * @param  {HTMLElement} rootEl
+ */
+
+
+function insertMultiDragClones(elementsInserted, rootEl) {
+  multiDragClones.forEach(function (clone, i) {
+    var target = rootEl.children[clone.sortableIndex + (elementsInserted ? Number(i) : 0)];
+
+    if (target) {
+      rootEl.insertBefore(clone, target);
+    } else {
+      rootEl.appendChild(clone);
+    }
+  });
+}
+
+function removeMultiDragElements() {
+  multiDragElements.forEach(function (multiDragElement) {
+    if (multiDragElement === dragEl$1) return;
+    multiDragElement.parentNode && multiDragElement.parentNode.removeChild(multiDragElement);
+  });
+}
+
+Sortable.mount(new AutoScrollPlugin());
+Sortable.mount(Remove, Revert);
+/* harmony default export */ __webpack_exports__["default"] = (Sortable);
+
+
+/***/ }),
+
 /***/ "./node_modules/symbol-observable/es/index.js":
 /*!****************************************************!*\
   !*** ./node_modules/symbol-observable/es/index.js ***!
@@ -16441,25 +18077,25 @@ module.exports = function (module) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Controller; });
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
-/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/createElement */ "./src/utils/createElement.ts");
+/* harmony import */ var _utils_addItem__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/addItem */ "./src/utils/addItem.ts");
 /* harmony import */ var json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-schema-library/lib/addValidator */ "./node_modules/json-schema-library/lib/addValidator.js");
 /* harmony import */ var json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var _services_DataService__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./services/DataService */ "./src/services/DataService.ts");
-/* harmony import */ var _services_SchemaService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/SchemaService */ "./src/services/SchemaService.ts");
-/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./services/ValidationService */ "./src/services/ValidationService.ts");
-/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./services/LocationService */ "./src/services/LocationService.ts");
-/* harmony import */ var _services_State__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/State */ "./src/services/State.ts");
-/* harmony import */ var _utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./utils/selectEditor */ "./src/utils/selectEditor.ts");
-/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./utils/createElement */ "./src/utils/createElement.ts");
-/* harmony import */ var _utils_addItem__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./utils/addItem */ "./src/utils/addItem.ts");
-/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./utils/UISchema */ "./src/utils/UISchema.ts");
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./utils/getID */ "./src/utils/getID.ts");
-/* harmony import */ var _plugin__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./plugin */ "./src/plugin/index.ts");
-/* harmony import */ var _utils_i18n__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./utils/i18n */ "./src/utils/i18n.ts");
-/* harmony import */ var _utils_createProxy__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./utils/createProxy */ "./src/utils/createProxy.ts");
+/* harmony import */ var _utils_createProxy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/createProxy */ "./src/utils/createProxy.ts");
+/* harmony import */ var _services_DataService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/DataService */ "./src/services/DataService.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils_i18n__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/i18n */ "./src/utils/i18n.ts");
+/* harmony import */ var _services_InstanceService__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/InstanceService */ "./src/services/InstanceService.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./services/LocationService */ "./src/services/LocationService.ts");
+/* harmony import */ var _plugin__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./plugin */ "./src/plugin/index.ts");
+/* harmony import */ var _services_SchemaService__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./services/SchemaService */ "./src/services/SchemaService.ts");
+/* harmony import */ var _utils_selectEditor__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./utils/selectEditor */ "./src/utils/selectEditor.ts");
+/* harmony import */ var _services_State__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./services/State */ "./src/services/State.ts");
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./utils/UISchema */ "./src/utils/UISchema.ts");
+/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./services/ValidationService */ "./src/services/ValidationService.ts");
 /* harmony import */ var _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./editors/oneofeditor */ "./src/editors/oneofeditor/index.ts");
 /* harmony import */ var _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./editors/arrayeditor */ "./src/editors/arrayeditor/index.ts");
 /* harmony import */ var _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./editors/objecteditor */ "./src/editors/objecteditor/index.ts");
@@ -16498,34 +18134,12 @@ var _proxy;
 
 
 
-const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.cores;
-/** throws an error, when given pointer is not a valid jons-pointer */
-function assertValidPointer(pointer) {
-    if (pointer[0] !== "#") {
-        throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
-    }
-}
-/** removes the editor from the instances-inventory of active editors */
-function removeEditorFrom(instances, editor) {
-    const pointer = editor.getPointer();
-    if (instances[pointer]) {
-        instances[pointer] = instances[pointer].filter(instance => editor !== instance);
-        if (instances[pointer].length === 0) {
-            delete instances[pointer];
-        }
-    }
-}
-/** callback on each editor-instance */
-function eachInstance(instances, cb) {
-    Object.keys(instances).forEach(pointer => {
-        instances[pointer].forEach(editor => cb(pointer, editor));
-    });
-}
+const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_8___default.a.cores;
 /**
  * Main component to build editors. Each editor should receive the controller, which carries all required services
  * for editor initialization
  *
- * ### Usage
+ * # Usage
  *
  * Instantiate the controller
  *
@@ -16557,22 +18171,32 @@ function eachInstance(instances, cb) {
  * ```js
  *  const data = editron.getData();
  * ```
- *
- * @param  {Object} schema          - json schema describing required data/form template
- * @param  {Any} data               - initial data for given json-schema
- * @param  {Object} [options]       - configuration options
- * @param  {Array} options.editors  - list of editron-editors/widgets to use. Order defines editor to use
- *      (based on editorOf-method)
  */
 class Controller {
+    /**
+     * Create a new editron instance, which will be used to create ui-forms for specific
+     * data-points via `controller.createEditor(pointer, dom);`
+     *
+     * @param [schema] - json schema describing required data/form template
+     * @param [data] - initial data for given json-schema
+     * @param [options] - configuration options
+     * @param [options.editors] - list of editron-editors/widgets to use. Order defines editor to use
+     *      (based on editorOf-method)
+     * @param [options.plugins] - list of editron-plugins to use
+     */
     constructor(schema = { type: "object" }, data = {}, options = {}) {
-        _proxy.set(this, void 0);
+        /** internal helper. Set to `true`, if editron has been destroyed */
         this.destroyed = false;
+        /** active state of editor */
         this.disabled = false;
-        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].extendSchema(schema);
+        /** list of active plugins for this instance */
+        this.plugins = [];
+        /** editron proxy instance */
+        _proxy.set(this, void 0);
+        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_14__["default"].extendSchema(schema);
         this.options = {
             editors: [
-                ..._plugin__WEBPACK_IMPORTED_MODULE_13__["default"].getEditors(),
+                ..._plugin__WEBPACK_IMPORTED_MODULE_10__["default"].getEditors(),
                 _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__["default"],
                 _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__["default"],
                 _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__["default"],
@@ -16581,11 +18205,10 @@ class Controller {
             ...options,
         };
         this.editors = this.options.editors;
-        this.state = new _services_State__WEBPACK_IMPORTED_MODULE_7__["default"]();
-        this.instances = {};
+        this.state = new _services_State__WEBPACK_IMPORTED_MODULE_13__["default"]();
         this.core = new Core();
-        __classPrivateFieldSet(this, _proxy, Object(_utils_createProxy__WEBPACK_IMPORTED_MODULE_15__["default"])(this.options.proxy));
-        _plugin__WEBPACK_IMPORTED_MODULE_13__["default"].getValidators().forEach(([validationType, ...validator]) => {
+        __classPrivateFieldSet(this, _proxy, Object(_utils_createProxy__WEBPACK_IMPORTED_MODULE_3__["default"])(this.options.proxy));
+        _plugin__WEBPACK_IMPORTED_MODULE_10__["default"].getValidators().forEach(([validationType, ...validator]) => {
             try {
                 if (validationType === "format") {
                     // @ts-ignore
@@ -16602,174 +18225,56 @@ class Controller {
             }
             return false;
         });
-        this.schemaService = new _services_SchemaService__WEBPACK_IMPORTED_MODULE_4__["default"](schema, data, this.core);
-        this.validationService = new _services_ValidationService__WEBPACK_IMPORTED_MODULE_5__["default"](this.state, schema, this.core);
-        // enable i18n error-translations
-        this.validationService.setErrorHandler(error => _utils_i18n__WEBPACK_IMPORTED_MODULE_14__["default"].translateError(this, error));
         // merge given data with template data
-        data = this.schemaService.addDefaultData(data, schema);
-        this.dataService = new _services_DataService__WEBPACK_IMPORTED_MODULE_3__["default"](this.state, data);
-        // start validation after data has been updated
-        this.onAfterDataUpdate = this.dataService
-            .on(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EventType"].AFTER_UPDATE, this.onAfterDataUpdate.bind(this));
+        const schemaService = new _services_SchemaService__WEBPACK_IMPORTED_MODULE_11__["default"](schema, data, this.core);
+        data = schemaService.addDefaultData(data, schema);
+        this.services = {
+            instances: new _services_InstanceService__WEBPACK_IMPORTED_MODULE_7__["default"](this),
+            location: new _services_LocationService__WEBPACK_IMPORTED_MODULE_9__["default"](),
+            data: new _services_DataService__WEBPACK_IMPORTED_MODULE_4__["default"](this.state, data),
+            schema: schemaService,
+            validation: new _services_ValidationService__WEBPACK_IMPORTED_MODULE_15__["default"](this.state, schema, this.core)
+        };
+        this.service("data").watch(event => {
+            switch (event.type) {
+                // update container will be called before any editor change-notification this gives us time,
+                // to manage update-pointer and destory events of known editors
+                case "data:update:container":
+                    this.services.instances.updateContainer(event.value.pointer, this, event.value.changes);
+                    break;
+                // sync latest data and start validation
+                case "data:update:after": {
+                    let { pointer } = event.value;
+                    this.service("schema").setData(this.service("data").get());
+                    // @feature selective-validation
+                    if (pointer.includes("/")) {
+                        // @attention validate parent-object or array, in order to support parent-validators.
+                        // any higher validators will still be ignore
+                        pointer = pointer.replace(/\/[^/]+$/, "");
+                    }
+                    setTimeout(() => {
+                        const data = this.service("data").getDataByReference();
+                        this.destroyed !== true && this.service("validation").validate(data, pointer);
+                    });
+                    break;
+                }
+            }
+        });
+        // enable i18n error-translations
+        this.service("validation").setErrorHandler(error => _utils_i18n__WEBPACK_IMPORTED_MODULE_6__["default"].translateError(this, error));
         // run initial validation
         this.validateAll();
-        this.locationService = new _services_LocationService__WEBPACK_IMPORTED_MODULE_6__["default"]();
-        this.locationService.on(_services_LocationService__WEBPACK_IMPORTED_MODULE_6__["EventType"].FOCUS, (pointer) => {
-            console.log("focus", pointer, this.schemaService.get(pointer));
-        });
-    }
-    /** reset undo history */
-    resetUndoRedo() {
-        this.dataService.resetUndoRedo();
-    }
-    /**
-     * enable or disable the editor input-interaction
-     * @param active if false, deactivates editor
-     */
-    setActive(active = true) {
-        const disabled = active === false;
-        if (this.disabled === disabled) {
-            return;
+        // @lifecycle hook initialize on controller ready
+        if (Array.isArray(options.plugins)) {
+            this.plugins = options.plugins.map(plugin => plugin.initialize(this));
         }
-        this.disabled = disabled;
-        eachInstance(this.getInstances(), (pointer, editor) => {
-            editor.setActive(!this.disabled);
-        });
     }
-    /** returns the editors active state */
-    isActive() {
-        return !this.disabled;
+    service(serviceName) {
+        return this.services[serviceName];
     }
-    /**
-     * Helper to create dom elements via mithril syntax
-     *
-     * @param  {String} selector    - a css selector describing the desired element
-     * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
-     * @returns the resulting dom-element (not attached)
-     */
-    createElement(selector, attributes) {
-        return Object(_utils_createElement__WEBPACK_IMPORTED_MODULE_9__["default"])(selector, attributes);
+    getPlugin(pluginId) {
+        return this.plugins.find(plugin => plugin.id === pluginId);
     }
-    /**
-     * @throws
-     * The only entry point to create editors.
-     * Use in application and from editors to create (delegate) child editors
-     *
-     * @param  pointer - data pointer to editor in current state
-     * @param  element - parent element of create editor. Will be appended automatically
-     * @param  [options] - individual editor options
-     * @returns created editor-instance or undefined;
-     */
-    createEditor(pointer, element, options) {
-        if (pointer == null || element == null) {
-            throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
-        }
-        assertValidPointer(pointer);
-        // merge schema["editron:ui"] object with options. options precede
-        const instanceOptions = Object.assign({
-            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_12__["default"])(pointer),
-            pointer,
-            disabled: this.disabled
-        }, _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].copyOptions(pointer, this), options);
-        // find a matching editor
-        const EditorConstructor = Object(_utils_selectEditor__WEBPACK_IMPORTED_MODULE_8__["default"])(this.getEditors(), pointer, this, instanceOptions);
-        if (EditorConstructor === false) {
-            return undefined;
-        }
-        if (EditorConstructor === undefined) {
-            this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.schema().get(pointer));
-            return undefined;
-        }
-        // iniitialize editor and save editor in list
-        // @TODO loose reference to destroyed editors
-        const editor = new EditorConstructor(pointer, this, instanceOptions);
-        element.appendChild(editor.toElement());
-        editor.setActive(!this.disabled);
-        this.addInstance(pointer, editor);
-        return editor;
-    }
-    /**
-     * Call this method, when your editor is destroyed, deregistering its instance on editron
-     * @param editor - editor instance to remove
-     */
-    removeInstance(editor) {
-        // controller inserted child and removes it here again
-        // @ts-ignore
-        const $element = editor.toElement();
-        if ($element.parentNode) {
-            $element.parentNode.removeChild($element);
-        }
-        removeEditorFrom(this.instances, editor);
-    }
-    addInstance(pointer, editor) {
-        this.instances[pointer] = this.instances[pointer] || [];
-        this.instances[pointer].push(editor);
-    }
-    /**
-     * Request to insert a child item (within the data) at the given pointer. If multiple options are present, a
-     * dialogue is opened to let the user select the appropriate type of child (oneof).
-     * @param pointer - to array on which to insert the child
-     * @param index - index within array, where the child should be inserted (does not replace). Default: 0
-     */
-    addItemTo(pointer, index = 0) {
-        Object(_utils_addItem__WEBPACK_IMPORTED_MODULE_10__["default"])(this.data(), this.schema(), this.locationService, pointer, index);
-        this.locationService.goto(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, index, true));
-    }
-    /**
-     * Get or update data from a pointer
-     * @returns DataService instance
-     */
-    data() { return this.dataService; }
-    /**
-     * Get the json schema from a pointer or replace the schema
-     * @returns SchemaService instance
-     */
-    schema() { return this.schemaService; }
-    /**
-     * @returns proxy instance
-     */
-    proxy() { return __classPrivateFieldGet(this, _proxy); }
-    /**
-     * Validate data based on a json-schema and register to generated error events
-     *
-     * - start validation
-     * - get your current errors at `pointer`
-     * - hook into validation to receive your errors at `pointer`
-     *
-     * @returns ValidationService instance
-     */
-    validator() { return this.validationService; }
-    /**
-     * ## Usage
-     *  goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
-     *  setCurrent(pointer) - Update current pointer, but do not jump to target
-     * @returns LocationService-Singleton
-     */
-    location() { return this.locationService; }
-    /**
-     * Set the application data
-     * @param {Any} data    - json data matching registered json-schema
-     */
-    setData(data) {
-        data = this.schemaService.addDefaultData(data);
-        this.data().set("#", data);
-    }
-    /**
-     * @param {JsonPointer} [pointer="#"] - location of data to fetch. Defaults to root (all) data
-     * @returns data at the given location
-     */
-    getData(pointer = "#") {
-        return this.data().get(pointer);
-    }
-    /**
-     * @returns registered editor-widgets used to edit the json-data
-     */
-    getEditors() { return this.editors; }
-    /**
-     * @returns currently active editor/widget instances
-     */
-    getInstances() { return this.instances; }
     /**
      * @param format - value of _format_
      * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
@@ -16789,57 +18294,156 @@ class Controller {
     addKeywordValidator(datatype, keyword, validator) {
         json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2___default.a.keyword(this.core, datatype, keyword, validator);
     }
+    /** reset undo history */
+    resetUndoRedo() {
+        this.service("data").resetUndoRedo();
+    }
+    /**
+     * enable or disable the editor input-interaction
+     * @param active if false, deactivates editor
+     */
+    setActive(active = true) {
+        const disabled = active === false;
+        if (this.disabled === disabled) {
+            return;
+        }
+        this.disabled = disabled;
+        this.service("instances").setActive(!this.disabled);
+    }
+    /** returns the editors active state */
+    isActive() {
+        return !this.disabled;
+    }
+    /**
+     * Helper to create dom elements via mithril syntax
+     * @param selector - a css selector describing the desired element
+     * @param attributes - a map of dom attribute:value of the element (reminder className = class)
+     * @returns the resulting dom-element (not attached)
+     */
+    createElement(selector, attributes) {
+        return Object(_utils_createElement__WEBPACK_IMPORTED_MODULE_0__["default"])(selector, attributes);
+    }
+    /**
+     * @throws
+     * The only entry point to create editors.
+     * Use in application and from editors to create (delegate) child editors
+     *
+     * @param pointer - data pointer to editor in current state
+     * @param element - parent element of create editor. Will be appended automatically
+     * @param [options] - individual editor options
+     * @returns created editor-instance or undefined;
+     */
+    createEditor(pointer, element, options) {
+        assertValidPointer(pointer);
+        if (element == null) {
+            throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
+        }
+        // merge schema["editron:ui"] object with options. options precede
+        const instanceOptions = {
+            pointer,
+            disabled: this.disabled,
+            ..._utils_UISchema__WEBPACK_IMPORTED_MODULE_14__["default"].copyOptions(pointer, this),
+            ...options
+        };
+        instanceOptions.attrs = {
+            "data-title": instanceOptions.title,
+            ...instanceOptions.attrs
+        };
+        // find a matching editor
+        const EditorConstructor = Object(_utils_selectEditor__WEBPACK_IMPORTED_MODULE_12__["default"])(this.editors, pointer, this, instanceOptions);
+        if (EditorConstructor === false) {
+            return undefined;
+        }
+        if (EditorConstructor === undefined) {
+            this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.service("schema").get(pointer));
+            return undefined;
+        }
+        // iniitialize editor and notify instance manager
+        const editor = new EditorConstructor(pointer, this, instanceOptions);
+        const dom = editor.getElement();
+        element.appendChild(dom);
+        this.services.instances.add(editor);
+        editor.update({ type: "active", value: !instanceOptions.disabled });
+        // @lifecycle hook create widget
+        this.plugins.filter(plugin => plugin.onCreateEditor)
+            .forEach(plugin => plugin.onCreateEditor(pointer, editor, instanceOptions));
+        return editor;
+    }
+    /**
+     * Call this method, to destroy your editors, deregistering its instance on editron
+     * @param editor - editor instance to remove
+     */
+    destroyEditor(editor) {
+        var _a;
+        if (!editor) {
+            return;
+        }
+        // @lifecycle hook destroy widget
+        this.plugins.filter(plugin => plugin.onDestroyEditor)
+            .forEach(plugin => plugin.onDestroyEditor(editor.getPointer(), editor));
+        this.services.instances.remove(editor);
+        // controller inserted child and removes it here again
+        const $element = editor.getElement();
+        (_a = $element === null || $element === void 0 ? void 0 : $element.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild($element);
+        editor.destroy();
+    }
+    /**
+     * Request to insert a child item (within the data) at the given pointer. If multiple options are present, a
+     * dialogue is opened to let the user select the appropriate type of child (oneof).
+     * @param pointer - to array on which to insert the child
+     * @param index - index within array, where the child should be inserted (does not replace). Default: 0
+     */
+    addItemTo(pointer, index = 0) {
+        Object(_utils_addItem__WEBPACK_IMPORTED_MODULE_1__["default"])(this.service("data"), this.service("schema"), this.services.location, pointer, index);
+        this.services.location.goto(gson_pointer__WEBPACK_IMPORTED_MODULE_5___default.a.join(pointer, index, true));
+    }
+    /**
+     * @returns proxy instance
+     */
+    proxy() { return __classPrivateFieldGet(this, _proxy); }
+    /**
+     * Set the application data
+     * @param data - json data matching registered json-schema
+     */
+    setData(data) {
+        data = this.service("schema").addDefaultData(data);
+        this.service("data").set("#", data);
+    }
+    /**
+     * @param [pointer="#"] - location of data to fetch. Defaults to root (all) data
+     * @returns data at the given location
+     */
+    getData(pointer = "#") {
+        return this.service("data").get(pointer);
+    }
     /**
      * Change the new schema for the current data
      * @param schema   - a valid json-schema
      */
     setSchema(schema) {
-        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_11__["default"].extendSchema(schema);
-        this.validationService.set(schema);
-        this.schemaService.setSchema(schema);
-    }
-    // update data in schema service
-    update() {
-        this.schemaService.setData(this.dataService.get());
+        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_14__["default"].extendSchema(schema);
+        this.service("validation").set(schema);
+        this.service("schema").setSchema(schema);
     }
     /**
      * Starts validation of current data
      */
     validateAll() {
-        setTimeout(() => this.destroyed !== true && this.validationService.validate(this.dataService.getDataByReference()));
+        setTimeout(() => this.destroyed !== true && this.service("validation").validate(this.service("data").getDataByReference()));
     }
     /** Destroy the editor, its widgets and services */
     destroy() {
-        // delete all editors
-        Object.keys(this.instances).forEach(pointer => {
-            this.instances[pointer] && this.instances[pointer].forEach(instance => instance.destroy());
-        });
         this.destroyed = true;
-        this.instances = {};
-        this.schemaService.destroy();
-        this.validationService.destroy();
-        this.dataService.destroy();
-        this.dataService.off(_services_DataService__WEBPACK_IMPORTED_MODULE_3__["EventType"].AFTER_UPDATE, this.onAfterDataUpdate);
-    }
-    onAfterDataUpdate({ pointer }) {
-        this.update();
-        // @feature selective-validation
-        if (pointer.includes("/")) {
-            // @attention validate parent-object or array, in order to support parent-validators.
-            // Any higher validators will still be ignore
-            pointer = pointer.replace(/\/[^/]+$/, "");
-        }
-        setTimeout(() => {
-            const data = this.dataService.getDataByReference();
-            this.destroyed !== true && this.validationService.validate(data, pointer);
-        });
-    }
-    changePointer(newPointer, editor) {
-        removeEditorFrom(this.instances, editor);
-        this.addInstance(newPointer, editor);
+        Object.keys(this.services).forEach(id => this.services[id].destroy());
     }
 }
 _proxy = new WeakMap();
+/** throws an error, when given pointer is not a valid jons-pointer */
+function assertValidPointer(pointer) {
+    if (pointer == null || pointer[0] !== "#") {
+        throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
+    }
+}
 
 
 /***/ }),
@@ -16908,23 +18512,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/populated */ "./src/utils/populated.ts");
 
 
-/**
- * Mithril Component to render a description
- *
- * # Usage
- *
- * render by
- *
- * ```js
- *  m(ContainerDescription, { description: "description" }
- * ```
- *
- * which will result in a html-node like
- *
- * ```html
- *  <div class="editron-container__description mmf-meta">"description"</div>
- * ```
- */
 /* harmony default export */ __webpack_exports__["default"] = ({
     view(vnode) {
         return Object(_utils_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(vnode.attrs.description, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__description.mmf-meta", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(vnode.attrs.description)));
@@ -16971,9 +18558,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/getID */ "./src/utils/getID.ts");
-/* harmony import */ var _utils_populated__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/populated */ "./src/utils/populated.ts");
-
+/* harmony import */ var _utils_populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/populated */ "./src/utils/populated.ts");
 
 
 function getClass(hasAction, { title, icon, disabled }) {
@@ -16993,9 +18578,8 @@ function getClass(hasAction, { title, icon, disabled }) {
         };
         const hasAction = (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown || attrs.oncollapse) != null;
         return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__header", {
-            "class": getClass(hasAction, attrs),
-            name: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.pointer)
-        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__title", Object(_utils_populated__WEBPACK_IMPORTED_MODULE_2__["default"])(vnode.attrs.icon, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", attrs.icon)), (!attrs.hideTitle) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("h2", attrs.title)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__actions", attrs.onmoveup && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+            "class": getClass(hasAction, attrs)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__title", Object(_utils_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(vnode.attrs.icon, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", attrs.icon)), (!attrs.hideTitle) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("h2", attrs.title)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__actions", attrs.onmoveup && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
             onclick: attrs.onmoveup
         }, "arrow_upward"), attrs.onmovedown && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
             onclick: attrs.onmovedown
@@ -17062,8 +18646,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms */ "./node_modules/mithril-material-forms/dist/mmf.js");
-/* harmony import */ var mithril_material_forms__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/index */ "./node_modules/mithril-material-forms/index.ts");
 
 
 /**
@@ -17075,7 +18658,7 @@ __webpack_require__.r(__webpack_exports__);
             "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
         }, vnode.attrs.header && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__header", mithril__WEBPACK_IMPORTED_MODULE_0___default()("h1", vnode.attrs.header)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__content", {
             oncreate: (contentNode) => contentNode.dom.appendChild(vnode.attrs.container)
-        }), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__footer", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onAbort }, vnode.attrs.titleAbort), vnode.attrs.showSave && mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onSave }, "Speichern")));
+        }), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__footer", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onAbort }, vnode.attrs.titleAbort), vnode.attrs.showSave && mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onSave }, "Speichern")));
     }
 });
 
@@ -17125,6 +18708,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Tile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tile */ "./src/components/overlayselecttiles/Tile.ts");
 
 
+const noop = (value) => { }; // eslint-disable-line
 function getDataValue(node) {
     while (node.parentNode &&
         node.getAttribute("data-value") == null &&
@@ -17134,16 +18718,14 @@ function getDataValue(node) {
     return node.getAttribute("data-value");
 }
 /**
- * @View mithril
  * Overlay content to pick options. Displayed as tiles
- * @type {Object}
  */
 /* harmony default export */ __webpack_exports__["default"] = ({
     view(vnode) {
         const attrs = {
             value: 0,
             options: [{ title: "Keine Optionen angegeben", value: -1 }],
-            onchange: Function.prototype,
+            onchange: noop,
             ...vnode.attrs
         };
         return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-tiles", {
@@ -17178,8 +18760,6 @@ function getDataValue(node) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractEditor; });
-/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/ValidationService */ "./src/services/ValidationService.ts");
-
 function getTypeClass(schema) {
     return schema.type === "array" || schema.type === "object" ? schema.type : "value";
 }
@@ -17191,12 +18771,7 @@ function getTypeClass(schema) {
  * Still required is
  *
  *      1. a custom `static editorOf(p, c, o)`-method, to register on a schema
- *      2. an `update(patch)`-method to respond to changes of the data at _pointer_
- *      3. a custom `updatePointer(newPointer)`-method to respond to changes in the location of the editor. Most of
- *          times, the pointer will be used in rendering and/or when creating child-editors. Dont forget to call
- *          `super.updatePointer(newPointer)`
- *
- * and optionally an `updateErrors(errors)`-method to handle new (or removed) errors.
+ *      2. an `update(event)`-method to respond to changes
  *
  * Convenience methods are
  *
@@ -17204,12 +18779,12 @@ function getTypeClass(schema) {
  *      - `setData(newValue)` to update the associated data of the current _pointer_
  *      - `getSchema()` returning the json-schema of the current _pointer_
  *      - `getErrors()` returning a list of current errors
- *      - `toElement()` gives you the root dom-node for this editor (aka render target)
+ *      - `getElement()` gives you the root dom-node for this editor (aka render target)
  *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
  *
- * @param {String} pointer          - pointer referencing the current data and schema
- * @param {Controller} controller   - editron controller instance
- * @param {Object} options          - resolved options object
+ * @param pointer - pointer referencing the current data and schema
+ * @param controller - editron controller instance
+ * @param options - resolved options object
  */
 class AbstractEditor {
     constructor(pointer, controller, options) {
@@ -17218,70 +18793,39 @@ class AbstractEditor {
         this.options = options;
         this.dom = this.controller
             .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
-        this.update = controller.data()
-            .observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
-        this.setErrors = controller.validator()
-            .observe(pointer, this.setErrors.bind(this), options.notifyNestedErrors === true);
-        this.errors = this.controller.validator()
-            .getErrorsAndWarnings(pointer);
     }
     static editorOf(pointer, controller, options) {
         throw new Error("Missing editorOf-method in custom editor");
     }
-    update() {
-        throw new Error("Missing implemented of method 'update' in custom editor");
-    }
-    updatePointer(newPointer) {
-        const oldPointer = this.pointer;
-        this.controller.changePointer(newPointer, this);
-        this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.validator().removeObserver(oldPointer, this.setErrors);
-        this.pointer = newPointer;
-        this.controller.data().observe(newPointer, this.update, this.options.notifyNestedChanges === true);
-        this.setErrors = this.controller.validator().observe(newPointer, this.setErrors);
-        return [newPointer, oldPointer];
+    update(event) {
+        throw new Error("Missing implementation of method 'update' in custom editor");
     }
     getData() {
-        return this.controller.data().get(this.pointer);
+        return this.controller.service("data").get(this.pointer);
     }
     setData(data) {
-        return this.controller.data().set(this.pointer, data);
-    }
-    setActive(active = true) {
-        throw new Error(`Missing implementation of method 'setActive' in custom editor ${this}`);
+        return this.controller.service("data").set(this.pointer, data);
     }
     getErrors() {
-        return this.errors;
+        return this.controller.service("validation").getErrorsAndWarnings(this.pointer);
     }
     getSchema() {
-        return this.controller.schema().get(this.pointer);
+        return this.controller.service("schema").get(this.pointer);
     }
     getPointer() {
         return this.pointer;
     }
-    focus() {
-        this.controller.location().setCurrent(this.pointer);
-    }
-    blur() {
-        this.controller.location().blur(this.pointer);
-    }
-    toElement() {
+    getElement() {
         return this.dom;
     }
-    destroy() {
-        this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
-        this.controller.data().removeObserver(this.pointer, this.update);
-        this.controller.validator().removeObserver(this.pointer, this._addError);
-        // @todo this event is not registered in this class
-        this.controller.validator().off(_services_ValidationService__WEBPACK_IMPORTED_MODULE_0__["EventType"].BEFORE_VALIDATION, this._clearErrors);
+    focus() {
+        this.controller.service("location").setCurrent(this.pointer);
     }
-    setErrors(errors) {
-        this.errors = errors;
-        // @ts-ignore
-        if (this.updateErrors) {
-            // @ts-ignore
-            this.updateErrors(this.errors);
-        }
+    blur() {
+        this.controller.service("location").blur(this.pointer);
+    }
+    destroy() {
+        throw new Error("Missing implementation of method 'destroy' in custom editor");
     }
 }
 
@@ -17301,15 +18845,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractValueEditor; });
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/getID */ "./src/utils/getID.ts");
-
 
 const convert = {
     boolean(value) {
         if (value === "true") {
             return true;
         }
-        if (value === "false") {
+        else if (value === "false") {
             return false;
         }
         return value;
@@ -17331,150 +18873,172 @@ const convert = {
 };
 /**
  * Convenience class, which registers required events and base methods for value-editors (not object, array)
- *
- * Usage
- * ```js
- *      MyValueEditor extends AbstractValueEditor {
- *          constructor(pointer, controller, options) {
- *              super(pointer, controller, options);
- *              this.render();
- *          }
- *          render() {
- *              m.render(this.$element, m(MyView, this.viewModel));
- *          }
- *      }
- * ```
  */
 class AbstractValueEditor {
     /**
-     * #options
-     *      - editorValueType:String - custom type of editor value (added as classname)
-     *      - editorElementProperties:Object - add custom properties to main DOM-element
-     *      - viewModel:Object - viewModel which extends base viewmodel
+     * options
+     *    - editorValueType:String - custom type of editor value (added as classname)
+     *    - editorElementProperties:Object - add custom properties to main DOM-element
+     *    - viewModel:Object - viewModel which extends base viewmodel
      *
-     * @param  {String} pointer         - json pointer to value
-     * @param  {Controller} controller  - json editor controller
-     * @param  {Object} options
+     * @param pointer - json pointer to value
+     * @param controller - json editor controller
+     * @param options
      */
     constructor(pointer, controller, options) {
-        this.pointer = pointer;
+        this.notifyNestedChanges = false;
         this.controller = controller;
-        const schema = controller.schema().get(pointer);
-        options = Object.assign({
+        this.options = options;
+        this.pointer = pointer;
+        this.notifyNestedChanges = options.notifyNestedChanges || this.notifyNestedChanges;
+        const schema = controller.service("schema").get(pointer);
+        options = {
             viewModel: null,
             title: null,
             description: null,
             editorValueType: schema.enum ? "select" : schema.type,
-            editorElementProperties: null
-        }, options);
+            editorElementProperties: null,
+            ...options
+        };
         // create main DOM-element for view-generation
-        this.$element = controller.createElement(`.editron-value.editron-value--${options.editorValueType}`, Object.assign({
-            name: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(pointer)
-        }, options.attrs));
+        this.dom = controller.createElement(`.editron-value.editron-value--${options.editorValueType}`, { ...options.attrs });
         // use this model to generate the view. may be customized with `options.viewModel`
-        this.viewModel = Object.assign({
+        this.viewModel = {
             pointer,
-            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(pointer),
             title: options.title,
             description: options.description,
-            value: controller.data().get(pointer),
+            value: controller.service("data").get(pointer),
             instantUpdate: options.instantUpdate,
             schema,
             options,
-            errors: controller.validator().getErrorsAndWarnings(pointer),
-            onfocus: () => controller.location().setCurrent(pointer),
-            onblur: () => controller.location().blur(pointer),
-            onchange: value => {
-                if (convert[schema.type]) {
-                    value = convert[schema.type](value);
-                }
-                this.setValue(value);
-            }
-        }, options.viewModel);
-        // in order to deregister callbacks in destroy(), bind all callbacks to this class
-        this.update = controller.data().observe(pointer, this.update.bind(this));
-        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-        // this.render();
+            errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            onfocus: () => controller.service("location").setCurrent(pointer),
+            onblur: () => controller.service("location").blur(pointer),
+            onchange: value => this.setValue(convert[schema.type] ? convert[schema.type](value) : value),
+            ...options.viewModel
+        };
     }
     static editorOf(pointer, controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type !== "object" && schema.type !== "array";
+    }
+    update(event) {
+        if (this.viewModel == null) {
+            console.log("%c abort update VALUE", "background: yellow;", event);
+            return;
+        }
+        switch (event.type) {
+            case "pointer": {
+                const pointer = event.value;
+                // this.dom.setAttribute("name", `editor-${pointer}`);
+                this.viewModel.pointer = pointer;
+                this.viewModel.onfocus = () => this.controller.service("location").setCurrent(pointer);
+                break;
+            }
+            case "data:update":
+                this.viewModel.value = this.controller.service("data").get(this.getPointer());
+                this.viewModel.disabled = !this.controller.isActive();
+                break;
+            case "validation:errors":
+                this.viewModel.errors = event.value;
+                break;
+            case "active":
+                this.viewModel.disabled = event.value === false;
+                if (this.viewModel.options) {
+                    this.viewModel.options.disabled = this.viewModel.disabled;
+                }
+                break;
+            default:
+                console.log("unknown event type", event);
+        }
+        this.render();
+    }
+    // do not trigger rendering here. data-observer will notify change event
+    setValue(value) {
+        this.controller.service("data").set(this.getPointer(), value);
+    }
+    // update view
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()("b", "Overwrite AbstractValueEditor.render() to generate view"));
     }
     getPointer() {
         return this.pointer;
     }
-    updatePointer(pointer) {
-        if (pointer === this.pointer) {
-            return;
-        }
-        this.controller.changePointer(pointer, this);
-        const oldPointer = this.pointer;
-        this.$element.setAttribute("name", `editor-${pointer}`);
-        this.pointer = pointer;
-        this.viewModel.pointer = pointer;
-        this.viewModel.id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_1__["default"])(pointer);
-        this.viewModel.onfocus = () => this.controller.location().setCurrent(pointer);
-        this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.validator().removeObserver(oldPointer, this.setErrors);
-        this.controller.data().observe(pointer, this.update);
-        this.controller.validator().observe(pointer, this.setErrors);
-        this.update();
-    }
-    setActive(active = true) {
-        this.viewModel.disabled = active === false;
-        if (this.viewModel.options) {
-            this.viewModel.options.disabled = this.viewModel.disabled;
-        }
-        this.render();
-    }
-    // update display value in view
-    update() {
-        this.viewModel.value = this.controller.data().get(this.pointer);
-        this.viewModel.disabled = !this.controller.isActive();
-        this.render();
-    }
-    // updates value in data-store
-    setValue(value) {
-        this.controller.data().set(this.pointer, value);
-        // do not trigger rendering here. data-observer will notify change event
-    }
-    // adds an error to view
-    setErrors(errors) {
-        console.log("set errors", errors);
-        this.viewModel.errors = errors;
-        this.render();
-    }
-    // update view
-    render() {
-        // this.$element.innerHTML = "<b>Overwrite AbstractValueEditor.render() to generate your view</b>";
-        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()("b", "Overwrite AbstractValueEditor.render() to generate view"));
-    }
     // return main dom element
-    toElement() {
-        return this.$element;
+    getElement() {
+        return this.dom;
     }
     // destroy this editor
     destroy() {
         if (this.viewModel == null) {
             return;
         }
-        this.controller.removeInstance(this);
         // destroy this editor only once
-        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
         this.viewModel = null;
-        this.controller.data().removeObserver(this.pointer, this.update);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.$element = null;
+        this.dom = null;
     }
 }
 
 
 /***/ }),
 
-/***/ "./src/editors/arrayeditor/ArrayItemEditor.ts":
-/*!****************************************************!*\
-  !*** ./src/editors/arrayeditor/ArrayItemEditor.ts ***!
-  \****************************************************/
+/***/ "./src/editors/arrayeditor/ArrayItemView.ts":
+/*!**************************************************!*\
+  !*** ./src/editors/arrayeditor/ArrayItemView.ts ***!
+  \**************************************************/
+/*! exports provided: EditorTarget, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditorTarget", function() { return EditorTarget; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/index */ "./node_modules/mithril-material-forms/index.ts");
+/* harmony import */ var _InsertButtonView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./InsertButtonView */ "./src/editors/arrayeditor/InsertButtonView.ts");
+
+
+
+const EditorTarget = ".editron-item";
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view({ attrs }) {
+        const { disabled = false } = attrs;
+        const canRemove = attrs.minItems < attrs.length;
+        const canAdd = attrs.maxItems > attrs.length;
+        const showIndex = attrs.showIndex === true;
+        return [
+            // ARRAY-CONTROLS
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__controls.editron-container__controls--child", {
+                "class": disabled ? "is-disabled" : "is-enabled"
+            }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "more_vert"), mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul", !(attrs.move === false || attrs.index === 0) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onMove(attrs.index - 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_upward"), "move up")), !(attrs.move === false || attrs.index === attrs.length - 1) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onMove(attrs.index + 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_downward"), "move down")), attrs.clone && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onClone() }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "content_copy"), "duplicate")), (attrs.remove && attrs.onRemove && canRemove) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onRemove(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "delete"), "delete")), (attrs.add && attrs.onAdd && canAdd) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onAdd(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add"), "add")))),
+            // TARGET CONTAINER FOR EDITOR
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(EditorTarget, {
+                "data-index": `${attrs.index + 1} / ${attrs.length}`,
+                "class": [
+                    disabled ? "is-disabled" : "",
+                    canRemove ? "has-remove-enabled" : "has-remove-disabled",
+                    canAdd ? "has-add-enabled" : "has-add-disabled",
+                    showIndex ? "with-index" : ""
+                ].join(" ").trim()
+            }),
+            (attrs.insert && canAdd) && mithril__WEBPACK_IMPORTED_MODULE_0___default()(_InsertButtonView__WEBPACK_IMPORTED_MODULE_2__["default"], {
+                disabled,
+                onAdd: attrs.onAdd,
+                index: attrs.index
+            })
+        ];
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/ArrayItemWrapper.ts":
+/*!*****************************************************!*\
+  !*** ./src/editors/arrayeditor/ArrayItemWrapper.ts ***!
+  \*****************************************************/
 /*! exports provided: default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -17497,27 +19061,37 @@ class ArrayItemEditor {
         // eslint-disable-next-line max-len
         this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
         this.controller = controller;
-        const onadd = () => this.add();
-        const onremove = () => this.remove();
+        const onAdd = () => this.add();
+        const onRemove = () => this.remove();
         this.viewModel = {
             disabled: false,
-            onadd,
-            onremove,
-            onmove: index => this.move(index),
+            onAdd,
+            onRemove,
+            onMove: index => this.move(index),
+            onClone: () => this.clone(),
             ...options
         };
         this.render();
         const $target = this.$element.querySelector(_ArrayItemView__WEBPACK_IMPORTED_MODULE_2__["EditorTarget"]);
         this.editor = controller.createEditor(pointer, $target, {
-            ondelete: onremove
+            ondelete: onRemove
         });
         this.updatePointer(pointer);
+    }
+    disable(isDisabled = false) {
+        if (this.viewModel.disabled !== isDisabled) {
+            this.viewModel.disabled = isDisabled;
+            this.render();
+        }
     }
     render() {
         mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_ArrayItemView__WEBPACK_IMPORTED_MODULE_2__["default"], this.viewModel));
     }
     add() {
         _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
+    }
+    clone() {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].cloneItem(this.parentPointer, this.controller, this.viewModel.index);
     }
     remove() {
         _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].removeItem(this.parentPointer, this.controller, this.viewModel.index);
@@ -17529,11 +19103,10 @@ class ArrayItemEditor {
         this.parentPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(newPointer, "..", true);
         this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
         this.viewModel.pointer = newPointer;
-        this.viewModel.length = this.controller.data().get(this.parentPointer).length;
+        this.viewModel.length = this.controller.service("data").get(this.parentPointer).length;
         this.render();
-        this.editor && this.editor.updatePointer(newPointer);
     }
-    toElement() {
+    getElement() {
         return this.$element;
     }
     getPointer() {
@@ -17544,7 +19117,7 @@ class ArrayItemEditor {
             return;
         }
         this.viewModel = null;
-        this.editor && this.editor.destroy();
+        this.controller.destroyEditor(this.editor);
         this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
     }
     static getIndex(pointer) {
@@ -17556,56 +19129,34 @@ class ArrayItemEditor {
 
 /***/ }),
 
-/***/ "./src/editors/arrayeditor/ArrayItemView.ts":
-/*!**************************************************!*\
-  !*** ./src/editors/arrayeditor/ArrayItemView.ts ***!
-  \**************************************************/
-/*! exports provided: EditorTarget, default */
+/***/ "./src/editors/arrayeditor/InsertButtonView.ts":
+/*!*****************************************************!*\
+  !*** ./src/editors/arrayeditor/InsertButtonView.ts ***!
+  \*****************************************************/
+/*! exports provided: default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditorTarget", function() { return EditorTarget; });
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 
-const EditorTarget = ".editron-item";
-/* harmony default export */ __webpack_exports__["default"] = ({
-    view({ attrs }) {
-        const { disabled = false } = attrs;
-        const canRemove = attrs.minItems < attrs.length;
-        const canAdd = attrs.maxItems > attrs.length;
-        const showIndex = attrs.showIndex === true;
-        return [
-            // CONTROLS
-            mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul.editron-container__controls.editron-container__controls--child", {
-                "class": disabled ? "is-disabled" : undefined
-            }, (attrs.move === false || attrs.index === 0) ? "" : mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onmove(attrs.index - 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_upward")), (attrs.move === false || attrs.index === attrs.length - 1) ? "" : mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onmove(attrs.index + 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_downward")), (attrs.remove && attrs.onremove && canRemove) ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onremove(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "delete")) : "", (attrs.add && attrs.onadd && canAdd) ? mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onadd(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add")) : ""),
-            // TARGET CONTAINER FOR EDITOR
-            mithril__WEBPACK_IMPORTED_MODULE_0___default()(EditorTarget, {
-                "data-index": `${attrs.index + 1} / ${attrs.length}`,
-                "class": [
-                    disabled ? "is-disabled" : "",
-                    canRemove ? "has-remove-enabled" : "has-remove-disabled",
-                    canAdd ? "has-add-enabled" : "has-add-disabled",
-                    showIndex ? "with-index" : ""
-                ].join(" ").trim()
-            }),
-            // ADD BUTTON
-            (attrs.insert && canAdd) ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__separator.mmf-row", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__button--add", {
-                "class": disabled ? "is-disabled" : undefined,
-                onclick: e => {
-                    console.log("add", disabled);
-                    if (!disabled) {
-                        e.preventDefault();
-                        attrs.onadd && attrs.onadd(attrs.index);
-                    }
+const InsertButtonView = {
+    view(vnode) {
+        const { disabled, onAdd, index } = vnode.attrs;
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__separator.mmf-row", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__button--add", {
+            "class": disabled && "is-disabled",
+            onclick: e => {
+                if (!disabled) {
+                    e.preventDefault();
+                    onAdd && onAdd(index);
                 }
-            }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add_circle"))) : ""
-        ];
+            }
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add_circle")));
     }
-});
+};
+/* harmony default export */ __webpack_exports__["default"] = (InsertButtonView);
 
 
 /***/ }),
@@ -17621,42 +19172,43 @@ const EditorTarget = ".editron-item";
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ArrayEditor; });
-/* harmony import */ var _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ArrayItemEditor */ "./src/editors/arrayeditor/ArrayItemEditor.ts");
+/* harmony import */ var _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ArrayItemWrapper */ "./src/editors/arrayeditor/ArrayItemWrapper.ts");
 /* harmony import */ var _services_utils_diffpatch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/utils/diffpatch */ "./src/services/utils/diffpatch.ts");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../AbstractEditor */ "./src/editors/AbstractEditor.ts");
 
 
 
 
-class ArrayEditor {
+
+class ArrayEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default"] {
     constructor(pointer, controller, options = {}) {
-        // add id to element, since no other input-form is associated with this editor
-        options.attrs = { id: options.id, ...options.attrs };
-        const schema = controller.schema().get(pointer);
-        const data = controller.data().get(pointer);
+        super(pointer, controller, options);
+        this.children = [];
+        this.dom.classList.add("withAddButton");
         this.onAdd = (index = 0) => {
             if (!this.viewModel.disabled) {
                 controller.addItemTo(this.pointer, index);
             }
         };
-        const arrayHTMLElement = ".editron-container.editron-container--array.withAddButton";
-        this.$element = controller.createElement(arrayHTMLElement, options.attrs);
-        this.controller = controller;
-        this.pointer = pointer;
-        this.children = [];
+        const schema = this.getSchema();
+        const data = this.getData();
         this.viewModel = {
-            pointer,
             attrs: {},
-            errors: controller.validator().getErrorsAndWarnings(pointer),
-            onadd: this.onAdd,
+            disabled: false,
+            errors: controller.service("validation").getErrorsAndWarnings(pointer),
             length: data.length,
             maxItems: schema.maxItems || Infinity,
             minItems: schema.minItems || 0,
+            onadd: this.onAdd,
+            pointer,
             ...options,
             controls: {
                 add: false,
+                clone: true,
+                disabled: false,
                 remove: true,
                 move: true,
                 insert: true,
@@ -17666,178 +19218,125 @@ class ArrayEditor {
                 ...options.controls
             }
         };
-        this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
-        this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
         this.render();
-        this.$items = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
+        this.$items = this.dom.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
         this.rebuildChildren();
         this.updateControls();
     }
     static editorOf(pointer, controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type === "array";
     }
-    setActive(active = true) {
-        const disabled = active === false;
-        this.viewModel.disabled = disabled;
-        this.viewModel.controls.disabled = disabled;
-        this.rebuildChildren();
-        this.render();
-    }
-    update() {
-        this.rebuildChildren();
-        this.updateControls();
-    }
-    updatePointer(newPointer) {
-        if (this.pointer === newPointer) {
+    update(event) {
+        if (this.viewModel == null) {
+            // @ts-ignore
+            console.log("%c abort update ARRAY", "background: yellow;", event);
             return;
         }
-        this.controller.changePointer(newPointer, this);
-        const previousPointer = this.pointer;
-        this.pointer = newPointer;
-        this.viewModel.pointer = newPointer;
-        this.viewModel.attrs.id = newPointer;
-        this.controller.data().removeObserver(previousPointer, this.updateView);
-        this.controller.validator().removeObserver(previousPointer, this.setErrors);
-        this.controller.data().observe(newPointer, this.updateView);
-        this.controller.validator().observe(newPointer, this.setErrors);
-        this.children.forEach((child, index) => child.updatePointer(`${newPointer}/${index}`));
+        switch (event.type) {
+            case "data:update":
+                this.applyPatches(event.value.patch);
+                this.updateControls();
+                break;
+            case "validation:errors":
+                this.viewModel.errors = event.value;
+                break;
+            case "pointer":
+                this.viewModel.pointer = event.value;
+                this.children.forEach((child, index) => child.updatePointer(`${event.value}/${index}`));
+                break;
+            case "active": {
+                const disabled = event.value === false;
+                this.viewModel.disabled = disabled;
+                this.viewModel.controls.disabled = disabled;
+                this.children.forEach(child => child.disable(disabled));
+                break;
+            }
+        }
         this.render();
     }
-    updateView(changeEvent) {
-        if (changeEvent && changeEvent.patch) {
-            this.applyPatches(changeEvent.patch);
-        }
-        else {
-            this.rebuildChildren();
-        }
-        this.updateControls();
-    }
     applyPatches(patch) {
+        const { pointer, controller, viewModel, children, $items } = this;
         // fetch a copy of the original list
-        const originalChildren = this.children.slice(0);
+        const originalChildren = Array.from(children);
         // and patch the current list
-        _services_utils_diffpatch__WEBPACK_IMPORTED_MODULE_1__["default"].patch(this.children, patch);
+        _services_utils_diffpatch__WEBPACK_IMPORTED_MODULE_1__["default"].patch(children, patch);
         // search for inserted children
-        this.children.forEach((child, index) => {
-            if (child instanceof _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__["default"] === false) {
-                const pointer = `${this.pointer}/${index}`;
-                const newChild = new _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__["default"](pointer, this.controller, this.viewModel.controls);
-                // @insert?
-                this.children[index] = newChild;
+        children.forEach((child, index) => {
+            if (child instanceof _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__["default"] === false) {
+                const newChild = new _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__["default"](`${pointer}/${index}`, controller, viewModel.controls);
+                children[index] = newChild;
             }
         });
-        // search for removed children
+        // search for removed children (item wrappers)
         originalChildren.forEach(child => {
-            if (this.children.indexOf(child) === -1) {
+            if (children.indexOf(child) === -1) {
                 child.destroy();
             }
         });
         // update view: move and inserts nodes
-        const currentLocation = this.controller.location().getCurrent();
-        for (let i = 0, l = this.children.length; i < l; i += 1) {
-            const previousPointer = this.children[i].getPointer();
-            const currentPointer = `${this.pointer}/${i}`;
+        const currentLocation = controller.service("location").getCurrent();
+        const changePointer = {};
+        for (let i = 0, l = children.length; i < l; i += 1) {
+            const previousPointer = children[i].getPointer();
+            const currentPointer = `${pointer}/${i}`;
             // update current location
             if (currentLocation.indexOf(previousPointer) === 0) {
                 const editorLocation = currentLocation.replace(previousPointer, currentPointer);
-                this.controller.location().setCurrent(editorLocation);
+                controller.service("location").setCurrent(editorLocation);
             }
             // update child views to match patched list
-            this.children[i].updatePointer(currentPointer);
-            if (this.$items.children[i] === this.children[i].toElement()) {
+            if (previousPointer !== currentPointer) {
+                changePointer[previousPointer] = currentPointer;
+            }
+            // this updates the array-item wrapper
+            children[i].updatePointer(currentPointer);
+            if ($items.children[i] === children[i].getElement()) {
                 // skip moving node, already in place
                 continue;
             }
-            else if (i + 1 < this.$items.children.length) {
+            else if (i + 1 < $items.children.length) {
                 // move node to correct position
-                this.$items.insertBefore(this.children[i].toElement(), this.$items.children[i + 1]);
+                $items.insertBefore(children[i].getElement(), $items.children[i + 1]);
             }
             else {
                 // remaining nodes may be simply appended
-                this.$items.appendChild(this.children[i].toElement());
+                $items.appendChild(children[i].getElement());
             }
         }
     }
     rebuildChildren() {
-        const data = this.controller.data().get(this.pointer);
-        // delete all child editors
-        this.children.forEach(editor => editor.destroy());
-        this.children.length = 0;
-        this.$items.innerHTML = "";
+        const { pointer, controller, viewModel, children, $items } = this;
+        const data = this.getData();
+        children.forEach((editor) => editor.destroy());
+        children.length = 0;
+        $items.innerHTML = "";
         // recreate child editors
         data.forEach((item, index) => {
-            const childPointer = `${this.pointer}/${index}`;
-            const childEditor = new _ArrayItemEditor__WEBPACK_IMPORTED_MODULE_0__["default"](childPointer, this.controller, this.viewModel.controls);
-            this.$items.appendChild(childEditor.toElement());
-            this.children.push(childEditor);
+            const childEditor = new _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__["default"](`${pointer}/${index}`, controller, viewModel.controls);
+            $items.appendChild(childEditor.getElement());
+            children.push(childEditor);
         });
     }
     updateControls() {
-        this.viewModel.length = this.children.length;
-        this.viewModel.onadd = this.viewModel.maxItems > this.children.length ? this.onAdd : false;
-        this.$element.classList.toggle("has-add-disabled", this.viewModel.maxItems <= this.children.length);
-        this.$element.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
-    }
-    getPointer() {
-        return this.pointer;
-    }
-    setErrors(errors) {
-        this.viewModel.errors = errors;
-        this.render();
+        const { dom, viewModel, children } = this;
+        viewModel.length = children.length;
+        viewModel.onadd = viewModel.maxItems > children.length ? this.onAdd : undefined;
+        dom.classList.toggle("has-add-disabled", viewModel.maxItems <= children.length);
+        dom.classList.toggle("has-remove-disabled", viewModel.minItems >= children.length);
     }
     render() {
-        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_2___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
-    }
-    toElement() {
-        return this.$element;
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_2___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
     }
     destroy() {
         if (this.viewModel == null) {
             return;
         }
-        this.controller.removeInstance(this);
+        this.children.forEach((editor) => editor.destroy());
         this.viewModel = null;
-        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_2___default()("i"));
-        this.controller.data().removeObserver(this.pointer, this.updateView);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.children.forEach(editor => editor.destroy());
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_2___default()("i"));
     }
 }
-
-
-/***/ }),
-
-/***/ "./src/editors/index.ts":
-/*!******************************!*\
-  !*** ./src/editors/index.ts ***!
-  \******************************/
-/*! exports provided: default */
-/*! all exports used */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AbstractEditor */ "./src/editors/AbstractEditor.ts");
-/* harmony import */ var _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AbstractValueEditor */ "./src/editors/AbstractValueEditor.ts");
-/* harmony import */ var _arrayeditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./arrayeditor */ "./src/editors/arrayeditor/index.ts");
-/* harmony import */ var _objecteditor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./objecteditor */ "./src/editors/objecteditor/index.ts");
-/* harmony import */ var _oneofeditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./oneofeditor */ "./src/editors/oneofeditor/index.ts");
-/* harmony import */ var _valueeditor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./valueeditor */ "./src/editors/valueeditor/index.ts");
-
-
-
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    AbstractEditor: _AbstractEditor__WEBPACK_IMPORTED_MODULE_0__["default"],
-    AbstractValueEditor: _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_1__["default"],
-    ArrayEditor: _arrayeditor__WEBPACK_IMPORTED_MODULE_2__["default"],
-    ObjectEditor: _objecteditor__WEBPACK_IMPORTED_MODULE_3__["default"],
-    OneOfEditor: _oneofeditor__WEBPACK_IMPORTED_MODULE_4__["default"],
-    ValueEditor: _valueeditor__WEBPACK_IMPORTED_MODULE_5__["default"],
-});
 
 
 /***/ }),
@@ -17873,18 +19372,12 @@ function showJSON(controller, data, title) {
 class ObjectEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default"] {
     constructor(pointer, controller, options = {}) {
         super(pointer, controller, options);
-        // add id to element, since no other input-form is associated with this editor...
-        // @todo ...except another editron-instance
-        options.attrs = { id: options.id, ...options.attrs };
-        this.pointer = pointer;
-        this.options = options;
-        this.controller = controller;
         this.childEditors = [];
         this.viewModel = {
             pointer,
             errors: [],
             ...options,
-            attrs: options.attrs || {},
+            attrs: options.attrs || {}
         };
         if (options.collapsed != null) {
             this.viewModel.oncollapse = () => {
@@ -17896,92 +19389,75 @@ class ObjectEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default
             this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
         }
         if (options.addDelete) {
-            this.viewModel.ondelete = this.delete;
+            this.viewModel.ondelete = this.deleteObject.bind(this);
         }
         this.render();
         this.$children = this.dom.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
-        this.update();
+        this.update({ type: "data:update", value: null });
     }
     static editorOf(pointer, controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type === "object";
     }
-    updatePointer(pointer) {
-        const returnValue = super.updatePointer(pointer);
-        // if (this.viewModel == null) {
-        //     return;
-        // }
-        this.dom.id = pointer;
-        this.options.attrs.id = pointer;
-        this.viewModel.pointer = pointer;
-        this.childEditors.forEach(editor => editor.updatePointer(`${pointer}/${editor._property}`));
-        this.render();
-        return returnValue;
-    }
-    /** de/activate this editors user-interaction */
-    setActive(active = true) {
-        this.viewModel.disabled = active === false;
-        this.render();
-    }
-    update() {
+    update(event) {
         if (this.viewModel == null) {
-            console.error(`destroyed ObjectEditor receives an update event
-                - this may be invoked through oneOf-Editor`, this);
+            console.log("%c abort update OBJECT", "background: yellow;", event);
             return;
         }
-        // fetch latest data
-        const data = this.getData();
-        // destroy child editor
-        this.childEditors.forEach(editor => editor.destroy());
-        this.childEditors.length = 0;
-        // clear html
-        this.$children.innerHTML = "";
-        // rebuild children
-        if (data) {
-            Object.keys(data).forEach(property => {
-                const editor = this.controller.createEditor(`${this.pointer}/${property}`, this.$children);
-                if (editor) {
-                    editor._property = property;
-                    this.childEditors.push(editor);
+        switch (event.type) {
+            case "data:update": {
+                const { pointer, controller, childEditors, $children } = this;
+                const data = this.getData();
+                childEditors.forEach(editor => controller.destroyEditor(editor));
+                childEditors.length = 0;
+                $children.innerHTML = "";
+                if (data == null) {
+                    break;
                 }
-            });
+                // rebuild children
+                Object.keys(data)
+                    .forEach(property => childEditors.push(controller.createEditor(`${pointer}/${property}`, $children)));
+                break;
+            }
+            // if we receive errors here, a property may be missing (which should go to schema.getTemplate)
+            // or additional, but prohibited properties exist. For the latter, add an option to show and/or
+            // delete the property
+            case "validation:errors": {
+                this.viewModel.errors = event.value.map(error => {
+                    if (error.code !== "no-additional-properties-error") {
+                        return error;
+                    }
+                    const message = error.message;
+                    const property = error.data.property;
+                    return {
+                        severity: error.type || "error",
+                        message: mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-error.editron-error--object-property", mithril__WEBPACK_IMPORTED_MODULE_0___default()("span", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(message)), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear"))
+                    };
+                });
+                break;
+            }
+            case "pointer":
+                this.viewModel.pointer = event.value;
+                break;
+            case "active":
+                /** de/activate this editors user-interaction */
+                this.viewModel.disabled = !event.value;
+                break;
         }
         this.render();
     }
     /** deletes this object from data */
-    delete() {
-        this.controller.data().delete(this.pointer);
+    deleteObject() {
+        this.controller.service("data").delete(this.pointer);
     }
     /** deletes a property from this object */
     deleteProperty(property) {
-        const data = this.controller.data().get(this.pointer);
-        delete data[property];
-        this.controller.data().set(this.pointer, data);
+        this.controller.service("data").delete(`${this.pointer}/${property}`);
     }
     /** displays the properties json-value */
     showProperty(property) {
-        const propertyData = this.controller.data().get(`${this.pointer}/${property}`);
+        const propertyData = this.controller.service("data").get(`${this.pointer}/${property}`);
         showJSON(this.controller, propertyData, property);
-    }
-    updateErrors(errors = []) {
-        if (this.viewModel == null) {
-            return;
-        }
-        // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
-        // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
-        // arrays this should come per default, as the may insert in add items...
-        this.viewModel.errors = errors.map(error => {
-            if (error.code === "no-additional-properties-error") {
-                const message = error.message;
-                const property = error.data.property;
-                return {
-                    severity: error.type || "error",
-                    message: mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-error.editron-error--object-property", mithril__WEBPACK_IMPORTED_MODULE_0___default()("span", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(message)), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear"))
-                };
-            }
-            return error;
-        });
-        this.render();
     }
     render() {
         mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
@@ -17991,9 +19467,8 @@ class ObjectEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default
         if (this.viewModel == null) {
             return;
         }
-        super.destroy();
         mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
-        this.childEditors.forEach(editor => editor.destroy());
+        this.childEditors.forEach(ed => this.controller.destroyEditor(ed));
         this.childEditors.length = 0;
         this.$children.innerHTML = "";
         this.viewModel = null;
@@ -18014,36 +19489,28 @@ class ObjectEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return OneOfEditor; });
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../utils/getID */ "./src/utils/getID.ts");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril */ "mithril");
-/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_2__);
-/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.ts");
-/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../../utils/UISchema */ "./src/utils/UISchema.ts");
-/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.ts");
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../AbstractEditor */ "./src/editors/AbstractEditor.ts");
 
 
 
 
-
-
-const { UI_PROPERTY } = _utils_UISchema__WEBPACK_IMPORTED_MODULE_4__["default"];
-class OneOfEditor {
+class OneOfEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_3__["default"] {
     constructor(pointer, controller, options) {
-        const childSchema = controller.schema().get(pointer);
+        super(pointer, controller, options);
+        this.notifyNestedChanges = true;
+        this.dom.classList.add("editron-container--oneof");
+        const childSchema = this.getSchema();
         // @special case. Our options lie in `schema.oneOfSchema`
         const schema = childSchema.oneOfSchema;
-        const attrs = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.get(schema, `#/${UI_PROPERTY}/attrs`);
-        this.schema = schema;
-        this.childSchema = childSchema;
         // ensure requried titles are set
         schema.oneOf.forEach((oneOfSchema, index) => (oneOfSchema.title = oneOfSchema.title || `${index}.`));
-        this.$element = controller.createElement(".editron-container.editron-container--oneof", attrs);
-        this.controller = controller;
-        this.pointer = pointer;
+        this.schema = schema;
+        this.childSchema = childSchema;
         this.viewModel = {
-            id: Object(_utils_getID__WEBPACK_IMPORTED_MODULE_0__["default"])(pointer),
             pointer,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
             onchange: (oneOfIndex) => this.changeChild(schema.oneOf[oneOfIndex]),
@@ -18051,24 +19518,19 @@ class OneOfEditor {
             title: schema.title,
             description: schema.description
         };
-        // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
-        this.update = controller.data().observe(pointer, this.update.bind(this), true);
         this.render();
-        this.$childContainer = this.$element.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_5__["CHILD_CONTAINER_SELECTOR"]);
+        this.$childContainer = this.dom.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_2__["CHILD_CONTAINER_SELECTOR"]);
         this.rebuild();
+        this.render();
     }
     static editorOf(pointer, controller, options) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.oneOfSchema && !schema.items && !options.renderOneOf;
     }
-    setActive(active = true) {
-        this.viewModel.disabled = active === false;
-        this.render();
-    }
     changeChild(schema) {
-        this.childEditor && this.childEditor.destroy();
-        const data = this.controller.schema().getTemplate(schema);
-        this.controller.data().set(this.pointer, data);
+        this.controller.destroyEditor(this.childEditor);
+        const data = this.controller.service("schema").getTemplate(schema);
+        this.controller.service("data").set(this.pointer, data);
     }
     getIndexOf(currentSchema) {
         for (let i = 0, l = this.schema.oneOf.length; i < l; i += 1) {
@@ -18078,59 +19540,47 @@ class OneOfEditor {
         }
         return 0;
     }
-    updatePointer(newPointer) {
-        const oldPointer = this.getPointer();
-        if (oldPointer === newPointer) {
-            return;
-        }
-        this.controller.changePointer(newPointer, this);
-        this.pointer = newPointer;
-        this.viewModel.id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_0__["default"])(newPointer);
-        this.viewModel.pointer = newPointer;
-        this.$element.id = newPointer;
-        this.controller.data().removeObserver(oldPointer, this.update);
-        this.controller.data().observe(newPointer, this.update, true);
-        if (this.childEditor) {
-            this.childEditor.updatePointer(newPointer);
+    update(event) {
+        switch (event.type) {
+            case "data:update": {
+                const currentSchema = this.getSchema();
+                delete currentSchema.oneOfSchema; // is recreated each time
+                if (currentSchema.title === this.childSchema.title) {
+                    return;
+                }
+                this.viewModel.value = this.getIndexOf(currentSchema);
+                this.childSchema = currentSchema;
+                this.rebuild();
+                break;
+            }
+            case "pointer":
+                this.viewModel.pointer = event.value;
+                break;
+            case "active":
+                this.viewModel.disabled = event.value === false;
+                break;
         }
         this.render();
     }
-    update() {
-        const currentSchema = this.controller.schema().get(this.pointer);
-        delete currentSchema.oneOfSchema; // is recreated each time
-        if (currentSchema.title === this.childSchema.title) {
-            return;
-        }
-        this.viewModel.value = this.getIndexOf(currentSchema);
-        this.childSchema = currentSchema;
-        this.rebuild();
-    }
     rebuild() {
-        this.childEditor && this.childEditor.destroy();
+        this.controller.destroyEditor(this.childEditor);
         this.$childContainer.innerHTML = "";
         this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
             // @attention this is very important or else we create an infinite loop through selectEditor
             renderOneOf: true
         });
-        this.render();
     }
     render() {
-        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_2___default()(_components_container__WEBPACK_IMPORTED_MODULE_5__["default"], this.viewModel, mithril__WEBPACK_IMPORTED_MODULE_2___default()(".editron-value", mithril__WEBPACK_IMPORTED_MODULE_2___default()(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel))));
-    }
-    toElement() {
-        return this.$element;
-    }
-    getPointer() {
-        return this.pointer;
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_2__["default"], this.viewModel, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-value", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_1__["default"], this.viewModel))));
     }
     destroy() {
         if (this.viewModel == null) {
             return;
         }
-        this.controller.removeInstance(this);
         this.viewModel = null;
-        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.$element, "i");
-        this.controller.data().removeObserver(this.pointer, this.update);
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, "i");
+        this.controller.destroyEditor(this.childEditor);
+        this.controller.service("data").removeObserver(this.pointer, this.update);
     }
 }
 
@@ -18160,35 +19610,92 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const TYPES = {
+    string: "text",
+    integer: "number",
+    number: "number"
+};
+function getInputType(schema) {
+    return TYPES[schema.type] || "text";
+}
 const Component = {
-    view({ attrs }) {
-        const { schema } = attrs;
-        const { options = {} } = attrs.options;
-        const config = {
-            type: schema.type,
-            title: schema.title,
-            description: schema.description,
-            onblur: attrs.onblur || Function.prototype,
-            onfocus: attrs.onfocus || Function.prototype,
-            onchange: attrs.onchange || Function.prototype,
-            ...attrs,
-            ...options
-        };
+    view(vnode) {
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer } = vnode.attrs;
         if (schema.enum && schema.enum.length > 0) {
-            config.options = _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].enumOptions(schema);
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__["default"], config);
+            const selectFormModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                disabled: options.disabled,
+                errors,
+                options: _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].enumOptions(schema),
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__["default"], selectFormModel, vnode.children);
         }
         if (schema.type === "boolean") {
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__["default"], config);
+            const checkBoxModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                disabled: options.disabled,
+                errors,
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__["default"], checkBoxModel, vnode.children);
         }
         if (schema.type === "string" && schema.format === "html") {
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], config);
+            const textareaModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                placeholder: options.placeholder,
+                disabled: options.disabled,
+                errors,
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], textareaModel, vnode.children);
         }
         if (schema.type === "string" && schema.format === "textarea") {
-            config.rows = options["textarea:rows"] || 1;
-            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], config);
+            const textareaModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                placeholder: options.placeholder,
+                disabled: options.disabled,
+                errors,
+                rows: options["textarea:rows"] || 1,
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], textareaModel, vnode.children);
         }
-        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__["default"], config);
+        const inputModel = {
+            id: pointer,
+            title: options.title,
+            description: options.description,
+            placeholder: options.placeholder,
+            disabled: options.disabled,
+            errors,
+            type: getInputType(schema),
+            instantUpdate: options.instantUpdate,
+            value,
+            onchange,
+            onblur,
+            onfocus
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__["default"], inputModel, vnode.children);
     }
 };
 /* harmony default export */ __webpack_exports__["default"] = (Component);
@@ -18216,7 +19723,7 @@ __webpack_require__.r(__webpack_exports__);
 
 class ValueEditor extends _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_2__["default"] {
     static editorOf(pointer, controller) {
-        const schema = controller.schema().get(pointer);
+        const schema = controller.service("schema").get(pointer);
         return schema.type !== "object" && schema.type !== "array";
     }
     constructor(pointer, controller, options = {}) {
@@ -18224,7 +19731,74 @@ class ValueEditor extends _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_2__["def
         this.render();
     }
     render() {
-        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_View__WEBPACK_IMPORTED_MODULE_1__["default"], this.viewModel));
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_View__WEBPACK_IMPORTED_MODULE_1__["default"], this.viewModel));
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/delegationplugin/index.ts":
+/*!**********************************************!*\
+  !*** ./src/plugin/delegationplugin/index.ts ***!
+  \**********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DelegationPlugin; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../editors/AbstractEditor */ "./src/editors/AbstractEditor.ts");
+/* harmony import */ var mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/index */ "./node_modules/mithril-material-forms/index.ts");
+
+
+
+class AbstractDelegationEditor extends _editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_1__["default"] {
+    static editorOf(pointer, controller, options) {
+        return options.delegate != null && options.isDelegated !== true;
+    }
+    constructor(pointer, controller, options) {
+        options.isDelegated = true;
+        super(pointer, controller, options);
+        this.render();
+    }
+    update(event) {
+        console.log("update delegation pliugin", event);
+    }
+    delegate(pointer) {
+        throw new Error("notify has not been implemented in 'DelegationEditor'");
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.editron-delegate.editron-delegate--${this.getSchema().type}`, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_2__["Button"], { onclick: () => this.delegate(this.pointer) }, "edit")));
+    }
+}
+class DelegationPlugin {
+    constructor(options) {
+        this.id = "delegation-plugin";
+        this.onDelegation = options.onDelegation;
+        this.dom = document.createElement("div");
+    }
+    initialize(controller) {
+        this.controller = controller;
+        class DelegationEditor extends AbstractDelegationEditor {
+        }
+        DelegationEditor.prototype.delegate = this.delegate.bind(this);
+        this.controller.editors.unshift(DelegationEditor);
+        return this;
+    }
+    delegate(pointer) {
+        if (this.current) {
+            this.current.destroy();
+        }
+        this.current = this.controller.createEditor(pointer, this.dom, { isDelegated: true });
+        this.onDelegation({
+            controller: this.controller,
+            pointer,
+            editor: this.current
+        });
     }
 }
 
@@ -18246,7 +19820,6 @@ const validators = [];
 /* harmony default export */ __webpack_exports__["default"] = ({
     /** register an editor (widget) to use in editron-controller */
     editor(constructor) {
-        // @ts-ignore
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);
     },
@@ -18281,23 +19854,390 @@ const validators = [];
 
 /***/ }),
 
-/***/ "./src/services/DataService.ts":
-/*!*************************************!*\
-  !*** ./src/services/DataService.ts ***!
-  \*************************************/
-/*! exports provided: EventType, default */
+/***/ "./src/plugin/remotedataplugin/index.ts":
+/*!**********************************************!*\
+  !*** ./src/plugin/remotedataplugin/index.ts ***!
+  \**********************************************/
+/*! exports provided: default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return RemoteDataPlugin; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class RemoteDataPlugin {
+    constructor(options) {
+        this.id = "remote-data-plugin";
+        // this.dom = document.createElement("div");
+    }
+    initialize(controller) {
+        this.controller = controller;
+        return this;
+    }
+    async setData(pointer, remote) {
+        const { controller } = this;
+        const currentData = controller.service("data").getDataByReference();
+        const source = Object.keys(remote.set);
+        const sourcePointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, remote.source);
+        let sourceData = controller.service("data").get(sourcePointer);
+        if (sourceData == null || sourceData === "") {
+            return;
+        }
+        if (typeof sourceData !== "object") {
+            sourceData = { [sourcePointer.split("/").pop()]: sourceData };
+        }
+        const remoteUrl = json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1___default()(remote.url, sourceData);
+        const json = await controller.proxy().get("json", ({ source: remoteUrl }));
+        source.forEach(key => {
+            const targetPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, remote.set[key]);
+            const currentValue = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(currentData, targetPointer);
+            if (remote.overwrite !== true && !(currentValue === "" || currentValue == null)) {
+                return;
+            }
+            const targetValue = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(json, key);
+            // console.log("set", targetPointer, targetValue, "//", key, remote.set);
+            controller.service("data").set(targetPointer, targetValue);
+        });
+    }
+    onCreateEditor(pointer, editor, options) {
+        if (options && options.remoteData) {
+            const { controller } = this;
+            const remote = options.remoteData;
+            // const source = Object.keys(remote.set);
+            const sourcePointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, remote.source);
+            // const sourceData = controller.service("data").get(sourcePointer);
+            // const remoteUrl = render(remote.url, sourceData);
+            controller.service("data").observe(sourcePointer, async () => {
+                this.setData(pointer, remote);
+            }, true);
+            this.setData(pointer, remote);
+            editor.__remoteDataPlugin = {
+                options: remote,
+            };
+        }
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__remoteDataPlugin) {
+            editor.__remoteDataPlugin = undefined;
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/selectionplugin/index.ts":
+/*!*********************************************!*\
+  !*** ./src/plugin/selectionplugin/index.ts ***!
+  \*********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SelectionPlugin; });
+class SelectionPlugin {
+    constructor(options) {
+        this.id = "selection-plugin";
+        // this.onDelegation = options.onDelegation;
+        this.dom = document.createElement("div");
+        this.onSelect = options.onSelect;
+        this.onDeselect = options.onDeselect;
+    }
+    initialize(controller) {
+        this.controller = controller;
+        document.body.addEventListener("click", () => this.deselect());
+        return this;
+    }
+    deselect() {
+        if (this.currentSelection) {
+            const editor = this.currentSelection;
+            editor.getElement().classList.remove("selected");
+            this.onDeselect({ pointer: editor.getPointer(), editor, options: editor.__selectionPlugin.options });
+            this.currentSelection = null;
+        }
+    }
+    select(event, editor) {
+        event.stopPropagation();
+        if (this.currentSelection === editor) {
+            return;
+        }
+        this.deselect();
+        this.currentSelection = editor;
+        this.currentSelection.getElement().classList.add("selected");
+        // console.log("add class to ", this.currentSelection.getElement());
+        this.onSelect({ pointer: editor.getPointer(), editor, options: editor.__selectionPlugin.options });
+    }
+    onCreateEditor(pointer, editor, options) {
+        if (options && options.selectable) {
+            // console.log("add selection", pointer, options);
+            editor.__selectionPlugin = {
+                options,
+                select: event => this.select(event, editor)
+            };
+            editor.getElement().addEventListener("click", editor.__selectionPlugin.select);
+        }
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__selectionPlugin) {
+            editor.getElement().removeEventListener("click", editor.__selectionPlugin.select);
+            editor.__selectionPlugin = undefined;
+            if (this.currentSelection === editor) {
+                this.currentSelection = null;
+            }
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/sortableplugin/index.ts":
+/*!********************************************!*\
+  !*** ./src/plugin/sortableplugin/index.ts ***!
+  \********************************************/
+/*! exports provided: onAddSortable, onEndSortable, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onAddSortable", function() { return onAddSortable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onEndSortable", function() { return onEndSortable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SortablePlugin; });
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var sortablejs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sortablejs */ "./node_modules/sortablejs/modular/sortable.esm.js");
+/* harmony import */ var _utils_array__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/array */ "./src/utils/array.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+function onAddSortable(pointer, controller, event) {
+    console.log("on add");
+    const { from, newIndex, item } = event;
+    const schema = controller.service("schema").get(pointer);
+    // always remove node - we create it from data
+    item.parentNode.removeChild(item);
+    if (from.dataset.parent == null) {
+        console.log("Add -- create new child from data-property");
+        let data;
+        try {
+            data = JSON.parse(item.dataset.content);
+            // for convinience, add missing data
+            data = controller.service("schema").core.getTemplate([data], schema)[0];
+        }
+        catch (e) {
+            console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
+            return;
+        }
+        const toList = controller.service("data").get(pointer);
+        toList.splice(newIndex, 0, data);
+        controller.service("data").set(pointer, toList);
+    }
+}
+function onEndSortable(pointer, controller, event) {
+    // const element = event.item;  // dragged HTMLElement
+    const { to, from, oldIndex, newIndex } = event;
+    if (to === from && oldIndex === newIndex) {
+        console.log("drag had no effect");
+        return;
+    }
+    const toPointer = to.dataset.parent;
+    const fromPointer = from.dataset.parent;
+    // if container or pointer (different editors) are the same, its a move within a list
+    if (to === from || (toPointer != null && toPointer === fromPointer)) {
+        _utils_array__WEBPACK_IMPORTED_MODULE_2__["default"].moveItem(pointer, controller, oldIndex, newIndex);
+        return;
+    }
+    if (to !== from) {
+        if (toPointer == null) {
+            console.log("undefined `toPointer` on", to);
+            return;
+        }
+        if (fromPointer == null) {
+            console.log("undefined `fromPointer` on", from);
+            return;
+        }
+        const toList = controller.service("data").get(toPointer);
+        const fromList = controller.service("data").get(fromPointer);
+        toList.splice(newIndex, 0, fromList[oldIndex]);
+        fromList.splice(oldIndex, 1);
+        // join data to make one change request (for undo)
+        const rootData = controller.service("data").get();
+        gson_pointer__WEBPACK_IMPORTED_MODULE_3___default.a.set(rootData, fromPointer, fromList);
+        gson_pointer__WEBPACK_IMPORTED_MODULE_3___default.a.set(rootData, toPointer, toList);
+        controller.service("data").set("#", rootData);
+        // controller.service("data").set(fromPointer, fromList);
+        // controller.service("data").set(toPointer, toList);
+    }
+}
+class SortablePlugin {
+    constructor(options) {
+        this.id = "sortable-plugin";
+        // this.onDelegation = options.onDelegation;
+        this.dom = document.createElement("div");
+        // this.onSelect = options.onSelect;
+        // this.onDeselect = options.onDeselect;
+    }
+    initialize(controller) {
+        this.controller = controller;
+        // document.body.addEventListener("click", () => this.deselect());
+        return this;
+    }
+    onCreateEditor(pointer, editor, options) {
+        var _a;
+        if ((options === null || options === void 0 ? void 0 : options.sortable) == null) {
+            return;
+        }
+        const schema = this.controller.service("schema").get(pointer);
+        if ((schema === null || schema === void 0 ? void 0 : schema.type) !== "array") {
+            return;
+        }
+        const { controller } = this;
+        const $children = editor.getElement().querySelector(_components_container__WEBPACK_IMPORTED_MODULE_0__["CHILD_CONTAINER_SELECTOR"]);
+        if ($children == null) {
+            console.log(`failed retrieving sortable children container '${_components_container__WEBPACK_IMPORTED_MODULE_0__["CHILD_CONTAINER_SELECTOR"]}' -- abort`);
+            return;
+        }
+        $children.dataset.parent = pointer;
+        let hasMoved;
+        const sortable = new sortablejs__WEBPACK_IMPORTED_MODULE_1__["default"]($children, {
+            group: (_a = options.sortable.group) !== null && _a !== void 0 ? _a : pointer,
+            // handle: ".editron-handle",
+            handle: ".editron-item",
+            onChoose: () => {
+                // console.log("choose");
+            },
+            onStart: () => {
+                hasMoved = true;
+            },
+            onUnchoose: (event) => {
+                const { to, from, oldIndex, newIndex } = event;
+                if (hasMoved === false && to === from && newIndex == null) {
+                    // console.log(event);
+                    // selectionService.toggle(`${this.pointer}/${oldIndex}`);
+                    console.log("update location", `${pointer}/${oldIndex}`);
+                    controller.service("location").setCurrent(`${pointer}/${oldIndex}`);
+                }
+                hasMoved = false;
+            },
+            onAdd(event) {
+                onAddSortable(pointer, controller, event);
+            },
+            onEnd(event) {
+                onEndSortable(pointer, controller, event);
+                // console.log(
+                //     "target list", to, "\n",
+                //     "previous list", from, "\n",
+                //     "element's old index within old parent", event.oldIndex, "\n",
+                //     "element's new index within new parent", event.newIndex, "\n",
+                //     "element's old index within old parent, only counting draggable elements", event.oldDraggableIndex, "\n",
+                //     "element's new index within new parent, only counting draggable elements", event.newDraggableIndex, "\n",
+                //     "the clone element", event.clone, "\n",
+                //     "when item is in another sortable: `clone` if cloning, `true` if moving", event.pullMode
+                // );
+            }
+        });
+        editor.__sortablePlugin = { sortable };
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__sortablePlugin) {
+            editor.__sortablePlugin.sortable.destroy();
+            editor.__sortablePlugin = undefined;
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/syncplugin/index.ts":
+/*!****************************************!*\
+  !*** ./src/plugin/syncplugin/index.ts ***!
+  \****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SyncPlugin; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+
+class SyncPlugin {
+    constructor(options) {
+        this.id = "remote-data-plugin";
+        // this.dom = document.createElement("div");
+    }
+    initialize(controller) {
+        this.controller = controller;
+        return this;
+    }
+    onCreateEditor(pointer, editor, options) {
+        const { sync } = options !== null && options !== void 0 ? options : {};
+        if (sync == null) {
+            return;
+        }
+        const { controller } = this;
+        const from = Object.keys(sync.fromTo);
+        const fromPointer = from.map(key => gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, key));
+        const currentData = {};
+        fromPointer.forEach(pointer => (currentData[pointer] = controller.service("data").get(pointer)));
+        const toPointer = from.map(key => gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, sync.fromTo[key]));
+        fromPointer.forEach((sourcePointer, index) => {
+            controller.service("data").observe(sourcePointer, () => {
+                const targetValue = controller.service("data").get(toPointer[index]);
+                const currentValue = currentData[sourcePointer];
+                currentData[sourcePointer] = controller.service("data").get(sourcePointer);
+                if (!(targetValue == null || targetValue == "") && targetValue !== currentValue) {
+                    return;
+                }
+                controller.service("data").set(toPointer[index], currentData[sourcePointer]);
+            }, true);
+        });
+        editor.__syncPlugin = {
+            options: sync
+        };
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__syncPlugin) {
+            editor.__syncPlugin = undefined;
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/services/DataService.ts":
+/*!*************************************!*\
+  !*** ./src/services/DataService.ts ***!
+  \*************************************/
+/*! exports provided: isAddChange, isDeleteChange, isMoveChange, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isAddChange", function() { return isAddChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isDeleteChange", function() { return isDeleteChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isMoveChange", function() { return isMoveChange; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DataService; });
 /* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/copy */ "./src/services/utils/copy.ts");
 /* harmony import */ var _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducers/dataReducer */ "./src/services/reducers/dataReducer.ts");
 /* harmony import */ var _utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/diffpatch */ "./src/services/utils/diffpatch.ts");
 /* harmony import */ var _utils_getParentPointer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/getParentPointer */ "./src/services/utils/getParentPointer.ts");
-/* harmony import */ var _utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/getPatchesPerPointer */ "./src/services/utils/getPatchesPerPointer.ts");
+/* harmony import */ var _utils_createDiff__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/createDiff */ "./src/services/utils/createDiff.ts");
 /* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
 /* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5__);
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
@@ -18305,21 +20245,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_isRootPointer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/isRootPointer */ "./src/services/utils/isRootPointer.ts");
 /* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
 /* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
-/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
-var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to set private field on non-instance");
-    }
-    privateMap.set(receiver, value);
-    return value;
-};
-var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
-    if (!privateMap.has(receiver)) {
-        throw new TypeError("attempted to get private field on non-instance");
-    }
-    return privateMap.get(receiver);
-};
-var _onStateChanged;
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../utils/UISchema */ "./src/utils/UISchema.ts");
 
 
 
@@ -18332,58 +20258,120 @@ var _onStateChanged;
 
 
 const DEBUG = false;
-var EventType;
-(function (EventType) {
-    /** called before starting data update */
-    EventType["BEFORE_UPDATE"] = "beforeUpdate";
-    /** called after data udpate was performed */
-    EventType["AFTER_UPDATE"] = "afterUpdate";
-    /** called after all updates with a list of patches */
-    EventType["FINAL_UPDATE"] = "finalUpdate";
-})(EventType || (EventType = {}));
-/**
- * Read and modify form data and notify observers
- * @param state - current state/store of application
- * @param data - current application data (form)
- */
+const isAddChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "add";
+const isDeleteChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "delete";
+const isMoveChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "move";
+/** converts a patch to a list of simple changes for add, delete and move operations */
+function getArrayChangeList(patchResult, originalData) {
+    const changeList = [];
+    const eventLocation = patchResult.pointer;
+    let originalArray = gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get(originalData, eventLocation);
+    if (Array.isArray(originalArray) === false) {
+        return changeList;
+    }
+    originalArray = originalArray.map((_, index) => `${eventLocation}/${index}`);
+    const changedArray = _utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__["default"].patch(Array.from(originalArray), patchResult.patch);
+    // retrieve deleted items
+    for (let i = 0, l = originalArray.length; i < l; i += 1) {
+        if (changedArray.includes(originalArray[i]) === false) {
+            const change = { type: "delete", old: originalArray[i] };
+            changeList.push(change);
+        }
+    }
+    // identify added and movement items
+    for (let i = 0, l = changedArray.length; i < l; i += 1) {
+        let change;
+        const ptrOrData = changedArray[i];
+        const ptrChanged = ptrOrData !== `${eventLocation}/${i}`;
+        if (ptrChanged === false) {
+            continue;
+        }
+        if (Object(_utils_UISchema__WEBPACK_IMPORTED_MODULE_10__["isPointer"])(ptrOrData)) {
+            change = { type: "move", old: ptrOrData, next: `${eventLocation}/${i}` };
+        }
+        else {
+            change = { type: "add", next: `${eventLocation}/${i}`, data: ptrOrData };
+        }
+        changeList.push(change);
+    }
+    return changeList;
+}
+function getObjectChangeList(patchResult) {
+    const changeList = [];
+    const { pointer } = patchResult;
+    const properties = Object.keys(patchResult.patch);
+    for (let i = 0, l = properties.length; i < l; i += 1) {
+        const property = properties[i];
+        const change = patchResult.patch[property];
+        if (change.length === 1) {
+            changeList.push({ type: "add", next: `${pointer}/${property}` });
+        }
+        else if (change[2] === 0) {
+            changeList.push({ type: "delete", old: `${pointer}/${property}` });
+        }
+        else if (change[2] === 3) {
+            console.log("object property movement", patchResult);
+            throw new Error(`Property movement currently unsupported (${JSON.stringify(change)})`);
+        }
+        // changed value
+        // else if (change.length === 2) { console.log("change", `${patch.pointer}/${property}`); }
+    }
+    return changeList;
+}
 class DataService {
+    /**
+     * Read and modify form data and notify observers
+     * @param state - current state/store of application
+     * @param data - current application data (form)
+     */
     constructor(state, data) {
         /** state store-id of service */
         this.id = "data";
-        /** event emitter */
-        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_10__["createNanoEvents"])();
-        _onStateChanged.set(this, void 0);
+        /** current observers on json-pointer changes */
+        this.observers = {};
+        /** internal value to track previous data */
+        this.lastUpdate = {};
+        /** list of active watchers on update-lifecycle events */
+        this.watcher = [];
         if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_8__["default"])) {
             throw new Error("Given state in DataService must be of instance 'State'");
         }
-        this.observers = {};
         this.state = state;
         this.state.register(this.id, _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_1__["default"]);
-        let lastUpdate = {};
-        // improved version - supporting multiple patches
-        __classPrivateFieldSet(this, _onStateChanged, () => {
-            const current = this.state.get(this.id);
-            const patches = Object(_utils_getPatchesPerPointer__WEBPACK_IMPORTED_MODULE_4__["default"])(lastUpdate, current.data.present);
-            if (patches.length === 0) {
-                DEBUG && console.info("DataService abort update event -- nothing changed");
-                return;
-            }
-            DEBUG && console.log("Patch locations", patches.map(delta => delta.pointer));
-            for (let i = 0, l = patches.length; i < l; i += 1) {
-                const eventLocation = patches[i].pointer;
-                const parentData = this.getDataByReference(eventLocation);
-                const parentDataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5___default()(parentData);
-                this.emit(EventType.AFTER_UPDATE, eventLocation, { type: parentDataType, patch: patches[i].patch });
-                this.bubbleObservers(eventLocation, { type: parentDataType, patch: patches[i].patch });
-            }
-            this.emitter.emit(EventType.FINAL_UPDATE, patches);
-            lastUpdate = current.data.present;
-        });
-        this.state.subscribe(this.id, __classPrivateFieldGet(this, _onStateChanged));
+        this.onStateChanged = this.onStateChanged.bind(this);
+        this.state.subscribe(this.id, this.onStateChanged);
         if (data !== undefined) {
             this.set("#", data);
             this.resetUndoRedo();
         }
+    }
+    // improved version - supporting multiple patches
+    onStateChanged() {
+        const current = this.state.get(this.id);
+        const patches = Object(_utils_createDiff__WEBPACK_IMPORTED_MODULE_4__["default"])(this.lastUpdate, current.data.present);
+        if (patches.length === 0) {
+            return;
+        }
+        for (let i = 0, l = patches.length; i < l; i += 1) {
+            const eventLocation = patches[i].pointer;
+            const parentData = this.getDataByReference(eventLocation);
+            const parentDataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5___default()(parentData);
+            // build simple patch-information and notify about changes in pointer for move-instance support
+            // this is a major performance improvement for array-item movements
+            if (parentDataType === "array") {
+                const changes = getArrayChangeList(patches[i], this.lastUpdate);
+                this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes } });
+            }
+            else if (parentDataType === "object") {
+                const changes = getObjectChangeList(patches[i]);
+                this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes } });
+            }
+            const payload = { pointer: eventLocation, patch: patches[i].patch };
+            this.notifyWatcher({ type: "data:update:after", value: payload });
+            this.bubbleObservers(eventLocation, { type: "data:update", value: payload });
+        }
+        this.notifyWatcher({ type: "data:update:done", value: patches });
+        this.lastUpdate = current.data.present;
     }
     /** clear undo/redo stack */
     resetUndoRedo() {
@@ -18391,7 +20379,7 @@ class DataService {
     }
     /**
      * Get a copy of current data from the requested `pointer`
-     * @param [pointer="#"] - data to fetch. Defaults to _root_
+     * @param [pointer] - data to fetch. Defaults to _root_
      * @returns data, associated with `pointer`
      */
     get(pointer = "#") {
@@ -18403,8 +20391,9 @@ class DataService {
      * @returns data, associated with `pointer`
      */
     getDataByReference(pointer = "#") {
+        var _a;
         // eslint-disable-next-line no-invalid-this
-        return gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get(this.state.get(this.id).data.present, pointer);
+        return gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get((_a = this.state.get(this.id)) === null || _a === void 0 ? void 0 : _a.data.present, pointer);
     }
     /**
      * Change data at the given `pointer`
@@ -18421,7 +20410,7 @@ class DataService {
             DEBUG && console.info("DataService abort update -- value not changed");
             return;
         }
-        this.emit(EventType.BEFORE_UPDATE, pointer, { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].DATA_SET, isSynched });
+        this.notifyWatcher({ type: "data:update:before", value: { pointer, action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].DATA_SET } });
         this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].setData(pointer, value, currentValue, isSynched));
         if (pointer === "#" && isSynched === false) {
             // do not add root changes to undo
@@ -18452,26 +20441,26 @@ class DataService {
     }
     /** undo last change */
     undo() {
-        this.emit(EventType.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].UNDO });
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].UNDO } });
         this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].undo());
     }
     /** redo last undo */
     redo() {
-        this.emit(EventType.BEFORE_UPDATE, "#", { action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].REDO });
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].REDO } });
         this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].redo());
     }
-    /** add an event listener to update events */
-    on(eventType, callback) {
-        return this.emitter.on(eventType, callback);
+    notifyWatcher(event) {
+        this.watcher.forEach(watcher => watcher(event));
     }
-    /** remove an event listener from update events */
-    off(eventType, callback) {
-        // @ts-ignore
-        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+    /** watch DataService lifecycle events */
+    watch(callback) {
+        if (this.watcher.includes(callback) === false) {
+            this.watcher.push(callback);
+        }
+        return callback;
     }
-    emit(eventType, pointer, data) {
-        // @ts-ignore
-        this.emitter.emit(eventType, createEventObject(pointer, data));
+    removeWatcher(callback) {
+        this.watcher = this.watcher.filter(watcher => watcher !== callback);
     }
     /**
      * observes changes in data at the specified json-pointer
@@ -18491,6 +20480,7 @@ class DataService {
         if (this.observers[pointer] && this.observers[pointer].length > 0) {
             this.observers[pointer] = this.observers[pointer].filter(cb => cb !== callback);
         }
+        return this;
     }
     /** send an event to all json-pointer observers */
     notify(pointer, event) {
@@ -18499,19 +20489,18 @@ class DataService {
         }
         const observers = this.observers[pointer];
         for (let i = 0, l = observers.length; i < l; i += 1) {
-            if (observers[i].bubbleEvents === true || event.pointer === pointer) {
+            if (observers[i].bubbleEvents === true || event.value.pointer === pointer) {
                 observers[i](event);
             }
         }
     }
-    bubbleObservers(pointer, data) {
-        const eventObject = createEventObject(pointer, data);
+    bubbleObservers(pointer, event) {
         const frags = gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.split(pointer);
         while (frags.length) {
-            this.notify(gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.join(frags, true), eventObject);
+            this.notify(gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.join(frags, true), event);
             frags.length -= 1;
         }
-        this.notify("#", eventObject);
+        this.notify("#", event);
     }
     /** Test the pointer for existing data */
     isValid(pointer) {
@@ -18519,17 +20508,120 @@ class DataService {
     }
     /** destroy service */
     destroy() {
-        this.state.unsubscribe(this.id, __classPrivateFieldGet(this, _onStateChanged));
+        this.state.unsubscribe(this.id, this.onStateChanged);
         this.state.unregister(this.id);
     }
 }
-_onStateChanged = new WeakMap();
-function createEventObject(pointer, data) {
-    return {
-        ...data,
-        pointer,
-        parentPointer: Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer)
-    };
+
+
+/***/ }),
+
+/***/ "./src/services/InstanceService.ts":
+/*!*****************************************!*\
+  !*** ./src/services/InstanceService.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return InstanceService; });
+/* harmony import */ var _DataService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DataService */ "./src/services/DataService.ts");
+
+/**
+ * manages editor instance events -
+ * tracks and notifies instances over their lifetime on changes
+ */
+class InstanceService {
+    constructor(controller) {
+        /** active editor instances */
+        this.instances = [];
+        this.controller = controller;
+    }
+    add(editor) {
+        const pointer = editor.getPointer();
+        editor.getElement().setAttribute("data-point", pointer);
+        editor.update = editor.update.bind(editor);
+        editor.pointer = pointer;
+        this.controller.service("data").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.controller.service("validation").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.instances.push(editor);
+    }
+    findFrom(parentPointer) {
+        return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer));
+    }
+    remove(editor) {
+        this.controller.service("data").removeObserver(editor.pointer, editor.update);
+        this.controller.service("validation").removeObserver(editor.pointer, editor.update);
+        this.instances = this.instances.filter(ed => ed !== editor);
+    }
+    /**
+     *  move or delete properties/items before upcoming editor updates
+     *  - changes pointers and observers and
+     *  - notifies editors
+     */
+    updateContainer(pointer, controller, changes) {
+        const changePointers = [];
+        for (let i = 0, l = changes.length; i < l; i += 1) {
+            const change = changes[i];
+            // we have to collect editors up front or patch-sequences get mangled
+            // between update and not yet udpated editor
+            if (Object(_DataService__WEBPACK_IMPORTED_MODULE_0__["isMoveChange"])(change)) {
+                changePointers.push({
+                    ...change,
+                    editors: this.findFrom(change.old)
+                });
+                // destroy editor instances
+            }
+            else if (Object(_DataService__WEBPACK_IMPORTED_MODULE_0__["isDeleteChange"])(change)) {
+                this.findFrom(change.old).forEach(ed => controller.destroyEditor(ed));
+            }
+        }
+        // change pointer of instances
+        changePointers.forEach(change => {
+            const { old: prevPtr, next: nextPtr, editors } = change;
+            editors.forEach((instance) => {
+                const newPointer = instance.getPointer().replace(prevPtr, nextPtr);
+                this.controller.service("data")
+                    .removeObserver(instance.pointer, instance.update)
+                    .observe(newPointer, instance.update, instance.notifyNestedChanges);
+                this.controller.service("validation")
+                    .removeObserver(instance.pointer, instance.update)
+                    .observe(newPointer, instance.update, instance.notifyNestedChanges);
+                instance.pointer = newPointer;
+                instance.update({ type: "pointer", value: newPointer });
+                instance.pointer = newPointer;
+                instance.getElement().setAttribute("data-point", newPointer);
+            });
+        });
+    }
+    /** change all editors active-state */
+    setActive(active) {
+        this.instances.forEach(ed => ed.update({ type: "active", value: active }));
+    }
+    destroy() {
+        this.instances.forEach(instance => instance.destroy());
+        this.instances.length = 0;
+    }
+    /**
+     * @debug
+     * @returns currently active editor/widget instances sorted by pointer
+     */
+    getInstancesPerPointer() {
+        const map = {};
+        this.instances.forEach(editor => {
+            const pointer = editor.getPointer();
+            map[pointer] = map[pointer] || [];
+            if (map[pointer].includes(editor) === false) {
+                map[pointer].push(editor);
+            }
+            else {
+                console.log("multiple instances on", editor.getPointer(), editor);
+            }
+        });
+        return map;
+    }
 }
 
 
@@ -18539,122 +20631,127 @@ function createEventObject(pointer, data) {
 /*!*****************************************!*\
   !*** ./src/services/LocationService.ts ***!
   \*****************************************/
-/*! exports provided: EventType, default */
+/*! exports provided: defaultOptions, default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultOptions", function() { return defaultOptions; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LocationService; });
-/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
-/* harmony import */ var _utils_getID__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/getID */ "./src/utils/getID.ts");
-
-
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
 
 
 const DELAY = 25;
-var EventType;
-(function (EventType) {
-    /** called for a focused editor */
-    EventType["FOCUS"] = "focus";
-    /** called for a blurred editor */
-    EventType["BLUR"] = "blur";
-    /** called, when a new page is focused (page = first property on root data) */
-    EventType["PAGE"] = "page";
-    /** called, when the current selected json-pointer has changed */
-    EventType["TARGET"] = "target";
-})(EventType || (EventType = {}));
-const emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_0__["createNanoEvents"])();
-/**
- * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
- *
- * The LocationService manages global pointer states and scroll position:
- *  - the "current pointer" tracks the currently focused editor and
- *  - the "page pointer" corresponds to the first property of "current pointer", which may be used for main page loading
- *
- * ### Motivation
- *
- * Jumping to specific editors via the navigation requires a targeting system. A page reload may occur for a called
- * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
- * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
- * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
- */
+function getViewportHeight() {
+    return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+}
+const defaultOptions = {
+    rootElement: document.body,
+    scrollTopOffset: 0,
+    pagePattern: "(^#?/[^/]+)"
+};
 class LocationService {
-    constructor() {
+    /**
+     * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
+     *
+     * The LocationService manages global pointer states and scroll position:
+     *  - the "current pointer" tracks the currently focused editor and
+     *  - the "page pointer" corresponds to the first property of "current pointer", which may be used for main page loading
+     *
+     * ### Motivation
+     *
+     * Jumping to specific editors via the navigation requires a targeting system. A page reload may occur for a called
+     * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
+     * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
+     * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
+     */
+    constructor(options = {}) {
         this.PAGE_EVENT = "page";
         this.TARGET_EVENT = "target";
-        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["EventType"].CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
-        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_2__["EventType"].CURRENT_POINTER, pointer => emitter.emit(EventType.TARGET, pointer));
+        this.watcher = [];
+        this.options = { ...defaultOptions, ...options };
+        this.setCurrent("");
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_1__["EventType"].CURRENT_PAGE, pointer => this.notifyWatcher({ type: "location:page", value: pointer }));
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_1__["EventType"].CURRENT_POINTER, pointer => this.notifyWatcher({ type: "location:target", value: pointer }));
     }
     // update page and target pointer
-    goto(targetPointer) {
-        const path = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.split(targetPointer);
-        if (path.length === 0 || (path.length === 1 && path[0] === "")) {
+    goto(targetPointer, rootElement = this.options.rootElement) {
+        const matches = targetPointer.match(new RegExp(this.options.pagePattern));
+        if (!matches) {
             return;
         }
-        const nextPage = path[0];
-        const currentPage = _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPage();
+        const nextPage = matches.pop();
+        const currentPage = _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPage();
         if (currentPage !== nextPage) {
-            _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPage(gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(nextPage, true));
+            _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPage(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(nextPage, true));
         }
-        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer(gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(targetPointer, true));
-        this.focus();
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPointer(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(targetPointer, true));
+        this.focus(rootElement);
     }
     /** set target pointer */
     setCurrent(pointer) {
         if (pointer !== this.getCurrent()) {
-            _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer(pointer);
-            emitter.emit(EventType.FOCUS, pointer);
+            _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPointer(pointer);
+            this.notifyWatcher({ type: "focus", value: pointer });
         }
     }
     getCurrent() {
-        return _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer();
+        return _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPointer();
     }
     /** focus target pointer */
-    focus() {
+    focus(rootElement = this.options.rootElement) {
         clearTimeout(this.timeout);
-        const pointer = _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer();
-        const id = Object(_utils_getID__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer);
-        const targetElement = document.getElementById(id);
-        // console.log(`pointer ${pointer} - id ${id}`, targetElement);
+        const pointer = _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPointer();
+        const targetElement = rootElement.querySelector(`[data-point="${pointer}"]`);
         if (targetElement == null) {
-            // console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
+            console.log(`Location:focus - target ${pointer} not found`);
             return;
         }
-        // const targetPosition = targetElement.getBoundingClientRect().top
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
         this.timeout = setTimeout(() => {
-            // try scrolling to header-row in container (low height) to have a more robust scroll target position
-            let scrollTarget = targetElement.querySelector(".editron-container > .editron-container__header");
-            scrollTarget = (scrollTarget == null || scrollTarget.offsetParent === null) ? targetElement : scrollTarget;
-            scrollTarget.scrollIntoView();
-            // @todo only fire focus event?
+            const { scrollTopOffset } = this.options;
+            const bound = targetElement.getBoundingClientRect();
+            const viewportHeight = getViewportHeight();
+            if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
+                // @note: this works only if editron is within a scrollable page
+                window.scrollTo(0, bound.top + scrollTopOffset);
+            }
+            else {
+                console.log("skip scrolling - already in viewport", viewportHeight, bound.top);
+            }
             targetElement.dispatchEvent(new Event("focus"));
-            targetElement.focus && targetElement.focus();
+            // @todo only fire focus event?
+            // targetElement.focus && targetElement.focus();
+            this.timeout = null;
         }, DELAY);
     }
     blur(pointer) {
-        if (_uistate__WEBPACK_IMPORTED_MODULE_2__["default"].getCurrentPointer() !== pointer) {
+        if (_uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPointer() !== pointer) {
             return;
         }
-        _uistate__WEBPACK_IMPORTED_MODULE_2__["default"].setCurrentPointer("");
-        emitter.emit(EventType.BLUR, pointer);
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPointer("");
+        this.notifyWatcher({ type: "blur", value: pointer });
     }
-    /** add an event listener to update events */
-    on(eventType, callback) {
-        return emitter.on(eventType, callback);
-    }
-    /** remove an event listener from update events */
-    off(eventType, callback) {
-        if (Array.isArray(emitter.events[eventType])) {
-            emitter.events[eventType] = emitter.events[eventType].filter(func => func !== callback);
+    watch(watcher) {
+        if (this.watcher.includes(watcher) === false) {
+            this.watcher.push(watcher);
         }
+        return this;
+    }
+    notifyWatcher(event) {
+        this.watcher.forEach(w => w(event));
+        return this;
+    }
+    removeWatcher(watcher) {
+        this.watcher = this.watcher.filter(w => w !== watcher);
+        return this;
     }
 }
-;
 
 
 /***/ }),
@@ -18663,12 +20760,13 @@ class LocationService {
 /*!****************************************!*\
   !*** ./src/services/OverlayService.ts ***!
   \****************************************/
-/*! exports provided: default */
+/*! exports provided: defaultOptions, default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultOptions", function() { return defaultOptions; });
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
 /* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _components_overlay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/overlay */ "./src/components/overlay/index.ts");
@@ -18680,34 +20778,23 @@ __webpack_require__.r(__webpack_exports__);
 
 
 _uistate__WEBPACK_IMPORTED_MODULE_3__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_3__["EventType"].OVERLAY, value => OverlayService.onChange(value === null || value === void 0 ? void 0 : value.element, value === null || value === void 0 ? void 0 : value.options));
+const defaultOptions = {
+    ok: false,
+    save: true,
+    fullscreen: false,
+    onAbort: Function.prototype,
+    onSave: Function.prototype
+};
 /**
  * Opens an overlay with a DOM-Node as contents
- * @type {Object}
  */
 const OverlayService = {
-    /**
-     * Opens the overlay, showing the given `container` as conten
-     *
-     * Options
-     *  {Boolean} ok            - display `ok`, instead of `abort`
-     *  {Boolean} fullscreen    - fullscreen size of overlay, regardless of content
-     *  {Function} onAbort      - called when Overlay is closed via ok/abort
-     *  {Function} onSave       - called when Overlay is closed via save
-     *
-     * @param  {HTMLElement} container
-     * @param  {Obejct} options
-     */
+    /** Opens the overlay, showing the given `container` as content */
     open(container, options) {
         // @ts-ignore
         _uistate__WEBPACK_IMPORTED_MODULE_3__["default"].setOverlay({
             element: container,
-            options: Object.assign({
-                ok: false,
-                save: true,
-                fullscreen: false,
-                onAbort: Function.prototype,
-                onSave: Function.prototype
-            }, options)
+            options: { ...defaultOptions, ...options }
         });
     },
     close() {
@@ -18774,13 +20861,13 @@ __webpack_require__.r(__webpack_exports__);
 
 const { getChildSchemaSelection } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a;
 const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.cores;
-/**
- * Manages json-schema interactions and adds caching of reoccuring json-schema requests
- * @param schema - json-schema
- * @param [data={}] - data corresponding to json-schema
- * @param [core={}] - instance of json-schema-library Core
- */
 class SchemaService {
+    /**
+     * Manages json-schema interactions and adds caching of reoccuring json-schema requests
+     * @param schema - json-schema
+     * @param [data] - data corresponding to json-schema
+     * @param [core] - instance of json-schema-library Core
+     */
     constructor(schema = { type: "object" }, data = {}, core = new Core()) {
         /** cache for resolved json-pointer */
         this.cache = {};
@@ -18800,14 +20887,13 @@ class SchemaService {
     /**
      * Create the template data object based on the json-schema, which fullfills the schemas structure as much as
      * possible
-     * @param  schema
      * @return data corresponding to json-schema
      */
     getTemplate(schema) {
         return this.core.getTemplate(undefined, schema);
     }
     /**
-     * @returns list of valid items to insert at the given position
+     * @return list of valid items to insert at the given position
      */
     getChildSchemaSelection(pointer, property) {
         const parentSchema = this.get(pointer);
@@ -18822,10 +20908,7 @@ class SchemaService {
         this.data = this.addDefaultData(data);
         this.resetCache();
     }
-    /**
-     * Set or change the application schema
-     * @param {Object} schema
-     */
+    /** Set or change the application schema */
     setSchema(schema) {
         this.core.setSchema(schema);
         this.schema = this.core.getSchema();
@@ -18877,9 +20960,7 @@ class SchemaService {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/**
- * Simple session service to store and retrieve user-specific data
- */
+/** Simple session service to store and retrieve user-specific data */
 /* harmony default export */ __webpack_exports__["default"] = ({
     get(key, defaultValue) {
         if (window.localStorage == null) {
@@ -18975,20 +21056,21 @@ class State {
      * @param  {Function} callback [description]
      */
     subscribe(id, callback) {
+        var _a;
         if (typeof id !== "string" || typeof callback !== "function") {
+            // eslint-disable-next-line prefer-rest-params
             throw new Error(`Invalid arguments for state.subscribe ${arguments}`);
         }
         const state = this.store.getState();
-        if (state[id] && state[id][FLAG_CHANGED] != null) {
-            this.emitter.on(id, callback);
-        }
-        else {
+        if (((_a = state[id]) === null || _a === void 0 ? void 0 : _a[FLAG_CHANGED]) == null) {
             throw new Error(`Could not subscribe to state ${id}. Property ${FLAG_CHANGED} not available`);
         }
+        this.emitter.on(id, callback);
     }
     unsubscribe(id, callback) {
         var _a;
         if (typeof id !== "string" || typeof callback !== "function") {
+            // eslint-disable-next-line prefer-rest-params
             throw new Error(`Invalid arguments for state.unsubscribe ${arguments}`);
         }
         this.emitter.events[id] = (_a = this.emitter.events[id]) === null || _a === void 0 ? void 0 : _a.filter(func => func !== callback);
@@ -19002,13 +21084,12 @@ class State {
 /*!*******************************************!*\
   !*** ./src/services/ValidationService.ts ***!
   \*******************************************/
-/*! exports provided: EventType, default */
+/*! exports provided: default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ValidationService; });
 /* harmony import */ var _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./src/services/utils/BubblingCollectionObservable.ts");
 /* harmony import */ var _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducers/errorReducer */ "./src/services/reducers/errorReducer.ts");
@@ -19017,8 +21098,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
 /* harmony import */ var _utils_Validation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/Validation */ "./src/services/utils/Validation.ts");
 /* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
-/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
-
 
 
 
@@ -19026,18 +21105,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_2___default.a.cores;
-var EventType;
-(function (EventType) {
-    EventType["BEFORE_VALIDATION"] = "beforeValidation";
-    EventType["AFTER_VALIDATION"] = "afterValidation";
-    EventType["ON_ERROR"] = "onError";
-})(EventType || (EventType = {}));
-;
 class ValidationService {
     constructor(state, schema = { type: "object" }, core = new Core()) {
         /** state store-id of service */
         this.id = "errors";
-        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_6__["createNanoEvents"])();
         this.observer = new _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_0__["default"]();
         if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_3__["default"])) {
             throw new Error("Given state in ValidationService must be of instance 'State'");
@@ -19062,7 +21133,6 @@ class ValidationService {
         if (this.currentValidation) {
             this.currentValidation.cancel();
         }
-        this.emit(EventType.BEFORE_VALIDATION);
         // @feature selective-validation
         this.observer.clearEvents(pointer);
         // reset stored list of events
@@ -19079,12 +21149,10 @@ class ValidationService {
             const completeListOfErrors = remainingErrors.concat(currentErrors);
             this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(completeListOfErrors));
             this.observer.notify(newError.data.pointer, newError);
-            this.emit(EventType.ON_ERROR, newError);
         }, validationErrors => {
             // @feature selective-validation
             const completeListOfErrors = remainingErrors.concat(validationErrors);
             this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(completeListOfErrors));
-            this.emit(EventType.AFTER_VALIDATION, completeListOfErrors);
             this.currentValidation = null;
         });
     }
@@ -19097,32 +21165,13 @@ class ValidationService {
     get() {
         return this.schema;
     }
-    /**
-     * add an event listener to update events
-     * @returns the callback
-     */
-    on(eventType, callback) {
-        if (eventType === undefined) {
-            throw new Error("Missing `eventType` in ValidationService.on");
-        }
-        this.emitter.on(eventType, callback);
-        return callback;
-    }
-    /** remove an event listener from update events */
-    off(eventType, callback) {
-        var _a, _b;
-        // @ts-ignore
-        this.emitter.events[eventType] = (_b = (_a = this.emitter.events[eventType]) === null || _a === void 0 ? void 0 : _a.filter(func => func !== callback)) !== null && _b !== void 0 ? _b : [];
-    }
-    emit(eventType, event = {}) {
-        this.emitter.emit(eventType, event);
-    }
     observe(pointer, observer, bubbledEvents = false) {
         this.observer.observe(pointer, observer, bubbledEvents);
         return observer;
     }
     removeObserver(pointer, observer) {
         this.observer.removeObserver(pointer, observer);
+        return this;
     }
     notify(pointer, event) {
         this.observer.notify(pointer, event);
@@ -19147,7 +21196,6 @@ class ValidationService {
     }
     destroy() {
         this.set(null);
-        this.emitter = null;
         this.observer = null;
         this.state.unregister(this.id);
         // this.state.unregister(this.id, errorReducer);
@@ -19199,14 +21247,15 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionTypes", function() { return ActionTypes; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionCreators", function() { return ActionCreators; });
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js");
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(redux_undo__WEBPACK_IMPORTED_MODULE_0__);
 /* eslint object-property-newline: 0 */
-const UndoActionCreators = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionCreators;
-const UndoActionTypes = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionTypes;
+
 const ActionTypes = {
     // data
     DATA_SET: "DATA_SET",
-    UNDO: UndoActionTypes.UNDO,
-    REDO: UndoActionTypes.REDO,
+    UNDO: redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionTypes"].UNDO,
+    REDO: redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionTypes"].REDO,
     // validation
     ERRORS_SET: "ERRORS_SET"
 };
@@ -19215,10 +21264,10 @@ const ActionCreators = {
         return { type: ActionTypes.DATA_SET, pointer, value: newValue, prevValue, isSynched };
     },
     undo() {
-        return UndoActionCreators.undo();
+        return redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].undo();
     },
     redo() {
-        return UndoActionCreators.redo();
+        return redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].redo();
     },
     setErrors(errors = []) {
         return { type: ActionTypes.ERRORS_SET, errors };
@@ -19296,9 +21345,10 @@ const config = {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const ActionTypes = __webpack_require__(/*! ./actions */ "./src/services/reducers/actions.ts").ActionTypes;
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./actions */ "./src/services/reducers/actions.ts");
+
 /* harmony default export */ __webpack_exports__["default"] = ((state = [], action) => {
-    return action.type === ActionTypes.ERRORS_SET ? action.errors : state;
+    return action.type === _actions__WEBPACK_IMPORTED_MODULE_0__["ActionTypes"].ERRORS_SET ? action.errors : state;
 });
 
 
@@ -19370,7 +21420,6 @@ var EventType;
     EventType["CURRENT_POINTER"] = "current";
     EventType["CURRENT_PAGE"] = "page";
 })(EventType || (EventType = {}));
-;
 class UIState {
     constructor() {
         this.id = "ui";
@@ -19402,8 +21451,10 @@ class UIState {
     }
     /** remove an event listener from update events */
     off(eventType, callback) {
-        // @ts-ignore
-        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+        if (Array.isArray(this.emitter.events[eventType])) {
+            // @ts-ignore
+            this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+        }
     }
     setCurrentPage(pointer) {
         const currentPage = this.get("currentPage");
@@ -19437,8 +21488,10 @@ Singleton.UIStateContructor = UIState;
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-const redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
-const ActionTypes = __webpack_require__(/*! ./actions */ "./src/services/uistate/actions.ts").ActionTypes;
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./actions */ "./src/services/uistate/actions.ts");
+
+
 const defaultState = {
     hasChanged: false,
     currentPage: "#",
@@ -19447,15 +21500,15 @@ const defaultState = {
 };
 function uiReducer(state = defaultState, action) {
     switch (action.type) {
-        case ActionTypes.UI_PAGE_SET:
+        case _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"].UI_PAGE_SET:
             state = Object.assign({}, state);
             state.currentPage = action.value;
             return state;
-        case ActionTypes.UI_CURRENT_SET:
+        case _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"].UI_CURRENT_SET:
             state = Object.assign({}, state);
             state.currentPointer = action.value;
             return state;
-        case ActionTypes.UI_OVERLAY_SET:
+        case _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"].UI_OVERLAY_SET:
             state = Object.assign({}, state);
             state.overlay = action.value;
             return state;
@@ -19464,9 +21517,9 @@ function uiReducer(state = defaultState, action) {
     }
 }
 function hasChanged(state = false, action) {
-    return ActionTypes[action.type] == null ? false : action.type;
+    return _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"][action.type] == null ? false : action.type;
 }
-/* harmony default export */ __webpack_exports__["default"] = (redux.combineReducers({
+/* harmony default export */ __webpack_exports__["default"] = (Object(redux__WEBPACK_IMPORTED_MODULE_0__["combineReducers"])({
     hasChanged,
     ui: uiReducer
 }));
@@ -19484,8 +21537,10 @@ function hasChanged(state = false, action) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
 /* eslint arrow-parens: 0 */
-const gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+
 /**
  * > Internal helper, mainly used in [ValidationService](#validationservice) to support the weird notification behaviour
  * of error-events.
@@ -19655,9 +21710,9 @@ class BubblingCollectionObservable {
      * @param eventCollection    - array of events at target `pointer`
      */
     _notifyAll(pointer, eventCollection) {
-        const frags = gp.split(pointer);
+        const frags = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.split(pointer);
         while (frags.length > 0) {
-            const p = gp.join(frags, true);
+            const p = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(frags, true);
             this._notify(p, pointer, eventCollection);
             frags.pop();
         }
@@ -19674,13 +21729,13 @@ class BubblingCollectionObservable {
         this.eventCollection[pointer].push(event);
         this._notifyAll(pointer, this.eventCollection[pointer]);
     }
-    _notify(observerPointer, sourcePointer, event) {
+    _notify(observerPointer, sourcePointer, errors = []) {
         if (this.observers[observerPointer] == null) {
             return;
         }
         this.observers[observerPointer].forEach(observer => {
             if (observer.receiveChildEvents === false && observerPointer === sourcePointer) {
-                observer(event);
+                observer({ type: "validation:errors", value: errors });
                 return;
             }
             if (observer.receiveChildEvents === false && observerPointer !== sourcePointer) {
@@ -19688,9 +21743,9 @@ class BubblingCollectionObservable {
             }
             this.bubbleCollection[observerPointer] = this.bubbleCollection[observerPointer] || {};
             const map = this.bubbleCollection[observerPointer];
-            map[sourcePointer] = event;
-            const events = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
-            observer(events);
+            map[sourcePointer] = errors;
+            const combinedErrors = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
+            observer({ type: "validation:errors", value: combinedErrors });
         });
     }
 }
@@ -19811,6 +21866,107 @@ function copy(data) {
 
 /***/ }),
 
+/***/ "./src/services/utils/createDiff.ts":
+/*!******************************************!*\
+  !*** ./src/services/utils/createDiff.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createDiff; });
+/* harmony import */ var _diffpatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diffpatch */ "./src/services/utils/diffpatch.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _getParentPointer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getParentPointer */ "./src/services/utils/getParentPointer.ts");
+
+
+
+/** sort by longest pointer first (from tree leaves to root node) */
+function sortByPointer(a, b) {
+    if (a.pointer < b.pointer) {
+        return -1;
+    }
+    else if (a.pointer > b.pointer) {
+        return 1;
+    }
+    return 0;
+}
+function isChange(value) {
+    return Array.isArray(value);
+}
+/** converts the diff tree result to a flat list of patches */
+function deltaToChangeList(pointer, diff, result = []) {
+    // run through each property and search for a patch
+    const properties = Object.keys(diff);
+    const isArrayItem = diff["_t"] === "a";
+    properties.forEach(property => {
+        // skip array flag
+        if (property === "_t") {
+            return;
+        }
+        const change = diff[property];
+        if (!isChange(change)) {
+            // step into path and search for patches
+            // @note this could also be a removed array-item ("_<index>": value)
+            // findPatches(`${pointer}/${property.replace(/^_/, "")}`, value, result);
+            deltaToChangeList(`${pointer}/${property}`, change, result);
+            return;
+        }
+        // add the patch to list
+        const propertyAdded = diff[property].length === 1;
+        const propertyRemoved = diff[property][2] === 0;
+        const entry = {
+            pointer: `${pointer}/${property}`,
+            change,
+            isArrayItem,
+            changedProperty: !isArrayItem && (propertyAdded || propertyRemoved)
+        };
+        result.push(entry);
+    });
+    return result;
+}
+/**
+ * creates a diff between given data-versions and returns a list of changes.
+ * Changes on object-properties (add, remove, rename) or array-items (add,
+ * remove, move) are grouped by their parent object or array.
+ */
+function createDiff(previousValue, newValue) {
+    const diff = _diffpatch__WEBPACK_IMPORTED_MODULE_0__["default"].diff(previousValue, newValue);
+    if (diff == null) {
+        return [];
+    }
+    const map = {};
+    const changes = deltaToChangeList("#", diff);
+    // merge all item patches by their parent-pointer
+    changes.forEach(entry => {
+        const { pointer, change, isArrayItem, changedProperty } = entry;
+        if (isArrayItem) {
+            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(pointer, "..");
+            const key = pointer.replace(`${parent}/`, "");
+            map[parent] = map[parent] || { _t: "a" };
+            map[parent][key] = change;
+            return;
+        }
+        if (changedProperty) {
+            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(pointer, "..");
+            const key = pointer.replace(`${parent}/`, "");
+            map[parent] = map[parent] || {};
+            map[parent][key] = change;
+            return;
+        }
+        map[entry.pointer] = change;
+    });
+    return Object.keys(map)
+        .map(pointer => ({ pointer, parentPointer: Object(_getParentPointer__WEBPACK_IMPORTED_MODULE_2__["default"])(pointer), patch: map[pointer] }))
+        .sort(sortByPointer);
+}
+
+
+/***/ }),
+
 /***/ "./src/services/utils/diffpatch.ts":
 /*!*****************************************!*\
   !*** ./src/services/utils/diffpatch.ts ***!
@@ -19835,13 +21991,6 @@ const options = {
         includeValueOnMove: false
     }
 };
-try {
-    // required in browser environments
-    // window["diff_match_patch"] = diffMatchPatch;
-}
-catch (e) {
-    // loaded by default in nodejs
-}
 const diffpatch = new jsondiffpatch__WEBPACK_IMPORTED_MODULE_0__["DiffPatcher"](options); // jsondiffpatch.create(options);
 // @ts-ignore
 diffpatch.options = options;
@@ -19912,110 +22061,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
 
 function getParentPointer(pointer) {
-    const list = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.split(pointer);
-    list.pop();
-    return gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(list, pointer[0] === "#");
+    return gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, "..");
 }
-;
-
-
-/***/ }),
-
-/***/ "./src/services/utils/getPatchesPerPointer.ts":
-/*!****************************************************!*\
-  !*** ./src/services/utils/getPatchesPerPointer.ts ***!
-  \****************************************************/
-/*! exports provided: default */
-/*! all exports used */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getPatchesPerPointer; });
-/* harmony import */ var _diffpatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diffpatch */ "./src/services/utils/diffpatch.ts");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _getParentPointer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getParentPointer */ "./src/services/utils/getParentPointer.ts");
-
-
-
-function sortByPointer(a, b) {
-    if (a.pointer < b.pointer) {
-        return -1;
-    }
-    else if (a.pointer > b.pointer) {
-        return 1;
-    }
-    return 0;
-}
-function findPatches(pointer, diff, result = []) {
-    // for a diff: { a: { '0': [ 'modifiedString' ], _t: 'a', _0: [ 'string', 0, 0 ] } }
-    // return diff[a] as patch and ".../a" as pointer
-    Object.keys(diff).forEach((key) => {
-        if (key === "_t") {
-            return;
-        }
-        if (Array.isArray(diff[key])) {
-            const entry = {
-                pointer: `${pointer}/${key}`,
-                patch: diff[key],
-                isArrayItem: false,
-                changedKey: false
-            };
-            const propertyAdded = diff[key].length === 1;
-            const propertyRemoved = diff[key][2] === 0;
-            if (diff._t === "a") {
-                entry.isArrayItem = true;
-            }
-            else if (propertyAdded || propertyRemoved) {
-                entry.changedKey = true;
-            }
-            result.push(entry);
-        }
-        else {
-            findPatches(`${pointer}/${key}`, diff[key], result);
-        }
-    });
-    return result;
-}
-/*
-    Between two objects, returns the json-pointer of the edit
-
-    - for now, returns common pointer of multiple changes (if any)
-    - returns parent pointer for any array-items or object-properties that are added or removed. this ensures a
-        container, array or object, receives a notification of changed children.
-*/
-function getPatchesPerPointer(previousValue, newValue) {
-    const diff = _diffpatch__WEBPACK_IMPORTED_MODULE_0__["default"].diff(previousValue, newValue);
-    if (diff == null) {
-        return [];
-    }
-    const patches = findPatches("#", diff);
-    // merge all item patches by their parent-pointer
-    const map = {};
-    // @todo this should be directly resolved in 'findPatches'
-    patches.forEach((entry) => {
-        if (entry.isArrayItem) {
-            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(entry.pointer, "..");
-            const key = entry.pointer.replace(`${parent}/`, "");
-            map[parent] = map[parent] || { _t: "a" };
-            map[parent][key] = entry.patch;
-        }
-        else if (entry.changedKey) {
-            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(entry.pointer, "..");
-            const key = entry.pointer.replace(`${parent}/`, "");
-            map[parent] = map[parent] || {};
-            map[parent][key] = entry.patch;
-        }
-        else {
-            map[entry.pointer] = entry.patch;
-        }
-    });
-    return Object.keys(map)
-        .map(pointer => ({ pointer, parentPointer: Object(_getParentPointer__WEBPACK_IMPORTED_MODULE_2__["default"])(pointer), patch: map[pointer] }))
-        .sort(sortByPointer);
-}
-;
 
 
 /***/ }),
@@ -20042,12 +22089,14 @@ __webpack_require__.r(__webpack_exports__);
 /*!*******************************!*\
   !*** ./src/utils/UISchema.ts ***!
   \*******************************/
-/*! exports provided: default */
+/*! exports provided: EDITRON_OPTION_PROPERTY, isPointer, default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EDITRON_OPTION_PROPERTY", function() { return EDITRON_OPTION_PROPERTY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPointer", function() { return isPointer; });
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 /* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
@@ -20058,6 +22107,8 @@ __webpack_require__.r(__webpack_exports__);
 
 const { eachSchema } = json_schema_library__WEBPACK_IMPORTED_MODULE_2___default.a;
 const UI_PROPERTY = "editron:ui";
+/** property on a schema-definition, containing editron-options */
+const EDITRON_OPTION_PROPERTY = "editron:ui";
 function isPointer(string) {
     return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
 }
@@ -20108,7 +22159,7 @@ function resolveReference(pointer, controller, pointerToResolve) {
     if (targetPointer[0] !== "#") {
         targetPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, targetPointer);
     }
-    const result = controller.data().get(targetPointer);
+    const result = controller.service("data").get(targetPointer);
     return Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(result, result, null);
 }
 /**
@@ -20118,11 +22169,13 @@ function resolveReference(pointer, controller, pointerToResolve) {
  * @return a resolved copy of the editron:ui settings
  */
 function copyOptions(pointer, controller) {
-    const schema = controller.schema().get(pointer);
-    const settings = Object.assign({
+    const schema = controller.service("schema").get(pointer);
+    const settings = {
         hidden: false,
-        description: schema.description
-    }, schema.options, schema[UI_PROPERTY]); // @legacy options
+        description: schema.description,
+        ...schema.options,
+        ...schema[UI_PROPERTY]
+    };
     settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
     Object
         .keys(settings)
@@ -20139,12 +22192,18 @@ function copyOptions(pointer, controller) {
 function extendSchema(rootSchema) {
     rootSchema = JSON.parse(JSON.stringify(rootSchema));
     eachSchema(rootSchema, childSchema => {
-        childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
-        childSchema[UI_PROPERTY] = Object.assign({
+        if (childSchema.$ref && childSchema[UI_PROPERTY] == null) {
+            // do not add default options for references - json-schema-library
+            // merges on root elements only (which is acceptable)
+            return;
+        }
+        childSchema[UI_PROPERTY] = {
             hidden: false,
             title: childSchema.title || "",
-            description: childSchema.description || ""
-        }, childSchema.options, childSchema[UI_PROPERTY]); // @legacy options
+            description: childSchema.description || "",
+            ...childSchema.options,
+            ...childSchema[UI_PROPERTY]
+        };
     });
     return rootSchema;
 }
@@ -20183,7 +22242,7 @@ function getOption(pointer, controller, ...options) {
     if (options.length === 0) {
         throw new Error("Expected at least one options property to be given in getOption");
     }
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
     const editronOptions = schema[UI_PROPERTY] || {};
     for (let i = 0; i < options.length; i += 1) {
         const option = editronOptions[options[i]];
@@ -20199,7 +22258,7 @@ function getOption(pointer, controller, ...options) {
     return null;
 }
 function getTitle(pointer, controller) {
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
     const title = getOption(pointer, controller, "title") || "";
     return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
@@ -20311,20 +22370,26 @@ __webpack_require__.r(__webpack_exports__);
         controller.addItemTo(pointer, index);
     },
     removeItem(pointer, controller, index) {
-        const nextList = controller.data().get(pointer);
+        const nextList = controller.service("data").get(pointer);
         nextList.splice(index, 1);
-        controller.data().set(pointer, nextList);
+        controller.service("data").set(pointer, nextList);
+    },
+    cloneItem(pointer, controller, index) {
+        const nextList = controller.service("data").get(pointer);
+        const item = nextList[index];
+        nextList.splice(index, 0, JSON.parse(JSON.stringify(item)));
+        controller.service("data").set(pointer, nextList);
     },
     moveItem(pointer, controller, index, destinationIndex) {
         if (destinationIndex < 0) {
             return;
         }
-        const list = controller.data().get(pointer);
+        const list = controller.service("data").get(pointer);
         if (list[index] == null || list[destinationIndex] == null) {
             return;
         }
         list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
-        controller.data().set(pointer, list);
+        controller.service("data").set(pointer, list);
     },
     moveElement(list, index, destinationIndex) {
         list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
@@ -20361,7 +22426,6 @@ function createElement(selector, attributes) {
     });
     return element;
 }
-;
 
 
 /***/ }),
@@ -20397,29 +22461,6 @@ function createProxy(options = {}) {
     }
     throw new Error(`Failed initializing proxy from: ${JSON.stringify(options)}`);
 }
-
-
-/***/ }),
-
-/***/ "./src/utils/getID.ts":
-/*!****************************!*\
-  !*** ./src/utils/getID.ts ***!
-  \****************************/
-/*! exports provided: default */
-/*! all exports used */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getID; });
-/**
- * Converts a json-pointer to a valid dom-id (url selection)
- * https://stackoverflow.com/questions/70579/what-are-valid-values-for-the-id-attribute-in-html
- */
-function getID(pointer) {
-    return `${pointer.replace(/(^[#/]*|\/+$)/, "")}`.replace(/\/+/g, ".");
-}
-;
 
 
 /***/ }),
@@ -20476,7 +22517,7 @@ const i18n = {
 /*!****************************!*\
   !*** ./src/utils/index.ts ***!
   \****************************/
-/*! exports provided: addItem, array, createElement, getID, i18n, isNodeContext, populated, selection, selectEditor, UISchem */
+/*! exports provided: addItem, array, createElement, i18n, isNodeContext, populated, selection, selectEditor, UISchem */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -20491,27 +22532,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _createElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./createElement */ "./src/utils/createElement.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return _createElement__WEBPACK_IMPORTED_MODULE_2__["default"]; });
 
-/* harmony import */ var _getID__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./getID */ "./src/utils/getID.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getID", function() { return _getID__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+/* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./i18n */ "./src/utils/i18n.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "i18n", function() { return _i18n__WEBPACK_IMPORTED_MODULE_3__["default"]; });
 
-/* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./i18n */ "./src/utils/i18n.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "i18n", function() { return _i18n__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+/* harmony import */ var _isNodeContext__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./isNodeContext */ "./src/utils/isNodeContext.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNodeContext", function() { return _isNodeContext__WEBPACK_IMPORTED_MODULE_4__["default"]; });
 
-/* harmony import */ var _isNodeContext__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./isNodeContext */ "./src/utils/isNodeContext.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNodeContext", function() { return _isNodeContext__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+/* harmony import */ var _populated__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "populated", function() { return _populated__WEBPACK_IMPORTED_MODULE_5__["default"]; });
 
-/* harmony import */ var _populated__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "populated", function() { return _populated__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./selection */ "./src/utils/selection.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selection", function() { return _selection__WEBPACK_IMPORTED_MODULE_6__["default"]; });
 
-/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./selection */ "./src/utils/selection.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selection", function() { return _selection__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+/* harmony import */ var _selectEditor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./selectEditor */ "./src/utils/selectEditor.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selectEditor", function() { return _selectEditor__WEBPACK_IMPORTED_MODULE_7__["default"]; });
 
-/* harmony import */ var _selectEditor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./selectEditor */ "./src/utils/selectEditor.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selectEditor", function() { return _selectEditor__WEBPACK_IMPORTED_MODULE_8__["default"]; });
-
-/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "UISchem", function() { return _UISchema__WEBPACK_IMPORTED_MODULE_9__["default"]; });
-
+/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "UISchem", function() { return _UISchema__WEBPACK_IMPORTED_MODULE_8__["default"]; });
 
 
 
@@ -20613,7 +22650,7 @@ function select(editors, pointer, controller, options) {
     if (/_id$/.test(pointer)) {
         return false; // abort if it is an internal value
     }
-    const schema = controller.schema().get(pointer);
+    const schema = controller.service("schema").get(pointer);
     if (schema.type === "error") {
         // data-pointer could not be found in schema
         // @todo find a better solution for additional data: maybe an 'additional data'-editor
@@ -20645,8 +22682,6 @@ function select(editors, pointer, controller, options) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _getID__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./getID */ "./src/utils/getID.ts");
-
 const isBlurable = (element) => (typeof element.mayBlur === "function");
 /** returns true if one may trigger blur on the element via cursor movement **/
 function mayBlur(element, direction) {
@@ -20696,13 +22731,12 @@ function mayBlur(element, direction) {
 }
 /** returns the current active (editron) input element or false */
 function getActiveInput(controller, parent = document.body) {
-    const currentPointer = controller.location().getCurrent();
-    const currentId = `#${Object(_getID__WEBPACK_IMPORTED_MODULE_0__["default"])(currentPointer)}`;
-    if (currentId === "#") {
+    const currentPointer = controller.service("location").getCurrent();
+    if (currentPointer === "#") {
         console.log("abort empty selection", currentPointer, "active element", document.activeElement);
         return false;
     }
-    const activeInput = parent.querySelector(currentId);
+    const activeInput = parent.querySelector(`[data-id='${currentPointer}'] label input`);
     if (activeInput == null) {
         return false;
     }

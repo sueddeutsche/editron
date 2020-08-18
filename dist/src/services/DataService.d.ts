@@ -1,39 +1,57 @@
-import { Delta } from "./utils/getPatchesPerPointer";
+import { Patch, PatchResult } from "./utils/createDiff";
 import State from "./State";
-import { Unsubscribe } from "nanoevents";
 import { JSONData, JSONPointer } from "../types";
-export declare enum EventType {
-    /** called before starting data update */
-    BEFORE_UPDATE = "beforeUpdate",
-    /** called after data udpate was performed */
-    AFTER_UPDATE = "afterUpdate",
-    /** called after all updates with a list of patches */
-    FINAL_UPDATE = "finalUpdate"
-}
-export declare type DataServiceEvent = {
-    pointer: string;
-    parentPointer: string;
-    [p: string]: any;
+import { UpdateDataEvent } from "../editors/Editor";
+export declare type AddChange = {
+    type: "add";
+    next: JSONPointer;
+    data?: any;
 };
-export interface Events {
-    /** called before starting data update */
-    [EventType.BEFORE_UPDATE]: (pointer: JSONPointer, eventObject: DataServiceEvent) => void;
-    /** called after data udpate was performed */
-    [EventType.AFTER_UPDATE]: (pointer: JSONPointer, eventObject: DataServiceEvent) => void;
-    /** called after all updates with a list of patches */
-    [EventType.FINAL_UPDATE]: (patches: Array<DataServiceEvent>) => void;
-}
+export declare type DeleteChange = {
+    type: "delete";
+    old: JSONPointer;
+};
+export declare type MoveChange = {
+    type: "move";
+    old: JSONPointer;
+    next: JSONPointer;
+};
+export declare type Change = AddChange | DeleteChange | MoveChange;
+export declare const isAddChange: (change: any) => change is AddChange;
+export declare const isDeleteChange: (change: any) => change is DeleteChange;
+export declare const isMoveChange: (change: any) => change is MoveChange;
+declare type BeforeUpdateEvent = {
+    type: "data:update:before";
+    value: {
+        pointer: JSONPointer;
+        action: string;
+    };
+};
+declare type AfterUpdateEvent = {
+    type: "data:update:after";
+    value: {
+        pointer: JSONPointer;
+        patch: Patch;
+    };
+};
+declare type ContainerUpdateEvent = {
+    type: "data:update:container";
+    value: {
+        pointer: JSONPointer;
+        changes: Array<Change>;
+    };
+};
+declare type UpdateDoneEvent = {
+    type: "data:update:done";
+    value: Array<PatchResult>;
+};
+export declare type Event = BeforeUpdateEvent | ContainerUpdateEvent | AfterUpdateEvent | UpdateDoneEvent;
+export declare type Watcher = (event: Event) => void;
 export declare type Observer = {
-    (event: DataServiceEvent): void;
+    (event: UpdateDataEvent): void;
     bubbleEvents?: boolean;
 };
-/**
- * Read and modify form data and notify observers
- * @param state - current state/store of application
- * @param data - current application data (form)
- */
 export default class DataService {
-    #private;
     /** state store-id of service */
     id: string;
     /** current state */
@@ -42,14 +60,22 @@ export default class DataService {
     observers: {
         [pointer: string]: Array<Observer>;
     };
-    /** event emitter */
-    emitter: import("nanoevents").Emitter<Events>;
+    /** internal value to track previous data */
+    lastUpdate: {};
+    /** list of active watchers on update-lifecycle events */
+    watcher: any[];
+    /**
+     * Read and modify form data and notify observers
+     * @param state - current state/store of application
+     * @param data - current application data (form)
+     */
     constructor(state: State, data?: JSONData);
+    onStateChanged(): void;
     /** clear undo/redo stack */
     resetUndoRedo(): void;
     /**
      * Get a copy of current data from the requested `pointer`
-     * @param [pointer="#"] - data to fetch. Defaults to _root_
+     * @param [pointer] - data to fetch. Defaults to _root_
      * @returns data, associated with `pointer`
      */
     get(pointer?: JSONPointer): any;
@@ -78,11 +104,10 @@ export default class DataService {
     undo(): void;
     /** redo last undo */
     redo(): void;
-    /** add an event listener to update events */
-    on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe;
-    /** remove an event listener from update events */
-    off<T extends keyof Events>(eventType: T, callback: Function): void;
-    emit<T extends keyof Events>(eventType: T, pointer: JSONPointer, data: JSONData): void;
+    notifyWatcher(event: Event): void;
+    /** watch DataService lifecycle events */
+    watch(callback: Watcher): Watcher;
+    removeWatcher(callback: Watcher): void;
     /**
      * observes changes in data at the specified json-pointer
      * @param pointer - json-pointer to watch
@@ -92,17 +117,13 @@ export default class DataService {
      */
     observe<T extends Observer>(pointer: JSONPointer, callback: T, bubbleEvents?: boolean): T;
     /** stop an observer from watching changes on pointer */
-    removeObserver(pointer: JSONPointer, callback: Observer): void;
+    removeObserver(pointer: JSONPointer, callback: Observer): this;
     /** send an event to all json-pointer observers */
-    notify(pointer: JSONPointer, event: any): void;
-    bubbleObservers(pointer: JSONPointer, data: {
-        type: string;
-        patch: {
-            [p: string]: Delta;
-        };
-    }): void;
+    notify(pointer: JSONPointer, event: UpdateDataEvent): void;
+    bubbleObservers(pointer: JSONPointer, event: UpdateDataEvent): void;
     /** Test the pointer for existing data */
     isValid(pointer: JSONPointer): boolean;
     /** destroy service */
     destroy(): void;
 }
+export {};

@@ -4,7 +4,5 @@ declare const _default: {
     set(key: string, value: any): void;
     toggle(key: string): JSONData;
 };
-/**
- * Simple session service to store and retrieve user-specific data
- */
+/** Simple session service to store and retrieve user-specific data */
 export default _default;

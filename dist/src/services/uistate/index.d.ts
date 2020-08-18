@@ -9,7 +9,7 @@ export declare enum EventType {
 export interface Events {
     [EventType.OVERLAY]: (overlay: {
         element: HTMLElement;
-        options: object;
+        options?: any;
     }) => void;
     [EventType.CURRENT_POINTER]: (currentPointer: JSONPointer) => void;
     [EventType.CURRENT_PAGE]: (currentPage: JSONPointer) => void;
@@ -28,7 +28,7 @@ declare class UIState {
     /** add an event listener to update events */
     on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe;
     /** remove an event listener from update events */
-    off<T extends keyof Events>(eventType: T, callback: Function): void;
+    off<T extends keyof Events>(eventType: T, callback: (pointer: JSONPointer) => void): void;
     setCurrentPage(pointer: any): void;
     setCurrentPointer(pointer: any): void;
 }
