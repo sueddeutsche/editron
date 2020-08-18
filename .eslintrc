@@ -1,10 +1,13 @@
 {
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+
     "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended"
     ],
-    "parser": "@typescript-eslint/parser",
+
     "plugins": [
         "@typescript-eslint",
         "array-func",
@@ -15,7 +18,7 @@
 
     "parserOptions": {
         "ecmaVersion": 2018,
-        "sourceType": "commonjs"
+        "sourceType": "module"
     },
 
     "globals": {
@@ -30,20 +33,13 @@
         "mocha": true
     },
 
-    "settings": {
-        "node": {
-            "tryExtensions": [
-                ".js",
-                ".json",
-                ".ts"
-            ]
-        }
-    },
-
     "rules": {
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/ban-ts-ignore": "off",
-        "@typescript-eslint/no-var-requires": "off",
-        "@typescript-eslint/no-use-before-define": "off"
+        "@typescript-eslint/no-explicit-any": "off"
+        // "@typescript-eslint/explicit-function-return-type": "off",
+        // "@typescript-eslint/ban-ts-ignore": "off",
+        // "@typescript-eslint/no-var-requires": "off",
+        // "@typescript-eslint/no-use-before-define": "off",
+        // "no-unused-vars": "warn",
+        // "semi": "error"
     }
 }
