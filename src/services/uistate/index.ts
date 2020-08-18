@@ -2,17 +2,17 @@ import { createNanoEvents, Unsubscribe } from "nanoevents";
 import State from "../State";
 import { ActionCreators } from "./actions";
 import uiReducer from "./uiReducer";
-import { JSONPointer, JSONData } from "../../types";
+import { JSONPointer } from "../../types";
 
 
 export enum EventType {
-    OVERLAY ="overlay",
-    CURRENT_POINTER ="current",
-    CURRENT_PAGE ="page"
+    OVERLAY = "overlay",
+    CURRENT_POINTER = "current",
+    CURRENT_PAGE = "page"
 }
 
 export interface Events {
-    [EventType.OVERLAY]: (overlay: { element: HTMLElement, options: object }) => void;
+    [EventType.OVERLAY]: (overlay: { element: HTMLElement, options? }) => void;
     [EventType.CURRENT_POINTER]: (currentPointer: JSONPointer) => void;
     [EventType.CURRENT_PAGE]: (currentPage: JSONPointer) => void;
 }
@@ -58,9 +58,11 @@ class UIState {
     }
 
     /** remove an event listener from update events */
-    off<T extends keyof Events>(eventType: T, callback: Function): void {
-        // @ts-ignore
-        this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+    off<T extends keyof Events>(eventType: T, callback: (pointer: JSONPointer) => void): void {
+        if (Array.isArray(this.emitter.events[eventType])) {
+            // @ts-ignore
+            this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+        }
     }
 
     setCurrentPage(pointer) {

@@ -109,7 +109,7 @@ export default function createDiff<T extends any>(previousValue: T, newValue: T)
             const parent = gp.join(pointer, "..");
             const key = pointer.replace(`${parent}/`, "");
             map[parent] = map[parent] || { _t: "a" };
-            map[parent][key] = entry.change;
+            map[parent][key] = change;
             return;
         }
 
@@ -117,11 +117,11 @@ export default function createDiff<T extends any>(previousValue: T, newValue: T)
             const parent = gp.join(pointer, "..");
             const key = pointer.replace(`${parent}/`, "");
             map[parent] = map[parent] || {};
-            map[parent][key] = entry.change;
+            map[parent][key] = change;
             return;
         }
 
-        map[entry.pointer] = entry.change;
+        map[entry.pointer] = change;
     });
 
     return Object.keys(map)

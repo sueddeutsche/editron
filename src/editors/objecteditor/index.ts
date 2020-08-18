@@ -6,7 +6,6 @@ import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
 import { Editor, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
-import { ValidationError } from "../../types";
 
 
 function showJSON(controller: Controller, data: JSONData, title: string) {
@@ -43,8 +42,8 @@ export type ViewModel = {
     errors: Array<any>;
     hideTitle?: boolean;
     icon?: string;
-    oncollapse?: Function;
-    ondelete?: Function;
+    oncollapse?: () => void;
+    ondelete?: () => void;
     pointer: JSONPointer;
     title?: string;
 }
@@ -76,7 +75,7 @@ export default class ObjectEditor extends AbstractEditor {
                 this.viewModel.collapsed = !this.viewModel.collapsed;
                 this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
                 this.render(); // redraw container, to update header collapse-icon
-            }
+            };
             this.dom.classList.add("collapsible");
             this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
         }

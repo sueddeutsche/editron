@@ -31,7 +31,7 @@ export default class InstanceService {
     }
 
     findFrom(parentPointer: JSONPointer) {
-        return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer))
+        return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer));
     }
 
     remove(editor: Editor) {
@@ -84,7 +84,7 @@ export default class InstanceService {
                 instance.pointer = newPointer;
                 instance.getElement().setAttribute("data-point", newPointer);
             });
-        })
+        });
     }
 
     /** change all editors active-state */

@@ -1,5 +1,5 @@
 import { createStore, combineReducers } from "redux";
-import { createNanoEvents, Unsubscribe } from "nanoevents";
+import { createNanoEvents } from "nanoevents";
 
 const FLAG_CHANGED = "hasChanged";
 
@@ -70,6 +70,7 @@ export default class State {
      */
     subscribe(id: string, callback) {
         if (typeof id !== "string" || typeof callback !== "function") {
+            // eslint-disable-next-line prefer-rest-params
             throw new Error(`Invalid arguments for state.subscribe ${arguments}`);
         }
 
@@ -83,6 +84,7 @@ export default class State {
 
     unsubscribe(id: string, callback) {
         if (typeof id !== "string" || typeof callback !== "function") {
+            // eslint-disable-next-line prefer-rest-params
             throw new Error(`Invalid arguments for state.unsubscribe ${arguments}`);
         }
         this.emitter.events[id] = this.emitter.events[id]?.filter(func => func !== callback);

@@ -1,6 +1,6 @@
 /* eslint arrow-parens: 0 */
-const gp = require("gson-pointer");
-import { JSONPointer, JSONData, JSONSchema, ValidationError } from "../../types";
+import gp from "gson-pointer";
+import { JSONPointer, ValidationError } from "../../types";
 import { UpdateErrorsEvent } from "../../editors/Editor";
 
 
@@ -87,8 +87,6 @@ class BubblingCollectionObservable {
     observers = {};
     eventCollection = {};
     bubbleCollection = {};
-
-    constructor() {}
 
     /**
      * Observe events on the _pointer_ (`#/observe/location`). May also observe

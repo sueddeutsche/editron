@@ -38,4 +38,4 @@ export default {
     moveElement(list: Array<any>, index: number, destinationIndex: number): void {
         list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
     }
-}
+};

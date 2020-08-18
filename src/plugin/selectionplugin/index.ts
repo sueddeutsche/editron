@@ -1,9 +1,5 @@
-import m from "mithril";
 import Controller from "../../Controller";
-import AbstractEditor from "../../editors/AbstractEditor";
-import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
-import { Button } from "mithril-material-forms/index";
 import { Plugin } from "../index";
 
 
@@ -72,7 +68,7 @@ export default class SelectionPlugin implements Plugin {
             editor.__selectionPlugin = {
                 options,
                 select: event => this.select(event, editor)
-            }
+            };
             editor.getElement().addEventListener("click", editor.__selectionPlugin.select);
         }
     }

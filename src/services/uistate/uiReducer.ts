@@ -1,5 +1,5 @@
-const redux = require("redux");
-const ActionTypes = require("./actions").ActionTypes;
+import { combineReducers } from "redux";
+import { ActionTypes } from "./actions";
 
 const defaultState = {
     hasChanged: false,
@@ -32,7 +32,7 @@ function hasChanged(state = false, action) { // eslint-disable-line @typescript-
 }
 
 
-export default redux.combineReducers({
+export default combineReducers({
     hasChanged,
     ui: uiReducer
 });

@@ -5,7 +5,7 @@ import { Observer } from "../services/ValidationService";
 
 
 function getTypeClass(schema: JSONSchema): string {
-    return schema.type === "array" || schema.type === "object" ? schema.type : "value"
+    return schema.type === "array" || schema.type === "object" ? schema.type : "value";
 }
 
 

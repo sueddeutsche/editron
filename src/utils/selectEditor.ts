@@ -1,6 +1,6 @@
 import { JSONPointer } from "../types";
 import Controller from "../Controller";
-import { Editor, EditorPlugin } from "../editors/Editor";
+import { EditorPlugin } from "../editors/Editor";
 
 
 interface EditorConstructor {

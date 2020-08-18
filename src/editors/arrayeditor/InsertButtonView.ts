@@ -24,9 +24,9 @@ const InsertButtonView: m.Component<Attrs> = {
                 },
                 m("i.mmf-icon", "add_circle")
             )
-        )
+        );
     }
-}
+};
 
 
 export default InsertButtonView;

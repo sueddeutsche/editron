@@ -4,7 +4,6 @@ import SelectForm, { Attrs as SelectAttrs } from "mithril-material-forms/compone
 import TextareaForm, { Attrs as TextareaAttrs } from "mithril-material-forms/components/textareaform";
 import InputForm, { Attrs as InputAttrs, InputType } from "mithril-material-forms/components/inputform";
 import UISchema from "../../utils/UISchema";
-import { JSONSchema } from "../../types";
 import { ViewModel } from "../AbstractValueEditor";
 
 
@@ -25,7 +24,7 @@ function getInputType(schema): InputType {
 const Component: m.Component<Attrs> = {
 
     view(vnode) {
-        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer } = vnode.attrs;
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value } = vnode.attrs;
 
         if (schema.enum && schema.enum.length > 0) {
             const selectFormModel: SelectAttrs = {
@@ -54,7 +53,7 @@ const Component: m.Component<Attrs> = {
                 onchange,
                 onblur,
                 onfocus
-            }
+            };
 
             return m(CheckboxForm, checkBoxModel, vnode.children);
         }
@@ -71,7 +70,7 @@ const Component: m.Component<Attrs> = {
                 onchange,
                 onblur,
                 onfocus
-            }
+            };
             return m(TextareaForm, textareaModel, vnode.children);
         }
 
@@ -88,7 +87,7 @@ const Component: m.Component<Attrs> = {
                 onchange,
                 onblur,
                 onfocus
-            }
+            };
             return m(TextareaForm, textareaModel, vnode.children);
         }
 
@@ -105,7 +104,7 @@ const Component: m.Component<Attrs> = {
             onchange,
             onblur,
             onfocus
-        }
+        };
 
         return m(InputForm, inputModel, vnode.children);
     }

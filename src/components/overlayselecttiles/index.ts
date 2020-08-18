@@ -1,10 +1,13 @@
 import m from "mithril";
-import Tile, { Attrs as TileAttrs } from "./Tile";
+import Tile from "./Tile";
+
+
+const noop = (value: string) => {}; // eslint-disable-line
 
 
 export type Attrs = {
     value?: number;
-    onchange?: Function;
+    onchange?: (value: string) => void;
     options?: Array<{
         value?: number;
         title?: string;
@@ -34,7 +37,7 @@ export default {
         const attrs: Attrs = {
             value: 0,
             options: [{ title: "Keine Optionen angegeben", value: -1 }],
-            onchange: Function.prototype,
+            onchange: noop,
             ...vnode.attrs
         };
 

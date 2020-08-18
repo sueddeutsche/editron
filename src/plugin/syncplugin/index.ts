@@ -1,12 +1,8 @@
-import m from "mithril";
 import Controller from "../../Controller";
-import AbstractEditor from "../../editors/AbstractEditor";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
-import { Button } from "mithril-material-forms/index";
 import { Plugin } from "../index";
 import gp from "gson-pointer";
-import render from "json-schema-library/lib/utils/render";
 
 
 type Options = {
@@ -47,10 +43,10 @@ export default class SyncPlugin implements Plugin {
         }
 
         const { controller } = this;
-        const from = Object.keys(sync.fromTo)
+        const from = Object.keys(sync.fromTo);
         const fromPointer = from.map(key => gp.join(pointer, key));
         const currentData = {};
-        fromPointer.forEach((pointer, index) => (currentData[pointer] = controller.service("data").get(pointer)));
+        fromPointer.forEach(pointer => (currentData[pointer] = controller.service("data").get(pointer)));
         const toPointer = from.map(key => gp.join(pointer, sync.fromTo[key]));
 
 
@@ -71,7 +67,7 @@ export default class SyncPlugin implements Plugin {
 
         editor.__syncPlugin = {
             options: sync
-        }
+        };
     }
 
     onDestroyEditor(pointer, editor: SyncEditor) {

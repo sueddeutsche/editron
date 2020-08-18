@@ -124,11 +124,13 @@ export default class AbstractValueEditor implements Editor {
         }
 
         switch (event.type) {
-            case "pointer":
+            case "pointer": {
                 const pointer = event.value;
                 // this.dom.setAttribute("name", `editor-${pointer}`);
                 this.viewModel.pointer = pointer;
                 this.viewModel.onfocus = () => this.controller.service("location").setCurrent(pointer);
+                break;
+            }
 
             case "data:update":
                 this.viewModel.value = this.controller.service("data").get(this.getPointer());
@@ -140,8 +142,7 @@ export default class AbstractValueEditor implements Editor {
                 break;
 
             case "active":
-                const active = event.value;
-                this.viewModel.disabled = active === false;
+                this.viewModel.disabled = event.value === false;
                 if (this.viewModel.options) {
                     this.viewModel.options.disabled = this.viewModel.disabled;
                 }

@@ -100,10 +100,11 @@ export default class MinimapEditor extends AbstractEditor {
         switch (event.type) {
             case "pointer":
                 // this.pointer has been set by service. Continue with data-update // no-break;
-            case "data:update":
+            case "data:update": { // eslint-disable-line no-fallthrough
                 const data = this.getData();
                 this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
                 break;
+            }
 
             case "validation:errors":
                 this.viewModel.errors = event.value.filter(error => error.severity !== "warning");

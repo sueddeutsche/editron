@@ -6,12 +6,6 @@ import { Editor } from "../../editors/Editor";
 import { Button } from "mithril-material-forms/index";
 import { Plugin } from "../index";
 
-// new Controller({
-//     plugins: [
-//         new DelegationPlugin({ options })
-//     ]
-// });
-
 
 class AbstractDelegationEditor extends AbstractEditor {
 
@@ -81,6 +75,6 @@ export default class DelegationPlugin {
             controller: this.controller,
             pointer,
             editor: this.current
-        })
+        });
     }
 }

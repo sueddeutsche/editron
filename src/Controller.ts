@@ -2,7 +2,7 @@ import _createElement from "./utils/createElement";
 import addItem from "./utils/addItem";
 import addValidator from "json-schema-library/lib/addValidator";
 import createProxy from "./utils/createProxy";
-import DataService, { Event as DataUpdateEvents, Change, isMoveChange, isDeleteChange } from "./services/DataService";
+import DataService from "./services/DataService";
 import getID from "./utils/getID";
 import gp from "gson-pointer";
 import i18n from "./utils/i18n";
@@ -137,7 +137,7 @@ export default class Controller {
         });
 
         // merge given data with template data
-        const schemaService = new SchemaService(schema, data, this.core)
+        const schemaService = new SchemaService(schema, data, this.core);
         data = schemaService.addDefaultData(data, schema);
 
         this.services = {
@@ -157,7 +157,7 @@ export default class Controller {
                     break;
 
                 // sync latest data and start validation
-                case "data:update:after":
+                case "data:update:after": {
                     let { pointer } = event.value;
                     this.service("schema").setData(this.service("data").get());
                     // @feature selective-validation
@@ -171,6 +171,7 @@ export default class Controller {
                         this.destroyed !== true && this.service("validation").validate(data, pointer);
                     });
                     break;
+                }
             }
         });
 
@@ -189,7 +190,7 @@ export default class Controller {
         return this.services[serviceName];
     }
 
-    getPlugin(pluginId: string) {
+    getPlugin(pluginId: string): Plugin {
         return this.plugins.find(plugin => plugin.id === pluginId);
     }
 
@@ -243,7 +244,7 @@ export default class Controller {
      * @param attributes - a map of dom attribute:value of the element (reminder className = class)
      * @returns the resulting dom-element (not attached)
      */
-    createElement(selector: string, attributes?: object): HTMLElement { // eslint-disable-line class-methods-use-this
+    createElement(selector: string, attributes?): HTMLElement { // eslint-disable-line class-methods-use-this
         return _createElement(selector, attributes);
     }
 
@@ -275,7 +276,7 @@ export default class Controller {
         instanceOptions.attrs = {
             "data-title": instanceOptions.title,
             ...instanceOptions.attrs
-        }
+        };
 
         // find a matching editor
         const EditorConstructor = selectEditor(this.editors, pointer, this, instanceOptions);
@@ -306,7 +307,7 @@ export default class Controller {
      * Call this method, to destroy your editors, deregistering its instance on editron
      * @param editor - editor instance to remove
      */
-    destroyEditor(editor: Editor) {
+    destroyEditor(editor: Editor): void {
         if (!editor) {
             return;
         }
@@ -329,7 +330,7 @@ export default class Controller {
      * @param pointer - to array on which to insert the child
      * @param index - index within array, where the child should be inserted (does not replace). Default: 0
      */
-    addItemTo(pointer: JSONPointer, index = 0) {
+    addItemTo(pointer: JSONPointer, index = 0): void {
         addItem(this.service("data"), this.service("schema"), this.services.location, pointer, index);
         this.services.location.goto(gp.join(pointer, index, true));
     }
@@ -343,7 +344,7 @@ export default class Controller {
      * Set the application data
      * @param data - json data matching registered json-schema
      */
-    setData(data: JSONData) {
+    setData(data: JSONData): void {
         data = this.service("schema").addDefaultData(data);
         this.service("data").set("#", data);
     }

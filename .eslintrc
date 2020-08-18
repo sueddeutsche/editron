@@ -34,12 +34,14 @@
     },
 
     "rules": {
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        // consider turning explicit-module-boundary-types on:
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/ban-ts-comment": "warn",
         // "@typescript-eslint/explicit-function-return-type": "off",
-        // "@typescript-eslint/ban-ts-ignore": "off",
         // "@typescript-eslint/no-var-requires": "off",
         // "@typescript-eslint/no-use-before-define": "off",
         // "no-unused-vars": "warn",
-        // "semi": "error"
+        "semi": "error"
     }
 }

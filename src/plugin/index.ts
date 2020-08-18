@@ -8,7 +8,7 @@ const validators = [];
 export interface Plugin {
     id: string;
     initialize(controller): Plugin;
-    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: object) => void;
+    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: any) => void;
     onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
 }
 
@@ -17,7 +17,6 @@ export default {
 
     /** register an editor (widget) to use in editron-controller */
     editor(constructor: EditorPlugin): void {
-        // @ts-ignore
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);
     },

@@ -1,4 +1,5 @@
 /* eslint-env node */
+/* eslint @typescript-eslint/no-var-requires: "off" */
 const path = require("path");
 const webpack = require("webpack");
 const PRODUCTION = process.env.NODE_ENV === "production";

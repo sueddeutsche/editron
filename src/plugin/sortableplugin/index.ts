@@ -1,10 +1,7 @@
-import m from "mithril";
 import Controller from "../../Controller";
-import AbstractEditor from "../../editors/AbstractEditor";
 import { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
-import { Button } from "mithril-material-forms/index";
 import { Plugin } from "../index";
 import Sortable, { SortableEvent } from 'sortablejs';
 import arrayUtils from "../../utils/array";
@@ -49,8 +46,7 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
 }
 
 export function onEndSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
-    console.log("on end");
-    const element = event.item;  // dragged HTMLElement
+    // const element = event.item;  // dragged HTMLElement
     const { to, from, oldIndex, newIndex } = event;
 
     if (to === from && oldIndex === newIndex) {
@@ -154,10 +150,10 @@ export default class SortablePlugin implements Plugin {
                 hasMoved = false;
             },
             onAdd(event: SortableEvent) {
-                onAddSortable(pointer, controller, event)
+                onAddSortable(pointer, controller, event);
             },
             onEnd(event: SortableEvent): void {
-                onEndSortable(pointer, controller, event)
+                onEndSortable(pointer, controller, event);
                 // console.log(
                 //     "target list", to, "\n",
                 //     "previous list", from, "\n",

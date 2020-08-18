@@ -2,11 +2,12 @@
 import m from "mithril";
 import SessionService from "../../services/SessionService";
 import getId from "../../utils/getID";
-import isNodeContext from "../../utils/isNodeContext";
 import Sortable from "sortablejs";
 import { onAddSortable, onEndSortable } from "../../plugin/sortableplugin";
 import gp from "gson-pointer";
+import { ValidationError } from "../../types";
 
+// import isNodeContext from "../../utils/isNodeContext";
 // if (!isNodeContext()) {
 
 
@@ -15,9 +16,9 @@ import { JSONPointer } from "../../types";
 import Controller from "../../Controller";
 
 
-function sanitizeString(title = "", maxLength = 40) {
-    return (title && title.substr) ? title.replace(/<.*?>/g, "").substr(0, maxLength) : title;
-}
+// function sanitizeString(title = "", maxLength = 40) {
+//     return (title && title.substr) ? title.replace(/<.*?>/g, "").substr(0, maxLength) : title;
+// }
 
 
 export type Node = {
@@ -100,7 +101,7 @@ export type Attrs = {
     withHandle?: boolean;
     controller: Controller;
     node: Node;
-    errors: Array<object>;
+    errors: Array<ValidationError>;
     currentSelection: JSONPointer;
     onSelect: (pointer: JSONPointer) => void;
 }

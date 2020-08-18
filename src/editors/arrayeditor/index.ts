@@ -3,8 +3,8 @@ import Controller from "../../Controller";
 import diffpatch from "../../services/utils/diffpatch";
 import m from "mithril";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
-import { JSONPointer, JSONSchema } from "../../types";
-import { Editor, EditorUpdateEvent } from "../Editor";
+import { JSONPointer } from "../../types";
+import { EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { ValidationError } from "../../types";
 import { Patch } from "../../services/utils/createDiff";
@@ -23,19 +23,19 @@ export type Controls = {
 }
 
 export type ViewModel = {
-    attrs: object;
+    attrs: any;
     controls: Controls;
     disabled: boolean;
     errors: Array<ValidationError>;
     length: number;
     maxItems: number;
     minItems: number;
-    onadd?: Function;
+    onadd?: (index?: number) => void;
     pointer: string;
 }
 
 export type Options = {
-    attrs?: object;
+    attrs?: any;
     controls?: Controls;
 }
 
@@ -44,7 +44,7 @@ export default class ArrayEditor extends AbstractEditor {
     $items: HTMLElement;
     children: Array<ArrayItemWrapper> = [];
     controller: Controller;
-    onAdd: Function;
+    onAdd: (index: number) => void;
     pointer: JSONPointer;
     viewModel: ViewModel;
 
@@ -118,12 +118,13 @@ export default class ArrayEditor extends AbstractEditor {
                 this.children.forEach((child, index) => child.updatePointer(`${event.value}/${index}`));
                 break;
 
-            case "active":
+            case "active": {
                 const disabled = event.value === false;
                 this.viewModel.disabled = disabled;
                 this.viewModel.controls.disabled = disabled;
                 this.children.forEach(child => child.disable(disabled));
                 break;
+            }
         }
 
         this.render();

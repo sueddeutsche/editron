@@ -1,6 +1,5 @@
 import gp from "gson-pointer";
 import UIState, { EventType as UIEvent } from "./uistate";
-import getId from "../utils/getID";
 import { JSONPointer } from "../types";
 const DELAY = 25;
 
@@ -51,8 +50,8 @@ export type Options = {
 export const defaultOptions: Options = {
     rootElement: document.body,
     scrollTopOffset: 0,
-    pagePattern: "(^#?\/[^/]+)"
-}
+    pagePattern: "(^#?/[^/]+)"
+};
 
 
 export default class LocationService {

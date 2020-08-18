@@ -1,9 +1,6 @@
-import m from "mithril";
 import Controller from "../../Controller";
-import AbstractEditor from "../../editors/AbstractEditor";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
-import { Button } from "mithril-material-forms/index";
 import { Plugin } from "../index";
 import gp from "gson-pointer";
 import render from "json-schema-library/lib/utils/render";
@@ -74,11 +71,11 @@ export default class RemoteDataPlugin implements Plugin {
         if (options && options.remoteData) {
             const { controller } = this;
             const remote = options.remoteData;
-            const source = Object.keys(remote.set);
+            // const source = Object.keys(remote.set);
 
             const sourcePointer = gp.join(pointer, remote.source);
-            const sourceData = controller.service("data").get(sourcePointer);
-            const remoteUrl = render(remote.url, sourceData);
+            // const sourceData = controller.service("data").get(sourcePointer);
+            // const remoteUrl = render(remote.url, sourceData);
 
             controller.service("data").observe(sourcePointer, async () => {
                 this.setData(pointer, remote);
@@ -88,7 +85,7 @@ export default class RemoteDataPlugin implements Plugin {
 
             editor.__remoteDataPlugin = {
                 options: remote,
-            }
+            };
         }
     }
 
