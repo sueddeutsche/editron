@@ -9,6 +9,7 @@ export interface Plugin {
     id: string;
     initialize(controller): Plugin;
     onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: any) => void;
+    onChangePointer?: (oldPointer: JSONPointer, newPointer: JSONPointer, editor: Editor) => void;
     onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
 }
 

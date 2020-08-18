@@ -43,7 +43,6 @@ export type Services = {
     location: LocationService;
 }
 
-
 /**
  * Main component to build editors. Each editor should receive the controller, which carries all required services
  * for editor initialization
@@ -205,6 +204,14 @@ export default class Controller {
 
     getPlugin(pluginId: string): Plugin {
         return this.plugins.find(plugin => plugin.id === pluginId);
+    }
+
+    notifyPlugins(method: string, ...args) {
+        this.plugins.forEach(plugin => {
+            if (plugin[method]) {
+                plugin[method](...args);
+            }
+        });
     }
 
     /**

@@ -5,14 +5,23 @@ import { Plugin } from "../index";
 import gp from "gson-pointer";
 
 
+/** sync-plugin options, given on initialization */
 type Options = {
 
+}
+
+/** required settings in editron:ui-config */
+export type EditronSchemaOptions = {
+    sync: {
+        /** map of json-pointer from source to target */
+        fromTo: { [fromPointer: string]: JSONPointer }
+    }
 }
 
 
 interface SyncEditor extends Editor {
     __syncPlugin?: {
-        options: any;
+        options: EditronSchemaOptions["sync"];
     }
 }
 
@@ -37,11 +46,12 @@ export default class SyncPlugin implements Plugin {
     }
 
     onCreateEditor(pointer: JSONPointer, editor: SyncEditor, options?) {
-        const { sync } = options ?? {};
+        const sync: EditronSchemaOptions["sync"] = options?.sync;
         if (sync == null) {
             return;
         }
 
+        // @todo listen to change pointer updates
         const { controller } = this;
         const from = Object.keys(sync.fromTo);
         const fromPointer = from.map(key => gp.join(pointer, key));
@@ -49,9 +59,10 @@ export default class SyncPlugin implements Plugin {
         fromPointer.forEach(pointer => (currentData[pointer] = controller.service("data").get(pointer)));
         const toPointer = from.map(key => gp.join(pointer, sync.fromTo[key]));
 
+        const observers = [];
 
         fromPointer.forEach((sourcePointer, index) => {
-            controller.service("data").observe(sourcePointer, () => {
+            const observer = () => {
                 const targetValue = controller.service("data").get(toPointer[index]);
                 const currentValue = currentData[sourcePointer];
                 currentData[sourcePointer] = controller.service("data").get(sourcePointer);
@@ -60,9 +71,10 @@ export default class SyncPlugin implements Plugin {
                 }
 
                 controller.service("data").set(toPointer[index], currentData[sourcePointer]);
-            }, true);
+            };
 
-
+            controller.service("data").observe(sourcePointer, observer, true);
+            observers.push([sourcePointer, observer]);
         });
 
         editor.__syncPlugin = {

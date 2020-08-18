@@ -34,6 +34,10 @@ export default class InstanceService {
         return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer));
     }
 
+    find<T extends Editor>(test: (editor: T) => boolean): Array<T> {
+        return this.instances.filter(test) as Array<T>;
+    }
+
     remove(editor: Editor) {
         this.controller.service("data").removeObserver(editor.pointer, editor.update);
         this.controller.service("validation").removeObserver(editor.pointer, editor.update);
@@ -69,6 +73,7 @@ export default class InstanceService {
         changePointers.forEach(change => {
             const { old: prevPtr, next: nextPtr, editors } = change;
             editors.forEach((instance: Editor) => {
+                const oldPointer = instance.pointer;
                 const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);
 
                 this.controller.service("data")
@@ -83,6 +88,12 @@ export default class InstanceService {
                 instance.update(<ChangePointerEvent>{ type: "pointer", value: newPointer });
                 instance.pointer = newPointer;
                 instance.getElement().setAttribute("data-point", newPointer);
+
+                controller.plugins.forEach(plugin => {
+                    if (plugin.onChangePointer) {
+                        plugin.onChangePointer(oldPointer, newPointer, instance);
+                    }
+                });
             });
         });
     }
