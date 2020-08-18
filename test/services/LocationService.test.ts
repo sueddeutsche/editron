@@ -5,7 +5,7 @@ import LocationService from "../../src/services/LocationService";
 import { MoveChange, DeleteChange } from "../../src/services/DataService";
 
 
-describe.only("LocationService", () => {
+describe("LocationService", () => {
 
     let service: LocationService;
     beforeEach(() => {

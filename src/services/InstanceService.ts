@@ -20,7 +20,7 @@ export default class InstanceService {
 
     add(editor: Editor) {
         const pointer = editor.getPointer();
-        editor.toElement().setAttribute("data-point", pointer);
+        editor.getElement().setAttribute("data-point", pointer);
         editor.update = editor.update.bind(editor);
 
         editor.pointer = pointer;
@@ -82,7 +82,7 @@ export default class InstanceService {
                 instance.pointer = newPointer;
                 instance.update(<ChangePointerEvent>{ type: "pointer", value: newPointer });
                 instance.pointer = newPointer;
-                instance.toElement().setAttribute("data-point", newPointer);
+                instance.getElement().setAttribute("data-point", newPointer);
             });
         })
     }

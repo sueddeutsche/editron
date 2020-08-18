@@ -762,7 +762,7 @@ class, but you must follow the some basic rules, that are further described in [
 1. error event
 2. update pointer and event listeners
 3. creating dom element and class convention
-4. exposing helpers toElement, getPointer
+4. exposing helpers getElement, getPointer
 5. Using test-template
 -->
 

@@ -124,7 +124,7 @@ export default class SortablePlugin implements Plugin {
         }
 
         const { controller } = this;
-        const $children = <HTMLElement>editor.toElement().querySelector(CHILD_CONTAINER_SELECTOR);
+        const $children = <HTMLElement>editor.getElement().querySelector(CHILD_CONTAINER_SELECTOR);
         if ($children == null) {
             console.log(`failed retrieving sortable children container '${CHILD_CONTAINER_SELECTOR}' -- abort`);
             return;

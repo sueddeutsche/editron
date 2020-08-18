@@ -174,15 +174,15 @@ export default class ArrayEditor extends AbstractEditor {
             // this updates the array-item wrapper
             children[i].updatePointer(currentPointer);
 
-            if ($items.children[i] === children[i].toElement()) {
+            if ($items.children[i] === children[i].getElement()) {
                 // skip moving node, already in place
                 continue;
             } else if (i + 1 < $items.children.length) {
                 // move node to correct position
-                $items.insertBefore(children[i].toElement(), $items.children[i + 1]);
+                $items.insertBefore(children[i].getElement(), $items.children[i + 1]);
             } else {
                 // remaining nodes may be simply appended
-                $items.appendChild(children[i].toElement());
+                $items.appendChild(children[i].getElement());
             }
         }
     }
@@ -196,7 +196,7 @@ export default class ArrayEditor extends AbstractEditor {
         // recreate child editors
         data.forEach((item, index) => {
             const childEditor = new ArrayItemWrapper(`${pointer}/${index}`, controller, viewModel.controls);
-            $items.appendChild(childEditor.toElement());
+            $items.appendChild(childEditor.getElement());
             children.push(childEditor);
         });
     }

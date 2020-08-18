@@ -102,7 +102,7 @@ export default class ArrayItemEditor {
         this.render();
     }
 
-    toElement(): HTMLElement {
+    getElement(): HTMLElement {
         return this.$element;
     }
 

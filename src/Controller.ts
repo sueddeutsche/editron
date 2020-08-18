@@ -290,7 +290,7 @@ export default class Controller {
 
         // iniitialize editor and notify instance manager
         const editor = new EditorConstructor(pointer, this, instanceOptions);
-        const dom = editor.toElement();
+        const dom = editor.getElement();
         element.appendChild(dom);
         this.services.instances.add(editor);
         editor.update(<SetEnabledEvent>{ type: "active", value: !instanceOptions.disabled });
@@ -318,7 +318,7 @@ export default class Controller {
         this.services.instances.remove(editor);
 
         // controller inserted child and removes it here again
-        const $element = editor.toElement();
+        const $element = editor.getElement();
         $element?.parentNode?.removeChild($element);
         editor.destroy();
     }

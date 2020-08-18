@@ -12,7 +12,7 @@ function createEditor(pointer = "#/target") {
         events: [],
         update(event) { this.events.push(event); },
         getPointer() { return this.pointer },
-        toElement() { return document.createElement("div"); },
+        getElement() { return document.createElement("div"); },
         destroy() { this.destroyed = true; }
     }
 }

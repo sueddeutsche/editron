@@ -169,7 +169,7 @@ export default class AbstractValueEditor implements Editor {
     }
 
     // return main dom element
-    toElement() {
+    getElement() {
         return this.dom;
     }
 

@@ -48,7 +48,7 @@ export default class SelectionPlugin implements Plugin {
     deselect() {
         if (this.currentSelection) {
             const editor = this.currentSelection;
-            editor.toElement().classList.remove("selected");
+            editor.getElement().classList.remove("selected");
             this.onDeselect({ pointer: editor.getPointer(), editor, options: editor.__selectionPlugin.options });
             this.currentSelection = null;
         }
@@ -61,8 +61,8 @@ export default class SelectionPlugin implements Plugin {
         }
         this.deselect();
         this.currentSelection = editor;
-        this.currentSelection.toElement().classList.add("selected");
-        // console.log("add class to ", this.currentSelection.toElement());
+        this.currentSelection.getElement().classList.add("selected");
+        // console.log("add class to ", this.currentSelection.getElement());
         this.onSelect({ pointer: editor.getPointer(), editor, options: editor.__selectionPlugin.options });
     }
 
@@ -73,13 +73,13 @@ export default class SelectionPlugin implements Plugin {
                 options,
                 select: event => this.select(event, editor)
             }
-            editor.toElement().addEventListener("click", editor.__selectionPlugin.select);
+            editor.getElement().addEventListener("click", editor.__selectionPlugin.select);
         }
     }
 
     onDestroyEditor(pointer, editor: ModifiedEditor) {
         if (editor.__selectionPlugin) {
-            editor.toElement().removeEventListener("click", editor.__selectionPlugin.select);
+            editor.getElement().removeEventListener("click", editor.__selectionPlugin.select);
             editor.__selectionPlugin = undefined;
 
             if (this.currentSelection === editor) {

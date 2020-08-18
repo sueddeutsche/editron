@@ -65,8 +65,8 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
         it("should expose api methods", () => {
             const editorInstance = new Constructor(pointer, controller);
 
-            assert.ok(typeof editorInstance.toElement === "function", "should have a method 'toElement'");
-            assert.ok(editorInstance.toElement() instanceof window.HTMLElement, "'toElement()' should return a HTML Node");
+            assert.ok(typeof editorInstance.getElement === "function", "should have a method 'getElement'");
+            assert.ok(editorInstance.getElement() instanceof window.HTMLElement, "'getElement()' should return a HTML Node");
             assert.ok(typeof editorInstance.getPointer === "function", "should have a method 'getPointer'");
             assert.ok(typeof editorInstance.getPointer() === "string", "'getPointer()' should return the editors pointer");
             assert.ok(typeof editorInstance.updatePointer === "function", "should have a method 'updatePointer'");

@@ -51,31 +51,19 @@ dataService.redo();
 #### DataService events
 
 ```js
-// called before any data changes of the action
-dataService.on("beforeUpdate", callback)
-// called after data changes, before observe events 
-dataService.on("afterUpdate", callback) 
+
+dataService.watch(event => {
+    console.log(event.type, event.value);
+    // called before any data changes of the action
+    if (event.type === "data:update:before") {}
+    // called after data changes, before observe events 
+    if (event.type === "data:update:after") {}
+    // called after all data changes have been sent
+    if (event.type === "data:update:done") {}
+})
 // Events bubble up to root pointer (#), # is last event
-dataService.observe(pointer, callback, true) 
+dataService.observe(pointer, callback, true);
 ```
-
-
-#### Dataservice event object
-
-```js
-// callbacks
-function callback(event) {}
-```
-
-```js
-// event object
-{
-    action: "SET_DATA", // @see store/actions.ActionTypes
-    pointer: "#/pointer/location",
-    parentPointer: "#/pointer",
-}
-```
-
 
 ### ValidationService
 
@@ -87,12 +75,8 @@ const validationService = new ValidationService(new State(), jsonSchema)
 ```
 
 ```js
-// called before a next validation
-validationService.on("beforeValidation", callback)     
 // Validation Events bubble up to root pointer (#)
 validationService.observe(pointer, callback, true)   
-// called after notifying observers 
-validationService.on("afterValidation", callback)    
 // validate data
 validationService.validate(data).then((errors) => {})
 ```

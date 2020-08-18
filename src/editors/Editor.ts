@@ -50,7 +50,7 @@ export interface Editor {
     /** returns current json-pointer of editor */
     getPointer(): JSONPointer;
     /** returns the editors root element */
-    toElement(): HTMLElement;
+    getElement(): HTMLElement;
     /** destroy editor-instance */
     destroy(): void;
 }

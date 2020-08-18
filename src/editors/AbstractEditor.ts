@@ -35,7 +35,7 @@ export type Options = {
  *      - `setData(newValue)` to update the associated data of the current _pointer_
  *      - `getSchema()` returning the json-schema of the current _pointer_
  *      - `getErrors()` returning a list of current errors
- *      - `toElement()` gives you the root dom-node for this editor (aka render target)
+ *      - `getElement()` gives you the root dom-node for this editor (aka render target)
  *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
  *
  * @param pointer - pointer referencing the current data and schema
@@ -84,16 +84,16 @@ export default class AbstractEditor implements Editor {
         return this.pointer;
     }
 
+    getElement(): HTMLElement {
+        return this.dom;
+    }
+
     focus(): void {
         this.controller.service("location").setCurrent(this.pointer);
     }
 
     blur(): void {
         this.controller.service("location").blur(this.pointer);
-    }
-
-    toElement(): HTMLElement {
-        return this.dom;
     }
 
     destroy(): void {
