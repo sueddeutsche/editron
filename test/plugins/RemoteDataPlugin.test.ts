@@ -20,7 +20,7 @@ describe("RemoteDataPlugin", () => {
             "editron:ui": {
                 remoteData: {
                     requestParam: "https://domain/{{type}}/{{id}}",
-                    requestParamSource: "/source",
+                    requestParamValues: "/source",
                     responseMapping: {
                         remoteValue: "/result/remoteValue",
                         remoteObject: "/result/remoteObject"

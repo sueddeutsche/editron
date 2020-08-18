@@ -10,11 +10,12 @@ import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
 import gp from "gson-pointer";
 import render from "json-schema-library/lib/utils/render";
+import isEmpty from "../../utils/isEmpty";
 
 
 /** required settings in editron:ui config */
 export type EditronSchemaOptions = {
-    remoteData: {
+    remoteData?: {
         /** proxy function to call for remote data. Default to "json" */
         proxyMethod?: string;
         /** url to call. You can use {{property}}-syntax to render values of target `source` */
@@ -42,12 +43,6 @@ interface RemoteDataEditor extends Editor {
     }
 }
 
-function isEmpty(value) {
-    return value == null || value === "" ||
-        (typeof value === "object" && Object.keys(value).length === 0) ||
-        (Array.isArray(value) && value.length === 0);
-}
-
 
 export default class RemoteDataPlugin implements Plugin {
 
@@ -65,8 +60,22 @@ export default class RemoteDataPlugin implements Plugin {
             return;
         }
 
-        const { controller } = this;
+        // validate options
         const remote = { ...defaultOptions, ...options.remoteData };
+        if (remote.requestParam == null || typeof remote.requestParam !== "string") {
+            console.warn(`editron remote-data-plugin: Expected option 'requestParam' to be a string. Given: ${remote.requestParam}`);
+            return;
+        }
+        if (remote.requestParamValues == null || typeof remote.requestParamValues !== "string") {
+            console.warn(`editron remote-data-plugin: Expected option 'requestParamValues' to be a string. Given: ${remote.requestParamValues}`);
+            return;
+        }
+        if (remote.responseMapping == null || typeof remote.responseMapping !== "object") {
+            console.warn(`editron remote-data-plugin: Expected option 'responseMapping' to be an object. Given: ${remote.responseMapping}`);
+            return;
+        }
+
+        const { controller } = this;
         const sourcePointer = gp.join(pointer, remote.requestParam);
 
         const observer = async () => this.setRemoteData(pointer, remote);
