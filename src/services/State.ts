@@ -1,5 +1,6 @@
 import { createStore, combineReducers } from "redux";
 import { createNanoEvents } from "nanoevents";
+import { init } from "@rematch/core";
 
 const FLAG_CHANGED = "hasChanged";
 
@@ -21,6 +22,9 @@ export default class State {
         this.reducers = {
             action: (state, action) => action
         };
+
+        // rematch
+        // const store = init({ models });
 
         this.store = createStore(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
         this.store.subscribe(() => this.onChange(this.store.getState()));
