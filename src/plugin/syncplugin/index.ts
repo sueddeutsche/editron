@@ -15,7 +15,7 @@ import isEmpty from "../../utils/isEmpty";
 /** required settings in editron:ui-config */
 export type EditronSchemaOptions = {
     sync?: {
-        /** map of json-pointer from source to target */
+        /** map of relative json-pointer from source to target */
         mappingFromTo: { [fromPointer: string]: JSONPointer }
     }
 }
