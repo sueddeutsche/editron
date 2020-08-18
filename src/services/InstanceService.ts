@@ -79,6 +79,7 @@ export default class InstanceService {
                     .removeObserver(instance.pointer, instance.update)
                     .observe(newPointer, instance.update, instance.notifyNestedChanges);
 
+                instance.pointer = newPointer;
                 instance.update(<ChangePointerEvent>{ type: "pointer", value: newPointer });
                 instance.pointer = newPointer;
                 instance.toElement().setAttribute("data-point", newPointer);

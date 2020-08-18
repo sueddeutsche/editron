@@ -71,10 +71,34 @@ describe("InstanceService", () => {
         assert.ok(controller.service("validation").observer.observers["#/newTarget"].includes(editor.update));
 
         assert.equal(editor.pointer, "#/newTarget",
-            "should udpate property 'pointer' on instance");
+            "should update property 'pointer' on instance");
 
         assert.deepEqual(editor.events[0], { type: "pointer", value: "#/newTarget" },
             "should have send update-action 'pointer' to editor");
+    });
+
+    it("should update pointer before calling update event", () => {
+        editor.update = function update(event) {
+            if (event.type === "pointer") {
+                // this.pointer should habe been updated
+                this.pointerOnUpdate = this.pointer;
+                // change pointer to an invalid value
+                this.pointer = "abc";
+            }
+        }
+        instanceService.add(editor);
+
+        // sends pointer event to editor
+        controller.service("data").notifyWatcher({
+            type: "data:update:container",
+            value: {
+                pointer: "#",
+                changes: [<MoveChange>{ type: "move", old: "#/target", next: "#/newTarget" }]
+            }
+        });
+
+        assert.equal(editor.pointerOnUpdate, "#/newTarget", "should update property 'pointer' before update");
+        assert.equal(editor.pointer, "#/newTarget", "should update property 'pointer' after update");
     });
 
     it("should remove observer-target for destroyed editors", () => {
