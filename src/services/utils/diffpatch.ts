@@ -1,7 +1,8 @@
 import { DiffPatcher, Delta } from "jsondiffpatch";
-// import diffMatchPatch from "diff_match_patch";
+
 
 export { Delta };
+
 
 const options = {
     // used to match objects when diffing arrays, by default only === operator is used
@@ -15,12 +16,6 @@ const options = {
     }
 };
 
-try {
-    // required in browser environments
-    // window["diff_match_patch"] = diffMatchPatch;
-} catch (e) {
-    // loaded by default in nodejs
-}
 
 const diffpatch = new DiffPatcher(options); // jsondiffpatch.create(options);
 // @ts-ignore
