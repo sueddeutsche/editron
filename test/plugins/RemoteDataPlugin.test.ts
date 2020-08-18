@@ -22,8 +22,8 @@ describe("RemoteDataPlugin", () => {
                     requestParam: "https://domain/{{type}}/{{id}}",
                     requestParamValues: "/source",
                     responseMapping: {
-                        remoteValue: "/result/remoteValue",
-                        remoteObject: "/result/remoteObject"
+                        "remoteValue": "/result/remoteValue",
+                        "remoteObject": "/result/remoteObject"
                     }
                 }
             },
@@ -90,7 +90,7 @@ describe("RemoteDataPlugin", () => {
     });
 
 
-    it("should replace 'requestParam' variables with 'requestParamSource' values", async () => {
+    it("should replace 'requestParam'-variables with 'requestParamValues'-values", async () => {
         schema["editron:ui"].remoteData.requestParam = "http://content/{{type}}/{{id}}";
         schema["editron:ui"].remoteData.requestParamValues = "/source";
 
@@ -104,7 +104,7 @@ describe("RemoteDataPlugin", () => {
     });
 
 
-    it("should use 'set'-map to update data", async () => {
+    it("should use 'responseMapping' to update data", async () => {
         let requestUrl;
 
         const responseData = { description: "123", data: { title: "abc" } };
@@ -156,5 +156,24 @@ describe("RemoteDataPlugin", () => {
         const finalData = controller.getData();
 
         assert.equal(finalData.result.remoteValue, "abc");
+    });
+
+    it("should watch 'requestParamValues' and update data on change", async () => {
+        schema["editron:ui"].remoteData.overwrite = true;
+        const controller = new Controller(schema, data, options);
+        const responses = [
+            { remoteValue: "second response", remoteObject: { response: 2 } },
+            { remoteValue: "first response", remoteObject: { response: 1 } }
+        ]
+        handler.json = ({ source }) => Promise.resolve(responses.pop());
+        const editor = controller.createEditor("#", document.createElement("div"));
+        await pause(1);
+
+        controller.service("data").set("#/source/id", "abc");
+        await pause(1);
+
+        const finalData = controller.getData();
+
+        assert.equal(finalData.result.remoteValue, "second response");
     });
 });

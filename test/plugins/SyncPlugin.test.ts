@@ -4,7 +4,7 @@ import Controller from "../../src/Controller";
 import SyncPlugin from "../../src/plugin/syncplugin";
 
 
-describe.only("SyncPlugin", () => {
+describe("SyncPlugin", () => {
     let schema;
     let data;
     let options;

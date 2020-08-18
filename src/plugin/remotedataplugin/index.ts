@@ -76,7 +76,7 @@ export default class RemoteDataPlugin implements Plugin {
         }
 
         const { controller } = this;
-        const sourcePointer = gp.join(pointer, remote.requestParam);
+        const sourcePointer = gp.join(pointer, remote.requestParamValues);
 
         const observer = async () => this.setRemoteData(pointer, remote);
         controller.service("data").observe(sourcePointer, observer, true);

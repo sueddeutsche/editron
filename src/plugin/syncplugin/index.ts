@@ -43,22 +43,26 @@ export default class SyncPlugin implements Plugin {
     copyData(pointer: JSONPointer, mapping: EditronSchemaOptions["sync"]["mappingFromTo"], previous) {
         const { controller } = this;
         const from = Object.keys(mapping);
-
         const data = controller.getData();
+
         from
             .forEach(key => {
                 // select data
                 const fromPointer = gp.join(pointer, key);
                 const fromValue = gp.get(data, fromPointer);
-                // write data
+                // update data
                 const toPointer = gp.join(pointer, mapping[key]);
                 const toValue = gp.get(data, toPointer);
                 if (previous[fromPointer] !== toValue && !isEmpty(toValue)) {
+                    // console.log("abort sync -- previous", fromPointer, previous, "value:", previous[fromPointer], "current:", toValue);
                     return;
                 }
+                // @todo write test. currently untested - but required. Combination of sync-plugin?
+                previous[fromPointer] = fromValue;
                 gp.set(data, toPointer, fromValue);
             });
 
+        // write data
         controller.setData(data);
     }
 
@@ -97,7 +101,8 @@ export default class SyncPlugin implements Plugin {
 
         editor.__syncPlugin = {
             removeObservers: () => observers.forEach(([pointer, observer]) =>
-                controller.service("data").removeObserver(pointer, observer)),
+                controller.service("data").removeObserver(pointer, observer)
+            ),
             options: sync
         };
     }
