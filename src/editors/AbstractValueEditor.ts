@@ -1,5 +1,4 @@
 import m from "mithril";
-import getId from "../utils/getID";
 import { JSONPointer, JSONSchema, ValidationError } from "../types";
 import Controller from "../Controller";
 import { Editor, EditorUpdateEvent } from "./Editor";
@@ -97,7 +96,7 @@ export default class AbstractValueEditor implements Editor {
         // create main DOM-element for view-generation
         this.dom = controller.createElement(
             `.editron-value.editron-value--${options.editorValueType}`,
-            { name: getId(pointer), ...options.attrs }
+            { ...options.attrs }
         );
 
         // use this model to generate the view. may be customized with `options.viewModel`

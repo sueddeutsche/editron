@@ -3,7 +3,6 @@ import addItem from "./utils/addItem";
 import addValidator from "json-schema-library/lib/addValidator";
 import createProxy from "./utils/createProxy";
 import DataService from "./services/DataService";
-import getID from "./utils/getID";
 import gp from "gson-pointer";
 import i18n from "./utils/i18n";
 import InstanceService from "./services/InstanceService";
@@ -266,7 +265,6 @@ export default class Controller {
 
         // merge schema["editron:ui"] object with options. options precede
         const instanceOptions = {
-            id: getID(pointer),
             pointer,
             disabled: this.disabled,
             ...UISchema.copyOptions(pointer, this),

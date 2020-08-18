@@ -96,7 +96,7 @@ export default class SortablePlugin implements Plugin {
     current: Editor;
     controller: Controller;
 
-    constructor(options: Options) {
+    constructor(options: Options) { // eslint-disable-line @typescript-eslint/no-unused-vars
         // this.onDelegation = options.onDelegation;
         this.dom = document.createElement("div");
         // this.onSelect = options.onSelect;

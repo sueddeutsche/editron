@@ -1,7 +1,7 @@
 import m from "mithril";
 import gp from "gson-pointer";
 import View, { buildTree, Node } from "./View";
-import { Editor, EditorUpdateEvent } from "../Editor";
+import { EditorUpdateEvent } from "../Editor";
 import Controller from "../../Controller";
 import { JSONPointer, ValidationError } from "../../types";
 import { Event as LocationEvent } from "../../services/LocationService";
@@ -56,7 +56,7 @@ export default class MinimapEditor extends AbstractEditor {
             onSelect: pointer => locationService.goto(pointer),
 
             onAdd: (item) => controller.addItemTo(item.pointer),
-            onChange(pointerToList, reorderedList, targetIndex) {
+            onChange(pointerToList, reorderedList/*, targetIndex*/) {
                 // update data
                 const data = controller.service("data").get(pointerToList);
                 const sorted = [];

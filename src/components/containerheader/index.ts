@@ -1,5 +1,4 @@
 import m from "mithril";
-import getID from "../../utils/getID";
 import populated from "../../utils/populated";
 
 
@@ -41,8 +40,7 @@ export default {
 
         return m(".editron-container__header",
             {
-                "class": getClass(hasAction, attrs),
-                name: getID(attrs.pointer)
+                "class": getClass(hasAction, attrs)
             },
 
             m(".editron-container__title",

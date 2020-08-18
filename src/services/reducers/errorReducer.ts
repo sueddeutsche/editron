@@ -1,4 +1,4 @@
-const ActionTypes = require("./actions").ActionTypes;
+import { ActionTypes } from "./actions";
 
 
 export default (state = [], action) => {

@@ -1,4 +1,3 @@
-import getID from "./getID";
 import Controller from "../Controller";
 
 
@@ -68,13 +67,12 @@ function mayBlur(element: FocusableElement|Blurable, direction: Direction): bool
 /** returns the current active (editron) input element or false */
 function getActiveInput(controller: Controller, parent: HTMLElement = document.body): FocusableElement|false {
     const currentPointer = controller.service("location").getCurrent();
-    const currentId = `#${getID(currentPointer)}`;
-    if (currentId === "#") {
+    if (currentPointer === "#") {
         console.log("abort empty selection", currentPointer, "active element", document.activeElement);
         return false;
     }
 
-    const activeInput = parent.querySelector(currentId) as FocusableElement;
+    const activeInput = parent.querySelector(`[data-point="${currentPointer}"] label input`) as FocusableElement;
     if (activeInput == null) { return false; }
     if (activeInput !== document.activeElement) {
         console.log("selection: active input is not the same as current editor", activeInput, document.activeElement);

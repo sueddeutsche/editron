@@ -1,7 +1,6 @@
-import { JSONData, JSONPointer, JSONSchema, ValidationError } from "../types";
+import { JSONData, JSONPointer, JSONSchema } from "../types";
 import Controller from "../Controller";
 import { Editor, EditorUpdateEvent } from "./Editor";
-import { Observer } from "../services/ValidationService";
 
 
 function getTypeClass(schema: JSONSchema): string {
@@ -60,7 +59,7 @@ export default class AbstractEditor implements Editor {
             .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
     }
 
-    update(event: EditorUpdateEvent) {
+    update(event: EditorUpdateEvent) { // eslint-disable-line @typescript-eslint/no-unused-vars
         throw new Error("Missing implementation of method 'update' in custom editor");
     }
 

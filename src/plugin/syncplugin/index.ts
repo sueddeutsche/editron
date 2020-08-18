@@ -27,7 +27,7 @@ export default class SyncPlugin implements Plugin {
 
     currentSelection: SyncEditor;
 
-    constructor(options: Options) {
+    constructor(options: Options) { // eslint-disable-line @typescript-eslint/no-unused-vars
         // this.dom = document.createElement("div");
     }
 

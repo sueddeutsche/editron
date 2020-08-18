@@ -1,7 +1,6 @@
 /* eslint quote-props: 0 */
 import m from "mithril";
 import SessionService from "../../services/SessionService";
-import getId from "../../utils/getID";
 import Sortable from "sortablejs";
 import { onAddSortable, onEndSortable } from "../../plugin/sortableplugin";
 import gp from "gson-pointer";
@@ -113,7 +112,7 @@ export type State = {
 const NodeComponent: m.Component<Attrs, State> = {
     view(vnode) {
         const { node, controller, withHandle, onSelect, currentSelection, errors } = vnode.attrs;
-        const { children, sortable, title, pointer, sortableGroup: group } = node;
+        const { sortable, title, pointer, sortableGroup: group } = node;
         return m(".editron-minimap__item", { "data-nav": pointer },
             m(".editron-minimap__header",
                 {
@@ -144,7 +143,7 @@ const NodeComponent: m.Component<Attrs, State> = {
                     },
                     onremove: () => this.sortable && this.sortable.destroy()
                 },
-                node.children.map((nextNode, index) =>
+                node.children.map(nextNode =>
                     m(NodeComponent, {
                         node: nextNode,
                         controller,
@@ -172,27 +171,27 @@ const MinimapComponent: m.Component<Attrs> = {
     }
 };
 
-function isUrl(value) {
-    return typeof value === "string" && /^https?:\/\//.test(value);
-}
+// function isUrl(value) {
+//     return typeof value === "string" && /^https?:\/\//.test(value);
+// }
 
-const Icon = {
-    view(vnode) {
-        if (isUrl(vnode.attrs.icon)) {
-            return m("span.editron-minimap.editron-minimap--dummy",
-                m("i.mmf-icon.mmf-icon--thumbnail", { style: `background-image: url(${vnode.attrs.icon})` })
-            );
-        }
+// const Icon = {
+//     view(vnode) {
+//         if (isUrl(vnode.attrs.icon)) {
+//             return m("span.editron-minimap.editron-minimap--dummy",
+//                 m("i.mmf-icon.mmf-icon--thumbnail", { style: `background-image: url(${vnode.attrs.icon})` })
+//             );
+//         }
 
-        if (vnode.attrs.icon) {
-            return m("span.editron-minimap.editron-minimap--dummy",
-                m("i.mmf-icon", vnode.attrs.icon)
-            );
-        }
+//         if (vnode.attrs.icon) {
+//             return m("span.editron-minimap.editron-minimap--dummy",
+//                 m("i.mmf-icon", vnode.attrs.icon)
+//             );
+//         }
 
-        return m("span.editron-minimap.editron-minimap--dummy");
-    }
-};
+//         return m("span.editron-minimap.editron-minimap--dummy");
+//     }
+// };
 
 
 function getCollapsedState(pointer) {
@@ -213,67 +212,64 @@ function hasError(pointer, errors) {
 
 
 
-const List = {
+// const List = {
 
-    toggleCollapse(item) {
-        item.$collapseTarget.classList.toggle("isCollapsed");
-        setCollapsedState(item.pointer, item.$collapseTarget.classList.contains("isCollapsed"));
-    },
+//     toggleCollapse(item) {
+//         item.$collapseTarget.classList.toggle("isCollapsed");
+//         setCollapsedState(item.pointer, item.$collapseTarget.classList.contains("isCollapsed"));
+//     },
 
-    view(vnode) {
-        return m("ul.editron-minimap-list", vnode.attrs.children.map((item) => {
-            let collapseIcon: string|m.Vnode = "";
-            if (item.editable && item.children.length > 0) {
-                // collapse sublist action
-                collapseIcon = m("span.editron-minimap.editron-minimap--collapse",
-                    { onclick: () => this.toggleCollapse(item) },
-                    m("i.mmf-icon", "expand_less")
-                );
-            } else if (item.editable && item.children.length === 0) {
-                // empty icon, nothing to expand
-                collapseIcon = m("span.editron-minimap.editron-minimap--dummy",
-                    m("i.mmf-icon", "")
-                );
-                // no children - deactivate collapse per default
-                setCollapsedState(item.pointer, false);
-            }
+//     view(vnode) {
+//         return m("ul.editron-minimap-list", vnode.attrs.children.map((item) => {
+//             let collapseIcon: string|m.Vnode = "";
+//             if (item.editable && item.children.length > 0) {
+//                 // collapse sublist action
+//                 collapseIcon = m("span.editron-minimap.editron-minimap--collapse",
+//                     { onclick: () => this.toggleCollapse(item) },
+//                     m("i.mmf-icon", "expand_less")
+//                 );
+//             } else if (item.editable && item.children.length === 0) {
+//                 // empty icon, nothing to expand
+//                 collapseIcon = m("span.editron-minimap.editron-minimap--dummy",
+//                     m("i.mmf-icon", "")
+//                 );
+//                 // no children - deactivate collapse per default
+//                 setCollapsedState(item.pointer, false);
+//             }
 
-            return m("li",
-                {
-                    class: getClass(item.pointer, vnode.attrs.activeTarget, vnode.attrs.errors),
-                    oncreate: (node) => (item.$collapseTarget = node.dom)
-                },
-                m(".editron-minimap",
-                    {
-                        "data-nav": item.pointer,
-                        class: item.editable ? "editron-minimap--editable" : "editron-minimap--default"
-                    },
-                    collapseIcon,
-                    m("a.editron-minimap",
-                        {
-                            href: `#${getId(item.pointer)}`,
-                            onclick: (e) => {
-                                e.preventDefault();
-                                vnode.attrs.onClick(item);
-                            }
-                        },
-                        item.title
-                    ),
-                    item.editable ? m("span.editron-minimap.editron-minimap--add",
-                        {
-                            onclick: () => vnode.attrs.onAdd(item)
-                        },
-                        m("i.mmf-icon", "playlist_add")
-                    ) : m("span.editron-minimap")
-                ),
-                m(vnode.attrs.ListComponent, Object.assign({}, vnode.attrs, item), vnode.children)
-            );
-        }));
-    }
-};
-
-
-
+//             return m("li",
+//                 {
+//                     class: getClass(item.pointer, vnode.attrs.activeTarget, vnode.attrs.errors),
+//                     oncreate: (node) => (item.$collapseTarget = node.dom)
+//                 },
+//                 m(".editron-minimap",
+//                     {
+//                         "data-nav": item.pointer,
+//                         class: item.editable ? "editron-minimap--editable" : "editron-minimap--default"
+//                     },
+//                     collapseIcon,
+//                     m("a.editron-minimap",
+//                         {
+//                             href: `#${getId(item.pointer)}`,
+//                             onclick: (e) => {
+//                                 e.preventDefault();
+//                                 vnode.attrs.onClick(item);
+//                             }
+//                         },
+//                         item.title
+//                     ),
+//                     item.editable ? m("span.editron-minimap.editron-minimap--add",
+//                         {
+//                             onclick: () => vnode.attrs.onAdd(item)
+//                         },
+//                         m("i.mmf-icon", "playlist_add")
+//                     ) : m("span.editron-minimap")
+//                 ),
+//                 m(vnode.attrs.ListComponent, Object.assign({}, vnode.attrs, item), vnode.children)
+//             );
+//         }));
+//     }
+// };
 
 
 export default MinimapComponent;

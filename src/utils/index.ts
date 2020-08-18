@@ -1,7 +1,6 @@
 export { default as addItem } from "./addItem";
 export { default as array } from "./array";
 export { default as createElement } from "./createElement";
-export { default as getID } from "./getID";
 export { default as i18n } from "./i18n";
 export { default as isNodeContext } from "./isNodeContext";
 export { default as populated } from "./populated";

@@ -1,7 +1,6 @@
 import Controller from "../../Controller";
 import m from "mithril";
 import Select, { Option } from "mithril-material-forms/components/select";
-import UISchema from "../../utils/UISchema";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { Editor, EditorUpdateEvent } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";

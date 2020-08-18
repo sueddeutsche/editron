@@ -1,5 +1,5 @@
 import Controller from "../Controller";
-import { JSONPointer, JSONData, ValidationError } from "../types";
+import { JSONPointer, ValidationError } from "../types";
 import { Patch } from "../services/utils/createDiff";
 
 

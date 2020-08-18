@@ -23,7 +23,7 @@ class AbstractDelegationEditor extends AbstractEditor {
         console.log("update delegation pliugin", event);
     }
 
-    delegate(pointer: JSONPointer) {
+    delegate(pointer: JSONPointer) { // eslint-disable-line @typescript-eslint/no-unused-vars
         throw new Error("notify has not been implemented in 'DelegationEditor'");
     }
 
