@@ -72,7 +72,7 @@ function getActiveInput(controller: Controller, parent: HTMLElement = document.b
         return false;
     }
 
-    const activeInput = parent.querySelector(`[data-point="${currentPointer}"] label input`) as FocusableElement;
+    const activeInput = parent.querySelector(`[data-id='${currentPointer}'] label input`) as FocusableElement;
     if (activeInput == null) { return false; }
     if (activeInput !== document.activeElement) {
         console.log("selection: active input is not the same as current editor", activeInput, document.activeElement);

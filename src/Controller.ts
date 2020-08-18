@@ -48,7 +48,7 @@ export type Services = {
  * Main component to build editors. Each editor should receive the controller, which carries all required services
  * for editor initialization
  *
- * ### Usage
+ * # Usage
  *
  * Instantiate the controller
  *
@@ -80,24 +80,38 @@ export type Services = {
  * ```js
  *  const data = editron.getData();
  * ```
- *
- * @param [schema] - json schema describing required data/form template
- * @param [data] - initial data for given json-schema
- * @param [options] - configuration options
- * @param [options.editors] - list of editron-editors/widgets to use. Order defines editor to use
- *      (based on editorOf-method)
  */
 export default class Controller {
-    #proxy: Foxy;
     core;
+    /** internal helper. Set to `true`, if editron has been destroyed */
     destroyed = false;
+    /** active state of editor */
     disabled = false;
+    /** list of editor-widgets to generate form for this instance */
     editors: Array<EditorPlugin>;
+    /** final options used by this editron instance */
     options: Options;
+    /** list of active plugins for this instance */
     plugins: Array<Plugin> = [];
+    /** list instantiated services */
     services: Services;
+    /** current state of errors, ui and data */
     state: State;
+    /** editron proxy instance */
+    #proxy: Foxy;
 
+
+    /**
+     * Create a new editron instance, which will be used to create ui-forms for specific
+     * data-points via `controller.createEditor(pointer, dom);`
+     *
+     * @param [schema] - json schema describing required data/form template
+     * @param [data] - initial data for given json-schema
+     * @param [options] - configuration options
+     * @param [options.editors] - list of editron-editors/widgets to use. Order defines editor to use
+     *      (based on editorOf-method)
+     * @param [options.plugins] - list of editron-plugins to use
+     */
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, options: Options = {}) {
         schema = UISchema.extendSchema(schema);
 

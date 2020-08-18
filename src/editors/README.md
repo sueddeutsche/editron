@@ -35,3 +35,7 @@ const page = editron.createEditor("#/page", dom);
 editron.destroyEditor(page);
 ```
 
+
+## talk about
+
+- `data-point` and `data-id`
