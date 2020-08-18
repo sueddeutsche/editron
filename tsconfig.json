@@ -18,6 +18,7 @@
         "*",
         "app/**/*",
         "src/**/*",
+        "test/**/*",
         "@technik-sde/foxy/**/*",
         "node_modules/mithril-material-forms/**/*"
     ],

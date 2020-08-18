@@ -386,6 +386,10 @@ export default class Controller {
         this.service("schema").setSchema(schema);
     }
 
+    getSchema(pointer?: JSONPointer): JSONSchema {
+        return this.service("schema").get(pointer);
+    }
+
     /**
      * Starts validation of current data
      */
