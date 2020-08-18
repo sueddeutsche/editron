@@ -79,7 +79,7 @@ export function buildTree(pointer: JSONPointer, data, controller: Controller, de
     }
 
     return node;
-};
+}
 
 
 

@@ -127,4 +127,4 @@ export default function createDiff<T extends any>(previousValue: T, newValue: T)
     return Object.keys(map)
         .map(pointer => ({ pointer, parentPointer: getParentPointer(pointer), patch: map[pointer] }))
         .sort(sortByPointer);
-};
+}

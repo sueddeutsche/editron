@@ -9,7 +9,7 @@ export interface EditorPlugin {
     prototype: Editor;
 
     editorOf(pointer: JSONPointer, controller: Controller, options?): boolean;
-};
+}
 
 
 export type SetEnabledEvent = {

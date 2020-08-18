@@ -9,7 +9,7 @@ export enum EventType {
     OVERLAY ="overlay",
     CURRENT_POINTER ="current",
     CURRENT_PAGE ="page"
-};
+}
 
 export interface Events {
     [EventType.OVERLAY]: (overlay: { element: HTMLElement, options: object }) => void;

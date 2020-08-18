@@ -49,7 +49,7 @@ export default class SyncPlugin implements Plugin {
         const { controller } = this;
         const from = Object.keys(sync.fromTo)
         const fromPointer = from.map(key => gp.join(pointer, key));
-        let currentData = {};
+        const currentData = {};
         fromPointer.forEach((pointer, index) => (currentData[pointer] = controller.service("data").get(pointer)));
         const toPointer = from.map(key => gp.join(pointer, sync.fromTo[key]));
 

@@ -7,4 +7,4 @@ import { JSONPointer } from "../types";
  */
 export default function getID(pointer: JSONPointer): string {
     return `${pointer.replace(/(^[#/]*|\/+$)/, "")}`.replace(/\/+/g, ".");
-};
+}

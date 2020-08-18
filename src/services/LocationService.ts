@@ -175,4 +175,4 @@ export default class LocationService {
         this.watcher = this.watcher.filter(w => w !== watcher);
         return this;
     }
-};
+}

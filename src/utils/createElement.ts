@@ -19,4 +19,4 @@ export default function createElement(selector: string, attributes?: HTMLAttribu
         }
     });
     return element;
-};
+}

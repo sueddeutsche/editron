@@ -14,4 +14,4 @@ export default function hasParentValue(data: JSONData, pointer: JSONPointer): bo
     }
     const type = getTypeOf(value);
     return type === "object" || type === "array";
-};
+}

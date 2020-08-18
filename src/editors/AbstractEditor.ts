@@ -1,11 +1,11 @@
-import { JSONData, JSONPointer, JSONSchema, ValidationError, UpdateEvent } from "../types";
+import { JSONData, JSONPointer, JSONSchema, ValidationError } from "../types";
 import Controller from "../Controller";
 import { Editor, EditorUpdateEvent } from "./Editor";
 import { Observer } from "../services/ValidationService";
 
 
 function getTypeClass(schema: JSONSchema): string {
-    return schema.type === "array" || schema.type === "object" ? schema.type : "value";
+    return schema.type === "array" || schema.type === "object" ? schema.type : "value"
 }
 
 

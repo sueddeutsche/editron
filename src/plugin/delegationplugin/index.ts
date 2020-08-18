@@ -63,7 +63,7 @@ export default class DelegationPlugin {
     initialize(controller: Controller): Plugin {
         this.controller = controller;
 
-        class DelegationEditor extends AbstractDelegationEditor {};
+        class DelegationEditor extends AbstractDelegationEditor {}
         DelegationEditor.prototype.delegate = this.delegate.bind(this);
 
         this.controller.editors.unshift(DelegationEditor);
