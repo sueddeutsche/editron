@@ -4,7 +4,7 @@ import View, { buildTree, Node } from "./View";
 import { Editor, EditorUpdateEvent } from "../Editor";
 import Controller from "../../Controller";
 import { JSONPointer, ValidationError } from "../../types";
-import { EventType as LocationEvent } from "../../services/LocationService";
+import { Event as LocationEvent } from "../../services/LocationService";
 import "./minimap-editor.scss";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 
@@ -46,13 +46,14 @@ export default class MinimapEditor extends AbstractEditor {
 
         this.dom.classList.add("editron-minimap-editor");
         const { minimap } = options;
+        const locationService = controller.service("location");
 
         this.viewModel = {
             controller,
-            node: buildTree(this.pointer, this.getData(), this.controller, minimap.depth ?? 2),
+            node: buildTree(pointer, this.getData(), controller, minimap.depth ?? 2),
             errors: [],
-            currentSelection: controller.service("location").getCurrent(),
-            onSelect: pointer => controller.service("location").goto(pointer),
+            currentSelection: locationService.getCurrent(),
+            onSelect: pointer => locationService.goto(pointer),
 
             onAdd: (item) => controller.addItemTo(item.pointer),
             onChange(pointerToList, reorderedList, targetIndex) {
@@ -66,12 +67,12 @@ export default class MinimapEditor extends AbstractEditor {
 
                 // refocus
                 // controller.location().goto(`${pointerToList}/${targetIndex}`);
-                const currentPointer = controller.service("location").getCurrent();
+                const currentPointer = locationService.getCurrent();
                 const localPointer = currentPointer.replace(pointerToList, "");
 
                 if (localPointer === currentPointer) {
                     // console.log("current focus is outside of reordered list - keep focus");
-                    return controller.service("location").focus();
+                    return locationService.focus();
                 }
 
                 const currentIndex = parseInt(localPointer.replace(/^\//, ""));
@@ -79,19 +80,18 @@ export default class MinimapEditor extends AbstractEditor {
 
                 if (nextIndex === currentIndex) {
                     // console.log("current index has not changed - keep focus");
-                    return controller.service("location").focus();
+                    return locationService.focus();
                 }
 
                 // console.log("change focus pointer - editor has moved", currentIndex, "->", nextIndex);
                 const updatedPointer = gp.join(pointerToList, nextIndex, localPointer.replace(/^\/[0-9]+\//, ""));
                 // console.log(currentPointer, "->", updatedPointer);
-                return controller.service("location").setCurrent(updatedPointer);
+                return locationService.setCurrent(updatedPointer);
             }
         };
 
-        const LocationService = controller.service("location");
-        this.onLocationChange = this.onLocationChange.bind(this);
-        LocationService.on(LocationService.TARGET_EVENT, this.onLocationChange);
+        this.updateLocation = this.updateLocation.bind(this);
+        locationService.watch(this.updateLocation);
 
         this.render();
     }
@@ -99,8 +99,7 @@ export default class MinimapEditor extends AbstractEditor {
     update(event: EditorUpdateEvent) {
         switch (event.type) {
             case "pointer":
-                this.pointer = event.value;
-                // run data update on pointer change // break;
+                // this.pointer has been set by service. Continue with data-update // no-break;
             case "data:update":
                 const data = this.getData();
                 this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
@@ -129,16 +128,18 @@ export default class MinimapEditor extends AbstractEditor {
         m.render(this.dom, m(View, this.viewModel));
     }
 
-    onLocationChange(targetPointer) {
-        this.viewModel.currentSelection = targetPointer;
-        this.render();
+    updateLocation(event: LocationEvent) {
+        if (event.type === "location:target") {
+            this.viewModel.currentSelection = event.value;
+            this.render();
+        }
     }
 
     destroy() {
         if (this.viewModel) {
             this.viewModel = null;
             m.render(this.dom, m("i"));
-            this.controller.service("location").off(LocationEvent.TARGET, this.onLocationChange);
+            this.controller.service("location").removeWatcher(this.updateLocation);
         }
     }
 }

@@ -8,7 +8,7 @@ import gp from "gson-pointer";
 import i18n from "./utils/i18n";
 import InstanceService from "./services/InstanceService";
 import jsonSchemaLibrary from "json-schema-library";
-import LocationService, { EventType as LocationEvent } from "./services/LocationService";
+import LocationService from "./services/LocationService";
 import plugin, { Plugin } from "./plugin";
 import SchemaService from "./services/SchemaService";
 import selectEditor from "./utils/selectEditor";

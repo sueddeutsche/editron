@@ -1,40 +1,40 @@
-import { createNanoEvents, Unsubscribe } from "nanoevents";
 import gp from "gson-pointer";
 import UIState, { EventType as UIEvent } from "./uistate";
 import getId from "../utils/getID";
 import { JSONPointer } from "../types";
 const DELAY = 25;
 
-
-export enum EventType {
-    /** called for a focused editor */
-    FOCUS = "focus",
-    /** called for a blurred editor */
-    BLUR = "blur",
-    /** called, when a new page is focused (page = first property on root data) */
-    PAGE = "page",
-    /** called, when the current selected json-pointer has changed */
-    TARGET = "target",
-}
-
-export interface Events {
-    /** called for a focused editor */
-    [EventType.FOCUS]: (pointer: JSONPointer) => void;
-    /** called for a blurred editor */
-    [EventType.BLUR]: (pointer: JSONPointer) => void;
-    /** called, when a new page is focused (page = first property on root data) */
-    [EventType.PAGE]: (pointer: JSONPointer) => void;
-    /** called, when the current selected json-pointer has changed */
-    [EventType.TARGET]: (pointer: JSONPointer) => void;
-}
-
-
-const emitter = createNanoEvents<Events>();
-
-
 function getViewportHeight() {
     return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
 }
+
+/** called for a focused editor */
+export type FocusEvent = {
+    type: "focus";
+    value: JSONPointer;
+}
+
+/** called for a blurred editor */
+export type BlurEvent = {
+    type: "blur";
+    value: JSONPointer;
+}
+
+/** called, when a new page is focused (page = first property on root data) */
+export type PageEvent = {
+    type: "location:page";
+    value: JSONPointer;
+}
+
+/** called, when the current selected json-pointer has changed */
+export type TargetEvent = {
+    type: "location:target";
+    value: JSONPointer;
+}
+
+export type Event = FocusEvent|BlurEvent|PageEvent|TargetEvent;
+
+export type Watcher = (event: Event) => void;
 
 
 export type Options = {
@@ -44,11 +44,14 @@ export type Options = {
     /** additional offset in px, to scroll into view. In case you want to
     adjust scroll-position on focus (e.g. skip a header). Defaults to 0 */
     scrollTopOffset?: number;
+    /** regular expression to identify page-target within a json-pointer */
+    pagePattern?: string;
 }
 
 export const defaultOptions: Options = {
     rootElement: document.body,
-    scrollTopOffset: 0
+    scrollTopOffset: 0,
+    pagePattern: "(^#?\/[^/]+)"
 }
 
 
@@ -58,6 +61,8 @@ export default class LocationService {
     TARGET_EVENT = "target";
     timeout: ReturnType<typeof setTimeout>;
     options: Options;
+
+    watcher: Array<Watcher> = [];
 
 
     /**
@@ -76,33 +81,36 @@ export default class LocationService {
      */
     constructor(options: Options = {}) {
         this.options = { ...defaultOptions, ...options };
+        this.setCurrent("");
 
-        UIState.on(UIEvent.CURRENT_PAGE, pointer => emitter.emit(EventType.PAGE, pointer));
-        UIState.on(UIEvent.CURRENT_POINTER, pointer => emitter.emit(EventType.TARGET, pointer));
+        UIState.on(UIEvent.CURRENT_PAGE, pointer =>
+            this.notifyWatcher(<PageEvent>{ type: "location:page", value: pointer }));
+
+        UIState.on(UIEvent.CURRENT_POINTER, pointer =>
+            this.notifyWatcher(<TargetEvent>{ type: "location:target", value: pointer }));
     }
 
     // update page and target pointer
-    goto(targetPointer: JSONPointer) {
-        const path = gp.split(targetPointer);
-
-        if (path.length === 0 || (path.length === 1 && path[0] === "")) {
+    goto(targetPointer: JSONPointer, rootElement = this.options.rootElement) {
+        const matches = targetPointer.match(new RegExp(this.options.pagePattern));
+        if (!matches) {
             return;
         }
 
-        const nextPage = path[0];
+        const nextPage = matches.pop();
         const currentPage = UIState.getCurrentPage();
         if (currentPage !== nextPage) {
             UIState.setCurrentPage(gp.join(nextPage, true));
         }
         UIState.setCurrentPointer(gp.join(targetPointer, true));
-        this.focus();
+        this.focus(rootElement);
     }
 
     /** set target pointer */
     setCurrent(pointer: JSONPointer) {
         if (pointer !== this.getCurrent()) {
             UIState.setCurrentPointer(pointer);
-            emitter.emit(EventType.FOCUS, pointer);
+            this.notifyWatcher(<FocusEvent>{ type: "focus", value: pointer });
         }
     }
 
@@ -148,18 +156,23 @@ export default class LocationService {
             return;
         }
         UIState.setCurrentPointer("");
-        emitter.emit(EventType.BLUR, pointer);
+        this.notifyWatcher(<BlurEvent>{ type: "blur", value: pointer });
     }
 
-    /** add an event listener to update events */
-    on<T extends keyof Events>(eventType: T, callback: Events[T]): Unsubscribe {
-        return emitter.on(eventType, callback);
-    }
-
-    /** remove an event listener from update events */
-    off<T extends keyof Events>(eventType: T, callback: Function): void {
-        if (Array.isArray(emitter.events[eventType])) {
-            emitter.events[eventType] = emitter.events[eventType].filter(func => func !== callback);
+    watch(watcher: Watcher): LocationService {
+        if (this.watcher.includes(watcher) === false) {
+            this.watcher.push(watcher);
         }
+        return this;
+    }
+
+    notifyWatcher(event: Event): LocationService {
+        this.watcher.forEach(w => w(event));
+        return this;
+    }
+
+    removeWatcher(watcher: Watcher): LocationService {
+        this.watcher = this.watcher.filter(w => w !== watcher);
+        return this;
     }
 };
