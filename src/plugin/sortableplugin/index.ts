@@ -8,18 +8,10 @@ import arrayUtils from "../../utils/array";
 import gp from "gson-pointer";
 
 
-export type Options = {
-}
+export { Sortable };
 
-
-interface SortableEditor extends Editor {
-    __sortablePlugin?: {
-        sortable: Sortable;
-    }
-}
 
 export function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
-    console.log("on add");
     const { from, newIndex, item } = event;
     const schema = controller.service("schema").get(pointer);
 
@@ -44,6 +36,7 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
         controller.service("data").set(pointer, toList);
     }
 }
+
 
 export function onEndSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
     // const element = event.item;  // dragged HTMLElement
@@ -83,96 +76,98 @@ export function onEndSortable(pointer: JSONPointer, controller: Controller, even
         gp.set(rootData, fromPointer, fromList);
         gp.set(rootData, toPointer, toList);
         controller.service("data").set("#", rootData);
-        // controller.service("data").set(fromPointer, fromList);
-        // controller.service("data").set(toPointer, toList);
+    }
+}
+
+
+/** required settings in editron:ui config */
+export type EditronSchemaOptions = {
+    sortable?: {
+        /** defines a group name for this array. If group names match, array items are interchangable.
+         Defaults to json-pointer of array */
+        group?: string;
+        /** optional css selector to choose a drag-handle on array items */
+        handle?: string;
+    }
+}
+
+
+interface SortableEditor extends Editor {
+    __sortablePlugin?: {
+        options: EditronSchemaOptions["sortable"];
+        sortable: Sortable;
+        $children: HTMLElement;
     }
 }
 
 
 export default class SortablePlugin implements Plugin {
-    id = "sortable-plugin";
 
-    dom: HTMLElement;
-    current: Editor;
+    id = "sortable-plugin";
     controller: Controller;
 
-    constructor(options: Options) { // eslint-disable-line @typescript-eslint/no-unused-vars
-        // this.onDelegation = options.onDelegation;
-        this.dom = document.createElement("div");
-        // this.onSelect = options.onSelect;
-        // this.onDeselect = options.onDeselect;
-    }
 
     initialize(controller: Controller): Plugin {
         this.controller = controller;
-        // document.body.addEventListener("click", () => this.deselect());
         return this;
     }
 
-    onCreateEditor(pointer, editor: SortableEditor, options?) {
-        if (options?.sortable == null) {
-            return;
-        }
-
-        const schema = this.controller.service("schema").get(pointer);
-        if (schema?.type !== "array") {
+    onCreateEditor(pointer, editor: SortableEditor, options?: EditronSchemaOptions) {
+        const sortableOptions = options?.sortable;
+        if (sortableOptions == null) {
             return;
         }
 
         const { controller } = this;
-        const $children = <HTMLElement>editor.getElement().querySelector(CHILD_CONTAINER_SELECTOR);
-        if ($children == null) {
-            console.log(`failed retrieving sortable children container '${CHILD_CONTAINER_SELECTOR}' -- abort`);
+        if (controller.getSchema(pointer)?.type !== "array") {
             return;
         }
 
-        $children.dataset.parent = pointer;
-        let hasMoved;
+        const $children = <HTMLElement>editor.getElement().querySelector(CHILD_CONTAINER_SELECTOR);
+        if ($children == null) {
+            console.log(`sortable plugin - children-container with '${CHILD_CONTAINER_SELECTOR}' not found`);
+            return;
+        }
 
+        // track pointer of child-parent for later retrieval in SortableEvents
+        $children.dataset.parent = pointer;
+
+        let hasMoved;
         const sortable = new Sortable($children, {
-            group: options.sortable.group ?? pointer,
-            // handle: ".editron-handle",
-            handle: ".editron-item",
-            onChoose: () => {
-                // console.log("choose");
-            },
-            onStart: () => {
-                hasMoved = true;
-            },
-            onUnchoose: (event) => {
+            group: sortableOptions.group ?? pointer,
+            handle: sortableOptions.handle,
+            // onChoose: () => { console.log("choose"); },
+            onStart: () => (hasMoved = true),
+            onUnchoose: event => {
                 const { to, from, oldIndex, newIndex } = event;
                 if (hasMoved === false && to === from && newIndex == null) {
-                    // console.log(event);
-                    // selectionService.toggle(`${this.pointer}/${oldIndex}`);
-                    console.log("update location", `${pointer}/${oldIndex}`);
                     controller.service("location").setCurrent(`${pointer}/${oldIndex}`);
                 }
                 hasMoved = false;
             },
-            onAdd(event: SortableEvent) {
-                onAddSortable(pointer, controller, event);
-            },
-            onEnd(event: SortableEvent): void {
-                onEndSortable(pointer, controller, event);
-                // console.log(
-                //     "target list", to, "\n",
-                //     "previous list", from, "\n",
-                //     "element's old index within old parent", event.oldIndex, "\n",
-                //     "element's new index within new parent", event.newIndex, "\n",
-                //     "element's old index within old parent, only counting draggable elements", event.oldDraggableIndex, "\n",
-                //     "element's new index within new parent, only counting draggable elements", event.newDraggableIndex, "\n",
-                //     "the clone element", event.clone, "\n",
-                //     "when item is in another sortable: `clone` if cloning, `true` if moving", event.pullMode
-                // );
-            }
+            onAdd: (event: SortableEvent) => onAddSortable(pointer, controller, event),
+            onEnd: (event: SortableEvent) => onEndSortable(pointer, controller, event)
         });
 
-        editor.__sortablePlugin = { sortable };
+        editor.__sortablePlugin = {
+            options: sortableOptions,
+            $children,
+            sortable
+        };
+    }
+
+    onChangePointer(oldPointer: JSONPointer, newPointer: JSONPointer, editor: SortableEditor) {
+        if (editor.__sortablePlugin) {
+            const options = editor.__sortablePlugin.options;
+            this.onDestroyEditor(oldPointer, editor);
+            this.onCreateEditor(newPointer, editor, { sortable: options });
+        }
     }
 
     onDestroyEditor(pointer, editor: SortableEditor) {
         if (editor.__sortablePlugin) {
             editor.__sortablePlugin.sortable.destroy();
+            editor.__sortablePlugin.$children.dataset.parent = null;
             editor.__sortablePlugin = undefined;
         }
     }

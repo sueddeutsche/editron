@@ -23,8 +23,8 @@ export type EditronSchemaOptions = {
 
 interface SyncEditor extends Editor {
     __syncPlugin?: {
-        removeObservers: () => void;
         options: EditronSchemaOptions["sync"];
+        removeObservers: () => void;
     }
 }
 

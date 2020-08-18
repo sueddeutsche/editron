@@ -64,7 +64,6 @@ export default class SelectionPlugin implements Plugin {
 
     onCreateEditor(pointer, editor: ModifiedEditor, options?) {
         if (options && options.selectable) {
-            // console.log("add selection", pointer, options);
             editor.__selectionPlugin = {
                 options,
                 select: event => this.select(event, editor)
