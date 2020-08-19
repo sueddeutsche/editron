@@ -2,40 +2,33 @@
 import m from "mithril";
 import Overlay from "../components/overlay";
 import createElement from "../utils/createElement";
-import { watch, getState } from "../store/global";
-
-
-watch(event => {
-    if (event.type === "global" && event.value.modelId === "ui") {
-        if (event.value.changes.overlay) {
-            const overlay = event.value.changes.overlay;
-            console.log("overlay event", overlay);
-            OverlayService.onChange(overlay?.element, overlay?.options);
-        }
-    }
-});
+import { watch, dispatch } from "../store/global";
 
 
 export const defaultOptions = {
-    ok: false,
-    save: true,
+    abortButton: "cancel",
+    confirmButton: "ok",
     fullscreen: false,
-    onAbort: Function.prototype,
-    onSave: Function.prototype
+    onSave: () => OverlayService.close(OverlayAction.Confirm),
+    onAbort: () => OverlayService.close(OverlayAction.Abort)
 };
 
 
+export enum OverlayAction {
+    Abort,
+    Close,
+    Confirm
+}
+
 export type Options = {
-    /** display `ok`, instead of `abort` */
-    ok?: boolean;
+    abortButton?: string|false;
+    confirmButton?: string|false;
     /** fullscreen size of overlay, regardless of content */
     fullscreen?: boolean;
-    /** show save button, defaults to true */
-    save?: boolean;
-    /** called when Overlay is closed via ok/abort */
-    onAbort?: () => void;
-    /** called when Overlay is closed via save */
-    onSave?: () => void;
+    // /** called when Overlay is closed via ok/abort */
+    // onAbort?: () => void;
+    // /** called when Overlay is closed via save */
+    // onSave?: () => void;
 }
 
 
@@ -43,68 +36,77 @@ export type Options = {
  * Opens an overlay with a DOM-Node as contents
  */
 const OverlayService = {
+    /** root overlay container */
+    $element: undefined,
+    /** Promise.resolve of current overlay */
+    resolve: undefined,
 
     /** Opens the overlay, showing the given `container` as content */
-    open(container: HTMLElement, options: Options) {
-        // @ts-ignore
-        UIState.setOverlay({
-            element: container,
-            options: { ...defaultOptions, ...options }
-        });
-    },
+    open(dialog: HTMLElement, options: Options): Promise<OverlayAction> {
+        OverlayService.removePanel();
 
-    close() {
-        // const currentContent = getState().ui.overlay;
-        // if (currentContent !== content) {
-        //     this.state.dispatch(ActionCreators.setOverlay(content));
-        //     this.emitter.emit(EventType.OVERLAY, this.get("overlay"));
-        // }
-
-
-        // must destroy component for reuse
-        m.render(this.getElement(), m("i"));
-    },
-
-    onChange(container: HTMLElement, options: Options) {
-        if (container == null) {
-            const $el = this.getElement();
-            $el.parentNode && $el.parentNode.removeChild($el);
-            return;
-        }
-
-        const $el = this.getElement();
-        container.classList.add("overlay__item");
-        m.render($el,
-            m(Overlay, {
-                container,
-                fullscreen: options.fullscreen,
-                showSave: options.save,
-                titleAbort: options.ok ? "OK" : "Abbrechen",
-                onSave: () => {
-                    options.onSave();
-                    this.close();
-                },
-                onAbort: () => this.close(), // calls onremove -> onAbort
-                onremove: () => options.onAbort()
-            })
-        );
-
+        const $el = OverlayService.getElement();
+        dialog.classList.add("overlay__item");
+        OverlayService.render(dialog, { ...defaultOptions, ...options });
         document.body.appendChild($el);
+        dispatch.ui.showOverlay(true);
+
+        return new Promise(resolve => (OverlayService.resolve = resolve));
+    },
+
+    /** close current dialog and overlay */
+    close(action: OverlayAction = OverlayAction.Close) {
+        OverlayService.removePanel(action);
+        OverlayService.removeOverlay();
+    },
+
+    /** helper: close current active dialog but keep overlay visible */
+    removePanel(action: OverlayAction = OverlayAction.Close) {
+        if (OverlayService.resolve) {
+            OverlayService.resolve(action);
+            OverlayService.resolve = undefined;
+            // must destroy component for reuse
+            m.render(OverlayService.getElement(), m("i"));
+        }
+    },
+
+    /** remove overlay container from dom */
+    removeOverlay() {
+        dispatch.ui.showOverlay(false);
+        const $el = OverlayService.getElement();
+        $el.parentNode && $el.parentNode.removeChild($el);
     },
 
     getElement() {
-        if (this.$element == null) {
-            this.$element = createElement(".ui-overlay");
-            this.$element.addEventListener("click", (e) => {
-                // close popup if clicked on "background"
-                if (e.target === this.$element) {
-                    this.close();
+        if (OverlayService.$element == null) {
+            OverlayService.$element = createElement(".ui-overlay");
+            // close popup if clicked on "background"
+            OverlayService.$element.addEventListener("click", (e) => {
+                if (e.target === OverlayService.$element) {
+                    OverlayService.close();
                 }
             });
         }
-        return this.$element;
+        return OverlayService.$element;
+    },
+
+    render($dialog: HTMLElement, options: Options) {
+        m.render(OverlayService.getElement(),
+            m(Overlay, {
+                container: $dialog,
+                onremove: () => OverlayService.close(),
+                ...options
+            })
+        );
     }
 };
+
+
+watch(event => {
+    if (event.value?.changes?.overlayIsVisible === false) {
+        OverlayService.close();
+    }
+});
 
 
 export default OverlayService;

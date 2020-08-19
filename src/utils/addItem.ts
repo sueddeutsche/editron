@@ -63,7 +63,8 @@ function addItem(dataService: DataService, schemaService: SchemaService, locatio
     }
 
     // and ask question
-    OverlayService.open(element, { save: false });
+    OverlayService.open(element, { confirmButton: false });
+        // .then(action => { console.log("dialog closed", action); });
 }
 
 

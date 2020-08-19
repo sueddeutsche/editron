@@ -10,7 +10,7 @@ import AbstractEditor from "../AbstractEditor";
 
 function showJSON(controller: Controller, data: JSONData, title: string) {
     const element = controller.createElement(".overlay__item.overlay__item--json");
-    OverlayService.open(element, { ok: true, save: false });
+    OverlayService.open(element, { confirmButton: "ok" });
     // render textarea after it is injected into dom, to correctly update textarea size
     m.render(element, m(TextareaForm, { title, value: JSON.stringify(data, null, 4) }));
 }

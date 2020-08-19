@@ -4,7 +4,7 @@ import addValidator from "json-schema-library/lib/addValidator";
 import createProxy from "./utils/createProxy";
 import DataService from "./services/DataService";
 import gp from "gson-pointer";
-import i18n from "./utils/i18n";
+import { translateError } from "./utils/i18n";
 import InstanceService from "./services/InstanceService";
 import jsonSchemaLibrary from "json-schema-library";
 import LocationService from "./services/LocationService";
@@ -188,7 +188,7 @@ export default class Controller {
         });
 
         // enable i18n error-translations
-        this.service("validation").setErrorHandler(error => i18n.translateError(this, error));
+        this.service("validation").setErrorHandler(error => translateError(this, error));
         // run initial validation
         this.validateAll();
 

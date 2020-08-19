@@ -1,14 +1,15 @@
 import m from "mithril";
 import { Button } from "mithril-material-forms/index";
+import { translate } from "../../utils/i18n";
 
 
 export type Attrs = {
     container?: HTMLElement;
     header?: string;
+    abortButton?: string|false;
+    confirmButton?: string|false;
     onAbort?: () => void;
     onSave?: () => void;
-    showSave?: boolean;
-    titleAbort?: string;
     fullscreen?: boolean;
 }
 
@@ -17,22 +18,25 @@ export type Attrs = {
  * Content overlay
  */
 export default {
+
     view(vnode) {
+        const { header, container, fullscreen, abortButton, onAbort, onSave, confirmButton } = vnode.attrs;
+
         return m("section.ui-overlay__card",
             {
-                "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
+                "class": fullscreen ? "ui-overlay__card--fullscreen" : null
             },
-            vnode.attrs.header && m(".ui-card__header",
-                m("h1", vnode.attrs.header)
+            header && m(".ui-card__header",
+                m("h1", header)
             ),
             m(".ui-card__content",
                 {
-                    oncreate: (contentNode) => contentNode.dom.appendChild(vnode.attrs.container)
+                    oncreate: contentNode => contentNode.dom.appendChild(container)
                 }
             ),
             m(".ui-card__footer",
-                m(Button, { onclick: vnode.attrs.onAbort }, vnode.attrs.titleAbort),
-                vnode.attrs.showSave && m(Button, { onclick: vnode.attrs.onSave }, "Speichern")
+                abortButton && m(Button, { onclick: onAbort }, translate(abortButton)),
+                confirmButton && m(Button, { onclick: onSave, raised: true }, translate(confirmButton))
             )
         );
     }

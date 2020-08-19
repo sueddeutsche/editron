@@ -21,20 +21,21 @@ import Controller from "./src/Controller";
 
 export default Controller;
 export * as components from "./src/components";
-
-export { default as DataService } from "./src/services/DataService";
-export { default as LocationService } from "./src/services/LocationService";
-export { default as SchemaService } from "./src/services/SchemaService";
-export { default as ValidationService } from "./src/services/ValidationService";
-
 export * as utils from "./src/utils";
+// editors
 export { default as AbstractEditor } from "./src/editors/AbstractEditor";
 export { default as AbstractValueEditor } from "./src/editors/AbstractValueEditor";
 export { default as ArrayEditor } from "./src/editors/arrayeditor";
 export { default as ObjectEditor } from "./src/editors/objecteditor";
 export { default as OneOfEditor } from "./src/editors/oneofeditor";
 export { default as ValueEditor } from "./src/editors/valueeditor";
-
+// services
+export { default as DataService } from "./src/services/DataService";
+export { default as LocationService } from "./src/services/LocationService";
+export { default as SchemaService } from "./src/services/SchemaService";
+export { default as ValidationService } from "./src/services/ValidationService";
+export { default as OverlayService } from "./src/services/OverlayService";
+// plugins
 export { default as plugin } from "./src/plugin";
 export { default as DelegationPlugin } from "./src/plugin/delegationplugin";
 export { default as RemoteDataPlugin } from "./src/plugin/remotedataplugin";

@@ -4,21 +4,26 @@ import { JSONPointer } from "../../types";
 export type UIState = {
     currentPointer: JSONPointer;
     currentPage: JSONPointer;
-    overlay: JSONPointer;
+    overlayIsVisible: boolean;
+}
+
+export type Overlay = {
+    isOpen: boolean;
 }
 
 
 export const initialState: UIState = {
     currentPointer: "",
     currentPage: "",
-    overlay: ""
+    /** true, if the overlay is currently visible */
+    overlayIsVisible: false
 };
 
 
 export type UIReducers = {
     setCurrentPage(pointer: JSONPointer);
     setCurrentPointer(pointer: JSONPointer);
-    setOverlay(pointer: JSONPointer);
+    showOverlay(overlayIsVisible: boolean);
 }
 
 
@@ -31,8 +36,8 @@ export default {
         setCurrentPointer(state: UIState, pointer: JSONPointer): UIState {
             return { ...state, currentPointer: pointer };
         },
-        setOverlay(state: UIState, value: JSONPointer): UIState {
-            return { ...state, overlay: value };
+        showOverlay(state: UIState, overlayIsVisible: boolean): UIState {
+            return { ...state, overlayIsVisible };
         }
     }
 };

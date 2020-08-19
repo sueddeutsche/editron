@@ -33,15 +33,47 @@ const schema = {
                 sortable: {}
             },
             items: {
-                title: "item",
-                type: "object",
-                properties: {
-                    description: {
-                        title: "Extensive description",
-                        type: "string",
-                        format: "textarea",
+                oneOfProperty: "type",
+                oneOf: [
+                    {
+                        title: "long",
+                        type: "object",
+                        properties: {
+                            type: {
+                                "editron:ui": {
+                                    hidden: true
+                                },
+                                type: "string",
+                                pattern: "^long$",
+                                default: "long"
+                            },
+                            description: {
+                                title: "Extensive description",
+                                type: "string",
+                                format: "textarea",
+                            },
+                        }
                     },
-                }
+                    {
+                        title: "short",
+                        type: "object",
+                        properties: {
+                            type: {
+                                "editron:ui": {
+                                    hidden: true
+                                },
+                                type: "string",
+                                pattern: "^short$",
+                                default: "short"
+                            },
+                            description: {
+                                title: "description one-liner ",
+                                type: "string",
+                                minLength: 1
+                            },
+                        }
+                    }
+                ]
             }
         }
     }
@@ -51,12 +83,15 @@ const schema = {
 const data = {
     list: [
         {
+            type: "short",
             description: "123"
         },
         {
+            type: "long",
             description: "abc"
         },
         {
+            type: "short",
             description: "Hans"
         }
     ]

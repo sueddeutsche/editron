@@ -58,10 +58,10 @@ store.subscribe(() => {
         if (diff == null) {
             return;
         }
+        previousModels[modelId] = stateString;
         const changes = {};
         Object.keys(diff).map(property => changes[property] = state[modelId][property]);
         notifyWatcher({ type: "global", value: { modelId, changes } });
-        previousModels[modelId] = stateString;
     });
 });
 
