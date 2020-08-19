@@ -1,7 +1,8 @@
 import gp from "gson-pointer";
-import UIState, { EventType as UIEvent } from "./uistate";
 import { JSONPointer } from "../types";
 const DELAY = 25;
+import { getState, dispatch, watch as watchState } from "../store/global";
+
 
 function getViewportHeight() {
     return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
@@ -82,11 +83,17 @@ export default class LocationService {
         this.options = { ...defaultOptions, ...options };
         this.setCurrent("");
 
-        UIState.on(UIEvent.CURRENT_PAGE, pointer =>
-            this.notifyWatcher(<PageEvent>{ type: "location:page", value: pointer }));
-
-        UIState.on(UIEvent.CURRENT_POINTER, pointer =>
-            this.notifyWatcher(<TargetEvent>{ type: "location:target", value: pointer }));
+        watchState(event => {
+            if (event.type === "global" && event.value.modelId === "ui") {
+                const { changes } = event.value;
+                if (changes.currentPage) {
+                    this.notifyWatcher(<PageEvent>{ type: "location:page", value: changes.currentPage });
+                }
+                if (changes.currentPointer) {
+                    this.notifyWatcher(<TargetEvent>{ type: "location:target", value: changes.currentPointer });
+                }
+            }
+        });
     }
 
     // update page and target pointer
@@ -97,31 +104,31 @@ export default class LocationService {
         }
 
         const nextPage = matches.pop();
-        const currentPage = UIState.getCurrentPage();
+        const { currentPage } = getState().ui;
         if (currentPage !== nextPage) {
-            UIState.setCurrentPage(gp.join(nextPage, true));
+            dispatch.ui.setCurrentPage(gp.join(nextPage, true));
         }
-        UIState.setCurrentPointer(gp.join(targetPointer, true));
+        dispatch.ui.setCurrentPointer(gp.join(targetPointer, true));
         this.focus(rootElement);
     }
 
     /** set target pointer */
     setCurrent(pointer: JSONPointer) {
         if (pointer !== this.getCurrent()) {
-            UIState.setCurrentPointer(pointer);
+            dispatch.ui.setCurrentPointer(pointer);
             this.notifyWatcher(<FocusEvent>{ type: "focus", value: pointer });
         }
     }
 
     getCurrent() {
-        return UIState.getCurrentPointer();
+        return getState().ui.currentPointer;
     }
 
     /** focus target pointer */
     focus(rootElement = this.options.rootElement) {
         clearTimeout(this.timeout);
 
-        const pointer = UIState.getCurrentPointer();
+        const pointer = getState().ui.currentPointer;
         const targetElement = <HTMLElement>rootElement.querySelector(`[data-point="${pointer}"]`);
         if (targetElement == null) {
             console.log(`Location:focus - target ${pointer} not found`);
@@ -151,10 +158,10 @@ export default class LocationService {
     }
 
     blur(pointer: JSONPointer) {
-        if (UIState.getCurrentPointer() !== pointer) {
+        if (getState().ui.currentPointer !== pointer) {
             return;
         }
-        UIState.setCurrentPointer("");
+        dispatch.ui.setCurrentPage("");
         this.notifyWatcher(<BlurEvent>{ type: "blur", value: pointer });
     }
 

@@ -131,6 +131,7 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     applyPatches(patch: Patch): void {
+        console.log("array apply patch", this.pointer, patch);
         const { pointer, controller, viewModel, children, $items } = this;
 
         // fetch a copy of the original list

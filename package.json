@@ -98,8 +98,6 @@
     "mithril": "2.x",
     "mithril-material-forms": "^3.2.2",
     "nanoevents": "5.1.8",
-    "redux": "^3.6.0",
-    "redux-undo": "^0.6.1",
     "sortablejs": "1.10.2",
     "with-observable": "^1.2.0"
   }

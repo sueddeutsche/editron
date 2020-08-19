@@ -1,7 +1,7 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
 import DataService from "../../../src/services/DataService";
-import State from "../../../src/services/State";
+import State from "../../../src/store";
 
 
 describe("DataService undo/redo", () => {
@@ -61,10 +61,10 @@ describe("DataService undo/redo", () => {
     });
 
     it("should not update states from unknown actions", () => {
-        const undoStepsBefore = state.get(service.id).data.past.length;
+        const undoStepsBefore = state.get("data").past.length;
 
-        state.dispatch({ type: "TEST_ACTION", value: 14 });
-        const undoStepsAfter = state.get(service.id).data.past.length;
+        state.dispatch.errors.set([14]);
+        const undoStepsAfter = state.get("data").past.length;
 
         assert.equal(undoStepsBefore, undoStepsAfter);
     });

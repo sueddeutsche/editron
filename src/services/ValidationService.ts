@@ -1,11 +1,11 @@
 import BubblingCollectionObservable, { Observer } from "./utils/BubblingCollectionObservable";
-import errorReducer from "./reducers/errorReducer";
 import jlib from "json-schema-library";
-import State from "./State";
+import Store from "../store";
 import Validation, { ValidationErrorMapper } from "./utils/Validation";
-import { ActionCreators } from "./reducers/actions";
 import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
 
+
+const ID = "errors";
 
 const { JsonEditor: Core } = jlib.cores;
 
@@ -14,24 +14,21 @@ export { Observer };
 
 
 export default class ValidationService {
-    /** state store-id of service */
-    id = "errors";
     core;
     currentValidation: Validation;
     errorHandler: ValidationErrorMapper;
     observer = new BubblingCollectionObservable();
     schema: JSONSchema;
-    state: State;
+    store: Store;
 
-    constructor(state: State, schema: JSONSchema = { type: "object" }, core = new Core()) {
-        if (!(state instanceof State)) {
+    constructor(store: Store, schema: JSONSchema = { type: "object" }, core = new Core()) {
+        if (!(store instanceof Store)) {
             throw new Error("Given state in ValidationService must be of instance 'State'");
         }
 
         this.core = core;
         this.set(schema);
-        this.state = state;
-        this.state.register(this.id, errorReducer);
+        this.store = store;
         this.setErrorHandler(error => error);
     }
 
@@ -57,24 +54,28 @@ export default class ValidationService {
         let remainingErrors = [];
         if (pointer !== "#") {
             // the following filtering is a duplicate from BubblingCollectionObservable.clearEvents
-            remainingErrors = this.state.get(this.id)
+            remainingErrors = this.store.get(ID)
                 .filter(e => e.data.pointer == null || e.data.pointer.startsWith(pointer) === false);
         }
 
-        this.state.dispatch(ActionCreators.setErrors(remainingErrors));
+        this.store.dispatch.errors.set(remainingErrors);
+
+        // this.store.dispatch(ActionCreators.setErrors(remainingErrors));
         this.currentValidation = new Validation(data, pointer, this.errorHandler);
         return this.currentValidation.start(
             this.core,
             (newError, currentErrors) => {
                 // @feature selective-validation
                 const completeListOfErrors = remainingErrors.concat(currentErrors);
-                this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
+                // this.store.dispatch(ActionCreators.setErrors(completeListOfErrors));
+                this.store.dispatch.errors.set(completeListOfErrors);
                 this.observer.notify(newError.data.pointer, newError);
             },
             validationErrors => {
                 // @feature selective-validation
                 const completeListOfErrors = remainingErrors.concat(validationErrors);
-                this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
+                // this.store.dispatch(ActionCreators.setErrors(completeListOfErrors));
+                this.store.dispatch.errors.set(completeListOfErrors);
                 this.currentValidation = null;
             }
         );
@@ -107,7 +108,7 @@ export default class ValidationService {
 
     /** returns all validation errors and warnings */
     getErrorsAndWarnings(pointer?: JSONPointer, withChildErrors = false): Array<ValidationError> {
-        const errors = this.state.get(this.id) || [];
+        const errors = this.store.get(ID);
         if (pointer == null) {
             return errors;
         }
@@ -129,7 +130,5 @@ export default class ValidationService {
     destroy() {
         this.set(null);
         this.observer = null;
-        this.state.unregister(this.id);
-        // this.state.unregister(this.id, errorReducer);
     }
 }

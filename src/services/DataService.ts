@@ -1,18 +1,17 @@
 import copy from "./utils/copy";
-import dataReducer from "./reducers/dataReducer";
 import diffpatch from "./utils/diffpatch";
 import getParentPointer from "./utils/getParentPointer";
 import createDiff, { Patch, PatchResult } from "./utils/createDiff";
 import getTypeOf from "json-schema-library/lib/getTypeOf";
 import gp from "gson-pointer";
 import isRootPointer from "./utils/isRootPointer";
-import State from "./State";
-import { ActionTypes, ActionCreators } from "./reducers/actions";
+import Store from "../store";
 import { JSONData, JSONPointer } from "../types";
 import { isPointer } from "../utils/UISchema";
 import { UpdateDataEvent } from "../editors/Editor";
 
 const DEBUG = false;
+const ID = "data";
 
 
 export type AddChange = {
@@ -129,11 +128,10 @@ function getObjectChangeList(patchResult: PatchResult): Array<Change> {
     return changeList;
 }
 
+
 export default class DataService {
-    /** state store-id of service */
-    id = "data";
     /** current state */
-    state: State;
+    store: Store;
     /** current observers on json-pointer changes */
     observers: { [pointer: string]: Array<Observer> } = {};
     /** internal value to track previous data */
@@ -141,20 +139,20 @@ export default class DataService {
     /** list of active watchers on update-lifecycle events */
     watcher = [];
 
+
     /**
      * Read and modify form data and notify observers
      * @param state - current state/store of application
      * @param data - current application data (form)
      */
-    constructor(state: State, data?: JSONData) {
-        if (!(state instanceof State)) {
+    constructor(store: Store, data?: JSONData) {
+        if (!(store instanceof Store)) {
             throw new Error("Given state in DataService must be of instance 'State'");
         }
 
-        this.state = state;
-        this.state.register(this.id, dataReducer);
+        this.store = store;
         this.onStateChanged = this.onStateChanged.bind(this);
-        this.state.subscribe(this.id, this.onStateChanged);
+        this.store.subscribe(ID, this.onStateChanged);
 
         if (data !== undefined) {
             this.set("#", data);
@@ -164,8 +162,8 @@ export default class DataService {
 
     // improved version - supporting multiple patches
     onStateChanged() {
-        const current = this.state.get(this.id);
-        const patches = createDiff(this.lastUpdate, current.data.present);
+        const { present: data } = this.store.get(ID);
+        const patches = createDiff(this.lastUpdate, data);
         if (patches.length === 0) {
             return;
         }
@@ -179,6 +177,7 @@ export default class DataService {
             // this is a major performance improvement for array-item movements
             if (parentDataType === "array") {
                 const changes = getArrayChangeList(patches[i], this.lastUpdate);
+                console.log("update array container", changes);
                 this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
 
             } else if (parentDataType === "object") {
@@ -192,12 +191,13 @@ export default class DataService {
         }
 
         this.notifyWatcher({ type: "data:update:done", value: patches });
-        this.lastUpdate = current.data.present;
+        this.lastUpdate = data;
     }
 
     /** clear undo/redo stack */
     resetUndoRedo() {
-        this.state.get(this.id).data.past.length = 0;
+        this.store.dispatch.data.clearHistory();
+        this.store.previousState?.errors.pop();
     }
 
     /**
@@ -215,8 +215,8 @@ export default class DataService {
      * @returns data, associated with `pointer`
      */
     getDataByReference(pointer: JSONPointer = "#") {
-        // eslint-disable-next-line no-invalid-this
-        return gp.get(this.state.get(this.id)?.data.present, pointer);
+        const state = this.store.store.getState();
+        return gp.get(state.data.present, pointer);
     }
 
     /**
@@ -236,12 +236,15 @@ export default class DataService {
             return;
         }
 
-        this.notifyWatcher({ type: "data:update:before", value: { pointer, action: ActionTypes.DATA_SET }});
-        this.state.dispatch(ActionCreators.setData(pointer, value, currentValue, isSynched));
+        this.notifyWatcher({ type: "data:update:before", value: { pointer, action: "data" }});
+        // this.store.dispatch(ActionCreators.setData(pointer, value, currentValue, isSynched));
+        this.store.dispatch.data.set({ pointer, value });
 
         if (pointer === "#" && isSynched === false) {
+            const store = this.store.store;
+            store.dispatch.data.removeLastUndo();
             // do not add root changes to undo
-            this.state.get(this.id).data.past.pop();
+            // this.store.get(this.id).data.past.pop();
         }
     }
 
@@ -264,24 +267,26 @@ export default class DataService {
 
     /** get valid undo count */
     undoCount(): number {
-        return this.state.get(this.id).data.past.length;
+        return this.store.get(ID).past.length;
     }
 
     /** get valid redo count */
     redoCount(): number {
-        return this.state.get(this.id).data.future.length;
+        return this.store.get(ID).future.length;
     }
 
     /** undo last change */
     undo() {
-        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: ActionTypes.UNDO }});
-        this.state.dispatch(ActionCreators.undo());
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: "undo" }});
+        this.store.dispatch.data.undo();
+        // this.store.dispatch(ActionCreators.undo());
     }
 
     /** redo last undo */
     redo() {
-        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: ActionTypes.REDO }});
-        this.state.dispatch(ActionCreators.redo());
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: "redo" }});
+        // this.store.dispatch(ActionCreators.redo());
+        this.store.dispatch.data.redo();
     }
 
     notifyWatcher(event: Event) {
@@ -351,8 +356,7 @@ export default class DataService {
 
     /** destroy service */
     destroy() {
-        this.state.unsubscribe(this.id, this.onStateChanged);
-        this.state.unregister(this.id);
+        this.store.unsubscribe(ID, this.onStateChanged);
     }
 }
 

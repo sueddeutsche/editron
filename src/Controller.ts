@@ -11,7 +11,7 @@ import LocationService from "./services/LocationService";
 import plugin, { Plugin } from "./plugin";
 import SchemaService from "./services/SchemaService";
 import selectEditor from "./utils/selectEditor";
-import State from "./services/State";
+import Store from "./store";
 import UISchema from "./utils/UISchema";
 import ValidationService from "./services/ValidationService";
 import { Editor, EditorPlugin, SetEnabledEvent } from "./editors/Editor";
@@ -95,7 +95,7 @@ export default class Controller {
     /** list instantiated services */
     services: Services;
     /** current state of errors, ui and data */
-    state: State;
+    store: Store;
     /** editron proxy instance */
     #proxy: Foxy;
 
@@ -126,7 +126,7 @@ export default class Controller {
         };
 
         this.editors = this.options.editors;
-        this.state = new State();
+        this.store = new Store();
         this.core = new Core();
         this.#proxy = createProxy(this.options.proxy);
 
@@ -155,9 +155,9 @@ export default class Controller {
         this.services = {
            instances: new InstanceService(this),
            location: new LocationService(),
-           data: new DataService(this.state, data),
+           data: new DataService(this.store, data),
            schema: schemaService,
-           validation: new ValidationService(this.state, schema, this.core)
+           validation: new ValidationService(this.store, schema, this.core)
         };
 
         this.service("data").watch(event => {

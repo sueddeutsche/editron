@@ -1,6 +1,6 @@
 import { strict as assert } from "assert";
 import DataService from "../../../src/services/DataService";
-import State from "../../../src/services/State";
+import State from "../../../src/store";
 
 const BUBBLE_EVENTS = true;
 

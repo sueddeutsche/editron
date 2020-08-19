@@ -96,7 +96,7 @@ const data = {
 const $editor = document.querySelector(".editor") as HTMLElement;
 const editron = new Controller(schema, data, {
     plugins: [
-        new SortablePlugin({})
+        new SortablePlugin()
     ]
 });
 editron.createEditor("#", $editor);

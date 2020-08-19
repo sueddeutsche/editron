@@ -1,8 +1,7 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
-import State from "../../../src/services/State";
+import State from "../../../src/store";
 import ValidationService from "../../../src/services/ValidationService";
-import { ActionCreators } from "../../../src/services/reducers/actions";
 
 
 describe("ValidationService/getErrors", () => {
@@ -18,7 +17,7 @@ describe("ValidationService/getErrors", () => {
             }
         };
         service = new ValidationService(state, schema);
-        state.dispatch(ActionCreators.setErrors([
+        state.store.dispatch.errors.set([
             {
                 type: "error",
                 message: "error 1",
@@ -54,7 +53,7 @@ describe("ValidationService/getErrors", () => {
                 message: "error 3a",
                 data: { id: "3a", pointer: "#/video/url" }
             }
-        ]));
+        ]);
     });
 
 

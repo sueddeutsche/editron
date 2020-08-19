@@ -2,10 +2,18 @@
 import m from "mithril";
 import Overlay from "../components/overlay";
 import createElement from "../utils/createElement";
-import UIState, { EventType as UIEvent } from "./uistate";
+import { watch, getState } from "../store/global";
 
 
-UIState.on(UIEvent.OVERLAY, value => OverlayService.onChange(value?.element, value?.options));
+watch(event => {
+    if (event.type === "global" && event.value.modelId === "ui") {
+        if (event.value.changes.overlay) {
+            const overlay = event.value.changes.overlay;
+            console.log("overlay event", overlay);
+            OverlayService.onChange(overlay?.element, overlay?.options);
+        }
+    }
+});
 
 
 export const defaultOptions = {
@@ -46,7 +54,13 @@ const OverlayService = {
     },
 
     close() {
-        UIState.setOverlay();
+        // const currentContent = getState().ui.overlay;
+        // if (currentContent !== content) {
+        //     this.state.dispatch(ActionCreators.setOverlay(content));
+        //     this.emitter.emit(EventType.OVERLAY, this.get("overlay"));
+        // }
+
+
         // must destroy component for reuse
         m.render(this.getElement(), m("i"));
     },

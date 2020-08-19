@@ -21,7 +21,12 @@ import Controller from "./src/Controller";
 
 export default Controller;
 export * as components from "./src/components";
-export * as services from "./src/services";
+
+export { default as DataService } from "./src/services/DataService";
+export { default as LocationService } from "./src/services/LocationService";
+export { default as SchemaService } from "./src/services/SchemaService";
+export { default as ValidationService } from "./src/services/ValidationService";
+
 export * as utils from "./src/utils";
 export { default as AbstractEditor } from "./src/editors/AbstractEditor";
 export { default as AbstractValueEditor } from "./src/editors/AbstractValueEditor";

@@ -1,7 +1,7 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
 import DataService from "../../../src/services/DataService";
-import State from "../../../src/services/State";
+import State from "../../../src/store";
 import isObject from "../../utils/isObject";
 
 

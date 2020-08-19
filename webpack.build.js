@@ -61,7 +61,7 @@ const config = {
                     presets: [require.resolve("@babel/preset-env")],
                     plugins: [
                         require.resolve("@babel/plugin-transform-object-assign"),
-                        require.resolve("@babel/plugin-proposal-object-rest-spread") // redux-undo
+                        require.resolve("@babel/plugin-proposal-object-rest-spread")
                     ],
                     babelrc: false,
                     cacheDirectory: true

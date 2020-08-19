@@ -132,8 +132,8 @@ const editron = new Controller(schema, data, {
         ],
     },
     plugins: [
-        new RemoteDataPlugin({}),
-        new SyncPlugin({})
+        new RemoteDataPlugin(),
+        new SyncPlugin()
     ]
 });
 editron.createEditor("#", $editor);

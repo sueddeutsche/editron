@@ -1,6 +1,6 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
-import State from "../../../src/services/State";
+import State from "../../../src/store";
 import ValidationService from "../../../src/services/ValidationService";
 
 
