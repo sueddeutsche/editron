@@ -17,17 +17,23 @@ const ID = "data";
 function pointerMap(data, pointer, result = []) {
     if (data == null) {
         return;
+
     } else if (Array.isArray(data)) {
-        data.forEach((value, index) =>
-            pointerMap(value, `${pointer}/${index}`, result)
-        );
+        data.forEach((value, index) => {
+            pointerMap(value, `${pointer}/${index}`, result);
+        });
+
     } else if (typeof data === "object") {
         Object.keys(data).forEach(property =>
             property !== "_id" && pointerMap(data[property], `${pointer}/${property}`, result)
         );
-    } else if (result.includes(pointer) === false) {
+
+    }
+
+    if (result.includes(pointer) === false) {
         result.push(pointer);
     }
+
     return result;
 }
 
@@ -81,7 +87,7 @@ type UpdateDoneEvent = {
     value: Array<SimpleChange>;
 }
 
-export type SimpleChange = { type: "add"|"delete"|"update", pointer: JSONPointer };
+export type SimpleChange = { type: "add"|"delete"|"update", pointer: JSONPointer, from?: JSONPointer, to?: JSONPointer };
 
 export type Event = BeforeUpdateEvent|ContainerUpdateEvent|AfterUpdateEvent|UpdateDoneEvent;
 
@@ -254,29 +260,26 @@ export default class DataService {
 
         const valueStream: Array<SimpleChange> = [];
         allChanges.forEach(change => {
+
             if (change.type === "value") {
                 valueStream.push({ type: "update", pointer: change.old });
+
             } else if (change.type === "add") {
-                valueStream.push({ type: "add", pointer: change.next });
-                pointerMap(gp.get(data, change.next), change.next).forEach(pointer => {
+                pointerMap(gp.get(data, change.next), change.next, [change.next]).forEach(pointer => {
                     valueStream.push({ type: "add", pointer });
                 });
 
             } else if (change.type === "delete") {
-                valueStream.push({ type: "delete", pointer: change.old });
-                pointerMap(gp.get(this.lastUpdate, change.old), change.old).forEach(pointer => {
+                pointerMap(gp.get(this.lastUpdate, change.old), change.old, [change.old]).forEach(pointer => {
                     valueStream.push({ type: "delete", pointer });
                 });
 
             } else if (change.type === "move") {
-                valueStream.push({ type: "delete", pointer: change.old });
-                pointerMap(gp.get(this.lastUpdate, change.old), change.old).forEach(pointer => {
-                    valueStream.push({ type: "delete", pointer });
+                pointerMap(gp.get(this.lastUpdate, change.old, [change.old]), change.old).forEach(pointer => {
+                    valueStream.push({ type: "delete", pointer, to: pointer.replace(change.old, change.next) });
                 });
-
-                valueStream.push({ type: "add", pointer: change.next });
-                pointerMap(gp.get(data, change.next), change.next).forEach(pointer => {
-                    valueStream.push({ type: "add", pointer });
+                pointerMap(gp.get(data, change.next), change.next, [change.next]).forEach(pointer => {
+                    valueStream.push({ type: "add", pointer, from: pointer.replace(change.next, change.old) });
                 });
             }
         });
