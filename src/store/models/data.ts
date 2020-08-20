@@ -6,6 +6,7 @@ import { JSONData, JSONPointer } from "../../types";
 
 
 export type DataState = {
+    undoSize: number;
     past: Array<JSONData>;
     present: JSONData;
     future: Array<JSONData>;
@@ -13,6 +14,7 @@ export type DataState = {
 
 
 export const initialState: DataState = {
+    undoSize: 50,
     past: [],
     present: null,
     future: []
@@ -38,7 +40,7 @@ export default {
     state: initialState,
     reducers: {
         clearHistory(state: DataState) {
-            return { ...state, past: [] };
+            return { ...state, past: [], future: [] };
         },
         removeLastUndo(state: DataState) {
             const past = Array.from(state.past);
@@ -64,13 +66,16 @@ export default {
             return newState;
         },
         set(state: DataState, action: ActionSet) {
-            const { pointer } = action;
+            const { pointer = "#" } = action;
             const value = ensureItemIDs(action.value);
 
             const newState = copy(state);
             if (newState.present != null) {
                 newState.past.push(copy(newState.present));
                 newState.future.length = 0;
+                while (newState.past.length > state.undoSize) {
+                    newState.past.shift();
+                }
             }
 
             if (isRootPointer(pointer)) {
