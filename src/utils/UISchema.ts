@@ -10,6 +10,11 @@ import Controller from "../Controller";
 export const EDITRON_OPTION_PROPERTY = "editron:ui";
 
 
+export function getEditronOptions(schema: JSONSchema) {
+    return schema[EDITRON_OPTION_PROPERTY];
+}
+
+
 export function isPointer(string: JSONPointer): boolean {
     return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
 }
