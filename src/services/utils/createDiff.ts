@@ -89,16 +89,11 @@ function deltaToChangeList(pointer: JSONPointer, diff: Delta, result = []): Arra
 
 
 /**
- * creates a diff between given data-versions and returns a list of changes.
+ * returns a list of changes from the passed diffpatch-delta
  * Changes on object-properties (add, remove, rename) or array-items (add,
  * remove, move) are grouped by their parent object or array.
  */
-export default function createDiff<T extends any>(previousValue: T, newValue: T): Array<PatchResult> {
-    const diff = diffpatch.diff(previousValue, newValue);
-    if (diff == null) {
-        return [];
-    }
-
+export function diffToPatches(diff: Delta): Array<PatchResult> {
     const map = {};
     const changes = deltaToChangeList("#", diff);
     // merge all item patches by their parent-pointer
@@ -127,4 +122,15 @@ export default function createDiff<T extends any>(previousValue: T, newValue: T)
     return Object.keys(map)
         .map(pointer => ({ pointer, parentPointer: getParentPointer(pointer), patch: map[pointer] }))
         .sort(sortByPointer);
+}
+
+
+/**
+ * creates a diff between given data-versions and returns a list of changes.
+ * Changes on object-properties (add, remove, rename) or array-items (add,
+ * remove, move) are grouped by their parent object or array.
+ */
+export default function createDiff<T extends any>(previousValue: T, newValue: T): Array<PatchResult> {
+    const diff = diffpatch.diff(previousValue, newValue);
+    return diff == null ? [] : diffToPatches(diff);
 }
