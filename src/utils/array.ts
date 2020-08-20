@@ -17,7 +17,9 @@ export default {
     cloneItem(pointer: JSONPointer, controller: Controller, index: number): void {
         const nextList = controller.service("data").get(pointer);
         const item = nextList[index];
-        nextList.splice(index, 0, JSON.parse(JSON.stringify(item)));
+        // copy value without control variables
+        const clone = JSON.stringify(item, (key, value) => key !== "_id" ? value : undefined);
+        nextList.splice(index, 0, JSON.parse(clone));
         controller.service("data").set(pointer, nextList);
     },
 
