@@ -153,15 +153,11 @@ export default class Controller {
             return false;
         });
 
-        // merge given data with template data
-        const schemaService = new SchemaService(schema, data, this.core);
-        data = schemaService.addDefaultData(data, schema);
-
         this.services = {
            instances: new InstanceService(this),
            location: new LocationService(),
-           data: new DataService(this.store, data),
-           schema: schemaService,
+           data: new DataService(this.store),
+           schema: new SchemaService(schema, data, this.core),
            validation: new ValidationService(this.store, schema, this.core)
         };
 
@@ -195,6 +191,10 @@ export default class Controller {
                     break;
             }
         });
+
+        // merge given data with template data and set initial data
+        this.setData(data);
+        this.resetUndoRedo();
 
         // enable i18n error-translations
         this.service("validation").setErrorHandler(error => translateError(this, error));
