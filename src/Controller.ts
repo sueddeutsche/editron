@@ -11,6 +11,7 @@ import LocationService from "./services/LocationService";
 import plugin, { Plugin } from "./plugin";
 import SchemaService from "./services/SchemaService";
 import selectEditor from "./utils/selectEditor";
+import { getState as getGlobalState } from "./store/global";
 import Store from "./store";
 import UISchema from "./utils/UISchema";
 import ValidationService from "./services/ValidationService";
@@ -390,9 +391,36 @@ export default class Controller {
         return this.service("schema").get(pointer);
     }
 
-    /**
-     * Starts validation of current data
-     */
+    /** @debug return editron and global-state */
+    getStates() {
+        return [this.store.getState(), getGlobalState()];
+    }
+
+    /** returns the parent editor */
+    getParentEditor(editor: Editor): Editor|undefined {
+        let node = editor.getElement();
+        while (node.parentNode !== null && node.parentNode !== document.body) {
+            node = <HTMLElement>node.parentNode;
+            if (node.dataset.point) {
+                return this.service("instances").editorFromElement(node);
+            }
+        }
+    }
+
+    /** returns the root editor of the editor tree */
+    getRootEditor(editor: Editor): Editor|undefined {
+        let node = editor.getElement();
+        let root = node;
+        while (node.parentNode !== null && node.parentNode !== document.body) {
+            node = <HTMLElement>node.parentNode;
+            if (node.dataset.point) {
+                root = node;
+            }
+        }
+        return this.service("instances").editorFromElement(root);
+    }
+
+    /** start validation of current data */
     validateAll(): void {
         setTimeout(() =>
             this.destroyed !== true && this.service("validation").validate(this.service("data").getDataByReference())

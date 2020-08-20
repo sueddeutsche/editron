@@ -34,6 +34,10 @@ export default class InstanceService {
         return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer));
     }
 
+    editorFromElement(dom: HTMLElement) {
+        return this.instances.find(editor => editor.dom === dom);
+    }
+
     find<T extends Editor>(test: (editor: T) => boolean): Array<T> {
         return this.instances.filter(test) as Array<T>;
     }

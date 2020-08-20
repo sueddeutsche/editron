@@ -41,9 +41,14 @@ export type EditorUpdateEvent = UpdateDataEvent|SetEnabledEvent|ChangePointerEve
 
 /** Editor Instance API */
 export interface Editor {
+    /** the root dom element returned by getElement */
     dom: HTMLElement;
+    /** the json-pointer of this editor. This updated from services */
     pointer: JSONPointer;
+    /** set to true, to receive changes from child-data */
     notifyNestedChanges?: boolean;
+    /** set to true, to receive errors from child-data */
+    notifyNestedErrors?: boolean;
 
     /** update is used as a convention, not enforced, nor required */
     update(event: EditorUpdateEvent): void;
