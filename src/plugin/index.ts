@@ -1,6 +1,7 @@
 import { EditorPlugin, Editor } from "../editors/Editor";
 import { JSONPointer, FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
 import Controller from "../Controller";
+import { SimpleChange } from "../services/DataService";
 
 const editors: Array<EditorPlugin> = [];
 const validators = [];
@@ -9,6 +10,7 @@ const validators = [];
 export interface Plugin {
     id: string;
     initialize(controller: Controller): Plugin;
+    onModifiedData?: (changes: Array<SimpleChange>) => void;
     onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: any) => void;
     onChangePointer?: (oldPointer: JSONPointer, newPointer: JSONPointer, editor: Editor) => void;
     onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;

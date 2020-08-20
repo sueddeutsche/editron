@@ -14,6 +14,24 @@ const DEBUG = false;
 const ID = "data";
 
 
+function pointerMap(data, pointer, result = []) {
+    if (data == null) {
+        return;
+    } else if (Array.isArray(data)) {
+        data.forEach((value, index) =>
+            pointerMap(value, `${pointer}/${index}`, result)
+        );
+    } else if (typeof data === "object") {
+        Object.keys(data).forEach(property =>
+            property !== "_id" && pointerMap(data[property], `${pointer}/${property}`, result)
+        );
+    } else if (result.includes(pointer) === false) {
+        result.push(pointer);
+    }
+    return result;
+}
+
+
 export type AddChange = {
     type: "add";
     next: JSONPointer;
@@ -31,7 +49,13 @@ export type MoveChange = {
     next: JSONPointer;
 }
 
-export type Change = AddChange|DeleteChange|MoveChange;
+export type ValueChange = {
+    type: "value";
+    old: JSONPointer;
+    next: JSONPointer;
+}
+
+export type Change = AddChange|DeleteChange|MoveChange|ValueChange;
 
 export const isAddChange = (change): change is AddChange => change?.type === "add";
 export const isDeleteChange = (change): change is DeleteChange => change?.type === "delete";
@@ -54,8 +78,10 @@ type ContainerUpdateEvent = {
 
 type UpdateDoneEvent = {
     type: "data:update:done";
-    value: Array<PatchResult>;
+    value: Array<SimpleChange>;
 }
+
+export type SimpleChange = { type: "add"|"delete"|"update", pointer: JSONPointer };
 
 export type Event = BeforeUpdateEvent|ContainerUpdateEvent|AfterUpdateEvent|UpdateDoneEvent;
 
@@ -64,6 +90,33 @@ export type Watcher = (event: Event) => void;
 export type Observer = {
     (event: UpdateDataEvent): void;
     bubbleEvents?: boolean;
+}
+
+
+function changeSequence(a, b) {
+    if (a.type === b.type) {
+        // longest pointer first (outer to inner)
+        return b.pointer.length - a.pointer.length;
+    }
+    // delete first
+    if (a.type === "delete") {
+        return -1;
+    } else if (b.type === "delete") {
+        return 1;
+    }
+    // move next
+    if (a.type === "move") {
+        return -1;
+    } else if (b.type === "move") {
+        return 1;
+    }
+    // at last add
+    if (a.type === "add") {
+        return -1;
+    } else if (b.type === "add") {
+        return 1;
+    }
+    throw new Error(`Uncaught comparisson ${a.type}:${b.type}`);
 }
 
 
@@ -168,29 +221,68 @@ export default class DataService {
             return;
         }
 
+        const allChanges = [];
+
         for (let i = 0, l = patches.length; i < l; i += 1) {
             const eventLocation = patches[i].pointer;
             const parentData = this.getDataByReference(eventLocation);
             const parentDataType = getTypeOf(parentData);
 
+            let changes;
+
             // build simple patch-information and notify about changes in pointer for move-instance support
             // this is a major performance improvement for array-item movements
             if (parentDataType === "array") {
-                const changes = getArrayChangeList(patches[i], this.lastUpdate);
-                console.log("update array container", changes);
+                changes = getArrayChangeList(patches[i], this.lastUpdate);
                 this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
 
             } else if (parentDataType === "object") {
-                const changes = getObjectChangeList(patches[i]);
+                changes = getObjectChangeList(patches[i]);
                 this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
+
+            } else {
+                const change: ValueChange = { type: "value", old: eventLocation, next: eventLocation };
+                changes = [change];
+                // this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
             }
 
             const payload = { pointer: eventLocation, patch: patches[i].patch };
             this.notifyWatcher({ type: "data:update:after", value: payload });
             this.bubbleObservers(eventLocation, { type: "data:update", value: payload });
+            allChanges.push(...changes);
         }
 
-        this.notifyWatcher({ type: "data:update:done", value: patches });
+        const valueStream: Array<SimpleChange> = [];
+        allChanges.forEach(change => {
+            if (change.type === "value") {
+                valueStream.push({ type: "update", pointer: change.old });
+            } else if (change.type === "add") {
+                valueStream.push({ type: "add", pointer: change.next });
+                pointerMap(gp.get(data, change.next), change.next).forEach(pointer => {
+                    valueStream.push({ type: "add", pointer });
+                });
+
+            } else if (change.type === "delete") {
+                valueStream.push({ type: "delete", pointer: change.old });
+                pointerMap(gp.get(this.lastUpdate, change.old), change.old).forEach(pointer => {
+                    valueStream.push({ type: "delete", pointer });
+                });
+
+            } else if (change.type === "move") {
+                valueStream.push({ type: "delete", pointer: change.old });
+                pointerMap(gp.get(this.lastUpdate, change.old), change.old).forEach(pointer => {
+                    valueStream.push({ type: "delete", pointer });
+                });
+
+                valueStream.push({ type: "add", pointer: change.next });
+                pointerMap(gp.get(data, change.next), change.next).forEach(pointer => {
+                    valueStream.push({ type: "add", pointer });
+                });
+            }
+        });
+
+        valueStream.sort(changeSequence);
+        this.notifyWatcher(<UpdateDoneEvent>{ type: "data:update:done", value: valueStream });
         this.lastUpdate = data;
     }
 

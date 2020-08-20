@@ -44,6 +44,10 @@ export type Services = {
     location: LocationService;
 }
 
+
+
+
+
 /**
  * Main component to build editors. Each editor should receive the controller, which carries all required services
  * for editor initialization
@@ -185,6 +189,10 @@ export default class Controller {
                     });
                     break;
                 }
+
+                case "data:update:done":
+                    setTimeout(() => this.notifyPlugins("onModifiedData", event.value));
+                    break;
             }
         });
 

@@ -11,6 +11,7 @@ import { Plugin } from "../index";
 import gp from "gson-pointer";
 import render from "json-schema-library/lib/utils/render";
 import isEmpty from "../../utils/isEmpty";
+import { SimpleChange } from "../../services/DataService";
 
 
 /** required settings in editron:ui config */
@@ -53,6 +54,16 @@ export default class RemoteDataPlugin implements Plugin {
     initialize(controller: Controller): Plugin {
         this.controller = controller;
         return this;
+    }
+
+    onModifiedData(changes: Array<SimpleChange>) {
+        changes.forEach(change => {
+            if (change.type === "add") {
+                console.log(change.pointer, change.type, this.controller.service("schema").get(change.pointer));
+            } else {
+                console.log(change.pointer, change.type);
+            }
+        });
     }
 
     onCreateEditor(pointer: JSONPointer, editor: RemoteDataEditor, options: EditronSchemaOptions) {

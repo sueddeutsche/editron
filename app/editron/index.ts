@@ -1,5 +1,6 @@
 import Controller from "../../src/Controller";
 import DelegationPlugin from "../../src/plugin/delegationplugin";
+import RemoteDataPlugin from "../../src/plugin/remotedataplugin";
 
 import "./index.scss";
 import "./index.html";
@@ -9,7 +10,7 @@ const schema = {
     title: "An object with collapsable property",
     type: "object",
     properties: {
-        title: { type: "string", title: "Title", minLength: 1 },
+        title: { type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true } },
         details: {
             title: "Details",
             type: "object",
@@ -150,6 +151,7 @@ const data = {
 const $editor = document.querySelector(".editor") as HTMLElement;
 const editron = new Controller(schema, data, {
     plugins: [
+        new RemoteDataPlugin(),
         new DelegationPlugin({
             onDelegation: (event) => {
                 console.log("delegation", event);
