@@ -34,12 +34,17 @@ const schema = {
             // title: "list",
             type: "array",
             items: {
-                // title: "item",
-                // "editron:ui": {
-                //     delegate: "sidebar"
-                // },
-                description: "Eine Gruppe dient als Sammlung von themennahen Teasern",
-                $ref: "#/definitions/object"
+                oneOfProperty: "type",
+                oneOf: [
+                    {
+                        description: "Eine Gruppe dient als Sammlung von themennahen Teasern",
+                        $ref: "#/definitions/inline"
+                    },
+                    {
+                        description: "Eine Gruppe dient als Sammlung von themennahen Teasern",
+                        $ref: "#/definitions/external"
+                    }
+                ]
             }
         },
         simple: {
@@ -51,13 +56,18 @@ const schema = {
         }
     },
     definitions: {
-        object: {
-            title: "Gruppe",
+        inline: {
+            title: "Inline",
             type: "object",
-            "editron:ui": {
-                delegate: "sidebar"
-            },
             properties: {
+                type: {
+                    type: "string",
+                    default: "inline",
+                    pattern: "^inline$",
+                    "editron:ui": {
+                        hidden: true
+                    }
+                },
                 title: {
                     title: "Titel",
                     type: "string"
@@ -70,7 +80,49 @@ const schema = {
                 details: {
                     type: "object",
                     "editron:ui": {
-                        collapse: true
+                        delegate: {
+                            delegateTo: "overlay"
+                        }
+                    },
+                    properties: {
+                        layout: {
+                            title: "Layout",
+                            type: "string",
+                            enum: ["default", "small", "large"],
+                        },
+                        visible: {
+                            title: "Anzeigen",
+                            type: "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        external: {
+            title: "Extern",
+            type: "object",
+            properties: {
+                type: {
+                    type: "string",
+                    default: "external",
+                    pattern: "^external$",
+                    "editron:ui": {
+                        hidden: true
+                    }
+                },
+                title: {
+                    title: "Titel",
+                    type: "string"
+                },
+                description: {
+                    title: "Teaser",
+                    type: "string",
+                    format: "textarea"
+                },
+                details: {
+                    type: "object",
+                    "editron:ui": {
+                        delegate: true
                     },
                     properties: {
                         layout: {
@@ -92,7 +144,7 @@ const schema = {
 
 
 const data = {
-    list: [{}, {}]
+    list: [{ type: "inline" }, { type: "external" }]
 };
 
 const $editor = document.querySelector(".editor") as HTMLElement;
@@ -100,8 +152,9 @@ const editron = new Controller(schema, data, {
     plugins: [
         new DelegationPlugin({
             onDelegation: (event) => {
+                console.log("delegation", event);
                 const dom = document.querySelector(".sidepanel");
-                dom.appendChild(event.editor.toElement());
+                dom.appendChild(event.editor.getElement());
             }
         })
     ]
