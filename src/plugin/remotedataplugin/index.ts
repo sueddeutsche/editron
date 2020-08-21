@@ -4,7 +4,7 @@ import { Plugin } from "../index";
 import gp from "gson-pointer";
 import render from "json-schema-library/lib/utils/render";
 import isEmpty from "../../utils/isEmpty";
-import { SimpleChange } from "../../services/dataservice";
+import { SimpleChange } from "../../services/dataservice/change";
 import { getEditronOptions } from "../../utils/UISchema";
 
 

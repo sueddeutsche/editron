@@ -2,7 +2,7 @@
 import { strict as assert } from "assert";
 import Controller from "../../src/Controller";
 import LocationService from "../../src/services/LocationService";
-import { MoveChange, DeleteChange } from "../../src/services/dataservice";
+import { MoveChange, DeleteChange } from "../../src/services/dataservice/change";
 
 
 describe("LocationService", () => {

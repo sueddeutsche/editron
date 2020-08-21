@@ -2,7 +2,7 @@
 import { strict as assert } from "assert";
 import Controller from "../../src/Controller";
 import InstanceService from "../../src/services/InstanceService";
-import { MoveChange, DeleteChange } from "../../src/services/dataservice";
+import { MoveChange, DeleteChange } from "../../src/services/dataservice/change";
 
 
 function createEditor(pointer = "#/target") {

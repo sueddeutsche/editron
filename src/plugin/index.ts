@@ -1,7 +1,7 @@
 import { EditorPlugin, Editor } from "../editors/Editor";
 import { JSONPointer, FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
 import Controller from "../Controller";
-import { SimpleChange } from "../services/dataservice";
+import { SimpleChange } from "../services/dataservice/change";
 
 const editors: Array<EditorPlugin> = [];
 const validators = [];

@@ -1,69 +1,18 @@
 import copy from "../utils/copy";
 import diffpatch from "../utils/diffpatch";
-import getParentPointer from "../utils/getParentPointer";
-import createDiff, { Patch, PatchResult } from "../utils/createDiff";
+import createDiff, { Patch } from "../utils/createDiff";
 import getTypeOf from "json-schema-library/lib/getTypeOf";
 import gp from "gson-pointer";
 import isRootPointer from "../utils/isRootPointer";
 import Store from "../../store";
 import { JSONData, JSONPointer } from "../../types";
-import { isPointer } from "../../utils/UISchema";
-import { UpdateDataEvent } from "../../editors/Editor";
 
-const DEBUG = false;
+import { UpdateDataEvent } from "../../editors/Editor";
+import { Change, SimpleChange, changesFromPatchResult, changesWithChildPointers } from "./change";
+
+
 const ID = "data";
 
-
-function pointerMap(data, pointer, result = []) {
-    if (data == null) {
-        return;
-
-    } else if (Array.isArray(data)) {
-        data.forEach((value, index) => {
-            pointerMap(value, `${pointer}/${index}`, result);
-        });
-
-    } else if (typeof data === "object") {
-        Object.keys(data).forEach(property =>
-            property !== "_id" && pointerMap(data[property], `${pointer}/${property}`, result)
-        );
-
-    }
-
-    // if (result.includes(pointer) === false) {
-    result.push(pointer);
-    // }
-
-    return result;
-}
-
-
-export type AddChange = {
-    type: "add";
-    pointer: JSONPointer;
-}
-
-export type DeleteChange = {
-    type: "delete";
-    pointer: JSONPointer;
-}
-
-export type MoveChange = {
-    type: "move";
-    pointer: JSONPointer;
-    to: JSONPointer;
-}
-
-export type ValueChange = {
-    type: "update";
-    pointer: JSONPointer;
-}
-
-export type Change = AddChange|DeleteChange|MoveChange|ValueChange;
-
-export const isAddChange = (change): change is AddChange => change?.type === "add";
-export const isDeleteChange = (change): change is DeleteChange => change?.type === "delete";
-export const isMoveChange = (change): change is MoveChange => change?.type === "move";
 
 type BeforeUpdateEvent = {
     type: "data:update:before";
@@ -85,8 +34,6 @@ type UpdateDoneEvent = {
     value: Array<SimpleChange>;
 }
 
-export type SimpleChange = { type: "add"|"delete"|"update", pointer: JSONPointer, from?: JSONPointer, to?: JSONPointer };
-
 export type Event = BeforeUpdateEvent|ContainerUpdateEvent|AfterUpdateEvent|UpdateDoneEvent;
 
 export type Watcher = (event: Event) => void;
@@ -94,95 +41,6 @@ export type Watcher = (event: Event) => void;
 export type Observer = {
     (event: UpdateDataEvent): void;
     bubbleEvents?: boolean;
-}
-
-
-function changeSequence(a, b) {
-    if (a.type === b.type) {
-        // longest pointer first (outer to inner)
-        return b.pointer.length - a.pointer.length;
-    }
-    // delete first
-    if (a.type === "delete") {
-        return -1;
-    } else if (b.type === "delete") {
-        return 1;
-    }
-    // move next
-    if (a.type === "move") {
-        return -1;
-    } else if (b.type === "move") {
-        return 1;
-    }
-    // at last add
-    if (a.type === "add") {
-        return -1;
-    } else if (b.type === "add") {
-        return 1;
-    }
-    throw new Error(`Uncaught comparisson ${a.type}:${b.type}`);
-}
-
-
-/** converts a patch to a list of simple changes for add, delete and move operations */
-function getArrayChangeList(patchResult: PatchResult, originalData: any): Array<Change> {
-    const changeList = [];
-
-    const eventLocation = patchResult.pointer;
-    let originalArray = gp.get(originalData, eventLocation);
-    if (Array.isArray(originalArray) === false) {
-        return changeList;
-    }
-    originalArray = originalArray.map((_, index) => `${eventLocation}/${index}`);
-    const changedArray = diffpatch.patch(Array.from(originalArray), patchResult.patch);
-
-    // retrieve deleted items
-    for (let i = 0, l = originalArray.length; i < l; i += 1) {
-        if (changedArray.includes(originalArray[i]) === false) {
-            const change: DeleteChange = { type: "delete", pointer: originalArray[i] };
-            changeList.push(change);
-        }
-    }
-
-    // identify added and movement items
-    for (let i = 0, l = changedArray.length; i < l; i += 1) {
-        let change: AddChange|MoveChange;
-        const ptrOrData = changedArray[i];
-        const ptrChanged = ptrOrData !== `${eventLocation}/${i}`;
-        if (ptrChanged === false) {
-            continue;
-        }
-
-        if (isPointer(ptrOrData)) {
-            change = <MoveChange>{ type: "move", pointer: ptrOrData, to: `${eventLocation}/${i}` };
-        } else {
-            change = <AddChange>{ type: "add", pointer: `${eventLocation}/${i}` };
-        }
-        changeList.push(change);
-    }
-
-    return changeList;
-}
-
-function getObjectChangeList(patchResult: PatchResult): Array<Change> {
-    const changeList = [];
-    const { pointer } = patchResult;
-    const properties = Object.keys(patchResult.patch);
-    for (let i = 0, l = properties.length; i < l; i += 1) {
-        const property = properties[i];
-        const change = patchResult.patch[property];
-        if (change.length === 1) {
-            changeList.push(<AddChange>{ type: "add", pointer: `${pointer}/${property}` });
-        } else if (change[2] === 0) {
-            changeList.push(<DeleteChange>{ type: "delete", pointer: `${pointer}/${property}` });
-        } else if (change[2] === 3) {
-            console.log("object property movement", patchResult);
-            throw new Error(`Property movement currently unsupported (${JSON.stringify(change)})`);
-        }
-        // changed value
-        // else if (change.length === 2) { console.log("change", `${patch.pointer}/${property}`); }
-    }
-    return changeList;
 }
 
 
@@ -227,6 +85,7 @@ export default class DataService {
 
         const allChanges = [];
 
+        // @todo simplify event-arguments: we have patches, changes and simplechanges
         for (let i = 0, l = patches.length; i < l; i += 1) {
             const eventLocation = patches[i].pointer;
             const parentData = this.getDataByReference(eventLocation);
@@ -234,53 +93,20 @@ export default class DataService {
 
             // build simple patch-information and notify about changes in pointer for move-instance support
             // this is a major performance improvement for array-item movements
-            if (parentDataType === "array") {
-                const changes = getArrayChangeList(patches[i], this.lastUpdate);
+            const changes = changesFromPatchResult(patches[i], parentDataType, this.lastUpdate);
+            if (parentDataType === "array" || parentDataType === "object") {
                 this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
-                allChanges.push(...changes);
-
-            } else if (parentDataType === "object") {
-                const changes = getObjectChangeList(patches[i]);
-                this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
-                allChanges.push(...changes);
-
-            } else {
-                const change: ValueChange = { type: "update", pointer: eventLocation };
-                allChanges.push(change);
             }
+
+            // collect all changes fo change-stream
+            allChanges.push(...changes);
 
             const payload = { pointer: eventLocation, patch: patches[i].patch };
             this.notifyWatcher({ type: "data:update:after", value: payload });
             this.bubbleObservers(eventLocation, { type: "data:update", value: payload });
         }
 
-        const changeStream: Array<SimpleChange> = [];
-        allChanges.forEach((change: Change) => {
-
-            if (change.type === "add") {
-                pointerMap(gp.get(data, change.pointer), change.pointer).forEach(pointer => {
-                    changeStream.push({ type: "add", pointer });
-                });
-
-            } else if (change.type === "delete") {
-                pointerMap(gp.get(this.lastUpdate, change.pointer), change.pointer).forEach(pointer => {
-                    changeStream.push({ type: "delete", pointer });
-                });
-
-            } else if (change.type === "move") {
-                pointerMap(gp.get(this.lastUpdate, change.pointer), change.pointer).forEach(pointer => {
-                    changeStream.push({ type: "delete", pointer, to: pointer.replace(change.pointer, change.to) });
-                });
-                pointerMap(gp.get(data, change.to), change.to).forEach(pointer => {
-                    changeStream.push({ type: "add", pointer, from: pointer.replace(change.to, change.pointer) });
-                });
-            } else {
-                // value change
-                changeStream.push(change);
-            }
-        });
-
-        changeStream.sort(changeSequence);
+        const changeStream = changesWithChildPointers(allChanges, this.lastUpdate, data);
         this.notifyWatcher(<UpdateDoneEvent>{ type: "data:update:done", value: changeStream });
         this.lastUpdate = data;
     }
@@ -323,7 +149,6 @@ export default class DataService {
 
         const currentValue = this.getDataByReference(pointer);
         if (diffpatch.diff(currentValue, value) == null) {
-            DEBUG && console.info("DataService abort update -- value not changed");
             return;
         }
 
@@ -348,8 +173,9 @@ export default class DataService {
             throw new Error("Can not remove root data via delete. Use set(\"#/\", {}) instead.");
         }
 
-        const key = pointer.split("/").pop();
-        const parentPointer = getParentPointer(pointer);
+        const frags = gp.split(pointer);
+        const key = frags.pop();
+        const parentPointer = gp.join(frags);
         const data = this.get(parentPointer);
 
         gp.delete(data, key);

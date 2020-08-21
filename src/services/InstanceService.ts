@@ -1,6 +1,6 @@
 import { Editor, ChangePointerEvent, SetEnabledEvent } from "../editors/Editor";
 import { JSONPointer } from "../types";
-import { Change, isMoveChange, isDeleteChange } from "./dataservice";
+import { Change, isMoveChange, isDeleteChange } from "./dataservice/change";
 import Controller from "../Controller";
 
 
