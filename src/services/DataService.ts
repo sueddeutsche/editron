@@ -234,58 +234,56 @@ export default class DataService {
             const parentData = this.getDataByReference(eventLocation);
             const parentDataType = getTypeOf(parentData);
 
-            let changes;
-
             // build simple patch-information and notify about changes in pointer for move-instance support
             // this is a major performance improvement for array-item movements
             if (parentDataType === "array") {
-                changes = getArrayChangeList(patches[i], this.lastUpdate);
+                const changes = getArrayChangeList(patches[i], this.lastUpdate);
                 this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
+                allChanges.push(...changes);
 
             } else if (parentDataType === "object") {
-                changes = getObjectChangeList(patches[i]);
+                const changes = getObjectChangeList(patches[i]);
                 this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
+                allChanges.push(...changes);
 
             } else {
                 const change: ValueChange = { type: "value", old: eventLocation, next: eventLocation };
-                changes = [change];
-                // this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes }});
+                allChanges.push(change);
             }
 
             const payload = { pointer: eventLocation, patch: patches[i].patch };
             this.notifyWatcher({ type: "data:update:after", value: payload });
             this.bubbleObservers(eventLocation, { type: "data:update", value: payload });
-            allChanges.push(...changes);
         }
 
-        const valueStream: Array<SimpleChange> = [];
+        const changeStream: Array<SimpleChange> = [];
         allChanges.forEach(change => {
 
             if (change.type === "value") {
-                valueStream.push({ type: "update", pointer: change.old });
+                changeStream.push({ type: "update", pointer: change.old });
 
             } else if (change.type === "add") {
                 pointerMap(gp.get(data, change.next), change.next, [change.next]).forEach(pointer => {
-                    valueStream.push({ type: "add", pointer });
+                    changeStream.push({ type: "add", pointer });
                 });
 
             } else if (change.type === "delete") {
                 pointerMap(gp.get(this.lastUpdate, change.old), change.old, [change.old]).forEach(pointer => {
-                    valueStream.push({ type: "delete", pointer });
+                    changeStream.push({ type: "delete", pointer });
                 });
 
             } else if (change.type === "move") {
                 pointerMap(gp.get(this.lastUpdate, change.old, [change.old]), change.old).forEach(pointer => {
-                    valueStream.push({ type: "delete", pointer, to: pointer.replace(change.old, change.next) });
+                    changeStream.push({ type: "delete", pointer, to: pointer.replace(change.old, change.next) });
                 });
                 pointerMap(gp.get(data, change.next), change.next, [change.next]).forEach(pointer => {
-                    valueStream.push({ type: "add", pointer, from: pointer.replace(change.next, change.old) });
+                    changeStream.push({ type: "add", pointer, from: pointer.replace(change.next, change.old) });
                 });
             }
         });
 
-        valueStream.sort(changeSequence);
-        this.notifyWatcher(<UpdateDoneEvent>{ type: "data:update:done", value: valueStream });
+        changeStream.sort(changeSequence);
+        this.notifyWatcher(<UpdateDoneEvent>{ type: "data:update:done", value: changeStream });
         this.lastUpdate = data;
     }
 

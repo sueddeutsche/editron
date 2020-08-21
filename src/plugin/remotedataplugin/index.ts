@@ -12,6 +12,7 @@ import gp from "gson-pointer";
 import render from "json-schema-library/lib/utils/render";
 import isEmpty from "../../utils/isEmpty";
 import { SimpleChange } from "../../services/DataService";
+import { getEditronOptions } from "../../utils/UISchema";
 
 
 /** required settings in editron:ui config */
@@ -31,25 +32,21 @@ export type EditronSchemaOptions = {
     }
 }
 
+
 export const defaultOptions = {
     overwrite: false,
     proxyMethod: "json"
 };
 
 
-interface RemoteDataEditor extends Editor {
-    __remoteDataPlugin?: {
-        options: EditronSchemaOptions["remoteData"],
-        removeObserver: () => void;
-    }
-}
-
-
 export default class RemoteDataPlugin implements Plugin {
 
     id = "remote-data-plugin";
     controller: Controller;
-
+    remotes: { [pointer: string]: {
+        options: EditronSchemaOptions["remoteData"];
+        removeObserver: () => void;
+    }} = {};
 
     initialize(controller: Controller): Plugin {
         this.controller = controller;
@@ -59,20 +56,23 @@ export default class RemoteDataPlugin implements Plugin {
     onModifiedData(changes: Array<SimpleChange>) {
         changes.forEach(change => {
             if (change.type === "add") {
-                console.log(change.pointer, change.type, this.controller.service("schema").get(change.pointer));
-            } else {
-                console.log(change.pointer, change.type);
+                const schema = this.controller.service("schema").get(change.pointer);
+                const options = getEditronOptions(schema);
+                if (options?.remoteData) {
+                    console.log("add remoteData to", change.pointer, change.from);
+                    this.createLink(change.pointer, options?.remoteData);
+                }
+
+            } else if (change.type === "delete" && this.remotes[change.pointer]) {
+                console.log("delete remote data", this.remotes[change.pointer]);
+                this.destroyLink(change.pointer);
             }
         });
     }
 
-    onCreateEditor(pointer: JSONPointer, editor: RemoteDataEditor, options: EditronSchemaOptions) {
-        if (options?.remoteData == null) {
-            return;
-        }
-
+    createLink(pointer: JSONPointer, options: EditronSchemaOptions["remoteData"]) {
         // validate options
-        const remote = { ...defaultOptions, ...options.remoteData };
+        const remote = { ...defaultOptions, ...options };
         if (remote.requestParam == null || typeof remote.requestParam !== "string") {
             console.warn(`editron remote-data-plugin: Expected option 'requestParam' to be a string. Given: ${remote.requestParam}`);
             return;
@@ -93,7 +93,7 @@ export default class RemoteDataPlugin implements Plugin {
         controller.service("data").observe(sourcePointer, observer, true);
         this.setRemoteData(pointer, remote);
 
-        editor.__remoteDataPlugin = {
+        this.remotes[pointer] = {
             options: remote,
             removeObserver: () => {
                 controller.service("data").removeObserver(sourcePointer, observer);
@@ -101,20 +101,10 @@ export default class RemoteDataPlugin implements Plugin {
         };
     }
 
-    onChangePointer(oldPointer: JSONPointer, newPointer: JSONPointer, editor: RemoteDataEditor) {
-        if (editor.__remoteDataPlugin == null) {
-            return;
-        }
-
-        const { options } = editor.__remoteDataPlugin;
-        this.onDestroyEditor(oldPointer, editor);
-        this.onCreateEditor(newPointer, editor, { remoteData: options });
-    }
-
-    onDestroyEditor(pointer: JSONPointer, editor: RemoteDataEditor) {
-        if (editor.__remoteDataPlugin) {
-            editor.__remoteDataPlugin.removeObserver();
-            editor.__remoteDataPlugin = undefined;
+    destroyLink(pointer: JSONPointer) {
+        if (this.remotes[pointer]) {
+            this.remotes[pointer].removeObserver();
+            this.remotes[pointer] = null;
         }
     }
 
