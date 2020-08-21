@@ -1,6 +1,5 @@
 import diffpatch, { Delta } from "./diffpatch";
 import gp from "gson-pointer";
-import getParentPointer from "./getParentPointer";
 import { JSONPointer } from "../../types";
 
 
@@ -35,7 +34,6 @@ function isChange(value: any) : value is Change {
 
 export type PatchResult = {
     pointer: JSONPointer;
-    parentPointer: JSONPointer;
     patch: Patch
 }
 
@@ -120,7 +118,7 @@ export function diffToPatches(diff: Delta): Array<PatchResult> {
     });
 
     return Object.keys(map)
-        .map(pointer => ({ pointer, parentPointer: getParentPointer(pointer), patch: map[pointer] }))
+        .map(pointer => ({ pointer, patch: map[pointer] }))
         .sort(sortByPointer);
 }
 

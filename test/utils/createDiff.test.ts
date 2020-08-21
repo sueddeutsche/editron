@@ -17,7 +17,6 @@ describe("utils/createDiff", () => {
 
         assert.equal(result.length, 1);
         assert.deepEqual(result[0], {
-            parentPointer: "#",
             pointer: "#/a",
             patch: ["prop", "properly"]
         });
@@ -31,7 +30,6 @@ describe("utils/createDiff", () => {
 
         assert.equal(result.length, 1);
         assert.deepEqual(result[0], {
-            parentPointer: "#/a",
             pointer: "#/a/changedHere",
             patch: ["prop", "properly"]
         });
@@ -45,12 +43,10 @@ describe("utils/createDiff", () => {
 
         assert.equal(result.length, 2);
         assert.deepEqual(result[0], {
-            parentPointer: "#/a",
             pointer: "#/a/changedHere",
             patch: ["prop", "properly"]
         });
         assert.deepEqual(result[1], {
-            parentPointer: "#",
             pointer: "#/andHere",
             patch: ["boo", "foo"]
         });
@@ -64,7 +60,6 @@ describe("utils/createDiff", () => {
 
         assert.equal(result.length, 1);
         assert.deepEqual(result[0], {
-            parentPointer: "#",
             pointer: "#/a",
             patch: { b: ["key", 0, 0], c: ["key"] }
         });
@@ -78,7 +73,6 @@ describe("utils/createDiff", () => {
 
         assert.equal(result.length, 1);
         assert.deepEqual(result[0], {
-            parentPointer: "#",
             pointer: "#/a",
             patch: { "0": ["modifiedString"], _0: ["string", 0, 0], _t: "a" }
         });
@@ -102,7 +96,6 @@ describe("utils/createDiff", () => {
         assert.equal(result.length, 3);
         // movement (changing indices) should come first
         assert.deepEqual(result[0], {
-            parentPointer: "#",
             pointer: "#/a",
             patch: { _t: "a", _1: ["", 1, 3], _2: ["", 0, 3] }
         });
