@@ -2,7 +2,7 @@ import _createElement from "./utils/createElement";
 import addItem from "./utils/addItem";
 import addValidator from "json-schema-library/lib/addValidator";
 import createProxy from "./utils/createProxy";
-import DataService from "./services/DataService";
+import DataService from "./services/dataservice";
 import gp from "gson-pointer";
 import { translateError } from "./utils/i18n";
 import InstanceService from "./services/InstanceService";

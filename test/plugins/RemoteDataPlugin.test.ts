@@ -68,11 +68,10 @@ describe("RemoteDataPlugin", () => {
 
 
     it("should call 'json'-handler per default", async () => {
-        const controller = new Controller(schema, data, options);
         let called = false;
-
         handler.json = () => (called = true) && Promise.resolve(response); // `called` is set sync!
-        controller.createEditor("#", document.createElement("div"));
+
+        const controller = new Controller(schema, data, options);
 
         assert.ok(called, "should have called 'json'-handler");
     });
@@ -80,11 +79,10 @@ describe("RemoteDataPlugin", () => {
 
     it("should call 'custom'-handler set by option", async () => {
         schema["editron:ui"].remoteData.proxyMethod = "custom";
+        let called = false;
         handler.custom = () => (called = true) && Promise.resolve(response); // `called` is set sync!
 
-        let called = false;
         const controller = new Controller(schema, data, options);
-        controller.createEditor("#", document.createElement("div"));
 
         assert.ok(called, "should have called 'custom'-handler");
     });
@@ -98,7 +96,6 @@ describe("RemoteDataPlugin", () => {
         handler.json = ({ source }) => (requestParam = source) && Promise.resolve(response); // `called` is set sync!
 
         const controller = new Controller(schema, { source: { type: "image", id: "hash4" }}, options);
-        controller.createEditor("#", document.createElement("div"));
 
         assert.equal(requestParam, "http://content/image/hash4");
     });
@@ -113,9 +110,9 @@ describe("RemoteDataPlugin", () => {
             "#/data/title": "result/remoteValue"
         }
 
-        const controller = new Controller(schema, data, options);
         handler.json = ({ source }) => (requestUrl = source) && Promise.resolve(responseData);
-        controller.createEditor("#", document.createElement("div"));
+        const controller = new Controller(schema, data, options);
+
         await pause(1);
         const finalData = controller.getData();
 
@@ -126,15 +123,12 @@ describe("RemoteDataPlugin", () => {
 
     it("should not overwrite existing data", async () => {
         let requestUrl;
-
         const responseData = { data: { title: "abc" } };
         schema["editron:ui"].remoteData.responseMapping = { "#/data/title": "result/remoteValue" };
-
         data.result = { remoteValue: "initial string" };
-        const controller = new Controller(schema, data, options);
         handler.json = ({ source }) => (requestUrl = source) && Promise.resolve(responseData);
-        controller.createEditor("#", document.createElement("div"));
-        await pause(1);
+
+        const controller = new Controller(schema, data, options);
         const finalData = controller.getData();
 
         assert.equal(finalData.result.remoteValue, "initial string");
@@ -143,15 +137,13 @@ describe("RemoteDataPlugin", () => {
 
     it("should overwrite existing data with option 'overwrite'", async () => {
         let requestUrl;
-
         const responseData = { data: { title: "abc" } };
         schema["editron:ui"].remoteData.overwrite = true;
         schema["editron:ui"].remoteData.responseMapping = { "#/data/title": "result/remoteValue" };
-
         data.result = { remoteValue: "initial string" };
-        const controller = new Controller(schema, data, options);
         handler.json = ({ source }) => (requestUrl = source) && Promise.resolve(responseData);
-        const editor = controller.createEditor("#", document.createElement("div"));
+
+        const controller = new Controller(schema, data, options);
         await pause(1);
         const finalData = controller.getData();
 
@@ -160,13 +152,14 @@ describe("RemoteDataPlugin", () => {
 
     it("should watch 'requestParamValues' and update data on change", async () => {
         schema["editron:ui"].remoteData.overwrite = true;
-        const controller = new Controller(schema, data, options);
+
         const responses = [
             { remoteValue: "second response", remoteObject: { response: 2 } },
             { remoteValue: "first response", remoteObject: { response: 1 } }
         ]
         handler.json = ({ source }) => Promise.resolve(responses.pop());
-        const editor = controller.createEditor("#", document.createElement("div"));
+
+        const controller = new Controller(schema, data, options);
         await pause(1);
 
         controller.service("data").set("#/source/id", "abc");

@@ -1,17 +1,10 @@
-/*
-    @todo remote-data-plugin:
-
-    - change plugin to be independent of editor creation (logic should follow
-        data structure - not instances, which may be duplicated)
-*/
 import Controller from "../../Controller";
 import { JSONPointer } from "../../types";
-import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
 import gp from "gson-pointer";
 import render from "json-schema-library/lib/utils/render";
 import isEmpty from "../../utils/isEmpty";
-import { SimpleChange } from "../../services/DataService";
+import { SimpleChange } from "../../services/dataservice";
 import { getEditronOptions } from "../../utils/UISchema";
 
 
@@ -50,16 +43,18 @@ export default class RemoteDataPlugin implements Plugin {
 
     initialize(controller: Controller): Plugin {
         this.controller = controller;
+        // root pointer is not tracked, run initially to grab config on root
+        this.onModifiedData([{ type: "add", pointer: "#" }]);
         return this;
     }
 
     onModifiedData(changes: Array<SimpleChange>) {
+
         changes.forEach(change => {
             if (change.type === "add") {
                 const schema = this.controller.service("schema").get(change.pointer);
                 const options = getEditronOptions(schema);
                 if (options?.remoteData) {
-                    console.log("add remoteData to", change.pointer, change.from);
                     this.createLink(change.pointer, options?.remoteData);
                 }
 

@@ -2,7 +2,7 @@
 import { strict as assert } from "assert";
 import Controller from "../../src/Controller";
 import InstanceService from "../../src/services/InstanceService";
-import { MoveChange, DeleteChange } from "../../src/services/DataService";
+import { MoveChange, DeleteChange } from "../../src/services/dataservice";
 
 
 function createEditor(pointer = "#/target") {
@@ -63,7 +63,7 @@ describe("InstanceService", () => {
             type: "data:update:container",
             value: {
                 pointer: "#",
-                changes: [<MoveChange>{ type: "move", old: "#/target", next: "#/newTarget" }]
+                changes: [<MoveChange>{ type: "move", pointer: "#/target", to: "#/newTarget" }]
             }
         });
 
@@ -93,7 +93,7 @@ describe("InstanceService", () => {
             type: "data:update:container",
             value: {
                 pointer: "#",
-                changes: [<MoveChange>{ type: "move", old: "#/target", next: "#/newTarget" }]
+                changes: [<MoveChange>{ type: "move", pointer: "#/target", to: "#/newTarget" }]
             }
         });
 
@@ -109,7 +109,7 @@ describe("InstanceService", () => {
             type: "data:update:container",
             value: {
                 pointer: "#",
-                changes: [<DeleteChange>{ type: "delete", old: "#/target" }]
+                changes: [<DeleteChange>{ type: "delete", pointer: "#/target" }]
             }
         });
 

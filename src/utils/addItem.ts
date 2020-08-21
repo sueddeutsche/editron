@@ -4,7 +4,7 @@ import LocationService from "../services/LocationService";
 import OverlayService from "../services/OverlayService";
 import SelectTileComponent from "../components/overlayselecttiles";
 import UISchema from "./UISchema";
-import DataService from "../services/DataService";
+import DataService from "../services/dataservice";
 import SchemaService from "../services/SchemaService";
 import { JSONPointer } from "../types";
 

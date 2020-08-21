@@ -1,6 +1,6 @@
 import { Editor, ChangePointerEvent, SetEnabledEvent } from "../editors/Editor";
 import { JSONPointer } from "../types";
-import { Change, isMoveChange, isDeleteChange } from "./DataService";
+import { Change, isMoveChange, isDeleteChange } from "./dataservice";
 import Controller from "../Controller";
 
 
@@ -64,18 +64,18 @@ export default class InstanceService {
             if (isMoveChange(change)) {
                 changePointers.push({
                     ...change,
-                    editors: this.findFrom(change.old)
+                    editors: this.findFrom(change.pointer)
                 });
 
             // destroy editor instances
             } else if (isDeleteChange(change)) {
-                this.findFrom(change.old).forEach(ed => controller.destroyEditor(ed));
+                this.findFrom(change.pointer).forEach(ed => controller.destroyEditor(ed));
             }
         }
 
         // change pointer of instances
         changePointers.forEach(change => {
-            const { old: prevPtr, next: nextPtr, editors } = change;
+            const { pointer: prevPtr, to: nextPtr, editors } = change;
             editors.forEach((instance: Editor) => {
                 const oldPointer = instance.pointer;
                 const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);

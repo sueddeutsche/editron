@@ -1,5 +1,5 @@
 import { strict as assert } from "assert";
-import DataService from "../../../src/services/DataService";
+import DataService from "../../../src/services/dataservice";
 import State from "../../../src/store";
 
 

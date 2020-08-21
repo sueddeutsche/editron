@@ -1,14 +1,14 @@
-import copy from "./utils/copy";
-import diffpatch from "./utils/diffpatch";
-import getParentPointer from "./utils/getParentPointer";
-import createDiff, { Patch, PatchResult } from "./utils/createDiff";
+import copy from "../utils/copy";
+import diffpatch from "../utils/diffpatch";
+import getParentPointer from "../utils/getParentPointer";
+import createDiff, { Patch, PatchResult } from "../utils/createDiff";
 import getTypeOf from "json-schema-library/lib/getTypeOf";
 import gp from "gson-pointer";
-import isRootPointer from "./utils/isRootPointer";
-import Store from "../store";
-import { JSONData, JSONPointer } from "../types";
-import { isPointer } from "../utils/UISchema";
-import { UpdateDataEvent } from "../editors/Editor";
+import isRootPointer from "../utils/isRootPointer";
+import Store from "../../store";
+import { JSONData, JSONPointer } from "../../types";
+import { isPointer } from "../../utils/UISchema";
+import { UpdateDataEvent } from "../../editors/Editor";
 
 const DEBUG = false;
 const ID = "data";
@@ -30,9 +30,9 @@ function pointerMap(data, pointer, result = []) {
 
     }
 
-    if (result.includes(pointer) === false) {
-        result.push(pointer);
-    }
+    // if (result.includes(pointer) === false) {
+    result.push(pointer);
+    // }
 
     return result;
 }
@@ -40,25 +40,23 @@ function pointerMap(data, pointer, result = []) {
 
 export type AddChange = {
     type: "add";
-    next: JSONPointer;
-    data?: any;
+    pointer: JSONPointer;
 }
 
 export type DeleteChange = {
     type: "delete";
-    old: JSONPointer;
+    pointer: JSONPointer;
 }
 
 export type MoveChange = {
     type: "move";
-    old: JSONPointer;
-    next: JSONPointer;
+    pointer: JSONPointer;
+    to: JSONPointer;
 }
 
 export type ValueChange = {
-    type: "value";
-    old: JSONPointer;
-    next: JSONPointer;
+    type: "update";
+    pointer: JSONPointer;
 }
 
 export type Change = AddChange|DeleteChange|MoveChange|ValueChange;
@@ -141,7 +139,7 @@ function getArrayChangeList(patchResult: PatchResult, originalData: any): Array<
     // retrieve deleted items
     for (let i = 0, l = originalArray.length; i < l; i += 1) {
         if (changedArray.includes(originalArray[i]) === false) {
-            const change: DeleteChange = { type: "delete", old: originalArray[i] };
+            const change: DeleteChange = { type: "delete", pointer: originalArray[i] };
             changeList.push(change);
         }
     }
@@ -156,9 +154,9 @@ function getArrayChangeList(patchResult: PatchResult, originalData: any): Array<
         }
 
         if (isPointer(ptrOrData)) {
-            change = <MoveChange>{ type: "move", old: ptrOrData, next: `${eventLocation}/${i}` };
+            change = <MoveChange>{ type: "move", pointer: ptrOrData, to: `${eventLocation}/${i}` };
         } else {
-            change = <AddChange>{ type: "add", next: `${eventLocation}/${i}`, data: ptrOrData };
+            change = <AddChange>{ type: "add", pointer: `${eventLocation}/${i}` };
         }
         changeList.push(change);
     }
@@ -174,9 +172,9 @@ function getObjectChangeList(patchResult: PatchResult): Array<Change> {
         const property = properties[i];
         const change = patchResult.patch[property];
         if (change.length === 1) {
-            changeList.push(<AddChange>{ type: "add", next: `${pointer}/${property}` });
+            changeList.push(<AddChange>{ type: "add", pointer: `${pointer}/${property}` });
         } else if (change[2] === 0) {
-            changeList.push(<DeleteChange>{ type: "delete", old: `${pointer}/${property}` });
+            changeList.push(<DeleteChange>{ type: "delete", pointer: `${pointer}/${property}` });
         } else if (change[2] === 3) {
             console.log("object property movement", patchResult);
             throw new Error(`Property movement currently unsupported (${JSON.stringify(change)})`);
@@ -247,7 +245,7 @@ export default class DataService {
                 allChanges.push(...changes);
 
             } else {
-                const change: ValueChange = { type: "value", old: eventLocation, next: eventLocation };
+                const change: ValueChange = { type: "update", pointer: eventLocation };
                 allChanges.push(change);
             }
 
@@ -257,28 +255,28 @@ export default class DataService {
         }
 
         const changeStream: Array<SimpleChange> = [];
-        allChanges.forEach(change => {
+        allChanges.forEach((change: Change) => {
 
-            if (change.type === "value") {
-                changeStream.push({ type: "update", pointer: change.old });
-
-            } else if (change.type === "add") {
-                pointerMap(gp.get(data, change.next), change.next, [change.next]).forEach(pointer => {
+            if (change.type === "add") {
+                pointerMap(gp.get(data, change.pointer), change.pointer).forEach(pointer => {
                     changeStream.push({ type: "add", pointer });
                 });
 
             } else if (change.type === "delete") {
-                pointerMap(gp.get(this.lastUpdate, change.old), change.old, [change.old]).forEach(pointer => {
+                pointerMap(gp.get(this.lastUpdate, change.pointer), change.pointer).forEach(pointer => {
                     changeStream.push({ type: "delete", pointer });
                 });
 
             } else if (change.type === "move") {
-                pointerMap(gp.get(this.lastUpdate, change.old, [change.old]), change.old).forEach(pointer => {
-                    changeStream.push({ type: "delete", pointer, to: pointer.replace(change.old, change.next) });
+                pointerMap(gp.get(this.lastUpdate, change.pointer), change.pointer).forEach(pointer => {
+                    changeStream.push({ type: "delete", pointer, to: pointer.replace(change.pointer, change.to) });
                 });
-                pointerMap(gp.get(data, change.next), change.next, [change.next]).forEach(pointer => {
-                    changeStream.push({ type: "add", pointer, from: pointer.replace(change.next, change.old) });
+                pointerMap(gp.get(data, change.to), change.to).forEach(pointer => {
+                    changeStream.push({ type: "add", pointer, from: pointer.replace(change.to, change.pointer) });
                 });
+            } else {
+                // value change
+                changeStream.push(change);
             }
         });
 
