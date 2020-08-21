@@ -59,7 +59,6 @@ export default class RemoteDataPlugin implements Plugin {
                 }
 
             } else if (change.type === "delete" && this.remotes[change.pointer]) {
-                console.log("delete remote data", this.remotes[change.pointer]);
                 this.destroyLink(change.pointer);
             }
         });
