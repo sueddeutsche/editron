@@ -1,15 +1,10 @@
-/*
-    @todo sync-plugin:
-
-    - change plugin to be independent of editor creation (logic should follow
-        data structure - not instances, which may be duplicated)
-*/
 import Controller from "../../Controller";
 import { JSONPointer } from "../../types";
-import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
 import gp from "gson-pointer";
 import isEmpty from "../../utils/isEmpty";
+import { SimpleChange } from "../../services/dataservice/change";
+import { getEditronOptions } from "../../utils/UISchema";
 
 
 /** required settings in editron:ui-config */
@@ -21,22 +16,17 @@ export type EditronSchemaOptions = {
 }
 
 
-interface SyncEditor extends Editor {
-    __syncPlugin?: {
-        options: EditronSchemaOptions["sync"];
-        removeObservers: () => void;
-    }
-}
-
-
 export default class SyncPlugin implements Plugin {
 
     id = "sync-plugin";
     controller: Controller;
+    hooks = {};
 
 
     initialize(controller: Controller): Plugin {
         this.controller = controller;
+        // root pointer is not tracked, run initially to grab config on root
+        this.onModifiedData([{ type: "add", pointer: "#" }]);
         return this;
     }
 
@@ -66,21 +56,35 @@ export default class SyncPlugin implements Plugin {
         controller.setData(data);
     }
 
-    onCreateEditor(pointer: JSONPointer, editor: SyncEditor, options?) {
-        const sync: EditronSchemaOptions["sync"] = options?.sync;
-        if (sync == null) {
+    onModifiedData(changes: Array<SimpleChange>) {
+        changes.forEach(change => {
+            if (change.type === "add") {
+                const schema = this.controller.service("schema").get(change.pointer);
+                const options = getEditronOptions(schema);
+                if (options?.sync) {
+                    this.startSync(change.pointer, options.sync);
+                }
+
+            } else if (change.type === "delete" && this.hooks[change.pointer]) {
+                this.stopSync(change.pointer);
+            }
+        });
+    }
+
+    startSync(pointer, options: EditronSchemaOptions["sync"]) {
+        if (options == null) {
             return;
         }
 
         // validate options
-        if (sync.mappingFromTo == null || typeof sync.mappingFromTo !== "object") {
-            console.warn(`editron sync-plugin: expected property 'mappingFromTo' in sync-plugin options. Given: ${sync.mappingFromTo}`);
+        if (options.mappingFromTo == null || typeof options.mappingFromTo !== "object") {
+            console.warn(`editron sync-plugin: expected property 'mappingFromTo' in sync-plugin options. Given: ${options.mappingFromTo}`);
             return;
         }
 
         // @todo listen to change pointer updates
         const { controller } = this;
-        const sourcePointers = Object.keys(sync.mappingFromTo).map(source => gp.join(pointer, source));
+        const sourcePointers = Object.keys(options.mappingFromTo).map(source => gp.join(pointer, source));
 
         // initialize
         const previousData = {};
@@ -91,34 +95,24 @@ export default class SyncPlugin implements Plugin {
                 // store current data-value
                 previousData[sourcePointer] = gp.get(data, sourcePointer);
                 // listen to changes for sync
-                const observer = () => this.copyData(pointer, sync.mappingFromTo, previousData);
+                const observer = () => this.copyData(pointer, options.mappingFromTo, previousData);
                 controller.service("data").observe(sourcePointer, observer, true);
                 observers.push([sourcePointer, observer]);
             });
 
         // initial sync
-        this.copyData(pointer, sync.mappingFromTo, previousData);
+        this.copyData(pointer, options.mappingFromTo, previousData);
 
-        editor.__syncPlugin = {
+        this.hooks[pointer] = {
             removeObservers: () => observers.forEach(([pointer, observer]) =>
                 controller.service("data").removeObserver(pointer, observer)
             ),
-            options: sync
+            options
         };
     }
 
-    onChangePointer(oldPointer: JSONPointer, newPointer: JSONPointer, editor: SyncEditor) {
-        if (editor.__syncPlugin) {
-            const options = editor.__syncPlugin.options;
-            this.onDestroyEditor(oldPointer, editor);
-            this.onCreateEditor(newPointer, editor, { sync: options });
-        }
-    }
-
-    onDestroyEditor(pointer, editor: SyncEditor) {
-        if (editor.__syncPlugin) {
-            editor.__syncPlugin.removeObservers();
-            editor.__syncPlugin = undefined;
-        }
+    stopSync(pointer) {
+        this.hooks[pointer]?.removeObservers();
+        this.hooks[pointer] = undefined;
     }
 }
