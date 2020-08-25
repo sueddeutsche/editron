@@ -2,62 +2,60 @@
 @import "mithril-material-forms/lib/colors";
 @import "mithril-material-forms/lib/typography";
 @import "mithril-material-forms/lib/units";
-@import "mithril-material-forms/lib/export-once";
 
-@if export-once("editron-minimap-editor/minimap-editor") {
 
-    .editron-minimap-editor {}
+.editron-minimap-editor {}
 
-    .editron-minimap__header {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        height: $mmf-block;
+.editron-minimap__header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    height: $mmf-block;
 
-        &:hover {
-            cursor: pointer;
-        }
+    &:hover {
+        cursor: pointer;
+    }
 
-        .editron-minimap__title {
-            flex-grow: 1
-        }
+    .editron-minimap__title {
+        flex-grow: 1
+    }
 
-        .editron-minimap__handle {
-            flex: 0;
-            &.mmf-icon {
-                height: auto;
-                width: auto;
-                line-height: 0;
-            }
-        }
-
-        &.isSelected .editron-minimap__title {
-            // background-color: #ccc;
-            text-decoration: underline;
-            text-decoration-color: green;
-        }
-
-        &.hasError {
-            border-left: 1px solid red;
+    .editron-minimap__handle {
+        flex: 0;
+        &.mmf-icon {
+            height: auto;
+            width: auto;
+            line-height: 0;
         }
     }
 
-    .editron-minimap__children {
-        padding-left: $mmf-unit;
+    &.isSelected .editron-minimap__title {
+        // background-color: #ccc;
+        text-decoration: underline;
+        text-decoration-color: green;
     }
 
-    // .editron-minimap {
-    li.isCollapsed {
-        overflow: hidden;
-
-        & > .editron-editable-minimap-list {
-            height: 0 !important;
-        }
-
-        & .editron-minimap__icon--collapse {
-            transform: rotate(180deg);
-        }
+    &.hasError {
+        border-left: 1px solid red;
     }
+}
+
+.editron-minimap__children {
+    padding-left: $mmf-unit;
+}
+
+// .editron-minimap {
+li.isCollapsed {
+    overflow: hidden;
+
+    & > .editron-editable-minimap-list {
+        height: 0 !important;
+    }
+
+    & .editron-minimap__icon--collapse {
+        transform: rotate(180deg);
+    }
+}
 
     //     .mmf-icon--thumbnail {
     //         // background-size: 100 * (1 - ($mmf-unit / $mmf-block)) + %;
@@ -104,8 +102,6 @@
 
     //     &--sortable {}
     // }
-}
-
 
 // @if export-once("editron-minimap-editor/minimap-editor/theme") {
 
