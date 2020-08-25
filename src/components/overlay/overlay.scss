@@ -6,35 +6,23 @@
 
 @if export-once("editron/components/overlay") {
 
-    .ui-overlay {
+    .ed-overlay {
         z-index: 1002;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        box-sizing: border-box;
         padding: $mmf-block $mmf-unit;
-        background: rgba(30, 30, 30, 0.5);
+
     }
 
-    .ui-overlay {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-    }
-
-    .ui-overlay__card {
+    .ed-overlay__card {
         @include card-layout();
         @include elevation24();
 
-        display: flex;
-        flex-direction: column;
+        // display: flex;
+        // flex-direction: column;
 
         margin: 0;
-        box-sizing: border-box;
-        width: auto;
-        align-self: center;
+        // box-sizing: border-box;
+        // width: auto;
+        // align-self: center;
 
         max-width: 20 * $mmf-block;
         min-height: 3 * $mmf-block;
@@ -46,7 +34,7 @@
         }
     }
 
-    .ui-overlay {
+    .ed-overlay {
 
         h1 {
             @include font-regular();
@@ -54,11 +42,11 @@
             margin: 0;
         }
 
-        .ui-card__header {
+        .ed-card__header {
             padding: $mmf-block * 0.5;
         }
 
-        .ui-card__content {
+        .ed-card__content {
             position: relative;
             padding: $mmf-block * 0.5;
             flex-grow: 1;
@@ -66,7 +54,7 @@
             overflow-x: hidden;
         }
 
-        .ui-card__footer {
+        .ed-card__footer {
             padding: $mmf-unit;
             text-align: right;
         }

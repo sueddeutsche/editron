@@ -1,0 +1,44 @@
+@import "mithril-material-forms/lib/colors";
+@import "mithril-material-forms/styles/icon"; // .interactive
+
+.ed-actions {
+    z-index: 999;
+
+    ul {
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        top: 0;
+        right: 1.5em;
+        list-style: none;
+
+        li {
+            button {
+                width: 100%;
+                margin: 0;
+                white-space: nowrap;
+                text-align: left;
+
+                &:hover {
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    &.is-enabled:hover {
+        background: #fff;
+    }
+
+    &.is-enabled:hover ul {
+        @include elevation(2);
+    }
+
+    &.is-disabled .mmf-icon {
+        color: rgba($mmf-color--light, $mmf-opacity--disabled);
+        &:hover {
+            cursor: default;
+            color: rgba($mmf-color--light, $mmf-opacity--disabled);
+        }
+    }
+}

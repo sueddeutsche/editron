@@ -1,0 +1,9 @@
+@import "../components/actions/layout";
+@import "../components/header/layout";
+@import "../components/container/layout";
+@import "../components/description/layout";
+@import "../components/errors/layout";
+
+.ed-children > * {
+    padding: $mmf-unit 0;
+}

@@ -18,9 +18,9 @@ export type Attrs = {
 
 
 function getClass(hasAction: boolean, { title, icon, disabled }): string {
-    let classname = `${title ? "withTitle" : "noTitle"}`;
-    classname += ` ${hasAction ? "withActions" : "noActions"}`;
-    classname += ` ${icon ? "withIcon" : "noIcon"}`;
+    let classname = `${title ? "with-title" : "no-title"}`;
+    classname += ` ${hasAction ? "with-actions" : "no-actions"}`;
+    classname += ` ${icon ? "with-icon" : "no-icon"}`;
     classname += disabled ? " is-disabled" : "";
     return classname;
 }
@@ -38,17 +38,17 @@ export default {
         const hasAction =
             (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown || attrs.oncollapse) != null;
 
-        return m(".editron-container__header",
+        return m(".ed-header",
             {
                 "class": getClass(hasAction, attrs)
             },
 
-            m(".editron-container__title",
+            m(".ed-header__title",
                 populated(vnode.attrs.icon, m("i.mmf-icon", attrs.icon)),
                 (!attrs.hideTitle) && m("h2", attrs.title)
             ),
 
-            m(".editron-container__actions",
+            m(".ed-header__actions",
                 attrs.onmoveup && m("i.mmf-icon.mmf-icon--add", {
                     onclick: attrs.onmoveup
                 }, "arrow_upward"),
@@ -65,7 +65,7 @@ export default {
                     onclick: attrs.ondelete
                 }, "delete"),
 
-                attrs.oncollapse && m("i.mmf-icon.mmf-icon--collapse", {
+                attrs.oncollapse && m("i.mmf-icon.mmf-icon--collapse.interactive", {
                     onclick: attrs.oncollapse
                 }, attrs.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down")
             )

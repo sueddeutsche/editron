@@ -1,17 +1,18 @@
 import m from "mithril";
 import gp from "gson-pointer";
 import ArrayItemView, { EditorTarget } from "./ArrayItemView";
-import arrayUtils from "../../utils/array";
 import { JSONPointer, EditronConfigAttrs } from "../../types";
 import Controller from "../../Controller";
 import { Editor } from "../Editor";
+import { Action } from "../../components/actions";
 
 
-export type Options = {
+export type __Options = {
     index: number;
     pointer: JSONPointer;
     length: number;
     attrs?: EditronConfigAttrs;
+    actions?: Array<Action>;
     disabled?: boolean;
     onAdd?: () => void;
     onRemove?: () => void;
@@ -25,11 +26,18 @@ export type ViewModel = {
     pointer: JSONPointer;
     length: number;
     disabled: boolean;
-    onAdd: () => void;
-    onRemove: () => void;
-    onMove: () => void;
-    onClone: () => void;
+    actions?: Array<Action>;
     attrs?: EditronConfigAttrs;
+}
+
+
+export type Options = {
+    actions: Array<Action>;
+    attrs?: EditronConfigAttrs;
+    disabled?: boolean;
+    index: number;
+    length: number;
+    pointer: JSONPointer;
 }
 
 
@@ -42,28 +50,21 @@ export default class ArrayItemEditor {
 
     constructor(pointer: JSONPointer, controller: Controller, options) {
         // eslint-disable-next-line max-len
-        this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
+        this.$element = controller.createElement(".ed-child", options.attrs);
         this.controller = controller;
 
-        const onAdd = () => this.add();
-        const onRemove = () => this.remove();
-
         this.viewModel = {
-            disabled: false,
-            onAdd,
-            onRemove,
-            onMove: index => this.move(index),
-            onClone: () => this.clone(),
-            ...options
+            pointer,
+            length: options.length,
+            disabled: options.disabled,
+            index: ArrayItemEditor.getIndex(pointer),
+            actions: options.actions
         };
 
         this.render();
 
         const $target = this.$element.querySelector(EditorTarget) as HTMLElement;
-        this.editor = controller.createEditor(pointer, $target, {
-            ondelete: onRemove
-        });
-
+        this.editor = controller.createEditor(pointer, $target);
         this.updatePointer(pointer);
     }
 
@@ -72,26 +73,6 @@ export default class ArrayItemEditor {
             this.viewModel.disabled = isDisabled;
             this.render();
         }
-    }
-
-    render(): void {
-        m.render(this.$element, m(ArrayItemView, this.viewModel));
-    }
-
-    add(): void {
-        arrayUtils.addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
-    }
-
-    clone(): void {
-        arrayUtils.cloneItem(this.parentPointer, this.controller, this.viewModel.index);
-    }
-
-    remove(): void {
-        arrayUtils.removeItem(this.parentPointer, this.controller, this.viewModel.index);
-    }
-
-    move(to: number): void {
-        arrayUtils.moveItem(this.parentPointer, this.controller, this.viewModel.index, to);
     }
 
     updatePointer(newPointer): void {
@@ -117,6 +98,10 @@ export default class ArrayItemEditor {
         this.viewModel = null;
         this.controller.destroyEditor(this.editor);
         this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
+    }
+
+    render(): void {
+        m.render(this.$element, m(ArrayItemView, this.viewModel));
     }
 
     static getIndex(pointer: JSONPointer): number {

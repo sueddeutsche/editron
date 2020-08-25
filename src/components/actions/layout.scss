@@ -1,0 +1,25 @@
+@import "mithril-material-forms/lib/interface";
+
+
+.ed-child {
+    // ensure actions parent is a bound for absolute placement
+    position: relative;
+}
+
+.ed-actions {
+    @include clickable();
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translateX(100%);
+    z-index: 101;
+
+    ul {
+        list-style: none;
+        display: none;
+    }
+
+    &.is-enabled:hover ul {
+        display: block;
+    }
+}

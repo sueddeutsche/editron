@@ -4,7 +4,7 @@ import Select, { Option } from "mithril-material-forms/components/select";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { Editor, EditorUpdateEvent } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
-import AbstractEditor from "../AbstractEditor";
+import AbstractEditor, { getTypeClass } from "../AbstractEditor";
 
 
 export type ViewModel = {
@@ -43,7 +43,7 @@ export default class OneOfEditor extends AbstractEditor {
 
     constructor(pointer: JSONPointer, controller: Controller, options: Options) {
         super(pointer, controller, options);
-        this.dom.classList.add("editron-container--oneof");
+        this.dom.classList.add(`ed-${getTypeClass(this.getSchema())}--oneof`);
 
         const childSchema = this.getSchema();
         // @special case. Our options lie in `schema.oneOfSchema`

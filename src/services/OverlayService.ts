@@ -46,7 +46,7 @@ const OverlayService = {
         OverlayService.removePanel();
 
         const $el = OverlayService.getElement();
-        dialog.classList.add("overlay__item");
+        dialog.classList.add("ed-overlay__item");
         OverlayService.render(dialog, { ...defaultOptions, ...options });
         document.body.appendChild($el);
         dispatch.ui.showOverlay(true);
@@ -79,7 +79,7 @@ const OverlayService = {
 
     getElement() {
         if (OverlayService.$element == null) {
-            OverlayService.$element = createElement(".ui-overlay");
+            OverlayService.$element = createElement(".ed-overlay");
             // close popup if clicked on "background"
             OverlayService.$element.addEventListener("click", (e) => {
                 if (e.target === OverlayService.$element) {

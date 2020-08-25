@@ -73,11 +73,11 @@ export default class ObjectEditor extends AbstractEditor {
         if (options.collapsed != null) {
             this.viewModel.oncollapse = () => {
                 this.viewModel.collapsed = !this.viewModel.collapsed;
-                this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
+                this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
                 this.render(); // redraw container, to update header collapse-icon
             };
             this.dom.classList.add("collapsible");
-            this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
+            this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
         }
 
         if (options.addDelete) {
@@ -125,10 +125,10 @@ export default class ObjectEditor extends AbstractEditor {
                     const property = error.data.property;
                     return {
                         severity: error.type || "error",
-                        message: m(".editron-error.editron-error--object-property",
+                        message: m(".ed-error.ed-error--object-property",
                             m("span", m.trust(message)),
-                            m("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"),
-                            m("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear")
+                            m("a.mmf-icon.interactive", { onclick: () => this.showProperty(property) }, "visibility"),
+                            m("a.mmf-icon.interactive", { onclick: () => this.deleteProperty(property) }, "clear")
                         )
                     };
                 });

@@ -10,7 +10,7 @@ export type Attrs = {
 export default {
     view(vnode) {
         return populated(vnode.attrs.description,
-            m(".editron-container__description.mmf-meta", m.trust(vnode.attrs.description))
+            m(".ed-description.mmf-meta", m.trust(vnode.attrs.description))
         );
     }
 

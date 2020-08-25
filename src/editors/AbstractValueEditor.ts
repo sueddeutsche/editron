@@ -95,9 +95,13 @@ export default class AbstractValueEditor implements Editor {
 
         // create main DOM-element for view-generation
         this.dom = controller.createElement(
-            `.editron-value.editron-value--${options.editorValueType}`,
+            `.ed-value.ed-value--${options.editorValueType}`,
             { ...options.attrs }
         );
+
+        if (schema.format) {
+            this.dom.classList.add(`.ed-${options.editorValueType}--${schema.type}`);
+        }
 
         // use this model to generate the view. may be customized with `options.viewModel`
         this.viewModel = {

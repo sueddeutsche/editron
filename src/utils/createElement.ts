@@ -14,7 +14,7 @@ export default function createElement(selector: string, attributes?: HTMLAttribu
     Object.keys(vnode.attrs).forEach((key) => {
         if (key === "className") {
             vnode.attrs[key].split(" ").forEach((className) => element.classList.add(className));
-        } else if (vnode.attrs[key] != null) {
+        } else if (vnode.attrs[key] != null && vnode.attrs[key] !== "") {
             element.setAttribute(key, vnode.attrs[key]);
         }
     });

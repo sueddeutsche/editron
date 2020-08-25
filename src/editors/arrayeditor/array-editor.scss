@@ -2,6 +2,8 @@
 @import "mithril-material-forms/lib/typography";
 @import "mithril-material-forms/lib/colors";
 @import "mithril-material-forms/lib/units";
+@import "../../components/actions/actions";
+@import "../../components/actions/layout";
 
 
 // separator button inner layers (inside of card)
@@ -38,18 +40,6 @@
     & > .editron-container > .editron-container__header {
         .mmf-icon--delete {
             visibility: hidden; // hide, but do not collapse
-        }
-    }
-}
-
-.editron-container__controls {
-    list-style: none;
-
-    &.is-disabled .mmf-icon {
-        color: rgba($mmf-color--light, $mmf-opacity--disabled);
-        &:hover {
-            cursor: default;
-            color: rgba($mmf-color--light, $mmf-opacity--disabled);
         }
     }
 }

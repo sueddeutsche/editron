@@ -1,0 +1,20 @@
+@import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/elevation";
+@import "../header/layout";
+@import "../description/layout";
+@import "../errors/layout";
+
+
+// add button replaces spacing between cards
+.with-insert-button .mmf-card {
+    margin-bottom: 0;
+}
+
+.ed-actions {
+    display: flex;
+}
+
+// additional wrapper if child-container must be wrapped (for controls, etc)
+.ed-child {
+    position: relative;
+}

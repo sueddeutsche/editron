@@ -1,4 +1,5 @@
 import ArrayItemWrapper from "./ArrayItemWrapper";
+import { Action } from "../../components/actions";
 import Controller from "../../Controller";
 import diffpatch from "../../services/utils/diffpatch";
 import m from "mithril";
@@ -8,6 +9,7 @@ import { EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { ValidationError } from "../../types";
 import { Patch } from "../../services/utils/createDiff";
+import arrayUtils from "../../utils/array";
 
 
 export type Controls = {
@@ -20,18 +22,23 @@ export type Controls = {
     move?: boolean;
     remove?: boolean;
     showIndex: boolean;
+    length: number;
 }
 
 export type ViewModel = {
     attrs: any;
-    controls: Controls;
     disabled: boolean;
     errors: Array<ValidationError>;
-    length: number;
-    maxItems: number;
-    minItems: number;
-    onadd?: (index?: number) => void;
     pointer: string;
+    title?: string;
+    description?: string;
+    icon?: string;
+}
+
+export type ArrayItemModel = {
+    pointer: JSONPointer;
+    index: number;
+    actions: Array<Action>;
 }
 
 export type Options = {
@@ -46,7 +53,9 @@ export default class ArrayEditor extends AbstractEditor {
     controller: Controller;
     onAdd: (index: number) => void;
     pointer: JSONPointer;
+
     viewModel: ViewModel;
+    actions: Array<Action> = [];
 
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -56,7 +65,7 @@ export default class ArrayEditor extends AbstractEditor {
 
     constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
         super(pointer, controller, options);
-        this.dom.classList.add("withAddButton");
+        this.dom.classList.add("with-insert-button");
         this.onAdd = (index = 0) => {
             if (!this.viewModel.disabled) {
                 controller.addItemTo(this.pointer, index);
@@ -65,35 +74,83 @@ export default class ArrayEditor extends AbstractEditor {
 
         const schema = this.getSchema();
         const data = this.getData();
+        const { maxItems, minItems } = schema;
+        const { add = true, clone = true, remove = true, move = true } = options.controls ?? {};
+
+        if (move) {
+            this.actions.push({
+                icon: "arrow_upward",
+                title: "move up",
+                disabled: (pointer, index) => index === 0,
+                action: (pointer, index) => this.move(index, index - 1)
+            });
+
+            this.actions.push({
+                icon: "arrow_downward",
+                title: "move down",
+                disabled: (pointer, index) => index >= this.getLength() - 1,
+                action: (pointer, index) => this.move(index, index + 1)
+            });
+        }
+
+        if (remove) {
+            this.actions.push({
+                icon: "delete",
+                title: "delete",
+                disabled: () => this.getLength() > minItems,
+                action: (pointer, index) => this.remove(index)
+            });
+        }
+
+        if (clone) {
+            this.actions.push({
+                icon: "content_copy",
+                title: "duplicate",
+                disabled: () => this.getLength() < maxItems,
+                action: (pointer, index) => this.clone(index)
+            });
+        }
+
+        if (add) {
+            this.actions.push({
+                icon: "add",
+                title: "add",
+                disabled: () => this.getLength() < maxItems,
+                action: (pointer, index) => this.add(index)
+            });
+        }
+
         this.viewModel = {
             attrs: {},
             disabled: false,
             errors: controller.service("validation").getErrorsAndWarnings(pointer),
-            length: data.length,
-            maxItems: schema.maxItems || Infinity,
-            minItems: schema.minItems || 0,
-            onadd: this.onAdd,
             pointer,
-            ...options,
-
-            controls: {
-                add: false,
-                clone: true,
-                disabled: false,
-                remove: true,
-                move: true,
-                insert: true,
-                showIndex: options["array:index"] === true,
-                maxItems: schema.maxItems || Infinity,
-                minItems: schema.minItems || 0,
-                ...options.controls
-            }
+            ...options
         };
 
         this.render();
         this.$items = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
         this.rebuildChildren();
-        this.updateControls();
+    }
+
+    add(index: number): void {
+        arrayUtils.addItem(this.pointer, this.controller, index + 1);
+    }
+
+    clone(index: number): void {
+        arrayUtils.cloneItem(this.pointer, this.controller, index);
+    }
+
+    remove(index: number): void {
+        arrayUtils.removeItem(this.pointer, this.controller, index);
+    }
+
+    move(index: number, to: number): void {
+        arrayUtils.moveItem(this.pointer, this.controller, index, to);
+    }
+
+    getLength(): number {
+        return this.getData().length;
     }
 
     update(event: EditorUpdateEvent) {
@@ -106,7 +163,6 @@ export default class ArrayEditor extends AbstractEditor {
         switch (event.type) {
             case "data:update":
                 this.applyPatches(event.value.patch);
-                this.updateControls();
                 break;
 
             case "validation:errors":
@@ -120,8 +176,8 @@ export default class ArrayEditor extends AbstractEditor {
 
             case "active": {
                 const disabled = event.value === false;
-                this.viewModel.disabled = disabled;
-                this.viewModel.controls.disabled = disabled;
+                // this.viewModel.disabled = disabled;
+                // this.viewModel.controls.disabled = disabled;
                 this.children.forEach(child => child.disable(disabled));
                 break;
             }
@@ -142,7 +198,7 @@ export default class ArrayEditor extends AbstractEditor {
         // search for inserted children
         children.forEach((child, index) => {
             if (child instanceof ArrayItemWrapper === false) {
-                const newChild = new ArrayItemWrapper(`${pointer}/${index}`, controller, viewModel.controls);
+                const newChild = new ArrayItemWrapper(`${pointer}/${index}`, controller, { index, actions: this.actions });
                 children[index] = newChild;
             }
         });
@@ -190,28 +246,23 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     rebuildChildren(): void {
-        const { pointer, controller, viewModel, children, $items } = this;
+        const { pointer, controller, children, $items } = this;
         const data = this.getData();
         children.forEach((editor: ArrayItemWrapper) => editor.destroy());
         children.length = 0;
         $items.innerHTML = "";
         // recreate child editors
         data.forEach((item, index) => {
-            const childEditor = new ArrayItemWrapper(`${pointer}/${index}`, controller, viewModel.controls);
+            const childEditor = new ArrayItemWrapper(`${pointer}/${index}`, controller, {
+                actions: this.actions
+            });
             $items.appendChild(childEditor.getElement());
             children.push(childEditor);
         });
     }
 
-    updateControls(): void {
-        const { dom, viewModel, children } = this;
-        viewModel.length = children.length;
-        viewModel.onadd = viewModel.maxItems > children.length ? this.onAdd : undefined;
-        dom.classList.toggle("has-add-disabled", viewModel.maxItems <= children.length);
-        dom.classList.toggle("has-remove-disabled", viewModel.minItems >= children.length);
-    }
-
     render(): void {
+        // this.children.forEach(child => child.render());
         m.render(this.dom, m(View, this.viewModel));
     }
 

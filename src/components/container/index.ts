@@ -1,10 +1,10 @@
 import m from"mithril";
-import ContainerHeader, { Attrs as HeaderAttrs } from"../containerheader";
-import ContainerErrors, { Attrs as ErrorAttrs } from"../containererrors";
-import ContainerDescription, { Attrs as DescriptionAttrs } from"../containerdescription";
+import Header, { Attrs as HeaderAttrs } from"../header";
+import Errors, { Attrs as ErrorAttrs } from"../errors";
+import Description, { Attrs as DescriptionAttrs } from"../description";
 
 
-export const CHILD_CONTAINER_SELECTOR = ".editron-container__children";
+export const CHILD_CONTAINER_SELECTOR = ".ed-children";
 
 
 export type Attrs = HeaderAttrs & DescriptionAttrs & ErrorAttrs;
@@ -29,10 +29,10 @@ export default {
         const { hideTitle } = vnode.attrs;
 
         return [
-            hideTitle === true ? null : m(ContainerHeader, vnode.attrs),
-            m(ContainerDescription, vnode.attrs),
+            hideTitle === true ? null : m(Header, vnode.attrs),
+            m(Description, vnode.attrs),
             vnode.children,
-            m(ContainerErrors, vnode.attrs),
+            m(Errors, vnode.attrs),
             m(CHILD_CONTAINER_SELECTOR)
         ];
     }

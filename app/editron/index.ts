@@ -9,8 +9,10 @@ import "./index.html";
 const schema = {
     title: "An object with collapsable property",
     type: "object",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ego vero volo in virtute vim esse quam maximam.",
     properties: {
         title: { type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true } },
+        visible: { type: "boolean", title: "Visibility", default: true },
         details: {
             title: "Details",
             type: "object",
@@ -21,6 +23,7 @@ const schema = {
             properties: {
                 description: {
                     title: "Extensive description",
+                    description: "textarea with some explain text",
                     type: "string",
                     format: "textarea",
                 },

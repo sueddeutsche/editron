@@ -1,0 +1,32 @@
+.ed-header {
+    display: flex;
+
+    &.no-title.no-actions {
+        display: none;
+    }
+
+    &.no-title {
+        .ed-header__tiutle {
+            display: none;
+        }
+    }
+
+    &.no-actions {
+        .ed-actions {
+            display: none;
+        }
+    }
+
+    &.with-icon .ed-header__tiutle h2 {
+        padding-left: 0;
+    }
+
+    &.with-actions {
+        padding-right: 0;
+    }
+
+    .ed-header__title {
+        display: flex;
+        width: 100%;
+    }
+}

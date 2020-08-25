@@ -3,7 +3,7 @@ import Controller from "../Controller";
 import { Editor, EditorUpdateEvent } from "./Editor";
 
 
-function getTypeClass(schema: JSONSchema): string {
+export function getTypeClass(schema: JSONSchema): string {
     return schema.type === "array" || schema.type === "object" ? schema.type : "value";
 }
 
@@ -55,8 +55,12 @@ export default class AbstractEditor implements Editor {
         this.pointer = pointer;
         this.controller = controller;
         this.options = options;
+        const schema = this.getSchema();
         this.dom = this.controller
-            .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
+            .createElement(`.ed-${getTypeClass(schema)}`, options.attrs);
+        if (schema.format) {
+            this.dom.classList.add(`ed-${getTypeClass(schema)}--${schema.format}`);
+        }
     }
 
     update(event: EditorUpdateEvent) { // eslint-disable-line @typescript-eslint/no-unused-vars

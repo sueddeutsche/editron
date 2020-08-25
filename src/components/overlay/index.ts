@@ -22,19 +22,19 @@ export default {
     view(vnode) {
         const { header, container, fullscreen, abortButton, onAbort, onSave, confirmButton } = vnode.attrs;
 
-        return m("section.ui-overlay__card",
+        return m("section.ed-overlay__card",
             {
-                "class": fullscreen ? "ui-overlay__card--fullscreen" : null
+                "class": fullscreen ? "ed-overlay__card--fullscreen" : null
             },
             header && m(".ui-card__header",
                 m("h1", header)
             ),
-            m(".ui-card__content",
+            m(".ed-card__content",
                 {
                     oncreate: contentNode => contentNode.dom.appendChild(container)
                 }
             ),
-            m(".ui-card__footer",
+            m(".ed-card__footer",
                 abortButton && m(Button, { onclick: onAbort }, translate(abortButton)),
                 confirmButton && m(Button, { onclick: onSave, raised: true }, translate(confirmButton))
             )
