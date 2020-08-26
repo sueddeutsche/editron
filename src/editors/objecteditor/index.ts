@@ -27,10 +27,13 @@ export type Options = {
     title?: string;
     /** object description from json-schema */
     description?: string;
-    /** adds an user-action to delete this object */
-    addDelete?: boolean;
+    controls?: {
+        /** adds an user-action to delete this object */
+        delete?: boolean
+    },
     /** if set, will add a toggle-button to show/hide its properties. Set to true, to hide it by default */
     collapsed?: boolean;
+    /** a list of actions, to be displayed in object-header */
     actions?: Array<Action>;
 }
 
@@ -67,6 +70,8 @@ export default class ObjectEditor extends AbstractEditor {
     constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
         super(pointer, controller, options);
 
+        console.log("object", options);
+
         this.viewModel = {
             pointer,
             errors: [],
@@ -75,7 +80,7 @@ export default class ObjectEditor extends AbstractEditor {
             actions: [...options.actions || []]
         };
 
-        if (options.addDelete) {
+        if (options.controls?.delete) {
             this.viewModel.actions.push({
                 icon: "delete",
                 classNames: "ed-action--delete",
