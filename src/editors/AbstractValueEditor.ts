@@ -40,6 +40,7 @@ export type ViewModel = {
     disabled?: boolean;
     value?;
     instantUpdate?: boolean;
+    invertOrder?: boolean;
     schema: JSONSchema;
     options;
     errors: Array<string|ValidationError>;

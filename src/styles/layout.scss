@@ -3,7 +3,10 @@
 @import "../components/container/layout";
 @import "../components/description/layout";
 @import "../components/errors/layout";
+@import "../components/overlay/layout";
+@import "../components/overlayselecttiles/layout";
+
 
 .ed-children > * {
-    padding: $mmf-unit 0;
+    padding-bottom: $mmf-unit;
 }

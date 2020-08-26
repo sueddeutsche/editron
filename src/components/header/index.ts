@@ -1,5 +1,6 @@
 import m from "mithril";
 import populated from "../../utils/populated";
+import { Action, ActionItem, renderAction } from "../actions";
 
 
 export type Attrs = {
@@ -14,6 +15,9 @@ export type Attrs = {
     onmovedown?: () => void;
     onmoveup?: () => void;
     title?: string;
+
+    pointerItem?: ActionItem;
+    actions?: Array<Action>
 }
 
 
@@ -35,8 +39,8 @@ export default {
             ...vnode.attrs
         };
 
-        const hasAction =
-            (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown || attrs.oncollapse) != null;
+        const { actions, pointer, pointerItem } = attrs;
+        const hasAction = actions?.length > 0;
 
         return m(".ed-header",
             {
@@ -49,25 +53,7 @@ export default {
             ),
 
             m(".ed-header__actions",
-                attrs.onmoveup && m("i.mmf-icon.mmf-icon--add", {
-                    onclick: attrs.onmoveup
-                }, "arrow_upward"),
-
-                attrs.onmovedown && m("i.mmf-icon.mmf-icon--add", {
-                    onclick: attrs.onmovedown
-                }, "arrow_downward"),
-
-                attrs.onadd && m("i.mmf-icon.mmf-icon--add", {
-                    onclick: () => attrs.onadd()
-                }, "add"),
-
-                attrs.ondelete && m("i.mmf-icon.mmf-icon--delete", {
-                    onclick: attrs.ondelete
-                }, "delete"),
-
-                attrs.oncollapse && m("i.mmf-icon.mmf-icon--collapse.interactive", {
-                    onclick: attrs.oncollapse
-                }, attrs.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down")
+                actions?.map(action => renderAction(pointer, action, pointerItem))
             )
         );
     }

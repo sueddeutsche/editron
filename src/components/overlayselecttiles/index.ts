@@ -2,6 +2,7 @@ import m from "mithril";
 import Tile from "./Tile";
 
 
+const CLASSNAME = "ed-overlay-tiles";
 const noop = (value: string) => {}; // eslint-disable-line
 
 
@@ -21,7 +22,7 @@ function getDataValue(node) {
     while (
         node.parentNode &&
         node.getAttribute("data-value") == null &&
-        node.className.includes("editron-form-tiles") === false
+        node.className.includes(CLASSNAME) === false
     ) {
         node = node.parentNode;
     }
@@ -41,7 +42,7 @@ export default {
             ...vnode.attrs
         };
 
-        return m(".editron-form-tiles",
+        return m(`.${CLASSNAME}`,
             {
                 onclick: (e) => {
                     const value = getDataValue(e.target);

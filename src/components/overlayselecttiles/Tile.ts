@@ -12,19 +12,19 @@ export type Attrs = {
 
 export default {
     view(vnode) {
-        return m(".editron-form-box",
+        return m(".ed-form-box",
             {
                 "data-value": vnode.attrs.value,
                 "data-type": vnode.attrs.title.toLowerCase() // @uitest
             },
-            m(".editron-form-box__content",
-                m(".editron-form-box__title",
+            m(".ed-form-box__content",
+                m(".ed-form-box__title",
                     [
                         vnode.attrs.icon ? m(".mmf-icon", vnode.attrs.icon) : "",
                         vnode.attrs.title
                     ]
                 ),
-                m(".editron-form-box__description", vnode.attrs.description)
+                m(".ed-form-box__description", vnode.attrs.description)
             )
         );
     }

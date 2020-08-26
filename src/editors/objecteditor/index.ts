@@ -6,6 +6,7 @@ import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
 import { Editor, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
+import { Action } from "../../components/actions";
 
 
 function showJSON(controller: Controller, data: JSONData, title: string) {
@@ -30,6 +31,7 @@ export type Options = {
     addDelete?: boolean;
     /** if set, will add a toggle-button to show/hide its properties. Set to true, to hide it by default */
     collapsed?: boolean;
+    actions?: Array<Action>;
 }
 
 export type ViewModel = {
@@ -46,6 +48,7 @@ export type ViewModel = {
     ondelete?: () => void;
     pointer: JSONPointer;
     title?: string;
+    actions: Array<Action>;
 }
 
 
@@ -54,6 +57,7 @@ export default class ObjectEditor extends AbstractEditor {
     options: Options;
     childEditors: Array<Editor> = [];
     $children: HTMLElement;
+
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.service("schema").get(pointer);
@@ -67,22 +71,39 @@ export default class ObjectEditor extends AbstractEditor {
             pointer,
             errors: [],
             ...options,
-            attrs: options.attrs || {}
+            attrs: options.attrs || {},
+            actions: [...options.actions || []]
         };
 
-        if (options.collapsed != null) {
-            this.viewModel.oncollapse = () => {
-                this.viewModel.collapsed = !this.viewModel.collapsed;
-                this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
-                this.render(); // redraw container, to update header collapse-icon
-            };
-            this.dom.classList.add("collapsible");
-            this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
+        if (options.addDelete) {
+            this.viewModel.actions.push({
+                icon: "delete",
+                classNames: "ed-action--delete",
+                disabled: () => this.viewModel.disabled,
+                action: this.deleteObject.bind(this)
+            });
         }
 
-        if (options.addDelete) {
-            this.viewModel.ondelete = this.deleteObject.bind(this);
+        if (options.collapsed != null) {
+            this.dom.classList.add("collapsible");
+            this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
+
+            const action: Action = {
+                icon: this.viewModel.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down",
+                classNames: "ed-action--collapse",
+                disabled: () => this.viewModel.disabled,
+                action: () => {
+                    this.viewModel.collapsed = !this.viewModel.collapsed;
+                    action.icon = this.viewModel.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down",
+                    this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
+                    this.render(); // redraw container, to update header collapse-icon
+                }
+            };
+
+            this.viewModel.actions.push(action);
         }
+
+        console.log("actions", this.viewModel.actions);
 
         this.render();
         this.$children = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);

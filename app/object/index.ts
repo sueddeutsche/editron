@@ -34,6 +34,11 @@ const schema = {
                     format: "textarea"
                 },
                 layout: {
+                    "editron:ui": {
+                        attrs: {
+                            invertOrder: true
+                        }
+                    },
                     title: "Layout",
                     type: "string",
                     enum: ["default", "small", "large"]

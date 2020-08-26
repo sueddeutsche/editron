@@ -29,7 +29,7 @@ export default {
         return [
             m(ActionsView, {
                 pointer,
-                index,
+                pointerItem: index,
                 disabled,
                 actions
             }),

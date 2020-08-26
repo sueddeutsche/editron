@@ -27,19 +27,21 @@ const Component: m.Component<Attrs> = {
         const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer } = vnode.attrs;
 
         if (schema.enum && schema.enum.length > 0) {
+
             const selectFormModel: SelectAttrs = {
                 id: pointer,
                 title: options.title,
                 description: options.description,
                 disabled: options.disabled,
                 errors,
-
+                invertOrder: options.invertOrder,
                 options: UISchema.enumOptions(schema),
                 value,
                 onchange,
                 onblur,
                 onfocus
             };
+
             return m(SelectForm, selectFormModel, vnode.children);
         }
 

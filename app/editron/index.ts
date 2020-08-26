@@ -30,6 +30,9 @@ const schema = {
                 layout: {
                     title: "Layout",
                     type: "string",
+                    "editron:ui": {
+                        invertOrder: true
+                    },
                     enum: ["default", "small", "large"],
                 }
             }
@@ -52,6 +55,7 @@ const schema = {
             }
         },
         simple: {
+            title: "simple list",
             type: "array",
             items: {
                 type: "string",

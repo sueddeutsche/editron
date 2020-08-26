@@ -33,6 +33,7 @@ export type ViewModel = {
     title?: string;
     description?: string;
     icon?: string;
+    actions: Array<Action>;
 }
 
 export type ArrayItemModel = {
@@ -55,7 +56,10 @@ export default class ArrayEditor extends AbstractEditor {
     pointer: JSONPointer;
 
     viewModel: ViewModel;
-    actions: Array<Action> = [];
+    /** actions per array-child */
+    itemActions: Array<Action> = [];
+    /** actions on array (add, collapse) */
+    headerActions: Array<Action> = [];
 
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -73,50 +77,58 @@ export default class ArrayEditor extends AbstractEditor {
         };
 
         const schema = this.getSchema();
-        const data = this.getData();
         const { maxItems, minItems } = schema;
         const { add = true, clone = true, remove = true, move = true } = options.controls ?? {};
 
         if (move) {
-            this.actions.push({
+            this.itemActions.push({
                 icon: "arrow_upward",
                 title: "move up",
-                disabled: (pointer, index) => index === 0,
-                action: (pointer, index) => this.move(index, index - 1)
+                disabled: (pointer, index) => {
+                    console.log("move up", pointer, index);
+                    return index === 0;
+                },
+                action: (pointer, index: number) => this.move(index, index - 1)
             });
 
-            this.actions.push({
+            this.itemActions.push({
                 icon: "arrow_downward",
                 title: "move down",
                 disabled: (pointer, index) => index >= this.getLength() - 1,
-                action: (pointer, index) => this.move(index, index + 1)
+                action: (pointer, index: number) => this.move(index, index + 1)
             });
         }
 
         if (remove) {
-            this.actions.push({
+            this.itemActions.push({
                 icon: "delete",
                 title: "delete",
                 disabled: () => this.getLength() > minItems,
-                action: (pointer, index) => this.remove(index)
+                action: (pointer, index: number) => this.remove(index)
             });
         }
 
         if (clone) {
-            this.actions.push({
+            this.itemActions.push({
                 icon: "content_copy",
                 title: "duplicate",
                 disabled: () => this.getLength() < maxItems,
-                action: (pointer, index) => this.clone(index)
+                action: (pointer, index: number) => this.clone(index)
             });
         }
 
         if (add) {
-            this.actions.push({
+            this.itemActions.push({
                 icon: "add",
                 title: "add",
                 disabled: () => this.getLength() < maxItems,
-                action: (pointer, index) => this.add(index)
+                action: (pointer, index: number) => this.add(index)
+            });
+            this.headerActions.push({
+                icon: "add",
+                title: "add",
+                disabled: () => this.getLength() < maxItems,
+                action: () => arrayUtils.addItem(this.pointer, this.controller, 0)
             });
         }
 
@@ -125,6 +137,7 @@ export default class ArrayEditor extends AbstractEditor {
             disabled: false,
             errors: controller.service("validation").getErrorsAndWarnings(pointer),
             pointer,
+            actions: this.headerActions,
             ...options
         };
 
@@ -198,7 +211,10 @@ export default class ArrayEditor extends AbstractEditor {
         // search for inserted children
         children.forEach((child, index) => {
             if (child instanceof ArrayItemWrapper === false) {
-                const newChild = new ArrayItemWrapper(`${pointer}/${index}`, controller, { index, actions: this.actions });
+                const newChild = new ArrayItemWrapper(`${pointer}/${index}`, controller, {
+                    pointerItem: index,
+                    actions: this.itemActions
+                });
                 children[index] = newChild;
             }
         });
@@ -254,7 +270,8 @@ export default class ArrayEditor extends AbstractEditor {
         // recreate child editors
         data.forEach((item, index) => {
             const childEditor = new ArrayItemWrapper(`${pointer}/${index}`, controller, {
-                actions: this.actions
+                pointerItem: index,
+                actions: this.itemActions
             });
             $items.appendChild(childEditor.getElement());
             children.push(childEditor);
