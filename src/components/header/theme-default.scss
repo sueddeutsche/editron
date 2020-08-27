@@ -3,14 +3,18 @@
 @import "mithril-material-forms/styles/icon"; // .interactive
 
 
-.ed-header__actions button {
-    border: 0;
-    margin: 0;
-    .mmf-icon {
-        padding: 0;
-    }
-    span {
-        display: none;
+.ed-header__actions {
+    flex-grow: 1;
+    text-align: right;
+    button {
+        border: 0;
+        margin: 0;
+        .mmf-icon {
+            padding: 0;
+        }
+        span {
+            display: none;
+        }
     }
 }
 

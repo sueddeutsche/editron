@@ -1,0 +1,17 @@
+@import "mithril-material-forms/lib/typography";
+
+.ed-separator {
+    display: flex;
+    justify-content: center;
+
+    button {
+        font-size: $mmf-text-size--meta;
+        border: 0;
+        .mmf-icon {
+            padding-right: 0;
+        }
+        span {
+            display: none;
+        }
+    }
+}
