@@ -56,9 +56,12 @@ const schema = {
                     handle: ".ed-header"
                 },
                 array: {
-                    insert: true
+                    insert: true,
+                    passActions: true
                 },
-                passActions: true
+                overlay: {
+                    header: "Pick your item"
+                }
             },
             items: {
                 oneOfProperty: "type",

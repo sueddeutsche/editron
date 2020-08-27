@@ -21,6 +21,8 @@ export enum OverlayAction {
 }
 
 export type Options = {
+    /** optional overlay title */
+    header?: string;
     abortButton?: string|false;
     confirmButton?: string|false;
     /** fullscreen size of overlay, regardless of content */

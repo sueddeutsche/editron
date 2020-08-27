@@ -28,6 +28,9 @@ may be configured with
         },
         "array": {
             // array options here
+        },
+        "overlay": {
+            header: "Overlay title for multiple choices dialog"
         }
     }   
 }

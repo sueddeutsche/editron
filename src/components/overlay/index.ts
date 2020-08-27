@@ -1,6 +1,7 @@
 import m from "mithril";
 import { Button } from "mithril-material-forms/index";
 import { translate } from "../../utils/i18n";
+import isEmpty from "../../utils/isEmpty";
 
 
 export type Attrs = {
@@ -26,7 +27,7 @@ export default {
             {
                 "class": fullscreen ? "ed-overlay__card--fullscreen" : null
             },
-            header && m(".ui-card__header",
+            !isEmpty(header) && m(".ed-card__header",
                 m("h1", header)
             ),
             m(".ed-card__content",

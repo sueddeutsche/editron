@@ -46,6 +46,7 @@ export type Options = {
 
 
 export type ChildEditorOptions = {
+    hideTitle: boolean;
     actions?: Array<Action>;
 }
 
@@ -89,7 +90,9 @@ export default class ArrayItemEditor {
 
         this.render();
 
-        const editorOptions: ChildEditorOptions = {};
+        const editorOptions: ChildEditorOptions = {
+            hideTitle: options.header === true
+        };
         if (this.passActions) {
             editorOptions.actions = this.viewModel.actions;
         }

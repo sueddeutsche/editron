@@ -3,7 +3,7 @@ import createElement from "./createElement";
 import LocationService from "../services/LocationService";
 import OverlayService from "../services/OverlayService";
 import SelectTileComponent from "../components/overlayselecttiles";
-import UISchema from "./UISchema";
+import UISchema, { getEditronOptions } from "./UISchema";
 import DataService from "../services/dataservice";
 import SchemaService from "../services/SchemaService";
 import { JSONPointer } from "../types";
@@ -41,6 +41,13 @@ function addItem(dataService: DataService, schemaService: SchemaService, locatio
         value: oneOfIndex
     }));
 
+    // fetch overlay options
+    const options = getEditronOptions(schemaService.get(pointer));
+    const overlayOptions = {
+        header: "",
+        ...options?.overlay
+    };
+
     // create user-selection
     m.render(element, m(SelectTileComponent, {
         // description: "Modulauswahl - Bitte wählen",
@@ -63,7 +70,10 @@ function addItem(dataService: DataService, schemaService: SchemaService, locatio
     }
 
     // and ask question
-    OverlayService.open(element, { confirmButton: false });
+    OverlayService.open(element, {
+        header: overlayOptions.header,
+        confirmButton: false
+    });
         // .then(action => { console.log("dialog closed", action); });
 }
 
