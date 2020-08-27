@@ -135,10 +135,6 @@ export default class LocationService {
             return;
         }
 
-        if (this.timeout) {
-            clearTimeout(this.timeout);
-        }
-
         this.timeout = setTimeout(() => {
             const { scrollTopOffset } = this.options;
             const bound = targetElement.getBoundingClientRect();
@@ -150,9 +146,11 @@ export default class LocationService {
                 console.log("skip scrolling - already in viewport", viewportHeight, bound.top);
             }
 
-            targetElement.dispatchEvent(new Event("focus"));
-            // @todo only fire focus event?
-            // targetElement.focus && targetElement.focus();
+            const targetInput = <HTMLElement>rootElement.querySelector(`[data-id="${pointer}"]`);
+            if (targetInput) {
+                targetInput.dispatchEvent(new Event("focus"));
+                targetInput.focus && targetInput.focus();
+            }
             this.timeout = null;
         }, DELAY);
     }
