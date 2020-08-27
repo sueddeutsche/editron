@@ -1,6 +1,7 @@
 import Controller from "../Controller";
 import { JSONPointer, ValidationError } from "../types";
 import { Patch } from "../services/utils/createDiff";
+import { Action } from "../components/actions";
 
 
 /** Editor Constructor API */
@@ -9,6 +10,16 @@ export interface EditorPlugin {
     prototype: Editor;
 
     editorOf(pointer: JSONPointer, controller: Controller, options?): boolean;
+}
+
+
+export type Options = {
+    title: string;
+    disabled: boolean;
+    description: string;
+    hidden: boolean;
+    pointer: JSONPointer;
+    actions?: Array<Action>;
 }
 
 

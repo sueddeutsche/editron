@@ -129,6 +129,21 @@ then setup the sync plugin in your schema
 > enables arrays to be sortable and interchangable via drag and drop (sortablejs). This also enables arrays of the same type, e.g. by different editors, like the minimap, to be drag and dropped correctly. This also enables dummy containers to be dropped as array item (e.g. adding new modules from a list of items - see example)
 
 
+### options
+
+```js
+  "editron:ui": {
+    sortable: SortableOptions
+  }
+```
+
+```ts
+type SortableOptions = {
+
+};
+```
+
+
 ### usage
 
 ensure the plugin is added to editron options.
@@ -160,27 +175,27 @@ Following are two configurations
   listA: {
     type: "array",
     "editron:ui": {
-    sortable: {
-      group: "string-tags"
-      // per default - the whole container is draggable (click target)
-    }
+      sortable: {
+        group: "string-tags"
+        // per default - the whole container is draggable (click target)
+      }
     },
     items: {
-    title: "people tags",
-    type: "string"
+      title: "people tags",
+      type: "string"
     }
   },
   listB: {
     type: "array",
     "editron:ui": {
-    sortable: {
-      group: "string-tags",
-      handle: ".drag-handle" // optionally, you set a html-element as drag-handle
-    }
+      sortable: {
+        group: "string-tags",
+        handle: ".drag-handle" // optionally, you set a html-element as drag-handle
+      }
     },
     items: {
-    title: "person tags",
-    type: "string"
+      title: "person tags",
+      type: "string"
     }
   }
   }

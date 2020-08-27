@@ -45,8 +45,8 @@ export default class MinimapEditor extends AbstractEditor {
     constructor(pointer, controller, options) {
         super(pointer, controller, options);
         options.notifyNestedChanges = true;
-
-        this.dom.classList.add("editron-minimap-editor");
+        // override all default classes
+        this.dom.className = "ed-minimap";
         const { minimap } = options;
         const locationService = controller.service("location");
 

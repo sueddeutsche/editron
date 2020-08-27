@@ -1,5 +1,6 @@
 .ed-header {
     display: flex;
+    align-items: center;
 
     &.no-title.no-actions {
         display: none;
@@ -28,7 +29,7 @@
     .ed-header__title {
         display: flex;
         align-items: center;
-        width: 100%;
+        flex-grow: 1;
 
         .mmf-icon {
             width: 1.5em;

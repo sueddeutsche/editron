@@ -12,6 +12,11 @@ const schema = {
     title: "An object with collapsable property",
     type: "object",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ego vero volo in virtute vim esse quam maximam.",
+    "editron:ui": {
+        // attrs: {
+        //     class: "as-card"
+        // }
+    },
     properties: {
         title: { type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true } },
         visible: { type: "boolean", title: "Visibility", default: true },
@@ -42,6 +47,17 @@ const schema = {
         list: {
             // title: "list",
             type: "array",
+            "editron:ui": {
+                icon: "list",
+                sortable: {
+                    group: "teaser",
+                    handle: ".ed-header"
+                },
+                array: {
+                    insert: true
+                },
+                passActions: true
+            },
             items: {
                 oneOfProperty: "type",
                 oneOf: [
@@ -61,7 +77,7 @@ const schema = {
             type: "array",
             items: {
                 type: "string",
-                description: "simple title"
+                description: "simple string"
             }
         }
     },
@@ -69,6 +85,13 @@ const schema = {
         inline: {
             title: "Inline",
             type: "object",
+            "editron:ui": {
+                icon: "home",
+                collapsed: false,
+                attrs: {
+                    class: "as-card"
+                }
+            },
             properties: {
                 type: {
                     type: "string",
@@ -112,7 +135,10 @@ const schema = {
             title: "Extern",
             type: "object",
             "editron:ui": {
-                icon: "extension"
+                icon: "extension",
+                attrs: {
+                    class: "as-card"
+                }
             },
             properties: {
                 type: {

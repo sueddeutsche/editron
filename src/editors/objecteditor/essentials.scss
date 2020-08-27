@@ -2,6 +2,6 @@
 @import "mithril-material-forms/styles/icon"; // .interactive
 
 
-.ed-object.collapsed .ed-children {
+.ed-object.is-collapsed > .ed-children {
     display: none;
 }

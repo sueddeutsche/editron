@@ -1,1 +1,35 @@
-@import "../components/header/theme";
+@import "../components/header/theme-default";
+@import "../editors/objecteditor/theme-default";
+
+
+@import "mithril-material-forms/lib/units";
+
+$ed-card-background: #fff;
+
+// .as-card {
+//     margin: $mmf-block/2 0;
+//     border-top-right-radius: 4px;
+//     border-top-left-radius: 4px;
+//     background-color: $ed-card-background;
+
+//     & > .ed-children {
+//         border-top: 1px solid rgb(242,242,243);
+//         padding-top: $mmf-unit;
+//     }
+// }
+
+// .as-card .as-card {
+//     margin-left: $mmf-unit;
+//     margin-right: $mmf-unit;
+//     border-top-right-radius: 0;
+//     border-top-left-radius: 0;
+//     background-color: darken($ed-card-background, 10%);
+// }
+
+.ed-header.with-title,
+.ed-description,
+.ed-errors,
+.ed-value {
+    padding-left: $mmf-unit;
+    padding-right: $mmf-unit;
+}

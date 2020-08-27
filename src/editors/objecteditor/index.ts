@@ -88,8 +88,8 @@ export default class ObjectEditor extends AbstractEditor {
         }
 
         if (options.collapsed != null) {
-            this.dom.classList.add("collapsible");
-            this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
+            this.dom.classList.add("is-collapsible");
+            this.dom.classList.toggle("is-collapsed", this.viewModel.collapsed === true);
 
             const action: Action = {
                 icon: this.viewModel.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down",
@@ -98,7 +98,7 @@ export default class ObjectEditor extends AbstractEditor {
                 action: () => {
                     this.viewModel.collapsed = !this.viewModel.collapsed;
                     action.icon = this.viewModel.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down",
-                    this.dom.classList.toggle("collapsed", this.viewModel.collapsed === true);
+                    this.dom.classList.toggle("is-collapsed", this.viewModel.collapsed === true);
                     this.render(); // redraw container, to update header collapse-icon
                 }
             };

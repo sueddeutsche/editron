@@ -4,7 +4,6 @@ import { Action, ActionItem, renderAction } from "../actions";
 
 
 export type Attrs = {
-    pointer: string;
     disabled?: boolean;
     hideTitle?: boolean;
     icon?: string;
@@ -16,7 +15,6 @@ export type Attrs = {
     onmoveup?: () => void;
     title?: string;
 
-    pointerItem?: ActionItem;
     actions?: Array<Action>
 }
 
@@ -39,7 +37,7 @@ export default {
             ...vnode.attrs
         };
 
-        const { actions, pointer, pointerItem } = attrs;
+        const { actions } = attrs;
         const hasAction = actions?.length > 0;
 
         return m(".ed-header",
@@ -53,7 +51,7 @@ export default {
             ),
 
             m(".ed-header__actions",
-                actions?.map(action => renderAction(pointer, action, pointerItem))
+                actions?.map(action => renderAction(action))
             )
         );
     }
