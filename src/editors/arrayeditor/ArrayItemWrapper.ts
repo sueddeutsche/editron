@@ -54,11 +54,9 @@ export default class ArrayItemEditor {
         this.controller = controller;
 
         this.viewModel = {
+            ...options,
             pointer,
-            length: options.length,
-            disabled: options.disabled,
             index: ArrayItemEditor.getIndex(pointer),
-            actions: options.actions
         };
 
         this.render();

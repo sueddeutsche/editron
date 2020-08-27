@@ -1,0 +1,34 @@
+@import "mithril-material-forms/lib/units";
+
+
+$minimap-selected-color: #eee !default;
+$minimap-selected-background: #29293A !default;
+
+
+.ed-minimap__header .mmf-icon {
+    color: $minimap-selected-color;
+}
+
+.ed-minimap .is-selected {
+    color: $minimap-selected-color;
+    background-color: $minimap-selected-background;
+}
+
+.ed-minimap .is-selected.is-collapsed,
+.ed-minimap .is-selected--target {
+    & > .ed-minimap__header {
+        color: #333;
+        .mmf-icon {
+            color: #333;
+        }
+        background-color: #fff;
+    }
+}
+
+.ed-minimap__header {
+    padding-right: $mmf-unit;
+}
+.ed-minimap__child .ed-minimap__child .ed-minimap__header {
+    margin: 0 $mmf-unit;
+    padding-right: 0;
+}

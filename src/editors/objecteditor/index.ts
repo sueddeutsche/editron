@@ -70,8 +70,6 @@ export default class ObjectEditor extends AbstractEditor {
     constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
         super(pointer, controller, options);
 
-        console.log("object", options);
-
         this.viewModel = {
             pointer,
             errors: [],
@@ -107,8 +105,6 @@ export default class ObjectEditor extends AbstractEditor {
 
             this.viewModel.actions.push(action);
         }
-
-        console.log("actions", this.viewModel.actions);
 
         this.render();
         this.$children = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);

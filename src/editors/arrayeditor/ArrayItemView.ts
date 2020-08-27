@@ -2,6 +2,7 @@ import m from "mithril";
 import { Button } from "mithril-material-forms/index";
 import { JSONPointer } from "../../types";
 import ActionsView, { Action } from "../../components/actions";
+import Header from "../../components/header";
 
 
 export const EditorTarget = ".ed-item";
@@ -14,6 +15,8 @@ export type Attrs = {
     index: number;
     pointer: JSONPointer;
     length: number;
+    header?: boolean;
+    title?: string;
 
     actions?: Array<Action>;
     insert?: Action;
@@ -23,7 +26,7 @@ export type Attrs = {
 export default {
 
     view({ attrs }) {
-        const { disabled = false, pointer, index, insert, actions } = attrs;
+        const { disabled = false, pointer, index, insert, header = false, actions } = attrs;
         const showIndex = attrs.showIndex === true;
 
         return [
@@ -33,6 +36,8 @@ export default {
                 disabled,
                 actions
             }),
+
+            header && m(Header, { title: attrs.title, pointer, pointerItem: index, actions }),
 
             // TARGET CONTAINER FOR EDITOR
             m(EditorTarget, {

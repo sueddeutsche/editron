@@ -6,7 +6,7 @@
     }
 
     &.no-title {
-        .ed-header__tiutle {
+        .ed-header__title {
             display: none;
         }
     }
@@ -27,6 +27,11 @@
 
     .ed-header__title {
         display: flex;
+        align-items: center;
         width: 100%;
+
+        .mmf-icon {
+            width: 1.5em;
+        }
     }
 }

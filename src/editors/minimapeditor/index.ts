@@ -5,7 +5,8 @@ import { EditorUpdateEvent } from "../Editor";
 import Controller from "../../Controller";
 import { JSONPointer, ValidationError } from "../../types";
 import { Event as LocationEvent } from "../../services/LocationService";
-import "./minimap-editor.scss";
+import "./layout.scss";
+import "./theme-default.scss";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 
 
@@ -19,6 +20,7 @@ export type ViewModel = {
     onSelect: (pointer: JSONPointer) => void;
     onAdd: (item) => void;
     onChange: (pointers, reordered, target) => void;
+    onUpdate: () => void;
 }
 
 
@@ -87,12 +89,14 @@ export default class MinimapEditor extends AbstractEditor {
                 const updatedPointer = gp.join(pointerToList, nextIndex, localPointer.replace(/^\/[0-9]+\//, ""));
                 // console.log(currentPointer, "->", updatedPointer);
                 return locationService.setCurrent(updatedPointer);
-            }
+            },
+
+            onUpdate: () => this.render()
         };
 
         this.updateLocation = this.updateLocation.bind(this);
         locationService.watch(this.updateLocation);
-
+        console.log("node", this.viewModel.node);
         this.render();
     }
 
@@ -103,6 +107,7 @@ export default class MinimapEditor extends AbstractEditor {
             case "data:update": { // eslint-disable-line no-fallthrough
                 const data = this.getData();
                 this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
+                console.log("node", this.viewModel.node);
                 break;
             }
 

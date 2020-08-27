@@ -16,6 +16,7 @@
     max-width: 20 * $mmf-block;
     min-height: 3 * $mmf-block;
     max-height: 96vh;
+    min-width: 4 * $mmf-block;
 
     &--fullscreen {
         width: 96vw;

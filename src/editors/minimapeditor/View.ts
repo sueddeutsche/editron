@@ -24,6 +24,7 @@ export type Node = {
     pointer: JSONPointer;
     title: string,
     icon?: string;
+    collapsible: boolean;
     sortable: boolean;
     sortableGroup?: string;
     children: Array<Node>;
@@ -50,7 +51,8 @@ export function buildTree(pointer: JSONPointer, data, controller: Controller, de
     const node: Node = {
         pointer,
         title: schemaOptions.minimap?.title || schema.title || pointer,
-        icon: UISchema.getOption(pointer, controller, "index:icon", "icon"),
+        icon: UISchema.getOption(pointer, controller, "minimap:icon", "icon"),
+        collapsible: false,
         sortable: false,
         sortableGroup: schemaOptions.sortable?.group || pointer,
         children: []
@@ -65,6 +67,7 @@ export function buildTree(pointer: JSONPointer, data, controller: Controller, de
     }
 
     if (Array.isArray(data)) {
+        node.collapsible = depth !== 0;
         node.sortable = true;
         node.children = data
             .map((item, index) => buildTree(`${pointer}/${index}`, data[index], controller, depth - 1))
@@ -72,6 +75,7 @@ export function buildTree(pointer: JSONPointer, data, controller: Controller, de
     }
 
     if (data != null && typeof data === "object") {
+        node.collapsible = depth !== 0;
         node.children = Object
             .keys(data)
             .map((key) => buildTree(`${pointer}/${key}`, data[key], controller, depth - 1))
@@ -83,15 +87,27 @@ export function buildTree(pointer: JSONPointer, data, controller: Controller, de
 
 
 
-function getClass(pointer, activeTarget, errors) {
-    let className = (hasError(pointer, errors) ? "hasError" : "hasNoError");
+function getClass(node: Node, activeTarget: JSONPointer, errors: Array<ValidationError>) {
+    const { icon, pointer } = node;
+
+    let className = (hasError(pointer, errors) ? "has-error" : "no-error");
+
     if (activeTarget === pointer || activeTarget.includes(`${pointer}/`)) {
-        className += " isSelected";
+        className += " is-selected";
+        if (activeTarget === pointer || node.children.length === 0) {
+            className += " is-selected--target";
+        }
     }
 
-    if (getCollapsedState(pointer) === true) {
-        className += " isCollapsed";
+    if (node.collapsible) {
+        className += " is-collapsible";
+        if (isCollapsed(pointer) === true) {
+            className += " is-collapsed";
+        }
     }
+
+    className += (icon == null || icon === "") && !node.collapsible ? " no-icon" : " with-icon";
+
     return className;
 }
 
@@ -103,6 +119,8 @@ export type Attrs = {
     errors: Array<ValidationError>;
     currentSelection: JSONPointer;
     onSelect: (pointer: JSONPointer) => void;
+    onUpdate: () => void;
+    includeRootNode?: boolean;
 }
 
 export type State = {
@@ -111,27 +129,46 @@ export type State = {
 
 const NodeComponent: m.Component<Attrs, State> = {
     view(vnode) {
-        const { node, controller, withHandle, onSelect, currentSelection, errors } = vnode.attrs;
-        const { sortable, title, pointer, sortableGroup: group } = node;
-        return m(".editron-minimap__item", { "data-nav": pointer },
-            m(".editron-minimap__header",
+        const { node, controller, withHandle, onSelect, onUpdate, currentSelection, errors } = vnode.attrs;
+        const { sortable, title, icon, pointer, collapsible, sortableGroup: group } = node;
+        return m(".ed-minimap__child",
+            {
+                "data-nav": pointer,
+                class: getClass(node, currentSelection, errors)
+            },
+
+            m(".ed-minimap__header",
                 {
-                    onclick: () => onSelect(pointer),
-                    class: getClass(pointer, currentSelection, errors)
+                    onclick: () => onSelect(pointer)
                 },
-                m(".editron-minimap__title", title || pointer),
-                withHandle && m("span.editron-minimap__handle.mmf-icon", "drag_handle")
+
+                collapsible && m("span.mmf-icon", {
+                    onclick: () => {
+                        const collapsed = isCollapsed(pointer);
+                        setCollapsedState(pointer, !collapsed);
+                        onUpdate();
+                    }
+                }, isCollapsed(pointer) ? "expand_more" : "expand_less"),
+
+                !(icon == null || icon === "") && m("span.mmf-icon", icon),
+
+                m(".ed-minimap__title", title || pointer),
+
+                sortable && m("span.mmf-icon", { onclick: () => controller.addItemTo(pointer, 0) }, "add"),
+
+                withHandle && m("span.ed-minimap__handle.mmf-icon", "drag_handle")
             ),
-            m(".editron-minimap__children",
+
+            m(".ed-minimap__children",
                 {
-                    class: sortable && "sortable",
+                    class: sortable ? "sortable" : "",
                     // @sortable plugin
                     "data-parent": pointer,
                     oncreate: ({ dom }) => {
                         if (sortable) {
                             this.sortable = new Sortable(dom as HTMLElement, {
                                 group,
-                                handle: ".editron-minimap__handle",
+                                handle: ".ed-minimap__handle",
                                 onAdd(event) {
                                     onAddSortable(pointer, controller, event);
                                 },
@@ -147,8 +184,9 @@ const NodeComponent: m.Component<Attrs, State> = {
                     m(NodeComponent, {
                         node: nextNode,
                         controller,
-                        withHandle: true,
+                        withHandle: sortable,
                         onSelect,
+                        onUpdate,
                         errors,
                         currentSelection
                     })
@@ -160,13 +198,27 @@ const NodeComponent: m.Component<Attrs, State> = {
 
 
 const MinimapComponent: m.Component<Attrs> = {
-    view(vnode) {
-        if (vnode.attrs.node == null) {
+    view({ attrs }) {
+        if (attrs.node == null) {
             return undefined;
         }
 
-        return m(".editron-minimap-editor",
-            m(NodeComponent, vnode.attrs)
+        if (attrs.includeRootNode) {
+            return m(".ed-minimap",
+                m(NodeComponent, attrs)
+            );
+        }
+
+        return m(".ed-minimap",
+            attrs.node.children.map(node => m(NodeComponent, {
+                node,
+                controller: attrs.controller,
+                withHandle: attrs.withHandle,
+                onSelect: attrs.onSelect,
+                onUpdate: attrs.onUpdate,
+                errors: attrs.errors,
+                currentSelection: attrs.currentSelection
+            }))
         );
     }
 };
@@ -194,12 +246,12 @@ const MinimapComponent: m.Component<Attrs> = {
 // };
 
 
-function getCollapsedState(pointer) {
-    return SessionService.get(`index:collapse:${pointer}`, false);
+function isCollapsed(pointer: JSONPointer): boolean {
+    return SessionService.get(`minimap:collapse:${pointer}`, false);
 }
 
-function setCollapsedState(pointer, state) {
-    return SessionService.set(`index:collapse:${pointer}`, state);
+function setCollapsedState(pointer: JSONPointer, state: boolean) {
+    return SessionService.set(`minimap:collapse:${pointer}`, state);
 }
 
 

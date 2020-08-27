@@ -23,6 +23,7 @@ export type Controls = {
     remove?: boolean;
     showIndex: boolean;
     length: number;
+    header?: boolean;
 }
 
 export type ViewModel = {
@@ -58,6 +59,7 @@ export default class ArrayEditor extends AbstractEditor {
     viewModel: ViewModel;
     /** actions per array-child */
     itemActions: Array<Action> = [];
+    withHeader: boolean;
     /** actions on array (add, collapse) */
     headerActions: Array<Action> = [];
 
@@ -78,16 +80,14 @@ export default class ArrayEditor extends AbstractEditor {
 
         const schema = this.getSchema();
         const { maxItems, minItems } = schema;
-        const { add = true, clone = true, remove = true, move = true } = options.controls ?? {};
+        const { add = true, clone = true, remove = true, move = true, } = options.controls ?? {};
+        this.withHeader = options?.controls?.header ?? false;
 
         if (move) {
             this.itemActions.push({
                 icon: "arrow_upward",
                 title: "move up",
-                disabled: (pointer, index) => {
-                    console.log("move up", pointer, index);
-                    return index === 0;
-                },
+                disabled: (pointer, index) => index === 0,
                 action: (pointer, index: number) => this.move(index, index - 1)
             });
 
@@ -200,8 +200,7 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     applyPatches(patch: Patch): void {
-        console.log("array apply patch", this.pointer, patch);
-        const { pointer, controller, viewModel, children, $items } = this;
+        const { pointer, controller, children, $items } = this;
 
         // fetch a copy of the original list
         const originalChildren = Array.from(children);
@@ -212,6 +211,8 @@ export default class ArrayEditor extends AbstractEditor {
         children.forEach((child, index) => {
             if (child instanceof ArrayItemWrapper === false) {
                 const newChild = new ArrayItemWrapper(`${pointer}/${index}`, controller, {
+                    header: this.withHeader,
+                    title: "Array-Item",
                     pointerItem: index,
                     actions: this.itemActions
                 });
@@ -270,6 +271,8 @@ export default class ArrayEditor extends AbstractEditor {
         // recreate child editors
         data.forEach((item, index) => {
             const childEditor = new ArrayItemWrapper(`${pointer}/${index}`, controller, {
+                header: this.withHeader,
+                title: "Array-Item",
                 pointerItem: index,
                 actions: this.itemActions
             });
