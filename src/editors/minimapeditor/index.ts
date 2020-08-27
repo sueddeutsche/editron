@@ -96,7 +96,7 @@ export default class MinimapEditor extends AbstractEditor {
 
         this.updateLocation = this.updateLocation.bind(this);
         locationService.watch(this.updateLocation);
-        console.log("node", this.viewModel.node);
+        // console.log("node", this.viewModel.node);
         this.render();
     }
 
@@ -107,7 +107,7 @@ export default class MinimapEditor extends AbstractEditor {
             case "data:update": { // eslint-disable-line no-fallthrough
                 const data = this.getData();
                 this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
-                console.log("node", this.viewModel.node);
+                // console.log("node", this.viewModel.node);
                 break;
             }
 

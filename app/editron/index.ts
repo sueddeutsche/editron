@@ -195,7 +195,7 @@ const schema = {
 
 
 const data = {
-    list: [{ type: "inline" }, { type: "external" }]
+    list: [{ type: "inline" }, { type: "external" }], simple: ["Lorem Linksrum"]
 };
 
 const editron = new Controller(schema, data, {

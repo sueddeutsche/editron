@@ -103,6 +103,8 @@ export default class LocationService {
             return;
         }
 
+        console.log("goto", targetPointer);
+
         const nextPage = matches.pop();
         const { currentPage } = getState().ui;
         if (currentPage !== nextPage) {
@@ -122,6 +124,15 @@ export default class LocationService {
 
     getCurrent() {
         return getState().ui.currentPointer;
+    }
+
+    /** trigger focus in input element. Will be ignored, if this is no input element */
+    focusInputElement(pointer: JSONPointer, rootElement = this.options.rootElement) {
+        const targetInput = <HTMLElement>rootElement.querySelector(`[data-id="${pointer}"]`);
+        if (targetInput) {
+            targetInput.dispatchEvent(new Event("focus"));
+            targetInput.focus && targetInput.focus();
+        }
     }
 
     /** focus target pointer */
@@ -146,11 +157,7 @@ export default class LocationService {
                 console.log("skip scrolling - already in viewport", viewportHeight, bound.top);
             }
 
-            const targetInput = <HTMLElement>rootElement.querySelector(`[data-id="${pointer}"]`);
-            if (targetInput) {
-                targetInput.dispatchEvent(new Event("focus"));
-                targetInput.focus && targetInput.focus();
-            }
+            this.focusInputElement(pointer, rootElement);
             this.timeout = null;
         }, DELAY);
     }

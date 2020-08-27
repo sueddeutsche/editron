@@ -360,7 +360,8 @@ export default class Controller {
      */
     addItemTo(pointer: JSONPointer, index = 0): void {
         addItem(this.service("data"), this.service("schema"), this.services.location, pointer, index);
-        this.services.location.goto(gp.join(pointer, index, true));
+        // @todo this might be a wrong falsy check within gson-pointer
+        this.services.location.focusInputElement(gp.join(pointer, `${index}`, true));
     }
 
     /**
