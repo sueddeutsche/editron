@@ -1,0 +1,18 @@
+@import "mithril-material-forms/lib/typography";
+@import "mithril-material-forms/lib/colors";
+@import "mithril-material-forms/lib/units";
+
+
+.ed-item.with-index {
+    padding-left: $mmf-block;
+
+    &:before {
+        content: attr(data-index);
+        display: inline-block;
+        position: absolute;
+        left: 0;
+        width: $mmf-block;
+        line-height: 2;
+        text-align: center;
+    }
+}

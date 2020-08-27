@@ -25,7 +25,7 @@ export default class InstanceService {
 
         editor.pointer = pointer;
         this.controller.service("data").observe(pointer, editor.update, editor.notifyNestedChanges);
-        this.controller.service("validation").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.controller.service("validation").observe(pointer, editor.update, editor.notifyNestedErrors);
 
         this.instances.push(editor);
     }

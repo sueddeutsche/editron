@@ -2,8 +2,7 @@
 
 Builds a form based of an array. Besides delegating childEditors it
 
-- adds an additional header
-- adds configurable controls to edit the array
+- adds configurable controls to edit the array-item
 - performs patch operations on data changes (reusing created editors via `updatePointer()`)
 
 will be build with
@@ -27,31 +26,40 @@ may be configured with
             // attributes past to main element @see mithril
             // e.g. class: "my-custom-class", data-target: "array", etc
         },
-        "controls": {
-            // controls managed by header and float right besides any card/container
-            add: false,     // display floating add button
-            remove: true,   // remove button
-            move: true,     // buttons: move array item up and down
-            insert: true    // inserts a button after array-container to insert an item between this and next item
+        "array": {
+            // array options here
         }
     }   
 }
 ```
 
+Options
 
-## API
-
-Options may contain an onadd-callback to overwrite default onadd-action
-
-```js
-new ArrayEditor(pointer, controller, {
-    // this currently refers to the main add-button only (within header/title)
-    onadd: (arrayIndex) => console.log("perform custom onadd action");
-})
+```ts
+type EditronSchemaOptions = EditorOptions & {
+  array?: {
+    /** show action to insert item another item */
+    add?: boolean;
+    /** clone an item */
+    clone?: boolean;
+    /** show item-header in array item */
+    header?: boolean;
+    /** add an insert button between items */
+    insert?: boolean;
+    /** show move up and down actions */
+    move?: boolean;
+    /** pass actions to child-editor (must be treated and rendered in child-editor) */
+    passActions?: boolean;
+    /** show a remove item action */
+    remove?: boolean;
+    /** show the index of the element */
+    showIndex?: boolean;
+  }
+}
 ```
 
 
 ## Sidenotes
 
-- Each editor is wrapped in a separate class to provide the array item actions and headers. Thus the Arrayeditor does not hold the the editors in its childlist. They may be access through `arrayEditor.children[childIndex].editor` (@see ArrayItemEditor)
+- Each editor is wrapped in a separate class to provide the array item actions and headers. Thus the Arrayeditor does not hold the the editors in its childlist. They may be access through `arrayEditor.children[childIndex].editor` (@see class ArrayItem)
 

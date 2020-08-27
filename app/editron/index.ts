@@ -25,7 +25,9 @@ const schema = {
             type: "object",
 
             "editron:ui": {
-                collapsed: true
+                object: {
+                    collapsed: true
+                }
             },
             properties: {
                 description: {
@@ -75,6 +77,11 @@ const schema = {
         simple: {
             title: "simple list",
             type: "array",
+            "editron:ui": {
+                array: {
+                    showIndex: true
+                }
+            },
             items: {
                 type: "string",
                 description: "simple string"
@@ -87,7 +94,9 @@ const schema = {
             type: "object",
             "editron:ui": {
                 icon: "home",
-                collapsed: false,
+                object: {
+                    collapsed: true
+                },
                 attrs: {
                     class: "as-card"
                 }

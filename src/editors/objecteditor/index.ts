@@ -4,7 +4,7 @@ import OverlayService from "../../services/OverlayService";
 import Container, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
-import { Editor, EditorUpdateEvent } from "../Editor";
+import { Editor, Options as EditorOptions, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { Action } from "../../components/actions";
 
@@ -17,25 +17,18 @@ function showJSON(controller: Controller, data: JSONData, title: string) {
 }
 
 
-export type Options = {
-    attrs?: { [p: string]: any };
-    /** icon to display in object-header */
-    icon?: string;
-    /** hide the title */
-    hideTitle?: boolean;
-    /** object title from json-schema */
-    title?: string;
-    /** object description from json-schema */
-    description?: string;
-    controls?: {
+export type EditronSchemaOptions = {
+    object?: {
         /** adds an user-action to delete this object */
-        delete?: boolean
-    },
-    /** if set, will add a toggle-button to show/hide its properties. Set to true, to hide it by default */
-    collapsed?: boolean;
-    /** a list of actions, to be displayed in object-header */
-    actions?: Array<Action>;
+        delete?: boolean;
+        /** if set, will ad a collapse option with its initial collpased state set to given value */
+        collapsed?: boolean;
+    }
 }
+
+
+export type Options = EditorOptions & EditronSchemaOptions;
+
 
 export type ViewModel = {
     attrs: {
@@ -67,7 +60,7 @@ export default class ObjectEditor extends AbstractEditor {
         return schema.type === "object";
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options = {}) {
+    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
         super(pointer, controller, options);
 
         this.viewModel = {
@@ -78,7 +71,7 @@ export default class ObjectEditor extends AbstractEditor {
             actions: [...options.actions || []]
         };
 
-        if (options.controls?.delete) {
+        if (options.object?.delete) {
             this.viewModel.actions.push({
                 icon: "delete",
                 classNames: "ed-action--delete",
@@ -87,7 +80,7 @@ export default class ObjectEditor extends AbstractEditor {
             });
         }
 
-        if (options.collapsed != null) {
+        if (options.object?.collapsed != null) {
             this.dom.classList.add("is-collapsible");
             this.dom.classList.toggle("is-collapsed", this.viewModel.collapsed === true);
 

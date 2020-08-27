@@ -4,22 +4,32 @@ import { Patch } from "../services/utils/createDiff";
 import { Action } from "../components/actions";
 
 
-/** Editor Constructor API */
-export interface EditorPlugin {
-    new (pointer: JSONPointer, controller: Controller, options?): Editor;
-    prototype: Editor;
-
-    editorOf(pointer: JSONPointer, controller: Controller, options?): boolean;
+export type Options = {
+    /** object title from json-schema */
+    title: string;
+    /** if set to true, editor should not allow data-modification */
+    disabled: boolean;
+    /** object description from json-schema */
+    description: string;
+    /** json-pointer of this editor */
+    pointer: JSONPointer;
+    /** set of actions to be rendered with editor */
+    actions?: Array<Action>;
+    /** icon to display in object-header */
+    icon?: string;
+    /** hide the title */
+    hideTitle?: boolean;
+    /** optional root-element html attributes */
+    attrs?: { [p: string]: any };
 }
 
 
-export type Options = {
-    title: string;
-    disabled: boolean;
-    description: string;
-    hidden: boolean;
-    pointer: JSONPointer;
-    actions?: Array<Action>;
+/** Editor Constructor API */
+export interface EditorPlugin {
+    new (pointer: JSONPointer, controller: Controller, options: Options): Editor;
+    prototype: Editor;
+
+    editorOf(pointer: JSONPointer, controller: Controller, options: Options): boolean;
 }
 
 

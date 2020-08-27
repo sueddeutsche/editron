@@ -13,12 +13,14 @@ import arrayUtils from "../../utils/array";
 
 
 /** type definitions for json-schema array-options (editron:ui) */
-export type EditronSchemaOptions = EditorOptions & {
+export type EditronSchemaOptions = {
     array?: {
         /** show action to insert item another item */
         add?: boolean;
         /** clone an item */
         clone?: boolean;
+        /** if set, will ad a collapse option with its initial collpased state set to given value */
+        collapsed?: boolean;
         /** show item-header in array item */
         header?: boolean;
         /** add an insert button between items */
@@ -46,6 +48,9 @@ export const defaultOptions = {
 };
 
 
+export type Options = EditorOptions & EditronSchemaOptions;
+
+
 export type ViewModel = {
     attrs: any;
     disabled: boolean;
@@ -55,11 +60,6 @@ export type ViewModel = {
     description?: string;
     icon?: string;
     actions: Array<Action>;
-}
-
-
-export type Options = EditronSchemaOptions & {
-    attrs?: any;
 }
 
 
