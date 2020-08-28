@@ -88,6 +88,7 @@ export default class ArrayItemEditor {
             };
         }
 
+        this.updatePointer(pointer);
         this.render();
 
         const editorOptions: ChildEditorOptions = {
@@ -99,8 +100,6 @@ export default class ArrayItemEditor {
 
         const $target = this.$element.querySelector(EditorTarget) as HTMLElement;
         this.editor = controller.createEditor(pointer, $target, editorOptions);
-
-        this.updatePointer(pointer);
     }
 
     createActions(controls): Array<Action> {
@@ -127,7 +126,7 @@ export default class ArrayItemEditor {
             actions.push({
                 icon: "delete",
                 title: "delete",
-                disabled: () => this.getLength() > minItems,
+                disabled: () => this.getLength() <= minItems,
                 action: () => this.remove()
             });
         }
@@ -136,7 +135,7 @@ export default class ArrayItemEditor {
             actions.push({
                 icon: "content_copy",
                 title: "duplicate",
-                disabled: () => this.getLength() < maxItems,
+                disabled: () => this.getLength() >= maxItems,
                 action: () => this.clone()
             });
         }
@@ -145,7 +144,7 @@ export default class ArrayItemEditor {
             actions.push({
                 icon: "add",
                 title: "add",
-                disabled: () => this.getLength() < maxItems,
+                disabled: () => this.getLength() >= maxItems,
                 action: () => this.add()
             });
         }
@@ -187,6 +186,7 @@ export default class ArrayItemEditor {
         this.viewModel.pointer = newPointer;
         this.viewModel.length = this.getLength();
         this.render();
+
         // @todo improve missing update of passed header actions
         // @ts-ignore
         this.passActions && this.editor?.render && this.editor.render();

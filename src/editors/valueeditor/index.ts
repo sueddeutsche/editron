@@ -6,6 +6,12 @@ import { JSONPointer } from "../../types";
 import { Options } from "../Editor";
 
 
+export type EditronSchemaOptions = {
+    /** invert label, input order for checkbox- or select-inputs */
+    invertOrder?: boolean;
+}
+
+
 export default class ValueEditor extends AbstractValueEditor {
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
