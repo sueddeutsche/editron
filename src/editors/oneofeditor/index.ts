@@ -24,12 +24,12 @@ export type Options = {
 
 
 export default class OneOfEditor extends AbstractEditor {
-    /** catch inner changes (changes are compared by a diff which may not notify parent pointer) */
     $childContainer: HTMLElement;
     childEditor: Editor;
     childSchema: JSONSchema;
     controller: Controller;
     dom: HTMLElement;
+    /** catch inner changes (changes are compared by a diff which may not notify parent pointer) */
     notifyNestedChanges = true;
     pointer: JSONPointer;
     schema: JSONSchema;

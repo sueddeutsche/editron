@@ -1,11 +1,8 @@
 export default {
-    title: "An object with collapsable property",
+    title: "editron form variations and templates",
     type: "object",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ego vero volo in virtute vim esse quam maximam.",
     "editron:ui": {
-        attrs: {
-            class: "as-card"
-        }
     },
     properties: {
         title: { type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true } },
@@ -40,7 +37,7 @@ export default {
             }
         },
         list: {
-            // title: "list",
+            title: "list with mixed objects",
             type: "array",
             "editron:ui": {
                 icon: "list",
@@ -93,8 +90,11 @@ export default {
     },
     definitions: {
         list: {
-            title: "nested list",
+            title: "simple list nested in another list",
             type: "object",
+            "editron:ui": {
+                icon: "list"
+            },
             properties: {
                 type: {
                     type: "string",
