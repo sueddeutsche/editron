@@ -3,9 +3,9 @@ export default {
     type: "object",
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ego vero volo in virtute vim esse quam maximam.",
     "editron:ui": {
-        // attrs: {
-        //     class: "as-card"
-        // }
+        attrs: {
+            class: "as-card"
+        }
     },
     properties: {
         title: { type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true } },
@@ -15,6 +15,9 @@ export default {
             type: "object",
 
             "editron:ui": {
+                attrs: {
+                    class: "as-card"
+                },
                 object: {
                     collapsed: true
                 }
@@ -41,6 +44,9 @@ export default {
             type: "array",
             "editron:ui": {
                 icon: "list",
+                attrs: {
+                    class: "as-card"
+                },
                 sortable: {
                     group: "teaser",
                     handle: ".ed-header"
@@ -100,19 +106,29 @@ export default {
                 },
                 list: {
                     type: "array",
+                    minLength: 1,
                     items: {
                         type: "object",
                         properties: {
                             option: {
                                 type: "string",
+                                "editron:ui": {
+                                    theme: "the-material"
+                                },
                                 enum: ["opinion", "exclusive", "news"]
                             },
                             title: {
-                                type: "string"
+                                type: "string",
+                                "editron:ui": {
+                                    theme: "the-material"
+                                }
                             },
                             content: {
                                 type: "string",
-                                format: "textarea"
+                                format: "textarea",
+                                "editron:ui": {
+                                    theme: "the-material"
+                                }
                             }
                         }
                     }

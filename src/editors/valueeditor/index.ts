@@ -9,6 +9,8 @@ import { Options } from "../Editor";
 export type EditronSchemaOptions = {
     /** invert label, input order for checkbox- or select-inputs */
     invertOrder?: boolean;
+    /** theme of form-styles. Depending on the mithril-material-forms styles imported. e.g. "the-material" */
+    theme?: string;
 }
 
 

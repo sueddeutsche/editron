@@ -33,10 +33,12 @@ const Component: m.Component<Attrs> = {
                 title: options.title,
                 description: options.description,
                 disabled: options.disabled,
+                theme: options.theme,
                 errors,
                 invertOrder: options.invertOrder,
-                options: UISchema.enumOptions(schema),
+
                 value,
+                options: UISchema.enumOptions(schema),
                 onchange,
                 onblur,
                 onfocus
@@ -51,6 +53,7 @@ const Component: m.Component<Attrs> = {
                 title: options.title,
                 description: options.description,
                 disabled: options.disabled,
+                theme: options.theme,
                 errors,
 
                 value,
@@ -69,6 +72,7 @@ const Component: m.Component<Attrs> = {
                 description: options.description,
                 placeholder: options.placeholder,
                 disabled: options.disabled,
+                theme: options.theme,
                 errors,
 
                 value,
@@ -86,6 +90,7 @@ const Component: m.Component<Attrs> = {
                 description: options.description,
                 placeholder: options.placeholder,
                 disabled: options.disabled,
+                theme: options.theme,
                 errors,
                 rows: options["textarea:rows"] || 1,
 
@@ -103,10 +108,11 @@ const Component: m.Component<Attrs> = {
             description: options.description,
             placeholder: options.placeholder,
             disabled: options.disabled,
+            theme: options.theme,
             errors,
-            type: getInputType(schema),
             instantUpdate: options.instantUpdate,
 
+            type: getInputType(schema),
             value,
             onchange,
             onblur,
