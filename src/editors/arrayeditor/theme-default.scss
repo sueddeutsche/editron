@@ -4,12 +4,9 @@
     display: flex;
     justify-content: center;
 
-    button {
+    button.the-default {
         font-size: $mmf-text-size--meta;
         border: 0;
-        .mmf-icon {
-            padding-right: 0;
-        }
         span {
             display: none;
         }

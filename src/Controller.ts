@@ -302,7 +302,7 @@ export default class Controller {
         };
 
         instanceOptions.attrs = {
-            "data-title": instanceOptions.title,
+            // "data-title": instanceOptions.title,
             ...instanceOptions.attrs
         };
 

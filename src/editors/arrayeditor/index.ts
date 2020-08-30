@@ -84,9 +84,11 @@ export default class ArrayEditor extends AbstractEditor {
 
         const schema = this.getSchema();
 
+
         this.childOptions = {
             ...defaultOptions,
             ...options,
+            attrs: undefined,
             ...options?.array,
             length: this.getLength(),
             disabled: false,
