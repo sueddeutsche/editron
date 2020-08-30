@@ -52,6 +52,12 @@ export function onEndSortable(pointer: JSONPointer, controller: Controller, even
 
     // if container or pointer (different editors) are the same, its a move within a list
     if (to === from || (toPointer != null && toPointer === fromPointer)) {
+        if (oldIndex === newIndex && to !== from) {
+            // item is dragged to the same position, but to another editor. now, the dragged element is removeChild
+            // from original list. We readd it here, to fix this
+            from.insertBefore(event.item, from.childNodes[oldIndex]);
+            return;
+        }
         arrayUtils.moveItem(pointer, controller, oldIndex, newIndex);
         return;
     }
