@@ -11,7 +11,9 @@ import { getEditronOptions } from "../../utils/UISchema";
 export type EditronSchemaOptions = {
     sync?: {
         /** map of relative json-pointer from source to target */
-        mappingFromTo: { [fromPointer: string]: JSONPointer }
+        mappingFromTo: { [fromPointer: string]: JSONPointer },
+        /** if true, will add updates to undo history. Defaults to `false` */
+        addToHistory?: boolean;
     }
 }
 
@@ -30,7 +32,8 @@ export default class SyncPlugin implements Plugin {
         return this;
     }
 
-    copyData(pointer: JSONPointer, mapping: EditronSchemaOptions["sync"]["mappingFromTo"], previous) {
+    copyData(pointer: JSONPointer, syncOptions: EditronSchemaOptions["sync"], previous) {
+        const { mappingFromTo: mapping, addToHistory } = syncOptions;
         const { controller } = this;
         const from = Object.keys(mapping);
         const data = controller.getData();
@@ -53,7 +56,7 @@ export default class SyncPlugin implements Plugin {
             });
 
         // write data
-        controller.setData(data);
+        controller.setData(data, { addToHistory });
     }
 
     onModifiedData(changes: Array<SimpleChange>) {
@@ -95,13 +98,13 @@ export default class SyncPlugin implements Plugin {
                 // store current data-value
                 previousData[sourcePointer] = gp.get(data, sourcePointer);
                 // listen to changes for sync
-                const observer = () => this.copyData(pointer, options.mappingFromTo, previousData);
+                const observer = () => this.copyData(pointer, options, previousData);
                 controller.service("data").observe(sourcePointer, observer, true);
                 observers.push([sourcePointer, observer]);
             });
 
         // initial sync
-        this.copyData(pointer, options.mappingFromTo, previousData);
+        this.copyData(pointer, options, previousData);
 
         this.hooks[pointer] = {
             removeObservers: () => observers.forEach(([pointer, observer]) =>

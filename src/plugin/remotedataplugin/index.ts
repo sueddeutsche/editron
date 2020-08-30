@@ -20,6 +20,8 @@ export type EditronSchemaOptions = {
         requestParamValues: JSONPointer;
         /** map of json-pointer from source to target */
         responseMapping: { [fromPointer: string]: JSONPointer };
+        /** if true, will add updates to undo history. Defaults to `false` */
+        addToHistory?: boolean;
         /** set to true, to overwrite values */
         overwrite?: boolean;
     }
@@ -28,7 +30,8 @@ export type EditronSchemaOptions = {
 
 export const defaultOptions = {
     overwrite: false,
-    proxyMethod: "json"
+    proxyMethod: "json",
+    addToHistory: false
 };
 
 
@@ -130,7 +133,7 @@ export default class RemoteDataPlugin implements Plugin {
                 }
 
                 const targetValue = gp.get(json, key);
-                controller.service("data").set(targetPointer, targetValue);
+                controller.service("data").set(targetPointer, targetValue, { addToHistory: remote.addToHistory });
             });
     }
 }

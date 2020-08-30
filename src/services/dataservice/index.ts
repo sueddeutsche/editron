@@ -140,9 +140,9 @@ export default class DataService {
      * Change data at the given `pointer`
      * @param pointer - data location to modify
      * @param value - new value at pointer
-     * @param [isSynched]
+     * @param [options]
      */
-    set(pointer: JSONPointer, value: any, isSynched = false) {
+    set(pointer: JSONPointer, value: any, options?: { addToHistory?: boolean }) {
         if (this.isValid(pointer) === false) {
             throw new Error(`Pointer ${pointer} does not exist in data`);
         }
@@ -152,16 +152,14 @@ export default class DataService {
             return;
         }
 
+        if (pointer === "#") {
+            // do not add root changes to undo (for sync, skip this)
+            options = { ...options, addToHistory: false};
+        }
+
         this.notifyWatcher({ type: "data:update:before", value: { pointer, action: "data" }});
         // this.store.dispatch(ActionCreators.setData(pointer, value, currentValue, isSynched));
-        this.store.dispatch.data.set({ pointer, value });
-
-        if (pointer === "#" && isSynched === false) {
-            const store = this.store.store;
-            store.dispatch.data.removeLastUndo();
-            // do not add root changes to undo
-            // this.store.get(this.id).data.past.pop();
-        }
+        this.store.dispatch.data.set({ pointer, value, addToHistory: options?.addToHistory });
     }
 
     /**

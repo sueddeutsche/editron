@@ -24,6 +24,7 @@ export const initialState: DataState = {
 export type ActionSet = {
     pointer: JSONPointer,
     value: JSONData;
+    addToHistory?: boolean;
 }
 
 
@@ -70,7 +71,7 @@ export default {
             const value = ensureItemIDs(action.value);
 
             const newState = copy(state);
-            if (newState.present != null) {
+            if (action.addToHistory !== false && newState.present != null) {
                 newState.past.push(copy(newState.present));
                 newState.future.length = 0;
                 while (newState.past.length > state.undoSize) {

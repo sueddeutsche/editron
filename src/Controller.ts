@@ -373,9 +373,9 @@ export default class Controller {
      * Set the application data
      * @param data - json data matching registered json-schema
      */
-    setData(data: JSONData): void {
+    setData(data: JSONData, options?): void {
         data = this.service("schema").addDefaultData(data);
-        this.service("data").set("#", data);
+        this.service("data").set("#", data, options);
     }
 
     /**
