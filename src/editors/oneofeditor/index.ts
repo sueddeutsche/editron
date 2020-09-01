@@ -13,9 +13,7 @@ export type EditronSchemaOptions = {
     /** invert order of oneOf selection */
     invertOrder?: boolean;
     /** title of oneOf selection */
-    oneOfTitle?: string;
-    /** description of oneOf selection */
-    oneOfDescription?: string;
+    title?: string;
     /** theme of oneOf selection */
     theme?: string;
 }
@@ -30,8 +28,7 @@ export type ViewModel = {
 export type Options = EditorOptions & {
     renderOneOf?: boolean;
     invertOrder?: boolean;
-    oneOfTitle?: string;
-    oneOfDescription?: string;
+    title?: string;
 };
 
 
@@ -65,8 +62,6 @@ export default class OneOfEditor extends AbstractEditor {
         schema.oneOf.forEach((oneOfSchema, index) => (oneOfSchema.title = oneOfSchema.title || `${index}.`));
 
         const oneOfOptions = getEditronOptions(schema) || {};
-        const { oneOfTitle, oneOfDescription } = oneOfOptions;
-
         console.log("options", oneOfOptions);
 
         this.schema = schema;
@@ -80,8 +75,7 @@ export default class OneOfEditor extends AbstractEditor {
         this.selectModel = {
             ...oneOfOptions,
             id: pointer,
-            title: oneOfTitle,
-            description: oneOfDescription,
+            description: undefined,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
             onchange: (oneOfIndex: string) => this.changeChild(schema.oneOf[oneOfIndex]),
             value: this.getIndexOf(childSchema),
