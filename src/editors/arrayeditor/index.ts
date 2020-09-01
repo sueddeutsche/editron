@@ -10,6 +10,7 @@ import AbstractEditor from "../AbstractEditor";
 import { ValidationError } from "../../types";
 import { Patch } from "../../services/utils/createDiff";
 import arrayUtils from "../../utils/array";
+import { translate as _ } from "../../utils/i18n";
 
 
 /** type definitions for json-schema array-options (editron:ui) */
@@ -21,7 +22,6 @@ export type EditronSchemaOptions = {
         addTitle?: string;
         /** clone an item */
         clone?: boolean;
-        cloneTitle?: string;
         /** if set, will ad a collapse option with its initial collpased state set to given value */
         collapsed?: boolean;
         /** show item-header in array item */
@@ -32,13 +32,10 @@ export type EditronSchemaOptions = {
         insertTitle?: string;
         /** show move up and down actions */
         move?: boolean;
-        moveUpTitle?: string;
-        moveDownTitle?: string;
         /** pass actions to child-editor (must be treated and rendered in child-editor) */
         passActions?: boolean;
         /** show a remove item action */
         remove?: boolean;
-        removeTitle?: string;
         /** show the index of the element */
         showIndex?: boolean;
     }
@@ -48,14 +45,10 @@ export const defaultOptions = {
     add: true,
     addTitle: "add",
     clone: true,
-    cloneTitle: "duplicate",
     insert: false,
     insertTitle: "insert",
     move: true,
-    moveUpTitle: "move up",
-    moveDownTitle: "move down",
     remove: true,
-    removeTitle: "delete",
     showIndex: false,
     header: false,
     passActions: false,
@@ -101,6 +94,10 @@ export default class ArrayEditor extends AbstractEditor {
 
         this.childOptions = {
             ...defaultOptions,
+            moveUpTitle: _("array:button:moveup"),
+            moveDownTitle: _("array:button:movedown"),
+            removeTitle: _("array:button:remove"),
+            cloneTitle: _("array:button:clone"),
             ...options,
             attrs: undefined,
             ...options?.array,

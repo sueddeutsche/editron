@@ -9,12 +9,8 @@ export default {
             type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true }
         },
         intro: {
-            title: "choice",
-            description: "choose your intro type",
             "editron:ui": {
-                oneOfTitle: "select intro type",
-                invertOrder: false,
-                theme: "the-material"
+                title: "select intro type"
             },
             oneOfProperty: "type",
             oneOf: [
@@ -29,7 +25,8 @@ export default {
                             "editron:ui": { hidden: true }
                         },
                         title: {
-                            type: "string"
+                            type: "string",
+                            minLength: 1
                         }
                     }
                 },
@@ -99,7 +96,9 @@ export default {
                     handle: ".ed-header"
                 },
                 array: {
+                    addTitle: "Neue Gruppe",
                     insert: true,
+                    insertTitle: "Neue Gruppe einfügen",
                     passActions: true
                 },
                 overlay: {

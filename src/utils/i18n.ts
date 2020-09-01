@@ -2,7 +2,12 @@ import render from "json-schema-library/lib/utils/render";
 import { JSONData, ValidationError } from "../types";
 import Controller from "../Controller";
 
-translate.strings = {};
+translate.strings = {
+    "array:button:moveup": "move up",
+    "array:button:movedown": "move down",
+    "array:button:remove": "remove",
+    "array:button:clone": "duplicate"
+};
 translateError.strings = {};
 
 
