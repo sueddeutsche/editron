@@ -13,7 +13,7 @@ translateError.strings = {};
 
 export function translate(key: string, data?: JSONData) {
     if (typeof translate.strings[key] === "string") {
-        return render(translate.strings[key], data);
+        return data == null ? translate.strings[key] : render(translate.strings[key], data);
     } else if (typeof translate.strings[key] === "function") {
         return translate.strings[key](data);
     }
@@ -23,7 +23,8 @@ export function translate(key: string, data?: JSONData) {
 
 export function translateError(controller: Controller, error: ValidationError): ValidationError {
     if (typeof translateError.strings[error.code] === "string") {
-        error.message = render(translateError.strings[error.code], error.data);
+        error.message = error.data == null ?
+            translateError.strings[error.code] : render(translateError.strings[error.code], error.data);
     } else if (typeof translateError.strings[error.code] === "function") {
         error.message = translateError.strings[error.code](controller, error);
     }
