@@ -1,4 +1,4 @@
-import ActionsView, { Action, renderAction } from "../../components/actions";
+import { Action, renderAction } from "../../components/actions";
 import arrayUtils from "../../utils/array";
 import Controller from "../../Controller";
 import gp from "gson-pointer";
@@ -8,9 +8,30 @@ import { Editor } from "../Editor";
 import { JSONPointer, EditronConfigAttrs } from "../../types";
 
 
+export type ActionsAttrs = {
+    className?: string;
+    disabled: boolean;
+    actions: Array<Action>;
+}
+
+const ActionsView = {
+    view(vnode) {
+        const { disabled, actions } = vnode.attrs;
+
+        return m(".ed-actions",
+            {
+                class: disabled ? "is-disabled" : "is-enabled"
+            },
+            m("i.mmf-icon.interactive", "more_vert"),
+            m("ul",
+                actions?.map(action => m("li", renderAction(action)))
+            )
+        );
+    }
+} as m.Component<ActionsAttrs>;
+
 
 export const EditorTarget = ".ed-item";
-
 
 
 export type ViewModel = {
@@ -20,6 +41,7 @@ export type ViewModel = {
     header: boolean;
     index: number;
     insert?: Action;
+    insertTitle: string;
     length: number;
     pointer: JSONPointer;
     showIndex: boolean;
@@ -29,17 +51,23 @@ export type ViewModel = {
 
 export type Options = {
     add: boolean;
+    addTitle: string;
     attrs?: EditronConfigAttrs;
     clone: boolean;
+    cloneTitle: string;
     disabled: boolean;
     header: boolean;
     insert: boolean;
+    insertTitle: string;
     length: number;
     maxItems: number;
     minItems: number;
     move: boolean;
+    moveUpTitle: string;
+    moveDownTitle: string;
     passActions: boolean;
     remove: boolean;
+    removeTitle: string;
     showIndex: boolean;
     title?: string;
 }
@@ -82,7 +110,7 @@ export default class ArrayItemEditor {
         if (options?.insert) {
             this.viewModel.insert = {
                 icon: "add",
-                title: "insert",
+                title: options.insertTitle,
                 disabled: () => options.disabled,
                 action: this.add.bind(this)
             };
@@ -103,20 +131,23 @@ export default class ArrayItemEditor {
     }
 
     createActions(controls): Array<Action> {
-        const { move, remove, clone, add, minItems, maxItems } = controls;
         const actions = [];
+        const {
+            move, remove, clone, add, minItems, maxItems,
+            moveUpTitle, moveDownTitle, removeTitle, cloneTitle, addTitle
+        } = controls;
 
         if (move) {
             actions.push({
                 icon: "arrow_upward",
-                title: "move up",
+                title: moveUpTitle,
                 disabled: () => this.index === 0,
                 action: () => this.move(this.index - 1)
             });
 
             actions.push({
                 icon: "arrow_downward",
-                title: "move down",
+                title: moveDownTitle,
                 disabled: () => this.index >= this.getLength() - 1,
                 action: () => this.move(this.index + 1)
             });
@@ -125,7 +156,7 @@ export default class ArrayItemEditor {
         if (remove) {
             actions.push({
                 icon: "delete",
-                title: "delete",
+                title: removeTitle,
                 disabled: () => this.getLength() <= minItems,
                 action: () => this.remove()
             });
@@ -134,7 +165,7 @@ export default class ArrayItemEditor {
         if (clone) {
             actions.push({
                 icon: "content_copy",
-                title: "duplicate",
+                title: cloneTitle,
                 disabled: () => this.getLength() >= maxItems,
                 action: () => this.clone()
             });
@@ -143,7 +174,7 @@ export default class ArrayItemEditor {
         if (add) {
             actions.push({
                 icon: "add",
-                title: "add",
+                title: addTitle,
                 disabled: () => this.getLength() >= maxItems,
                 action: () => this.add()
             });

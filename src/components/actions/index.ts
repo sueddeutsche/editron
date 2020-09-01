@@ -27,33 +27,7 @@ export function renderAction(action: Action): m.Vnode {
             onclick: () => action.action()
         },
         m("i.mmf-icon", action.icon),
-        m("span", action.title)
+        action.title && m("span", action.title)
     );
 }
-
-
-
-export type Attrs = {
-    className?: string;
-    disabled: boolean;
-    actions: Array<Action>;
-}
-
-
-export default {
-    view(vnode) {
-        const { disabled, actions } = vnode.attrs;
-
-        return m(".ed-actions",
-            {
-                class: disabled ? "is-disabled" : "is-enabled"
-            },
-            m("i.mmf-icon.interactive", "more_vert"),
-            m("ul",
-                actions?.map(action => m("li", renderAction(action)))
-            )
-        );
-    }
-
-} as m.Component<Attrs>;
 

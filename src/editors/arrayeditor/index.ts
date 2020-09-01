@@ -17,20 +17,28 @@ export type EditronSchemaOptions = {
     array?: {
         /** show action to insert item another item */
         add?: boolean;
+        /** button text of add-action */
+        addTitle?: string;
         /** clone an item */
         clone?: boolean;
+        cloneTitle?: string;
         /** if set, will ad a collapse option with its initial collpased state set to given value */
         collapsed?: boolean;
         /** show item-header in array item */
         header?: boolean;
         /** add an insert button between items */
         insert?: boolean;
+        /** button text of add-action */
+        insertTitle?: string;
         /** show move up and down actions */
         move?: boolean;
+        moveUpTitle?: string;
+        moveDownTitle?: string;
         /** pass actions to child-editor (must be treated and rendered in child-editor) */
         passActions?: boolean;
         /** show a remove item action */
         remove?: boolean;
+        removeTitle?: string;
         /** show the index of the element */
         showIndex?: boolean;
     }
@@ -38,10 +46,16 @@ export type EditronSchemaOptions = {
 
 export const defaultOptions = {
     add: true,
+    addTitle: "add",
     clone: true,
+    cloneTitle: "duplicate",
     insert: false,
+    insertTitle: "insert",
     move: true,
+    moveUpTitle: "move up",
+    moveDownTitle: "move down",
     remove: true,
+    removeTitle: "delete",
     showIndex: false,
     header: false,
     passActions: false,
@@ -103,7 +117,7 @@ export default class ArrayEditor extends AbstractEditor {
             pointer,
             actions: [{
                 icon: "add",
-                title: "add",
+                title: this.childOptions.addTitle,
                 disabled: () => this.getLength() < schema.maxItems,
                 action: () => arrayUtils.addItem(this.pointer, this.controller, 0)
             }],
