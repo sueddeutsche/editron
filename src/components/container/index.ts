@@ -2,12 +2,15 @@ import m from"mithril";
 import Header, { Attrs as HeaderAttrs } from"../header";
 import Errors, { Attrs as ErrorAttrs } from"../errors";
 import Description, { Attrs as DescriptionAttrs } from"../description";
+import { Action, renderAction } from "../actions";
 
 
 export const CHILD_CONTAINER_SELECTOR = ".ed-children";
 
 
-export type Attrs = HeaderAttrs & DescriptionAttrs & ErrorAttrs;
+export type Attrs = HeaderAttrs & DescriptionAttrs & ErrorAttrs & {
+    insertAction?: Action
+};
 
 
 /**
@@ -26,14 +29,15 @@ export default {
     },
 
     view(vnode) {
-        const { hideTitle } = vnode.attrs;
+        const { hideTitle, insertAction } = vnode.attrs;
 
         return [
             hideTitle === true ? null : m(Header, vnode.attrs),
             m(Description, vnode.attrs),
             vnode.children,
             m(Errors, vnode.attrs),
-            m(CHILD_CONTAINER_SELECTOR)
+            m(CHILD_CONTAINER_SELECTOR),
+            insertAction && m(".ed-separator.mmf-row", renderAction(insertAction)),
         ];
     }
 

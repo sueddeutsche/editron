@@ -67,6 +67,7 @@ export type ViewModel = {
     description?: string;
     icon?: string;
     actions: Array<Action>;
+    insertAction: Action
 }
 
 
@@ -91,7 +92,6 @@ export default class ArrayEditor extends AbstractEditor {
 
         const schema = this.getSchema();
 
-
         this.childOptions = {
             ...defaultOptions,
             moveUpTitle: _("array:button:moveup"),
@@ -112,12 +112,13 @@ export default class ArrayEditor extends AbstractEditor {
             disabled: options.disabled === true,
             errors: controller.service("validation").getErrorsAndWarnings(pointer),
             pointer,
-            actions: [{
+            actions: [], // to item-header
+            insertAction: {
                 icon: "add",
                 title: this.childOptions.addTitle,
                 disabled: () => this.getLength() < schema.maxItems,
                 action: () => arrayUtils.addItem(this.pointer, this.controller, 0)
-            }],
+            },
             ...options
         };
 
@@ -242,7 +243,6 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     render(): void {
-        // this.children.forEach(child => child.render());
         m.render(this.dom, m(View, this.viewModel));
     }
 

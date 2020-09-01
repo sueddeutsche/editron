@@ -244,6 +244,7 @@ export default class ArrayItemEditor {
         const { showIndex, title, length, disabled, insert, header, actions } = this.viewModel;
 
         m.render(this.$element, [
+            insert && m(".ed-separator.mmf-row", renderAction(insert)),
             // actions besides child-editor
             m(ActionsView, { disabled, actions }),
             // @todo consider to remove this option
@@ -256,9 +257,7 @@ export default class ArrayItemEditor {
                     disabled ? "is-disabled" : "",
                     showIndex ? "with-index" : ""
                 ].join(" ").trim()
-            }),
-
-            insert && m(".ed-separator.mmf-row", renderAction(insert))
+            })
         ]);
     }
 
