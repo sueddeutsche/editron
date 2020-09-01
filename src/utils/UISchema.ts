@@ -198,7 +198,7 @@ function getOption(pointer: JSONPointer, controller: Controller, ...options: Arr
 function getTitle(pointer: JSONPointer, controller: Controller) {
     const schema = controller.service("schema").get(pointer);
     const title = getOption(pointer, controller, "title") || "";
-    return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
+    return schema.minLength && title ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
 
 
