@@ -9,6 +9,7 @@ export const CHILD_CONTAINER_SELECTOR = ".ed-children";
 
 
 export type Attrs = HeaderAttrs & DescriptionAttrs & ErrorAttrs & {
+    /** Add an insert action, after child-list. Mainly used for arrays */
     insertAction?: Action
 };
 
