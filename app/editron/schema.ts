@@ -5,8 +5,56 @@ export default {
     "editron:ui": {
     },
     properties: {
-        title: { type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true } },
-        visible: { type: "boolean", title: "Visibility", default: true },
+        title: {
+            type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true }
+        },
+        intro: {
+            title: "choice",
+            description: "choose your intro type",
+            "editron:ui": {
+                oneOfTitle: "select intro type"
+            },
+            oneOfProperty: "type",
+            oneOf: [
+                {
+                    type: "object",
+                    title: "Intro A",
+                    properties: {
+                        type: {
+                            type: "string",
+                            default: "intro-a",
+                            pattern: "^intro-a$",
+                            "editron:ui": { hidden: true }
+                        },
+                        title: {
+                            type: "string"
+                        }
+                    }
+                },
+                {
+                    type: "object",
+                    title: "Intro B",
+                    properties: {
+                        type: {
+                            type: "string",
+                            default: "intro-b",
+                            pattern: "^intro-b$",
+                            "editron:ui": { hidden: true }
+                        },
+                        title: {
+                            type: "string"
+                        },
+                        description: {
+                            type: "string",
+                            format: "textarea"
+                        }
+                    }
+                },
+            ]
+        },
+        visible: {
+            type: "boolean", title: "Visibility", default: true
+        },
         details: {
             title: "Details",
             type: "object",
