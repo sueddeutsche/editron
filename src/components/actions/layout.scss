@@ -1,5 +1,6 @@
 @import "mithril-material-forms/lib/interface";
 @import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/elevation";
 
 
 .ed-child {
@@ -20,15 +21,11 @@
         display: none;
         min-width: 3 * $mmf-block;
 
-        li {
-            padding-bottom: $mmf-unit;
+        li button.mmf-button {
+            border: 0;
+            margin: 0;
+            width: 100%;
         }
-    }
-
-    button {
-        width: 100%;
-        margin: 0;
-        background-color: #fff;
     }
 
     &.is-enabled:hover ul {
@@ -38,7 +35,7 @@
     & > ul {
         position: absolute;
         top: $mmf-block;
-        right: $mmf-block;
+        right: $mmf-block * 0.75;
         margin: 0;
         transform: translateY(-50%);
     }
