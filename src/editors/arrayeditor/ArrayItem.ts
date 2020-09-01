@@ -184,7 +184,7 @@ export default class ArrayItemEditor {
     }
 
     add(): void {
-        arrayUtils.addItem(this.parentPointer, this.controller, this.index + 1);
+        arrayUtils.addItem(this.parentPointer, this.controller, this.index);
     }
 
     clone(): void {
