@@ -120,7 +120,7 @@ export default class OneOfEditor extends AbstractEditor {
 
     render(): void {
         m.render(this.dom, m(View, this.viewModel,
-            m(".editron-value",
+            m(".ed-value.ed-value--oneof",
                 m(Select, this.viewModel)
             )
         ));
