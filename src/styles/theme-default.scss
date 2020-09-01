@@ -3,12 +3,11 @@
 @import "../editors/arrayeditor/theme-default";
 @import "../components/actions/theme-default";
 
-
 @import "mithril-material-forms/lib/units";
 
 $ed-card-background: #fff;
 
-.as-card {
+.with-card {
     margin: $mmf-block/2 0;
     border-top-right-radius: 4px;
     border-top-left-radius: 4px;
@@ -20,7 +19,7 @@ $ed-card-background: #fff;
     }
 }
 
-.as-card .as-card {
+.with-card .with-card {
     margin: 0;
     margin-left: $mmf-unit;
     margin-right: $mmf-unit;
@@ -30,10 +29,65 @@ $ed-card-background: #fff;
 }
 
 
-.ed-header.with-title,
-.ed-description,
+// .ed-header.with-title,
+// .ed-description,
 .ed-errors,
 .ed-value {
     padding-left: $mmf-unit;
     padding-right: $mmf-unit;
 }
+
+
+// nested editors
+
+
+// use a different style for header of array or object, when nested
+
+.ed-object, .ed-array {
+    // all
+    // padding-top: $mmf-block/2;
+    .ed-children > * {
+        padding: $mmf-unit 0;
+    }
+
+    // 2nd level
+    .ed-object, .ed-array {
+        .ed-header {
+            border-bottom: 1px solid #000;
+        }
+
+        .ed-children {
+            padding-left: $mmf-block;
+        }
+
+        // reset 2nd level styles
+        .ed-object, .ed-array {
+            .ed-header {
+                border-bottom: none;
+            }
+            .ed-children {
+                padding-left: 0;
+            }
+        }
+
+        // 3nd+ level
+        .ed-object, .ed-array {
+            .ed-header {
+                position: relative;
+                // padding-top: $mmf-block/2;
+                padding-bottom: $mmf-block/2;
+
+                &:after {
+                    content: "";
+                    width: 48px;
+                    height: 1px;
+                    bottom: -2px;
+                    position: absolute;
+                    background-color: black;
+                    margin-bottom: $mmf-block/2;
+                }
+            }
+        }
+    }
+}
+

@@ -30,6 +30,7 @@
         display: flex;
         align-items: center;
         flex-grow: 1;
+        min-height: $mmf-block * 0.75;
 
         .mmf-icon {
             width: 1.5em;

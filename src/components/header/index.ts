@@ -56,8 +56,8 @@ export default {
                 vnode.children
             ),
 
-            m(".ed-header__actions",
-                actions?.map(action => renderAction(action))
+            actions?.length > 0 && m(".ed-header__actions",
+                actions.map(action => renderAction(action))
             )
         );
     }

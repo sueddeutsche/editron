@@ -6,7 +6,15 @@ export default {
     },
     properties: {
         title: {
-            type: "string", title: "Title", minLength: 1, "editron:ui": { instantUpdate: true }
+            type: "string",
+            title: "Title",
+            minLength: 1,
+            "editron:ui": { instantUpdate: true }
+        },
+        teaser: {
+            type: "string",
+            title: "Teasertext",
+            format: "textarea"
         },
         intro: {
             "editron:ui": {

@@ -4,13 +4,12 @@
 
 
 .ed-item.with-index {
-    padding-left: $mmf-block;
-
+    // padding-left: $mmf-block;
     &:before {
         content: attr(data-index);
         display: inline-block;
         position: absolute;
-        left: 0;
+        left: -$mmf-block;
         width: $mmf-block;
         line-height: 2;
         text-align: center;
@@ -18,5 +17,5 @@
 }
 
 .ed-separator {
-    background-color: var(--ed-bg-color, #fff);
+    background-color: var(--ed-bg-color, transparent);
 }

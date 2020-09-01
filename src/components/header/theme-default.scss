@@ -19,7 +19,7 @@
     color: inherit;
     line-height: 1em;
     text-transform: uppercase;
-    padding-top: 0.1em; // visually center title text vertically (uppercase only)
+    // padding-top: 0.1em; // visually center title text vertically (uppercase only)
     opacity: $mmf-opacity--primary;
 
     .ed-header__title {
@@ -33,7 +33,6 @@
             flex-grow: 2;
             display: inline-block;
             align-self: center;
-            padding: 2 * $mmf-unit 0;
         }
 
         i.mmf-icon:hover {

@@ -245,11 +245,11 @@ export default class ArrayItemEditor {
 
         m.render(this.$element, [
             insert && m(".ed-separator.mmf-row", renderAction(insert)),
-            // actions besides child-editor
-            m(ActionsView, { disabled, actions }),
             // @todo consider to remove this option
             // optional array-item header (replacing child-header)
             header && m(Header, { title: title, actions }),
+            // actions besides child-editor
+            m(ActionsView, { disabled, actions }),
             // TARGET CONTAINER FOR EDITOR
             m(EditorTarget, {
                 "data-index": `${this.index + 1} / ${length}`,
