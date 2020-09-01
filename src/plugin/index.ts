@@ -7,11 +7,14 @@ const editors: Array<EditorPlugin> = [];
 const validators = [];
 
 
+type EditorOptions = { [p: string]: any; }
+
 export interface Plugin {
     id: string;
     initialize(controller: Controller): Plugin;
     onModifiedData?: (changes: Array<SimpleChange>) => void;
-    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: any) => void;
+    onEditorOptions?: (pointer: JSONPointer, options: EditorOptions) => void;
+    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options: EditorOptions) => void;
     onChangePointer?: (oldPointer: JSONPointer, newPointer: JSONPointer, editor: Editor) => void;
     onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
 }

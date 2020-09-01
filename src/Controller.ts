@@ -317,6 +317,10 @@ export default class Controller {
             return undefined;
         }
 
+        // @lifecycle hook to modify options
+        this.plugins.filter(plugin => plugin.onEditorOptions)
+            .forEach(plugin => plugin.onEditorOptions(pointer, instanceOptions));
+
         // iniitialize editor and notify instance manager
         const editor = new EditorConstructor(pointer, this, instanceOptions);
         const dom = editor.getElement();
