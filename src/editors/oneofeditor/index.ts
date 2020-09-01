@@ -1,25 +1,37 @@
 import Controller from "../../Controller";
 import m from "mithril";
-import Select, { Option } from "mithril-material-forms/components/select";
+import SelectForm, { Attrs as SelectFormAttrs } from "mithril-material-forms/components/selectform";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
-import { Editor, EditorUpdateEvent } from "../Editor";
+import { Editor, EditorUpdateEvent, Options as EditorOptions } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
 import AbstractEditor, { getTypeClass } from "../AbstractEditor";
+import { getEditronOptions } from "../../utils/UISchema";
 
+
+
+export type EditronSchemaOptions = {
+    /** invert order of oneOf selection */
+    invertOrder?: boolean;
+    /** title of oneOf selection */
+    oneOfTitle?: string;
+    /** description of oneOf selection */
+    oneOfDescription?: string;
+    /** theme of oneOf selection */
+    theme?: string;
+}
 
 export type ViewModel = {
     description?: string;
     disabled?: boolean;
-    onchange: (value: string) => void;
-    options: Array<Option>;
     pointer: JSONPointer;
     title?: string;
-    value?: any;
 };
 
-
-export type Options = {
+export type Options = EditorOptions & {
     renderOneOf?: boolean;
+    invertOrder?: boolean;
+    oneOfTitle?: string;
+    oneOfDescription?: string;
 };
 
 
@@ -34,6 +46,7 @@ export default class OneOfEditor extends AbstractEditor {
     pointer: JSONPointer;
     schema: JSONSchema;
     viewModel: ViewModel;
+    selectModel: SelectFormAttrs;
 
 
     static editorOf(pointer: JSONPointer, controller: Controller, options: Options) {
@@ -51,15 +64,27 @@ export default class OneOfEditor extends AbstractEditor {
         // ensure requried titles are set
         schema.oneOf.forEach((oneOfSchema, index) => (oneOfSchema.title = oneOfSchema.title || `${index}.`));
 
+        const oneOfOptions = getEditronOptions(schema) || {};
+        const { oneOfTitle, oneOfDescription } = oneOfOptions;
+
+        console.log("options", oneOfOptions);
+
         this.schema = schema;
         this.childSchema = childSchema;
         this.viewModel = {
             pointer,
+            title: schema.title,
+            description: schema.description
+        };
+
+        this.selectModel = {
+            ...oneOfOptions,
+            id: pointer,
+            title: oneOfTitle,
+            description: oneOfDescription,
             options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
             onchange: (oneOfIndex: string) => this.changeChild(schema.oneOf[oneOfIndex]),
             value: this.getIndexOf(childSchema),
-            title: schema.title,
-            description: schema.description
         };
 
         this.render();
@@ -91,7 +116,7 @@ export default class OneOfEditor extends AbstractEditor {
                 if (currentSchema.title === this.childSchema.title) {
                     return;
                 }
-                this.viewModel.value = this.getIndexOf(currentSchema);
+                this.selectModel.value = this.getIndexOf(currentSchema);
                 this.childSchema = currentSchema;
                 this.rebuild();
                 break;
@@ -99,10 +124,12 @@ export default class OneOfEditor extends AbstractEditor {
 
             case "pointer":
                 this.viewModel.pointer = event.value;
+                this.selectModel.id = event.value;
                 break;
 
             case "active":
                 this.viewModel.disabled = event.value === false;
+                this.selectModel.disabled = event.value === false;
                 break;
         }
 
@@ -121,7 +148,7 @@ export default class OneOfEditor extends AbstractEditor {
     render(): void {
         m.render(this.dom, m(View, this.viewModel,
             m(".ed-value.ed-value--oneof",
-                m(Select, this.viewModel)
+                m(SelectForm, this.selectModel)
             )
         ));
     }

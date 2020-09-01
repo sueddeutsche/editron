@@ -12,7 +12,9 @@ export default {
             title: "choice",
             description: "choose your intro type",
             "editron:ui": {
-                oneOfTitle: "select intro type"
+                oneOfTitle: "select intro type",
+                invertOrder: false,
+                theme: "the-material"
             },
             oneOfProperty: "type",
             oneOf: [
