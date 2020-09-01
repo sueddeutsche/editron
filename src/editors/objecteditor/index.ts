@@ -18,13 +18,24 @@ function showJSON(controller: Controller, data: JSONData, title: string) {
 
 
 export type EditronSchemaOptions = {
+    /** theme option, passed to value-editors */
+    theme?: string;
+
     object?: {
         /** adds an user-action to delete this object */
         delete?: boolean;
         /** if set, will ad a collapse option with its initial collpased state set to given value */
         collapsed?: boolean;
+        // collapseIcon?: string; // "keyboard_arrow_down"
+        // collapsedIcon?: string; // "keyboard_arrow_right"
     }
 }
+
+
+// export const defaultOptions = {
+//     collapseIcon: "visibility_off",
+//     collapsedIcon: "visibility"
+// };
 
 
 export type Options = EditorOptions & EditronSchemaOptions;
@@ -53,6 +64,7 @@ export default class ObjectEditor extends AbstractEditor {
     options: Options;
     childEditors: Array<Editor> = [];
     $children: HTMLElement;
+    childOptions: { theme?: string };
 
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -80,17 +92,24 @@ export default class ObjectEditor extends AbstractEditor {
             });
         }
 
+        this.childOptions = {
+            theme: options.theme
+        };
+
         if (options.object?.collapsed != null) {
             this.dom.classList.add("is-collapsible");
             this.dom.classList.toggle("is-collapsed", this.viewModel.collapsed === true);
 
+            const collapsedIcon = "visibility_off"; // "keyboard_arrow_right";
+            const collapseIcon = "visibility"; // "keyboard_arrow_down"
+
             const action: Action = {
-                icon: this.viewModel.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down",
+                icon: this.viewModel.collapsed ? collapsedIcon : collapseIcon,
                 classNames: "ed-action--collapse",
                 disabled: () => this.viewModel.disabled,
                 action: () => {
                     this.viewModel.collapsed = !this.viewModel.collapsed;
-                    action.icon = this.viewModel.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down",
+                    action.icon = this.viewModel.collapsed ? collapsedIcon : collapseIcon,
                     this.dom.classList.toggle("is-collapsed", this.viewModel.collapsed === true);
                     this.render(); // redraw container, to update header collapse-icon
                 }
@@ -123,7 +142,7 @@ export default class ObjectEditor extends AbstractEditor {
                 // rebuild children
                 Object.keys(data)
                     .forEach(property =>
-                        childEditors.push(controller.createEditor(`${pointer}/${property}`, $children))
+                        childEditors.push(controller.createEditor(`${pointer}/${property}`, $children, this.childOptions))
                     );
                 break;
             }

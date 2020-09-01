@@ -21,6 +21,8 @@ export type Options = {
     hideTitle?: boolean;
     /** optional root-element html attributes */
     attrs?: { [p: string]: any };
+    /** theme options for value-editors */
+    theme?: string;
 }
 
 
