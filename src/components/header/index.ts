@@ -1,11 +1,12 @@
 import m from "mithril";
 import populated from "../../utils/populated";
-import { Action, ActionItem, renderAction } from "../actions";
+import { Action, renderAction } from "../actions";
 
 
 export type Attrs = {
     disabled?: boolean;
     hideTitle?: boolean;
+    hideHeader?: boolean;
     icon?: string;
     collapsed?: boolean;
     oncollapse?: () => void;
@@ -30,6 +31,10 @@ function getClass(hasAction: boolean, { title, icon, disabled }): string {
 
 export default {
     view(vnode) {
+        if (vnode.attrs.hideHeader) {
+            return;
+        }
+
         const attrs = {
             icon: "",
             title: "",
@@ -47,7 +52,8 @@ export default {
 
             m(".ed-header__title",
                 populated(vnode.attrs.icon, m("i.mmf-icon", attrs.icon)),
-                (!attrs.hideTitle) && m("h2", attrs.title)
+                (!attrs.hideTitle) && m("h2", attrs.title),
+                vnode.children
             ),
 
             m(".ed-header__actions",
