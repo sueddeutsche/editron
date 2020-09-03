@@ -5,6 +5,11 @@ $minimap-selected-color: #eee !default;
 $minimap-selected-background: #29293A !default;
 
 
+.ed-minimap {
+    color: #aaa;
+    background-color: #34344D;
+}
+
 .ed-minimap__header .mmf-icon {
     color: $minimap-selected-color;
 }

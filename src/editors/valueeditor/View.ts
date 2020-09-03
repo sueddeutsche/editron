@@ -1,5 +1,6 @@
 import m from "mithril";
 import CheckboxForm, { Attrs as CheckboxAttrs } from "mithril-material-forms/components/checkboxform";
+import SwitchForm, { Attrs as SwitchAttrs } from "mithril-material-forms/components/switchform";
 import SelectForm, { Attrs as SelectAttrs } from "mithril-material-forms/components/selectform";
 import TextareaForm, { Attrs as TextareaAttrs } from "mithril-material-forms/components/textareaform";
 import InputForm, { Attrs as InputAttrs, InputType } from "mithril-material-forms/components/inputform";
@@ -47,6 +48,24 @@ const Component: m.Component<Attrs> = {
             return m(SelectForm, selectFormModel, vnode.children);
         }
 
+        if (schema.type === "boolean" && schema.format === "switch") {
+            const switchModel: SwitchAttrs = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                disabled: options.disabled,
+                theme: options.theme,
+                errors,
+
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+
+            return m(SwitchForm, switchModel, vnode.children);
+        }
+
         if (schema.type === "boolean") {
             const checkBoxModel: CheckboxAttrs = {
                 id: pointer,
@@ -92,6 +111,7 @@ const Component: m.Component<Attrs> = {
                 disabled: options.disabled,
                 theme: options.theme,
                 errors,
+
                 rows: options["textarea:rows"] || 1,
 
                 value,
@@ -110,6 +130,7 @@ const Component: m.Component<Attrs> = {
             disabled: options.disabled,
             theme: options.theme,
             errors,
+
             instantUpdate: options.instantUpdate,
 
             type: getInputType(schema),

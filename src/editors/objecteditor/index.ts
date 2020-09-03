@@ -92,9 +92,10 @@ export default class ObjectEditor extends AbstractEditor {
             });
         }
 
-        this.childOptions = {
-            theme: options.theme
-        };
+        this.childOptions = {};
+        if (options.theme) {
+            this.childOptions.theme = options.theme;
+        }
 
         if (options.object?.collapsed != null) {
             this.dom.classList.add("is-collapsible");

@@ -117,7 +117,7 @@ export default class ArrayEditor extends AbstractEditor {
                 icon: "add",
                 title: this.childOptions.addTitle,
                 disabled: () => this.getLength() < schema.maxItems,
-                action: () => arrayUtils.addItem(this.pointer, this.controller, 0)
+                action: () => arrayUtils.addItem(this.pointer, this.controller, this.getLength())
             },
             ...options
         };

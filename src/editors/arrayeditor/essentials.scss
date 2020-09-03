@@ -16,6 +16,11 @@
     }
 }
 
+.ed-child:first-child > .ed-separator {
+    display: none;
+}
+
 .ed-separator {
+    min-height: $mmf-unit;
     background-color: var(--ed-bg-color, transparent);
 }

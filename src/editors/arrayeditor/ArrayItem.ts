@@ -244,7 +244,7 @@ export default class ArrayItemEditor {
         const { showIndex, title, length, disabled, insert, header, actions } = this.viewModel;
 
         m.render(this.$element, [
-            insert && m(".ed-separator.mmf-row", renderAction(insert)),
+            m(".ed-separator.mmf-row", insert && renderAction(insert)),
             // @todo consider to remove this option
             // optional array-item header (replacing child-header)
             header && m(Header, { title: title, actions }),
