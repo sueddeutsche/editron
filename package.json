@@ -95,7 +95,7 @@
     "json-schema-library": "^4.1.4",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
-    "mithril-material-forms": "git+ssh://git@github.com/sueddeutsche/mithril-material-forms.git#feature/v4-typescript",
+    "mithril-material-forms": "git://github.com/sueddeutsche/mithril-material-forms.git#develop",
     "nanoevents": "5.1.8",
     "sortablejs": "1.10.2",
     "with-observable": "^1.2.0"
