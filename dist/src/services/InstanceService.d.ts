@@ -1,6 +1,6 @@
 import { Editor } from "../editors/Editor";
 import { JSONPointer } from "../types";
-import { Change } from "./DataService";
+import { Change } from "./dataservice/change";
 import Controller from "../Controller";
 /**
  * manages editor instance events -
@@ -13,6 +13,8 @@ export default class InstanceService {
     constructor(controller: any);
     add(editor: Editor): void;
     findFrom(parentPointer: JSONPointer): Editor[];
+    editorFromElement(dom: HTMLElement): Editor;
+    find<T extends Editor>(test: (editor: T) => boolean): Array<T>;
     remove(editor: Editor): void;
     /**
      *  move or delete properties/items before upcoming editor updates

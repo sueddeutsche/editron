@@ -8,6 +8,7 @@ export declare type ViewModel = {
     disabled?: boolean;
     value?: any;
     instantUpdate?: boolean;
+    invertOrder?: boolean;
     schema: JSONSchema;
     options: any;
     errors: Array<string | ValidationError>;

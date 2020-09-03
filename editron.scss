@@ -1,9 +1,4 @@
-@import "mithril-material-forms/material-forms";
-@import "./core-editors";
-
-@import "./src/components/container/layout";
-@import "./src/components/overlay/overlay";
-@import "./src/components/overlayjson/overlay-json";
-@import "./src/components/overlayselecttiles/overlay-select-tiles";
-@import "./src/styles/mmf-card";
-@import "./src/styles/ui-row";
+@import "mithril-material-forms/styles/layout";
+@import "mithril-material-forms/styles/typography";
+@import "./src/styles/essentials";
+@import "./src/styles/layout";

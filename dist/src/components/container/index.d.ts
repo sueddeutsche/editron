@@ -1,9 +1,13 @@
 import m from "mithril";
-import { Attrs as HeaderAttrs } from "../containerheader";
-import { Attrs as ErrorAttrs } from "../containererrors";
-import { Attrs as DescriptionAttrs } from "../containerdescription";
-export declare const CHILD_CONTAINER_SELECTOR = ".editron-container__children";
-export declare type Attrs = HeaderAttrs & DescriptionAttrs & ErrorAttrs;
+import { Attrs as HeaderAttrs } from "../header";
+import { Attrs as ErrorAttrs } from "../errors";
+import { Attrs as DescriptionAttrs } from "../description";
+import { Action } from "../actions";
+export declare const CHILD_CONTAINER_SELECTOR = ".ed-children";
+export declare type Attrs = HeaderAttrs & DescriptionAttrs & ErrorAttrs & {
+    /** Add an insert action, after child-list. Mainly used for arrays */
+    insertAction?: Action;
+};
 declare const _default: m.Component<Attrs, {}>;
 /**
  * @view ContainerView

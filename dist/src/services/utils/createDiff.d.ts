@@ -1,3 +1,4 @@
+import { Delta } from "./diffpatch";
 import { JSONPointer } from "../../types";
 export declare type Change = [any, any?, number?];
 export declare type Patch = {
@@ -6,9 +7,14 @@ export declare type Patch = {
 };
 export declare type PatchResult = {
     pointer: JSONPointer;
-    parentPointer: JSONPointer;
     patch: Patch;
 };
+/**
+ * returns a list of changes from the passed diffpatch-delta
+ * Changes on object-properties (add, remove, rename) or array-items (add,
+ * remove, move) are grouped by their parent object or array.
+ */
+export declare function diffToPatches(diff: Delta): Array<PatchResult>;
 /**
  * creates a diff between given data-versions and returns a list of changes.
  * Changes on object-properties (add, remove, rename) or array-items (add,

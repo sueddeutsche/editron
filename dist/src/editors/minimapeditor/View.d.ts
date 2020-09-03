@@ -7,6 +7,7 @@ export declare type Node = {
     pointer: JSONPointer;
     title: string;
     icon?: string;
+    collapsible: boolean;
     sortable: boolean;
     sortableGroup?: string;
     children: Array<Node>;
@@ -19,6 +20,8 @@ export declare type Attrs = {
     errors: Array<ValidationError>;
     currentSelection: JSONPointer;
     onSelect: (pointer: JSONPointer) => void;
+    onUpdate: () => void;
+    includeRootNode?: boolean;
 };
 export declare type State = {
     sortable: Sortable;

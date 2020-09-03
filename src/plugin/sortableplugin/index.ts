@@ -3,7 +3,7 @@ import { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
-import Sortable, { SortableEvent } from 'sortablejs';
+import Sortable, { SortableEvent } from "sortablejs";
 import arrayUtils from "../../utils/array";
 import gp from "gson-pointer";
 

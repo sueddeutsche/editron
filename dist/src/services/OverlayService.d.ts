@@ -1,30 +1,40 @@
 export declare const defaultOptions: {
-    ok: boolean;
-    save: boolean;
+    abortButton: string;
+    confirmButton: string;
     fullscreen: boolean;
-    onAbort: Function;
-    onSave: Function;
+    onSave: () => void;
+    onAbort: () => void;
 };
+export declare enum OverlayAction {
+    Abort = 0,
+    Close = 1,
+    Confirm = 2
+}
 export declare type Options = {
-    /** display `ok`, instead of `abort` */
-    ok?: boolean;
+    /** optional overlay title */
+    header?: string;
+    abortButton?: string | false;
+    confirmButton?: string | false;
     /** fullscreen size of overlay, regardless of content */
     fullscreen?: boolean;
-    /** show save button, defaults to true */
-    save?: boolean;
-    /** called when Overlay is closed via ok/abort */
-    onAbort?: () => void;
-    /** called when Overlay is closed via save */
-    onSave?: () => void;
 };
 /**
  * Opens an overlay with a DOM-Node as contents
  */
 declare const OverlayService: {
+    /** root overlay container */
+    $element: any;
+    /** Promise.resolve of current overlay */
+    resolve: any;
     /** Opens the overlay, showing the given `container` as content */
-    open(container: HTMLElement, options: Options): void;
-    close(): void;
-    onChange(container: HTMLElement, options: Options): void;
+    open(dialog: HTMLElement, options: Options): Promise<OverlayAction>;
+    /** close current dialog and overlay */
+    close(action?: OverlayAction): void;
+    /** helper: close current active dialog but keep overlay visible */
+    removePanel(action?: OverlayAction): void;
+    /** remove overlay container from dom */
+    removeOverlay(): void;
     getElement(): any;
+    render($dialog: HTMLElement, options: Options): void;
 };
 export default OverlayService;

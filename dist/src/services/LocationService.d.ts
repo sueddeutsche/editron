@@ -57,6 +57,8 @@ export default class LocationService {
     /** set target pointer */
     setCurrent(pointer: JSONPointer): void;
     getCurrent(): string;
+    /** trigger focus in input element. Will be ignored, if this is no input element */
+    focusInputElement(pointer: JSONPointer, rootElement?: HTMLElement): void;
     /** focus target pointer */
     focus(rootElement?: HTMLElement): void;
     blur(pointer: JSONPointer): void;

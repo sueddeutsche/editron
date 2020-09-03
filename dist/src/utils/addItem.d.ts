@@ -1,5 +1,5 @@
 import LocationService from "../services/LocationService";
-import DataService from "../services/DataService";
+import DataService from "../services/dataservice";
 import SchemaService from "../services/SchemaService";
 import { JSONPointer } from "../types";
 /**

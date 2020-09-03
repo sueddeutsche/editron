@@ -1,18 +1,16 @@
 import BubblingCollectionObservable, { Observer } from "./utils/BubblingCollectionObservable";
-import State from "./State";
+import Store from "../store";
 import Validation, { ValidationErrorMapper } from "./utils/Validation";
 import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
 export { Observer };
 export default class ValidationService {
-    /** state store-id of service */
-    id: string;
     core: any;
     currentValidation: Validation;
     errorHandler: ValidationErrorMapper;
     observer: BubblingCollectionObservable;
     schema: JSONSchema;
-    state: State;
-    constructor(state: State, schema?: JSONSchema, core?: any);
+    store: Store;
+    constructor(store: Store, schema?: JSONSchema, core?: any);
     /** sets a custom error handler to map errors */
     setErrorHandler(callback: ValidationErrorMapper): void;
     /**

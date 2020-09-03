@@ -3,7 +3,8 @@ import { EditorUpdateEvent } from "../Editor";
 import Controller from "../../Controller";
 import { JSONPointer, ValidationError } from "../../types";
 import { Event as LocationEvent } from "../../services/LocationService";
-import "./minimap-editor.scss";
+import "./layout.scss";
+import "./theme-default.scss";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 export declare type ViewModel = {
     controller: Controller;
@@ -15,6 +16,7 @@ export declare type ViewModel = {
     onSelect: (pointer: JSONPointer) => void;
     onAdd: (item: any) => void;
     onChange: (pointers: any, reordered: any, target: any) => void;
+    onUpdate: () => void;
 };
 export declare type Options = EditorOptions & {
     minimap?: {

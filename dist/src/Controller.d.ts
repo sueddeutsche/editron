@@ -1,9 +1,9 @@
-import DataService from "./services/DataService";
+import DataService from "./services/dataservice";
 import InstanceService from "./services/InstanceService";
 import LocationService from "./services/LocationService";
 import { Plugin } from "./plugin";
 import SchemaService from "./services/SchemaService";
-import State from "./services/State";
+import Store from "./store";
 import ValidationService from "./services/ValidationService";
 import { Editor, EditorPlugin } from "./editors/Editor";
 import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
@@ -74,7 +74,7 @@ export default class Controller {
     /** list instantiated services */
     services: Services;
     /** current state of errors, ui and data */
-    state: State;
+    store: Store;
     /**
      * Create a new editron instance, which will be used to create ui-forms for specific
      * data-points via `controller.createEditor(pointer, dom);`
@@ -89,6 +89,7 @@ export default class Controller {
     constructor(schema?: JSONSchema, data?: JSONData, options?: Options);
     service<T extends keyof Services>(serviceName: T): Services[T];
     getPlugin(pluginId: string): Plugin;
+    notifyPlugins(method: string, ...args: any[]): void;
     /**
      * @param format - value of _format_
      * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
@@ -151,7 +152,7 @@ export default class Controller {
      * Set the application data
      * @param data - json data matching registered json-schema
      */
-    setData(data: JSONData): void;
+    setData(data: JSONData, options?: any): void;
     /**
      * @param [pointer="#"] - location of data to fetch. Defaults to root (all) data
      * @returns data at the given location
@@ -162,9 +163,50 @@ export default class Controller {
      * @param schema   - a valid json-schema
      */
     setSchema(schema: JSONSchema): void;
-    /**
-     * Starts validation of current data
-     */
+    getSchema(pointer?: JSONPointer): JSONSchema;
+    /** @debug return editron and global-state */
+    getStates(): (import("@rematch/core").ExtractRematchStateFromModels<{
+        data: {
+            state: import("./store/models/data").DataState;
+            reducers: {
+                clearHistory(state: import("./store/models/data").DataState): {
+                    past: any[];
+                    future: any[];
+                    undoSize: number;
+                    present: any;
+                };
+                removeLastUndo(state: import("./store/models/data").DataState): {
+                    past: any[];
+                    undoSize: number;
+                    present: any;
+                    future: any[];
+                };
+                undo(state: import("./store/models/data").DataState): import("./store/models/data").DataState;
+                redo(state: import("./store/models/data").DataState): import("./store/models/data").DataState;
+                set(state: import("./store/models/data").DataState, action: import("./store/models/data").ActionSet): import("./store/models/data").DataState;
+            };
+        };
+        errors: {
+            state: any[];
+            reducers: {
+                set(state: import("./store/models/errors").ErrorState, errors?: import("./store/models/errors").ErrorState): import("./store/models/errors").ErrorState;
+            };
+        };
+    }> | import("@rematch/core").ExtractRematchStateFromModels<{
+        ui: {
+            state: import("./store/models/ui").UIState;
+            reducers: {
+                setCurrentPage(state: import("./store/models/ui").UIState, pointer: string): import("./store/models/ui").UIState;
+                setCurrentPointer(state: import("./store/models/ui").UIState, pointer: string): import("./store/models/ui").UIState;
+                showOverlay(state: import("./store/models/ui").UIState, overlayIsVisible: boolean): import("./store/models/ui").UIState;
+            };
+        };
+    }>)[];
+    /** returns the parent editor */
+    getParentEditor(editor: Editor): Editor | undefined;
+    /** returns the root editor of the editor tree */
+    getRootEditor(editor: Editor): Editor | undefined;
+    /** start validation of current data */
     validateAll(): void;
     /** Destroy the editor, its widgets and services */
     destroy(): void;

@@ -2,6 +2,7 @@ import { JSONPointer, JSONSchema } from "../types";
 import Controller from "../Controller";
 /** property on a schema-definition, containing editron-options */
 export declare const EDITRON_OPTION_PROPERTY = "editron:ui";
+export declare function getEditronOptions(schema: JSONSchema): any;
 export declare function isPointer(string: JSONPointer): boolean;
 declare function getBreadcrumps(pointer: JSONPointer, controller: Controller): Array<string>;
 declare function enumOptions(schema: JSONSchema): Array<any>;

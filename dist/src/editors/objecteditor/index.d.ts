@@ -1,24 +1,19 @@
 import { JSONPointer } from "../../types";
 import Controller from "../../Controller";
-import { Editor, EditorUpdateEvent } from "../Editor";
+import { Editor, Options as EditorOptions, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
-export declare type Options = {
-    attrs?: {
-        [p: string]: any;
+import { Action } from "../../components/actions";
+export declare type EditronSchemaOptions = {
+    /** theme option, passed to value-editors */
+    theme?: string;
+    object?: {
+        /** adds an user-action to delete this object */
+        delete?: boolean;
+        /** if set, will ad a collapse option with its initial collpased state set to given value */
+        collapsed?: boolean;
     };
-    /** icon to display in object-header */
-    icon?: string;
-    /** hide the title */
-    hideTitle?: boolean;
-    /** object title from json-schema */
-    title?: string;
-    /** object description from json-schema */
-    description?: string;
-    /** adds an user-action to delete this object */
-    addDelete?: boolean;
-    /** if set, will add a toggle-button to show/hide its properties. Set to true, to hide it by default */
-    collapsed?: boolean;
 };
+export declare type Options = EditorOptions & EditronSchemaOptions;
 export declare type ViewModel = {
     attrs: {
         [p: string]: any;
@@ -33,14 +28,18 @@ export declare type ViewModel = {
     ondelete?: () => void;
     pointer: JSONPointer;
     title?: string;
+    actions: Array<Action>;
 };
 export default class ObjectEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
     childEditors: Array<Editor>;
     $children: HTMLElement;
+    childOptions: {
+        theme?: string;
+    };
     static editorOf(pointer: JSONPointer, controller: Controller): boolean;
-    constructor(pointer: JSONPointer, controller: Controller, options?: Options);
+    constructor(pointer: JSONPointer, controller: Controller, options: Options);
     update(event: EditorUpdateEvent): void;
     /** deletes this object from data */
     deleteObject(): void;

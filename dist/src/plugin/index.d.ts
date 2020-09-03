@@ -1,9 +1,17 @@
 import { EditorPlugin, Editor } from "../editors/Editor";
 import { JSONPointer, FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
+import Controller from "../Controller";
+import { SimpleChange } from "../services/dataservice/change";
+declare type EditorOptions = {
+    [p: string]: any;
+};
 export interface Plugin {
     id: string;
-    initialize(controller: any): Plugin;
-    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options?: any) => void;
+    initialize(controller: Controller): Plugin;
+    onModifiedData?: (changes: Array<SimpleChange>) => void;
+    onEditorOptions?: (pointer: JSONPointer, options: EditorOptions) => void;
+    onCreateEditor?: (pointer: JSONPointer, editor: Editor, options: EditorOptions) => void;
+    onChangePointer?: (oldPointer: JSONPointer, newPointer: JSONPointer, editor: Editor) => void;
     onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
 }
 declare const _default: {

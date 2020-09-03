@@ -1,6 +1,7 @@
 import { JSONData, JSONPointer, JSONSchema } from "../types";
 import Controller from "../Controller";
 import { Editor, EditorUpdateEvent } from "./Editor";
+export declare function getTypeClass(schema: JSONSchema): string;
 export declare type Options = {
     /** set to true, to receive errors from current location and all erorrs of child properties/items */
     notifyNestedChanges?: boolean;

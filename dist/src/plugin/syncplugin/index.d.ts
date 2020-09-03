@@ -1,22 +1,25 @@
 import Controller from "../../Controller";
 import { JSONPointer } from "../../types";
-import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
-declare type Options = {};
-interface SyncEditor extends Editor {
-    __syncPlugin?: {
-        options: any;
+import { SimpleChange } from "../../services/dataservice/change";
+/** required settings in editron:ui-config */
+export declare type EditronSchemaOptions = {
+    sync?: {
+        /** map of relative json-pointer from source to target */
+        mappingFromTo: {
+            [fromPointer: string]: JSONPointer;
+        };
+        /** if true, will add updates to undo history. Defaults to `false` */
+        addToHistory?: boolean;
     };
-}
+};
 export default class SyncPlugin implements Plugin {
     id: string;
-    dom: HTMLElement;
-    current: Editor;
     controller: Controller;
-    currentSelection: SyncEditor;
-    constructor(options: Options);
+    hooks: {};
     initialize(controller: Controller): Plugin;
-    onCreateEditor(pointer: JSONPointer, editor: SyncEditor, options?: any): void;
-    onDestroyEditor(pointer: any, editor: SyncEditor): void;
+    copyData(pointer: JSONPointer, syncOptions: EditronSchemaOptions["sync"], previous: any): void;
+    onModifiedData(changes: Array<SimpleChange>): void;
+    startSync(pointer: any, options: EditronSchemaOptions["sync"]): void;
+    stopSync(pointer: any): void;
 }
-export {};
