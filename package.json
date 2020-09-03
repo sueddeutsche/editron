@@ -3,6 +3,7 @@
   "version": "7.6.1",
   "description": "Editron - json-editor",
   "main": "dist/editron.js",
+  "types": "dist/editron.d.ts",
   "homepage": "https://github.com/sueddeutsche/editron",
   "bugs": "https://github.com/sueddeutsche/editron/issues",
   "repository": {
