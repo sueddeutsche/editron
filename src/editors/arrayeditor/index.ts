@@ -67,7 +67,7 @@ export type ViewModel = {
     description?: string;
     icon?: string;
     actions: Array<Action>;
-    insertAction: Action
+    insertAction: Action;
 }
 
 
@@ -112,7 +112,7 @@ export default class ArrayEditor extends AbstractEditor {
             disabled: options.disabled === true,
             errors: controller.service("validation").getErrorsAndWarnings(pointer),
             pointer,
-            actions: [], // to item-header
+            actions: options.actions ?? [],
             insertAction: {
                 icon: "add",
                 title: this.childOptions.addTitle,
@@ -121,6 +121,29 @@ export default class ArrayEditor extends AbstractEditor {
             },
             ...options
         };
+
+        if (options.array.collapsed != null) {
+            let collapsed = options.array.collapsed === true;
+            this.dom.classList.add("is-collapsible");
+            this.dom.classList.toggle("is-collapsed", collapsed);
+
+            const collapsedIcon = "visibility_off"; // "keyboard_arrow_right";
+            const collapseIcon = "visibility"; // "keyboard_arrow_down"
+
+            const collapseAction: Action = {
+                icon: collapsed ? collapsedIcon : collapseIcon,
+                classNames: "ed-action--collapse",
+                disabled: () => this.viewModel.disabled,
+                action: () => {
+                    collapsed = !collapsed;
+                    collapseAction.icon = collapsed ? collapsedIcon : collapseIcon,
+                    this.dom.classList.toggle("is-collapsed", collapsed);
+                    this.render(); // redraw container, to update header collapse-icon
+                }
+            };
+
+            this.viewModel.actions.push(collapseAction);
+        }
 
         this.render();
         this.$items = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);

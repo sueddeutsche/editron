@@ -20,6 +20,13 @@
     display: none;
 }
 
+.ed-array.is-collapsed {
+    & > .ed-separator,
+    & > .ed-children {
+        display: none;
+    }
+}
+
 .ed-separator {
     min-height: $mmf-unit;
     background-color: var(--ed-bg-color, transparent);
