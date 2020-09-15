@@ -122,7 +122,7 @@ export default class ArrayEditor extends AbstractEditor {
             ...options
         };
 
-        if (options.array.collapsed != null) {
+        if (options.array?.collapsed != null) {
             let collapsed = options.array.collapsed === true;
             this.dom.classList.add("is-collapsible");
             this.dom.classList.toggle("is-collapsed", collapsed);

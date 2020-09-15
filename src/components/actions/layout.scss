@@ -26,6 +26,8 @@
             margin: 0;
             width: 100%;
         }
+
+        background-color: var(--ed-bg-color, #fff);
     }
 
     &.is-enabled:hover ul {

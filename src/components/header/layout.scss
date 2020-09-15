@@ -2,6 +2,10 @@
     display: flex;
     align-items: center;
 
+    h2 {
+        margin: 0;
+    }
+
     &.no-title.no-actions {
         display: none;
     }

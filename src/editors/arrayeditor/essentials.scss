@@ -30,4 +30,15 @@
 .ed-separator {
     min-height: $mmf-unit;
     background-color: var(--ed-bg-color, transparent);
+    display: flex;
+    justify-content: center;
+
+    button.the-default {
+        font-size: $mmf-text-size--meta;
+        border: 0;
+        span {
+            display: none;
+        }
+    }
 }
+
