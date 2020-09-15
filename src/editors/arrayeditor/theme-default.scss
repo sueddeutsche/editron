@@ -1,14 +1,2 @@
 @import "mithril-material-forms/lib/typography";
 
-.ed-separator {
-    display: flex;
-    justify-content: center;
-
-    button.the-default {
-        font-size: $mmf-text-size--meta;
-        border: 0;
-        span {
-            display: none;
-        }
-    }
-}

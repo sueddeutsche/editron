@@ -7,7 +7,6 @@
         @include elevation(2);
         min-width: 3 * $mmf-block;
         padding: $mmf-unit;
-        background-color: var(--ed-bg-color, #fff);
         border-radius: 4px;
     }
 }

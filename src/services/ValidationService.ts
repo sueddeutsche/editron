@@ -67,14 +67,12 @@ export default class ValidationService {
             (newError, currentErrors) => {
                 // @feature selective-validation
                 const completeListOfErrors = remainingErrors.concat(currentErrors);
-                // this.store.dispatch(ActionCreators.setErrors(completeListOfErrors));
                 this.store.dispatch.errors.set(completeListOfErrors);
                 this.observer.notify(newError.data.pointer, newError);
             },
             validationErrors => {
                 // @feature selective-validation
                 const completeListOfErrors = remainingErrors.concat(validationErrors);
-                // this.store.dispatch(ActionCreators.setErrors(completeListOfErrors));
                 this.store.dispatch.errors.set(completeListOfErrors);
                 this.currentValidation = null;
             }
