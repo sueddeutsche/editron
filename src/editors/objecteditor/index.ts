@@ -2,6 +2,7 @@ import m from "mithril";
 import TextareaForm from "mithril-material-forms/components/textareaform";
 import OverlayService from "../../services/OverlayService";
 import Container, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
+import { CHILD_CONTAINER_SELECTOR as HEADER_CONTAINER_SELECTOR } from "../../components/header";
 import { JSONPointer, JSONData } from "../../types";
 import Controller from "../../Controller";
 import { Editor, Options as EditorOptions, EditorUpdateEvent } from "../Editor";
@@ -28,6 +29,7 @@ export type EditronSchemaOptions = {
         collapsed?: boolean;
         // collapseIcon?: string; // "keyboard_arrow_down"
         // collapsedIcon?: string; // "keyboard_arrow_right"
+        headerContent?: string;
     }
 }
 
@@ -51,6 +53,7 @@ export type ViewModel = {
     errors: Array<any>;
     hideTitle?: boolean;
     icon?: string;
+    headerContent?: string;
     oncollapse?: () => void;
     ondelete?: () => void;
     pointer: JSONPointer;
@@ -64,6 +67,7 @@ export default class ObjectEditor extends AbstractEditor {
     options: Options;
     childEditors: Array<Editor> = [];
     $children: HTMLElement;
+    $headerChildren: HTMLElement;
     childOptions: { theme?: string };
 
 
@@ -121,6 +125,7 @@ export default class ObjectEditor extends AbstractEditor {
 
         this.render();
         this.$children = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
+        this.$headerChildren = this.dom.querySelector(HEADER_CONTAINER_SELECTOR);
         this.update({ type: "data:update", value: null });
     }
 
@@ -132,7 +137,8 @@ export default class ObjectEditor extends AbstractEditor {
 
         switch (event.type) {
             case "data:update": {
-                const { pointer, controller, childEditors, $children } = this;
+                const { pointer, controller, childEditors, $headerChildren, $children } = this;
+                const { headerContent } = this.viewModel;
                 const data = this.getData();
                 childEditors.forEach(editor => controller.destroyEditor(editor));
                 childEditors.length = 0;
@@ -142,9 +148,11 @@ export default class ObjectEditor extends AbstractEditor {
                 }
                 // rebuild children
                 Object.keys(data)
-                    .forEach(property =>
-                        childEditors.push(controller.createEditor(`${pointer}/${property}`, $children, this.childOptions))
-                    );
+                    .forEach(property => {
+                        const childPointer = `${pointer}/${property}`;
+                        const targetContainer = property === headerContent ? $headerChildren : $children;
+                        childEditors.push(controller.createEditor(childPointer, targetContainer, this.childOptions));
+                    });
                 break;
             }
 
