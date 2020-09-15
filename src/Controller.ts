@@ -442,6 +442,9 @@ export default class Controller {
 
     /** Destroy the editor, its widgets and services */
     destroy(): void {
+        if (this.destroyed === true) {
+            return;
+        }
         this.destroyed = true;
         Object.keys(this.services).forEach(id => this.services[id].destroy());
     }

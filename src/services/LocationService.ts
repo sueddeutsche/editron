@@ -186,4 +186,9 @@ export default class LocationService {
         this.watcher = this.watcher.filter(w => w !== watcher);
         return this;
     }
+
+    destroy() {
+        clearTimeout(this.timeout);
+        this.watcher.length = 0;
+    }
 }
