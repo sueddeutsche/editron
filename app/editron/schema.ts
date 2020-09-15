@@ -16,8 +16,17 @@ export default {
             title: "Teasertext",
             format: "textarea"
         },
+        active: {
+            type: "boolean",
+            title: "is active",
+            format: "switch",
+            default: true
+        },
         intro: {
             "editron:ui": {
+                attrs: {
+                    class: "group-select"
+                },
                 title: "select intro type"
             },
             oneOfProperty: "type",
@@ -25,6 +34,9 @@ export default {
                 {
                     type: "object",
                     title: "Intro A",
+                    "editron:ui": {
+                        headerContent: "title"
+                    },
                     properties: {
                         type: {
                             type: "string",
@@ -67,9 +79,6 @@ export default {
             type: "object",
 
             "editron:ui": {
-                attrs: {
-                    class: "as-card"
-                },
                 object: {
                     collapsed: true
                 }
@@ -97,17 +106,17 @@ export default {
             "editron:ui": {
                 icon: "list",
                 attrs: {
-                    class: "as-card"
+                    class: "group group--bordered"
                 },
                 sortable: {
                     group: "teaser",
                     handle: ".ed-header"
                 },
                 array: {
-                    addTitle: "Neue Gruppe",
+                    addTitle: "Teaser",
                     insert: true,
-                    insertTitle: "Neue Gruppe einfügen",
-                    passActions: true
+                    insertTitle: "Teaser",
+                    // passActions: true
                 },
                 overlay: {
                     header: "Pick your item"
@@ -136,7 +145,8 @@ export default {
             type: "array",
             "editron:ui": {
                 array: {
-                    showIndex: true
+                    showIndex: true,
+                    addTitle: "Feld"
                 }
             },
             items: {
@@ -150,7 +160,10 @@ export default {
             title: "simple list nested in another list",
             type: "object",
             "editron:ui": {
-                icon: "list"
+                icon: "list",
+                attrs: {
+                    class: "group group--colored"
+                }
             },
             properties: {
                 type: {
@@ -166,6 +179,11 @@ export default {
                     minLength: 1,
                     items: {
                         type: "object",
+                        "editron:ui": {
+                            attrs: {
+                                class: "group group--bordered"
+                            }
+                        },
                         properties: {
                             option: {
                                 type: "string",
@@ -176,12 +194,14 @@ export default {
                             },
                             title: {
                                 type: "string",
+                                title: "Titel",
                                 "editron:ui": {
                                     theme: "the-material"
                                 }
                             },
                             content: {
                                 type: "string",
+                                title: "Teaser",
                                 format: "textarea",
                                 "editron:ui": {
                                     theme: "the-material"
@@ -201,7 +221,7 @@ export default {
                     collapsed: true
                 },
                 attrs: {
-                    class: "as-card"
+                    class: "group group--colored"
                 }
             },
             properties: {
@@ -249,7 +269,7 @@ export default {
             "editron:ui": {
                 icon: "extension",
                 attrs: {
-                    class: "as-card"
+                    class: "group group--colored"
                 }
             },
             properties: {
