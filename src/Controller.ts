@@ -7,7 +7,7 @@ import gp from "gson-pointer";
 import { translateError } from "./utils/i18n";
 import InstanceService from "./services/InstanceService";
 import jsonSchemaLibrary from "json-schema-library";
-import LocationService from "./services/LocationService";
+import LocationService, { Options as LocationServiceOptions } from "./services/LocationService";
 import plugin, { Plugin } from "./plugin";
 import SchemaService from "./services/SchemaService";
 import selectEditor from "./utils/selectEditor";
@@ -33,6 +33,7 @@ export type Options = {
     editors?: Array<EditorPlugin>;
     proxy?: ProxyOptions|Foxy;
     plugins?;
+    locationService?: LocationServiceOptions;
 };
 
 
@@ -155,7 +156,7 @@ export default class Controller {
 
         this.services = {
            instances: new InstanceService(this),
-           location: new LocationService(),
+           location: new LocationService(this.options.locationService),
            data: new DataService(this.store),
            schema: new SchemaService(schema, data, this.core),
            validation: new ValidationService(this.store, schema, this.core)
