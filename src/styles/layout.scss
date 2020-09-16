@@ -40,7 +40,7 @@
 }
 
 // add equal spacings to all nodes, regardless of depth (leafs are values)
-[data-point] {
+[data-point]:not(:last-child) {
     // each rendered node of the data-tree has a dom element with a [data-point] attribute as its root
     padding-top: $mmf-unit;
     padding-bottom: $mmf-unit;
