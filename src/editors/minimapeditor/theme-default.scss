@@ -6,8 +6,20 @@ $minimap-selected-background: #29293A !default;
 
 
 .ed-minimap {
-    color: #aaa;
-    background-color: #34344D;
+    // default/idle colors
+    --minimap-background: #34344D;
+    --minimap-color: #aaa;
+
+    // path-highlight in active selection
+    --minimap-color-path: #{$minimap-selected-color};
+    --minimap-background-path: #{$minimap-selected-background};
+
+    // selected element (leaf of selection)
+    --minimap-color-selected: #333;
+    --minimap-background-selected: #fff;
+
+    color: var(--minimap-color);
+    background-color: var(--minimap-background);
 }
 
 .ed-minimap__header .mmf-icon {
@@ -15,18 +27,18 @@ $minimap-selected-background: #29293A !default;
 }
 
 .ed-minimap .is-selected {
-    color: $minimap-selected-color;
-    background-color: $minimap-selected-background;
+    color: var(--minimap-color-path);
+    background-color: var(--minimap-background-path);
 }
 
 .ed-minimap .is-selected.is-collapsed,
 .ed-minimap .is-selected--target {
     & > .ed-minimap__header {
-        color: #333;
+        color: var(--minimap-color-selected);
         .mmf-icon {
-            color: #333;
+            color: var(--minimap-color-selected);
         }
-        background-color: #fff;
+        background-color: var(--minimap-background-selected);
     }
 }
 
