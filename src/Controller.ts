@@ -4,7 +4,7 @@ import addValidator from "json-schema-library/lib/addValidator";
 import createProxy from "./utils/createProxy";
 import DataService from "./services/dataservice";
 import gp from "gson-pointer";
-import { translateError } from "./utils/i18n";
+import { translate, translateError } from "./utils/i18n";
 import InstanceService from "./services/InstanceService";
 import jsonSchemaLibrary from "json-schema-library";
 import LocationService, { Options as LocationServiceOptions } from "./services/LocationService";
@@ -17,7 +17,7 @@ import UISchema from "./utils/UISchema";
 import ValidationService from "./services/ValidationService";
 import { Editor, EditorPlugin, SetEnabledEvent } from "./editors/Editor";
 import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
-import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
+import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator, ValidationError } from "./types";
 
 import oneOfEditor from "./editors/oneofeditor";
 import arrayEditor from "./editors/arrayeditor";
@@ -27,13 +27,26 @@ import valueEditor from "./editors/valueeditor";
 
 const { JsonEditor: Core } = jsonSchemaLibrary.cores;
 
+export type i18nFunction = (object?) => string;
+export type i18nErrorFunction = (controller: Controller, error: ValidationError) => string;
+
 
 export type Options = {
+    /** print debug messages */
     log?: boolean;
+    /** list of editors to use, replaces plugin and default editors */
     editors?: Array<EditorPlugin>;
+    /** proxy configuration for data and image retrieval */
     proxy?: ProxyOptions|Foxy;
-    plugins?;
+    /** list of plugins to use */
+    plugins?: Array<Plugin>;
+    /** configuration of location service */
     locationService?: LocationServiceOptions;
+    /** string mapping values */
+    i18n?: {
+        strings?: { [p: string]: string | i18nFunction };
+        errors?: { [p: string]: string | i18nErrorFunction };
+    }
 };
 
 
@@ -44,9 +57,6 @@ export type Services = {
     schema: SchemaService;
     location: LocationService;
 }
-
-
-
 
 
 /**
@@ -128,13 +138,21 @@ export default class Controller {
                 objectEditor,
                 valueEditor
             ],
-            ...options,
+            ...options
         };
 
         this.editors = this.options.editors;
         this.store = new Store();
         this.core = new Core();
         this.#proxy = createProxy(this.options.proxy);
+
+        // add strings and functions for translation
+        if (this.options.i18n?.strings) {
+            Object.assign(translate.strings, this.options.i18n.strings);
+        }
+        if (this.options.i18n?.errors) {
+            Object.assign(translateError.strings, this.options.i18n.errors);
+        }
 
         plugin.getValidators().forEach(([validationType, ...validator]) => {
             try {
