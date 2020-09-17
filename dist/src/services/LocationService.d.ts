@@ -65,4 +65,5 @@ export default class LocationService {
     watch(watcher: Watcher): LocationService;
     notifyWatcher(event: Event): LocationService;
     removeWatcher(watcher: Watcher): LocationService;
+    destroy(): void;
 }

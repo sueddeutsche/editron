@@ -1,17 +1,20 @@
 import m from "mithril";
 import { Action } from "../actions";
+export declare const CHILD_CONTAINER_SELECTOR = ".ed-header__children";
 export declare type Attrs = {
-    disabled?: boolean;
-    hideTitle?: boolean;
-    hideHeader?: boolean;
-    icon?: string;
-    collapsed?: boolean;
-    oncollapse?: () => void;
-    onadd?: () => void;
-    ondelete?: () => void;
-    onmovedown?: () => void;
-    onmoveup?: () => void;
+    /** header title */
     title?: string;
+    /** if true, adds a disabled header */
+    disabled?: boolean;
+    /** hide title */
+    hideTitle?: boolean;
+    /** completely hide header */
+    hideHeader?: boolean;
+    /** if true, creates an additional child-container */
+    headerContent?: boolean | string;
+    /** optional icon for title */
+    icon?: string;
+    /** list of actions to be displayed in header */
     actions?: Array<Action>;
 };
 declare const _default: m.Component<Attrs, {}>;

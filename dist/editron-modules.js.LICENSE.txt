@@ -4,8 +4,6 @@
 	http://www.jacklmoore.com/autosize
 */
 
-/*! For license information please see mmf.js.LICENSE.txt */
-
 /**!
  * Sortable 1.10.2
  * @author	RubaXa   <trash@rubaxa.org>

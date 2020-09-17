@@ -1,18 +1,35 @@
 import DataService from "./services/dataservice";
 import InstanceService from "./services/InstanceService";
-import LocationService from "./services/LocationService";
+import LocationService, { Options as LocationServiceOptions } from "./services/LocationService";
 import { Plugin } from "./plugin";
 import SchemaService from "./services/SchemaService";
 import Store from "./store";
 import ValidationService from "./services/ValidationService";
 import { Editor, EditorPlugin } from "./editors/Editor";
 import { Foxy, Options as ProxyOptions } from "@technik-sde/foxy";
-import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator } from "./types";
+import { JSONPointer, JSONSchema, JSONData, FormatValidator, KeywordValidator, ValidationError } from "./types";
+export declare type i18nFunction = (object?: any) => string;
+export declare type i18nErrorFunction = (controller: Controller, error: ValidationError) => string;
 export declare type Options = {
+    /** print debug messages */
     log?: boolean;
+    /** list of editors to use, replaces plugin and default editors */
     editors?: Array<EditorPlugin>;
+    /** proxy configuration for data and image retrieval */
     proxy?: ProxyOptions | Foxy;
-    plugins?: any;
+    /** list of plugins to use */
+    plugins?: Array<Plugin>;
+    /** configuration of location service */
+    locationService?: LocationServiceOptions;
+    /** string mapping values */
+    i18n?: {
+        strings?: {
+            [p: string]: string | i18nFunction;
+        };
+        errors?: {
+            [p: string]: string | i18nErrorFunction;
+        };
+    };
 };
 export declare type Services = {
     instances: InstanceService;

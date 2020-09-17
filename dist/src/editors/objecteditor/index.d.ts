@@ -11,6 +11,7 @@ export declare type EditronSchemaOptions = {
         delete?: boolean;
         /** if set, will ad a collapse option with its initial collpased state set to given value */
         collapsed?: boolean;
+        headerContent?: string;
     };
 };
 export declare type Options = EditorOptions & EditronSchemaOptions;
@@ -24,6 +25,7 @@ export declare type ViewModel = {
     errors: Array<any>;
     hideTitle?: boolean;
     icon?: string;
+    headerContent?: string;
     oncollapse?: () => void;
     ondelete?: () => void;
     pointer: JSONPointer;
@@ -35,6 +37,7 @@ export default class ObjectEditor extends AbstractEditor {
     options: Options;
     childEditors: Array<Editor>;
     $children: HTMLElement;
+    $headerChildren: HTMLElement;
     childOptions: {
         theme?: string;
     };

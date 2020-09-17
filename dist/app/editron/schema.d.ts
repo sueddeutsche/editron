@@ -17,14 +17,26 @@ declare const _default: {
             title: string;
             format: string;
         };
+        active: {
+            type: string;
+            title: string;
+            format: string;
+            default: boolean;
+        };
         intro: {
             "editron:ui": {
+                attrs: {
+                    class: string;
+                };
                 title: string;
             };
             oneOfProperty: string;
             oneOf: ({
                 type: string;
                 title: string;
+                "editron:ui": {
+                    headerContent: string;
+                };
                 properties: {
                     type: {
                         type: string;
@@ -61,6 +73,7 @@ declare const _default: {
                         format: string;
                     };
                 };
+                "editron:ui"?: undefined;
             })[];
         };
         visible: {
@@ -72,9 +85,6 @@ declare const _default: {
             title: string;
             type: string;
             "editron:ui": {
-                attrs: {
-                    class: string;
-                };
                 object: {
                     collapsed: boolean;
                 };
@@ -112,7 +122,6 @@ declare const _default: {
                     addTitle: string;
                     insert: boolean;
                     insertTitle: string;
-                    passActions: boolean;
                 };
                 overlay: {
                     header: string;
@@ -132,6 +141,7 @@ declare const _default: {
             "editron:ui": {
                 array: {
                     showIndex: boolean;
+                    addTitle: string;
                 };
             };
             items: {
@@ -146,6 +156,9 @@ declare const _default: {
             type: string;
             "editron:ui": {
                 icon: string;
+                attrs: {
+                    class: string;
+                };
             };
             properties: {
                 type: {
@@ -161,6 +174,11 @@ declare const _default: {
                     minLength: number;
                     items: {
                         type: string;
+                        "editron:ui": {
+                            attrs: {
+                                class: string;
+                            };
+                        };
                         properties: {
                             option: {
                                 type: string;
@@ -171,12 +189,14 @@ declare const _default: {
                             };
                             title: {
                                 type: string;
+                                title: string;
                                 "editron:ui": {
                                     theme: string;
                                 };
                             };
                             content: {
                                 type: string;
+                                title: string;
                                 format: string;
                                 "editron:ui": {
                                     theme: string;
