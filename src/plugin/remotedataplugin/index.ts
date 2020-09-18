@@ -133,7 +133,11 @@ export default class RemoteDataPlugin implements Plugin {
                 }
 
                 const targetValue = gp.get(json, key);
-                controller.service("data").set(targetPointer, targetValue, { addToHistory: remote.addToHistory });
+                try {
+                    controller.service("data").set(targetPointer, targetValue, { addToHistory: remote.addToHistory });
+                } catch (error) {
+                    // console.warn(`@todo`, error);
+                }
             });
     }
 }

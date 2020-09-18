@@ -200,7 +200,12 @@ export default class ArrayItemEditor {
     }
 
     getLength(): number {
-        return this.controller.service("data").get(this.parentPointer).length;
+        const list = this.controller.service("data").get(this.parentPointer);
+        if (Array.isArray(list)) {
+            return list.length;
+        }
+        console.warn(`Invalid array at ${this.parentPointer} for element ${this.index}`);
+        return 0;
     }
 
     disable(isDisabled = false) {
