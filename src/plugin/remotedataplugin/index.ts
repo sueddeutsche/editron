@@ -88,6 +88,7 @@ export default class RemoteDataPlugin implements Plugin {
 
         const observer = async () => this.setRemoteData(pointer, remote);
         controller.service("data").observe(sourcePointer, observer, true);
+        // @todo sometimes the pointer does not exist (timing issues?)
         this.setRemoteData(pointer, remote);
 
         this.remotes[pointer] = {
@@ -136,7 +137,7 @@ export default class RemoteDataPlugin implements Plugin {
                 try {
                     controller.service("data").set(targetPointer, targetValue, { addToHistory: remote.addToHistory });
                 } catch (error) {
-                    // console.warn(`@todo`, error);
+                    console.warn(`@todo`, error);
                 }
             });
     }
