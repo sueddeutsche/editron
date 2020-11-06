@@ -159,9 +159,21 @@ export default class AbstractValueEditor implements Editor {
         this.render();
     }
 
+    focus(): void {
+        this.controller.service("location").setCurrent(this.pointer);
+    }
+
+    blur(): void {
+        this.controller.service("location").blur(this.pointer);
+    }
+
     // do not trigger rendering here. data-observer will notify change event
     setValue(value) {
-        this.controller.service("data").set(this.getPointer(), value);
+        this.controller.service("data").set(this.pointer, value);
+    }
+
+    getValue() {
+        return this.controller.service("data").get(this.pointer);
     }
 
     // update view
