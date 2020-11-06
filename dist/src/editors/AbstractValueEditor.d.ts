@@ -39,7 +39,10 @@ export default class AbstractValueEditor implements Editor {
      */
     constructor(pointer: JSONPointer, controller: Controller, options: any);
     update(event: EditorUpdateEvent): void;
+    focus(): void;
+    blur(): void;
     setValue(value: any): void;
+    getValue(): any;
     render(): void;
     getPointer(): string;
     getElement(): HTMLElement;
