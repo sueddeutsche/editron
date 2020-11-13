@@ -12,6 +12,7 @@ export { Sortable };
 
 
 export function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
+    let action = "moved";
     const { from, newIndex, item } = event;
     const schema = controller.service("schema").get(pointer);
 
@@ -25,6 +26,7 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
             data = JSON.parse(item.dataset.content);
             // for convinience, add missing data
             data = controller.service("schema").core.getTemplate([data], schema)[0];
+            action = "created";
 
         } catch (e) {
             console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
@@ -35,6 +37,8 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
         toList.splice(newIndex, 0, data);
         controller.service("data").set(pointer, toList);
     }
+
+    return action;
 }
 
 
@@ -107,11 +111,21 @@ interface SortableEditor extends Editor {
 }
 
 
+export type Options = {
+    onAdd?: (pointer: string) => void;
+}
+
+
 export default class SortablePlugin implements Plugin {
 
     id = "sortable-plugin";
     controller: Controller;
+    options: Options
 
+
+    constructor(options: Options) {
+        this.options = options;
+    }
 
     initialize(controller: Controller): Plugin {
         this.controller = controller;
@@ -151,7 +165,12 @@ export default class SortablePlugin implements Plugin {
                 }
                 hasMoved = false;
             },
-            onAdd: (event: SortableEvent) => onAddSortable(pointer, controller, event),
+            onAdd: (event: SortableEvent) => {
+                const action = onAddSortable(pointer, controller, event);
+                if (action === "created" && this.options?.onAdd) {
+                    requestAnimationFrame(() => this.options.onAdd(pointer));
+                }
+            },
             onEnd: (event: SortableEvent) => onEndSortable(pointer, controller, event)
         });
 
