@@ -4,7 +4,14 @@ import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
 import Sortable, { SortableEvent } from "sortablejs";
 export { Sortable };
-export declare function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent): void;
+export declare type Options = {
+    onAdd?: ({ pointer: string, controller: Controller, event: SortableEvent }: {
+        pointer: any;
+        controller: any;
+        event: any;
+    }) => void;
+};
+export declare function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent): string;
 export declare function onEndSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent): void;
 /** required settings in editron:ui config */
 export declare type EditronSchemaOptions = {
@@ -26,6 +33,8 @@ interface SortableEditor extends Editor {
 export default class SortablePlugin implements Plugin {
     id: string;
     controller: Controller;
+    options: Options;
+    constructor(options?: Options);
     initialize(controller: Controller): Plugin;
     onCreateEditor(pointer: any, editor: SortableEditor, options?: EditronSchemaOptions): void;
     onChangePointer(oldPointer: JSONPointer, newPointer: JSONPointer, editor: SortableEditor): void;
