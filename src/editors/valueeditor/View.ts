@@ -1,9 +1,21 @@
 import m from "mithril";
-import CheckboxForm, { Attrs as CheckboxAttrs } from "mithril-material-forms/components/checkboxform";
-import SwitchForm, { Attrs as SwitchAttrs } from "mithril-material-forms/components/switchform";
-import SelectForm, { Attrs as SelectAttrs } from "mithril-material-forms/components/selectform";
-import TextareaForm, { Attrs as TextareaAttrs } from "mithril-material-forms/components/textareaform";
-import InputForm, { Attrs as InputAttrs, InputType } from "mithril-material-forms/components/inputform";
+import {
+    CheckboxForm,
+    CheckboxFormAttrs,
+    InputForm,
+    InputFormAttrs,
+    InputType,
+    SwitchForm,
+    SwitchFormAttrs,
+    SelectForm,
+    SelectFormAttrs,
+    TextareaForm,
+    TextareaFormAttrs
+} from "mithril-material-forms";
+// import SwitchForm, { Attrs as SwitchAttrs } from "mithril-material-forms/components/switchform";
+// import SelectForm, { Attrs as SelectAttrs } from "mithril-material-forms/components/selectform";
+// import TextareaForm, { Attrs as TextareaAttrs } from "mithril-material-forms/components/textareaform";
+// import InputForm, { Attrs as InputAttrs, InputType } from "mithril-material-forms/components/inputform";
 import UISchema from "../../utils/UISchema";
 import { ViewModel } from "../AbstractValueEditor";
 
@@ -29,7 +41,7 @@ const Component: m.Component<Attrs> = {
 
         if (schema.enum && schema.enum.length > 0) {
 
-            const selectFormModel: SelectAttrs = {
+            const selectFormModel: SelectFormAttrs = {
                 id: pointer,
                 title: options.title,
                 description: options.description,
@@ -49,7 +61,7 @@ const Component: m.Component<Attrs> = {
         }
 
         if (schema.type === "boolean" && schema.format === "switch") {
-            const switchModel: SwitchAttrs = {
+            const switchModel: SwitchFormAttrs = {
                 id: pointer,
                 title: options.title,
                 description: options.description,
@@ -67,7 +79,7 @@ const Component: m.Component<Attrs> = {
         }
 
         if (schema.type === "boolean") {
-            const checkBoxModel: CheckboxAttrs = {
+            const checkBoxModel: CheckboxFormAttrs = {
                 id: pointer,
                 title: options.title,
                 description: options.description,
@@ -85,7 +97,7 @@ const Component: m.Component<Attrs> = {
         }
 
         if (schema.type === "string" && schema.format === "html") {
-            const textareaModel: TextareaAttrs = {
+            const textareaModel: TextareaFormAttrs = {
                 id: pointer,
                 title: options.title,
                 description: options.description,
@@ -103,7 +115,7 @@ const Component: m.Component<Attrs> = {
         }
 
         if (schema.type === "string" && schema.format === "textarea") {
-            const textareaModel: TextareaAttrs = {
+            const textareaModel: TextareaFormAttrs = {
                 id: pointer,
                 title: options.title,
                 description: options.description,
@@ -122,7 +134,7 @@ const Component: m.Component<Attrs> = {
             return m(TextareaForm, textareaModel, vnode.children);
         }
 
-        const inputModel: InputAttrs = {
+        const inputModel: InputFormAttrs = {
             id: pointer,
             title: options.title,
             description: options.description,

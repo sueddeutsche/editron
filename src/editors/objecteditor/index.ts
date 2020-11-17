@@ -1,5 +1,5 @@
 import m from "mithril";
-import TextareaForm from "mithril-material-forms/components/textareaform";
+import { TextareaForm } from "mithril-material-forms";
 import OverlayService from "../../services/OverlayService";
 import Container, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { CHILD_CONTAINER_SELECTOR as HEADER_CONTAINER_SELECTOR } from "../../components/header";

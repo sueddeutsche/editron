@@ -3,7 +3,7 @@ import Controller from "../../Controller";
 import AbstractEditor, { Options as EditorOptions } from "../../editors/AbstractEditor";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
-import { Button } from "mithril-material-forms/index";
+import { Button } from "mithril-material-forms";
 import { Plugin } from "../index";
 import OverlayService from "../../services/OverlayService";
 import { translate } from "../../utils/i18n";

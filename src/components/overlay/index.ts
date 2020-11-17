@@ -1,5 +1,5 @@
 import m from "mithril";
-import { Button } from "mithril-material-forms/index";
+import { Button } from "mithril-material-forms";
 import { translate } from "../../utils/i18n";
 import isEmpty from "../../utils/isEmpty";
 
