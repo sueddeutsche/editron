@@ -115,26 +115,14 @@ interface SortableEditor extends Editor {
 }
 
 
-export type Options = {
-    onAdd?: (pointer: string) => void;
-}
-
-
 export default class SortablePlugin implements Plugin {
 
     id = "sortable-plugin";
     controller: Controller;
-    options: Options
-
-    options: Options
+    options: Options;
 
 
-    constructor(options: Options) {
-        this.options = options;
-    }
-
-
-    constructor(options: Options) {
+    constructor(options: Options = {}) {
         this.options = options;
     }
 
