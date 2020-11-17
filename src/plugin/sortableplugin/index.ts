@@ -31,6 +31,7 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
             // for convinience, add missing data
             data = controller.service("schema").core.getTemplate([data], schema)[0];
             action = "created";
+
         } catch (e) {
             console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
             return;
@@ -114,10 +115,16 @@ interface SortableEditor extends Editor {
 }
 
 
+export type Options = {
+    onAdd?: (pointer: string) => void;
+}
+
+
 export default class SortablePlugin implements Plugin {
 
     id = "sortable-plugin";
     controller: Controller;
+    options: Options
 
     options: Options
 
@@ -126,6 +133,10 @@ export default class SortablePlugin implements Plugin {
         this.options = options;
     }
 
+
+    constructor(options: Options) {
+        this.options = options;
+    }
 
     initialize(controller: Controller): Plugin {
         this.controller = controller;
