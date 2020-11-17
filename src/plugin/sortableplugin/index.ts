@@ -10,6 +10,10 @@ import gp from "gson-pointer";
 
 export { Sortable };
 
+export type Options = {
+    onAdd?: ({ pointer: string, controller: Controller, event: SortableEvent }) => void;
+}
+
 
 export function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
     let action = "moved";
@@ -122,6 +126,13 @@ export default class SortablePlugin implements Plugin {
     controller: Controller;
     options: Options
 
+    options: Options
+
+
+    constructor(options: Options) {
+        this.options = options;
+    }
+
 
     constructor(options: Options) {
         this.options = options;
@@ -168,7 +179,7 @@ export default class SortablePlugin implements Plugin {
             onAdd: (event: SortableEvent) => {
                 const action = onAddSortable(pointer, controller, event);
                 if (action === "created" && this.options?.onAdd) {
-                    requestAnimationFrame(() => this.options.onAdd(pointer));
+                    requestAnimationFrame(() => this.options.onAdd({ pointer, controller, event }));
                 }
             },
             onEnd: (event: SortableEvent) => onEndSortable(pointer, controller, event)
