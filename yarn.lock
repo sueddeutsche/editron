@@ -4041,7 +4041,12 @@ gson-conform@^1.0.3:
   resolved "https://registry.npmjs.org/gson-conform/-/gson-conform-1.0.3.tgz#6f982f98ea84199280bd48b6bfbcd0ae7447f1e2"
   integrity sha512-gaZQN/5ZbohkLBOs4JKHkg/IdOB9kuuEr5SVLAjHUs+Q+Nl746DRe18GgQy4oxxVXStO//Zga2wg4eWL9Mfshw==
 
-gson-pointer@^3.2.1, gson-pointer@^3.4.1, gson-pointer@^3.4.3:
+gson-pointer@4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/gson-pointer/-/gson-pointer-4.1.0.tgz#a806169305b195df5204651190f74e7503d0a755"
+  integrity sha512-5k5iE+50brpPDMvc/SVIhKlA70QKRGrkMpm6PWqCRG3V29D/AI/0tX0UY0Zxs9lxI47iyN2S76xJGY/tL+JFQQ==
+
+gson-pointer@^3.2.1, gson-pointer@^3.4.1:
   version "3.4.3"
   resolved "https://registry.npmjs.org/gson-pointer/-/gson-pointer-3.4.3.tgz#a3235083f3a2e3199ba0a422e8b019945a3a265f"
   integrity sha512-qraHrd8Eqxop1zNRxfRWohdIikgsDB9QtfBptWhy6Pm8GnlQKNUnT4uQU6vieeSpIAFEK/uopOorq/kABssUKA==
@@ -5339,9 +5344,10 @@ mississippi@^3.0.0:
     stream-each "^1.1.0"
     through2 "^2.0.0"
 
-"mithril-material-forms@git://github.com/sueddeutsche/mithril-material-forms.git#develop":
-  version "3.2.3"
-  resolved "git://github.com/sueddeutsche/mithril-material-forms.git#73af8921e2b18416ccc671546a395dffff762aed"
+mithril-material-forms@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npmjs.org/mithril-material-forms/-/mithril-material-forms-4.1.0.tgz#bac20a108a7ff813d64e3362ac2318aec9a919d6"
+  integrity sha512-YGlO47/WE0wHVL8w7+wivu2HIcOPIipITadAMRE7oxcHSCM3amNXzumAt9AFb7BSHl+G/PbDLDxGq+4s1tr1HQ==
   dependencies:
     autosize "^4.0.2"
     mithril "^2.0.4"

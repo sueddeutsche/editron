@@ -92,7 +92,7 @@
   "dependencies": {
     "@rematch/core": "1.4.0",
     "@technik-sde/foxy": "^1.0.0",
-    "gson-pointer": "^3.4.3",
+    "gson-pointer": "4.1.0",
     "json-schema-library": "^4.1.4",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",

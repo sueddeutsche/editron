@@ -1,2 +1,2 @@
-import isRoot from "gson-pointer/lib/isRoot";
+import { isRoot } from "gson-pointer";
 export default isRoot;

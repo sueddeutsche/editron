@@ -176,7 +176,7 @@ export default class DataService {
         const parentPointer = gp.join(frags);
         const data = this.get(parentPointer);
 
-        gp.delete(data, key);
+        gp.remove(data, key);
         this.set(parentPointer, data);
     }
 
