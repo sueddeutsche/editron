@@ -1,5 +1,5 @@
 import m from "mithril";
-import SelectForm from "mithril-material-forms/components/selectform";
+import { SelectForm } from "mithril-material-forms";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import AbstractEditor, { getTypeClass } from "../AbstractEditor";
 import { getEditronOptions } from "../../utils/UISchema";

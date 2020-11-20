@@ -1,5 +1,5 @@
 import Controller from "../../Controller";
-import { Attrs as SelectFormAttrs } from "mithril-material-forms/components/selectform";
+import { SelectFormAttrs } from "mithril-material-forms";
 import { Editor, EditorUpdateEvent, Options as EditorOptions } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
 import AbstractEditor from "../AbstractEditor";

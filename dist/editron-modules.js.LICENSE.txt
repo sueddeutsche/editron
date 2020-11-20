@@ -1,4 +1,8 @@
-/*! For license information please see mmf.js.LICENSE.txt */
+/*!
+	autosize 4.0.2
+	license: MIT
+	http://www.jacklmoore.com/autosize
+*/
 
 /**!
  * Sortable 1.10.2

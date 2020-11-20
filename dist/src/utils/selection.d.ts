@@ -13,7 +13,7 @@ declare function getAvailableInputs(parent: HTMLElement): Array<FocusableElement
 /** returns the next input element in direction or false if it is last/first */
 declare function getNextInput(controller: Controller, direction?: Direction, { parent }?: {
     parent?: HTMLElement;
-}): false | HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement;
+}): false | HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement;
 declare type Options = {
     /** ignores movement restrictions (e.g. navigation in textarea) */
     force?: boolean;
