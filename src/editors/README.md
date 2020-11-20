@@ -39,3 +39,29 @@ editron.destroyEditor(page);
 ## talk about
 
 - `data-point` and `data-id`
+
+
+### Editor widget DOM convention
+
+Each root-element of a widget must have a property `data-point`. This is assigned by the controller, but be sure not to 
+remove this attribute. e.g.
+
+```html
+<div class="editron-widget" data-point="#/document/title">
+    <!-- header, description, input-form, ... -->
+</div>
+```
+
+
+### Input-form DOM convention
+
+For a complete interaction of editron-features, an input-element like _input_, _textarea_, _select_ etc must have a
+property `data-id` with its json-pointer as value. e.g.
+
+```html
+<input type="text" data-id="#/document/title" />
+```
+
+Above all, this ensures that cursor navigation through input fields can be supported
+
+
