@@ -1,6 +1,6 @@
 import Controller from "../../Controller";
 import m from "mithril";
-import SelectForm, { Attrs as SelectFormAttrs } from "mithril-material-forms/components/selectform";
+import { SelectForm, SelectFormAttrs } from "mithril-material-forms";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { Editor, EditorUpdateEvent, Options as EditorOptions } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
