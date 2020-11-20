@@ -52,7 +52,7 @@ function getActiveInput(controller, parent = document.body) {
         console.log("abort empty selection", currentPointer, "active element", document.activeElement);
         return false;
     }
-    const activeInput = parent.querySelector(`[data-id='${currentPointer}'] label input`);
+    const activeInput = parent.querySelector(`[data-id="${currentPointer}"]`);
     if (activeInput == null) {
         return false;
     }

@@ -3,12 +3,11 @@ import DelegationPlugin from "../../src/plugin/delegationplugin";
 import SortablePlugin from "../../src/plugin/sortableplugin";
 import RemoteDataPlugin from "../../src/plugin/remotedataplugin";
 import MinimapEditor from "../../src/editors/minimapeditor";
-// import schema from "./schema";
-import schema from "./schema-test";
+import schema from "./schema";
 import "./index.scss";
 import "./index.html";
 const data = {
-// list: [{ type: "inline" }, { type: "external" }], simple: ["Lorem Linksrum"]
+    list: [{ type: "inline" }, { type: "external" }], simple: ["Lorem Linksrum"]
 };
 const editron = new Controller(schema, data, {
     plugins: [
