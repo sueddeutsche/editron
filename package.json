@@ -14,7 +14,9 @@
   "scripts": {
     "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
     "build": "rm -rf build; webpack && webpack --config webpack.build.js",
-    "dist": "rm -rf dist; NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js && tsc -p tsconfig.module.json",
+    "dist": "rm -rf dist; yarn dist:es5 && yarn dist:module",
+    "dist:es5": "NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
+    "dist:module": "tsc -p tsconfig.module.json",
     "docs": "npx documentation build -o docs/api -f html editron.js --config documentation.yml",
     "docs:serve": "npx documentation serve -f html editron.js --watch --config documentation.yml",
     "lint": "eslint src",
