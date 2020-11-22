@@ -40,6 +40,7 @@ export { default as LocationService } from "./src/services/LocationService";
 export { default as SchemaService } from "./src/services/SchemaService";
 export { default as ValidationService } from "./src/services/ValidationService";
 export { default as OverlayService } from "./src/services/OverlayService";
+export { default as SessionService } from "./src/services/SessionService";
 // plugins
 export { default as plugin } from "./src/plugin";
 export { default as DelegationPlugin } from "./src/plugin/delegationplugin";
