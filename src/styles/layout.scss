@@ -14,6 +14,10 @@
 
 @import "mithril-material-forms/lib/units";
 
+
+$color-header--border: transparent !default;
+
+
 .group {
     // for groups, set color to background
     --ed-color--bg: rgb(242,242,243);
@@ -48,7 +52,6 @@
 
 // set header styles of second layer and deeper-nested ones
 [data-point] [data-point] {
-    $color-header--border: red;
     // add a long header-line (when a header is defined) to nodes on second-layer (first-layer is root object)
     & > .ed-header {
         border-bottom: 1px solid var(--ed-color--bg, #{$color-header--border});

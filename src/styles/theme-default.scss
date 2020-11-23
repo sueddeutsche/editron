@@ -5,7 +5,7 @@
 
 @import "mithril-material-forms/lib/units";
 
-$ed-card-background: #fff;
+$ed-card-background: #fff !default;
 
 .with-card {
     margin: $mmf-block/2 0;
