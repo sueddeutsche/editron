@@ -25,9 +25,9 @@ export type Attrs = {
 
 
 function getClass(hasAction: boolean, { title, icon, disabled }): string {
-    let classname = `${title ? "with-title" : "no-title"}`;
+    let classname = `${title !== "" ? "with-title" : "no-title"}`;
     classname += ` ${hasAction ? "with-actions" : "no-actions"}`;
-    classname += ` ${icon ? "with-icon" : "no-icon"}`;
+    classname += ` ${icon !== "" ? "with-icon" : "no-icon"}`;
     classname += disabled ? " is-disabled" : "";
     return classname;
 }
@@ -56,13 +56,14 @@ export default {
 
         const { actions } = attrs;
         const hasAction = actions?.length > 0;
+        const withTitle = hasAction || attrs.title !== "" || attrs.icon !== "";
 
         return m(".ed-header",
             {
                 "class": getClass(hasAction, attrs)
             },
 
-            m(".ed-header__title",
+            withTitle && m(".ed-header__title",
                 populated(vnode.attrs.icon, m("i.mmf-icon", attrs.icon)),
                 (!attrs.hideTitle) && m("h2", attrs.title),
                 vnode.children
