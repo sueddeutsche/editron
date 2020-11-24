@@ -13,6 +13,16 @@ const { JsonEditor: Core } = jlib.cores;
 export { Observer };
 
 
+type ValidationDoneEvent = {
+    type: "validation:done";
+    value: Array<ValidationError>;
+}
+
+export type Event = ValidationDoneEvent;
+
+export type Watcher = (event: Event) => void;
+
+
 export default class ValidationService {
     core;
     currentValidation: Validation;
@@ -20,6 +30,8 @@ export default class ValidationService {
     observer = new BubblingCollectionObservable();
     schema: JSONSchema;
     store: Store;
+    /** list of active watchers on update-lifecycle events */
+    watcher = [];
 
     constructor(store: Store, schema: JSONSchema = { type: "object" }, core = new Core()) {
         if (!(store instanceof Store)) {
@@ -72,9 +84,10 @@ export default class ValidationService {
             },
             validationErrors => {
                 // @feature selective-validation
-                const completeListOfErrors = remainingErrors.concat(validationErrors);
+                const completeListOfErrors: Array<ValidationError> = remainingErrors.concat(validationErrors);
                 this.store.dispatch.errors.set(completeListOfErrors);
                 this.currentValidation = null;
+                this.notifyWatcher({ type: "validation:done", value: completeListOfErrors });
             }
         );
     }
@@ -102,6 +115,18 @@ export default class ValidationService {
 
     notify(pointer: JSONPointer, event: ValidationError) {
         this.observer.notify(pointer, event);
+    }
+
+    notifyWatcher(event: Event) {
+        this.watcher.forEach(watcher => watcher(event));
+    }
+
+    /** watch DataService lifecycle events */
+    watch(callback: Watcher) {
+        if (this.watcher.includes(callback) === false) {
+            this.watcher.push(callback);
+        }
+        return callback;
     }
 
     /** returns all validation errors and warnings */
