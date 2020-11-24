@@ -24,8 +24,9 @@ function getBreadcrumps(pointer, controller) {
     return breadcrumps;
 }
 function enumOptions(schema) {
+    var _a;
     let options;
-    if (schema[UI_PROPERTY].enum) {
+    if ((_a = schema === null || schema === void 0 ? void 0 : schema[UI_PROPERTY]) === null || _a === void 0 ? void 0 : _a.enum) {
         options = schema.enum.map((value, index) => ({
             title: schema[UI_PROPERTY].enum[index] || schema.enum[index],
             value: schema.enum[index]

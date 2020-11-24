@@ -7,6 +7,8 @@ const { JsonEditor: Core } = jlib.cores;
 export default class ValidationService {
     constructor(store, schema = { type: "object" }, core = new Core()) {
         this.observer = new BubblingCollectionObservable();
+        /** list of active watchers on update-lifecycle events */
+        this.watcher = [];
         if (!(store instanceof Store)) {
             throw new Error("Given state in ValidationService must be of instance 'State'");
         }
@@ -51,6 +53,7 @@ export default class ValidationService {
             const completeListOfErrors = remainingErrors.concat(validationErrors);
             this.store.dispatch.errors.set(completeListOfErrors);
             this.currentValidation = null;
+            this.notifyWatcher({ type: "validation:done", value: completeListOfErrors });
         });
     }
     /** set or change the json-schema for data validation */
@@ -72,6 +75,20 @@ export default class ValidationService {
     }
     notify(pointer, event) {
         this.observer.notify(pointer, event);
+    }
+    notifyWatcher(event) {
+        this.watcher.forEach(watcher => watcher(event));
+    }
+    /** watch DataService lifecycle events */
+    watch(callback) {
+        if (this.watcher.includes(callback) === false) {
+            this.watcher.push(callback);
+        }
+        return callback;
+    }
+    unwatch(callback) {
+        this.watcher = this.watcher.filter(w => w !== callback);
+        return callback;
     }
     /** returns all validation errors and warnings */
     getErrorsAndWarnings(pointer, withChildErrors = false) {
