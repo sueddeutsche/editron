@@ -1,31 +1,28 @@
 {
     "compilerOptions": {
-        "declaration": false,
-        "outDir": "./ts/",
-        "module": "es2015",
-        "target": "es2015",
         "allowJs": true,
-        "resolveJsonModule": true,
         "allowSyntheticDefaultImports": true,
+        "declaration": false,
         "downlevelIteration": true,
+        "module": "ES2015",
         "moduleResolution": "node",
-        "types": [],
+        "outDir": "./dist/",
+        "resolveJsonModule": true,
+        "target": "ES2019",
         "lib": [
             "DOM",
-            "ES2018"
+            "ES2019"
         ]
     },
     "include": [
-        "editron.js",
-        "Controller.js",
-        "editors/**/*",
-        "plugin/**/*",
-        "services/**/*"
-        "utils/**/*"
+        "*",
+        "app/**/*",
+        "src/**/*",
+        "test/**/*",
+        "@technik-sde/foxy/**/*"
     ],
     "exclude": [
         "node_modules/**/*.test.ts",
-        "node_modules/**/*.test.js",
         "**/webpack.*.js"
     ]
 }

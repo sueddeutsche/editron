@@ -1,0 +1,53 @@
+@import "mithril-material-forms/lib/typography";
+@import "mithril-material-forms/lib/units";
+@import "../../sass/card";
+@import "../../sass/elevation";
+
+
+.ed-overlay {
+    z-index: 1002;
+    padding: $mmf-block $mmf-unit;
+
+}
+
+.ed-overlay__card {
+    @include card-layout();
+    @include elevation24();
+    margin: 0;
+    max-width: 20 * $mmf-block;
+    min-height: 3 * $mmf-block;
+    max-height: 96vh;
+    min-width: 4 * $mmf-block;
+
+    &--fullscreen {
+        width: 96vw;
+        height: 96vh;
+    }
+}
+
+.ed-overlay {
+
+    h1 {
+        @include font-regular();
+        line-height: 1em;
+        margin: 0;
+    }
+
+    .ed-card__header {
+        padding: $mmf-block * 0.5;
+        padding-bottom: 0;
+    }
+
+    .ed-card__content {
+        flex-grow: 1;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: $mmf-block * 0.5;
+        position: relative;
+    }
+
+    .ed-card__footer {
+        padding: $mmf-unit;
+        text-align: right;
+    }
+}

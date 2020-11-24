@@ -3,19 +3,19 @@ const path = require("path");
 const webpack = require("webpack");
 const PRODUCTION = process.env.NODE_ENV === "production";
 const TARGET_FOLDER = PRODUCTION ? "dist" : "build";
+const TerserPlugin = require("terser-webpack-plugin");
 
 
 const editronModulesConfig = {
     mode: PRODUCTION ? "production" : "development",
     entry: [
-        path.join(__dirname, "editron.js"),
+        path.join(__dirname, "editron"),
         path.join(__dirname, "editron.scss"),
         path.resolve("./node_modules/mithril-material-forms"),
         path.resolve("./node_modules/json-schema-library"),
         path.resolve("./node_modules/gson-pointer"),
-        path.resolve("./node_modules/mitt"),
-        path.resolve("./node_modules/jsondiffpatch"),
-        path.resolve("./node_modules/diff_match_patch")
+        path.resolve("./node_modules/nanoevents"),
+        path.resolve("./node_modules/jsondiffpatch")
     ],
     output: {
         filename: "editron-modules.js",
@@ -33,10 +33,11 @@ const editronModulesConfig = {
 
     resolve: {
         symlinks: false,
+        extensions: [".tsx", ".ts", ".js"],
         modules: [".", "node_modules"],
         alias: {
             editron: path.resolve("./node_modules/editron"),
-            mitt: path.resolve("./node_modules/mitt/dist/mitt.js"),
+            nanoevents: path.resolve("./node_modules/nanoevents/index.js"),
             "medium-editor-styles": path.resolve("./node_modules/medium-editor/dist/css/medium-editor.min.css"),
             "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css"),
             // ensure dependencies are unique (not bundled multiple times)
@@ -48,6 +49,19 @@ const editronModulesConfig = {
 
     module: {
         rules: [
+            {
+                test: /\.tsx?$/,
+                use: {
+                    loader: "ts-loader",
+                    options: {
+                        configFile: path.resolve(__dirname, "tsconfig.json"),
+                        compilerOptions: {
+                            sourceMap: !PRODUCTION,
+                            declaration: PRODUCTION
+                        }
+                    }
+                }
+            },
             {
                 test: /.*.js$/,
                 loader: require.resolve("babel-loader"),
@@ -103,12 +117,13 @@ const editronModulesConfig = {
 
     optimization: {
         minimizer: [].concat(PRODUCTION ? [
-            new (require("uglifyjs-webpack-plugin"))({
-                sourceMap: false,
-                uglifyOptions: {
-                    compress: { drop_console: true } // eslint-disable-line @typescript-eslint/camelcase
-                }
-            })
+            new TerserPlugin()
+            // new (require("uglifyjs-webpack-plugin"))({
+            //     sourceMap: false,
+            //     uglifyOptions: {
+            //         compress: { drop_console: true }
+            //     }
+            // })
         ] : [])
     },
 

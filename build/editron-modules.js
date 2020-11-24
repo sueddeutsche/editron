@@ -87,2300 +87,6 @@ var editronModules =
 /************************************************************************/
 /******/ ({
 
-/***/ "./Controller.js":
-/*!***********************!*\
-  !*** ./Controller.js ***!
-  \***********************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _toArray(arr) { return _arrayWithHoles(arr) || _iterableToArray(arr) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
-
-var addValidator = __webpack_require__(/*! json-schema-library/lib/addValidator */ "./node_modules/json-schema-library/lib/addValidator.js");
-
-var DataService = __webpack_require__(/*! ./services/DataService */ "./services/DataService.js");
-
-var SchemaService = __webpack_require__(/*! ./services/SchemaService */ "./services/SchemaService.js");
-
-var ValidationService = __webpack_require__(/*! ./services/ValidationService */ "./services/ValidationService.js");
-
-var LocationService = __webpack_require__(/*! ./services/LocationService */ "./services/LocationService.js");
-
-var State = __webpack_require__(/*! ./services/State */ "./services/State.js");
-
-var selectEditor = __webpack_require__(/*! ./utils/selectEditor */ "./utils/selectEditor.js");
-
-var _createElement = __webpack_require__(/*! ./utils/createElement */ "./utils/createElement.js");
-
-var addItem = __webpack_require__(/*! ./utils/addItem */ "./utils/addItem.js");
-
-var UISchema = __webpack_require__(/*! ./utils/UISchema */ "./utils/UISchema.js");
-
-var getID = __webpack_require__(/*! ./utils/getID */ "./utils/getID.js");
-
-var plugin = __webpack_require__(/*! ./plugin */ "./plugin/index.js");
-
-var i18n = __webpack_require__(/*! ./utils/i18n */ "./utils/i18n.js");
-
-var createProxy = __webpack_require__(/*! ./utils/createProxy */ "./utils/createProxy.js");
-
-function isValidPointer(pointer) {
-  return pointer[0] === "#";
-}
-
-function assertValidPointer(pointer) {
-  if (isValidPointer(pointer) === false) {
-    throw new Error("Invalid json(schema)-pointer: ".concat(pointer));
-  }
-} // removes the editor from the instances-inventory of active editors
-
-
-function removeEditorFrom(instances, editor) {
-  var pointer = editor.getPointer();
-
-  if (instances[pointer]) {
-    instances[pointer] = instances[pointer].filter(function (instance) {
-      return editor !== instance;
-    });
-
-    if (instances[pointer].length === 0) {
-      delete instances[pointer];
-    }
-  }
-}
-
-function eachInstance(instances, cb) {
-  Object.keys(instances).forEach(function (pointer) {
-    instances[pointer].forEach(function (editor) {
-      return cb(pointer, editor);
-    });
-  });
-}
-/**
- * Main component to build editors. Each editor should receive the controller, which carries all required services
- * for editor initialization
- *
- * ### Usage
- *
- * Instantiate the controller
- *
- * ```js
- * import { Controller } from "editron";
- * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
- * const editron = new Controller(jsonSchema);
- * ```
- *
- * or, using all parameters
- *
- * ```js
- *  import { Controller } from "editron";
- *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
- *  // data = { title: "Hello" } - or simply use {}
- *  // options = { editors: [ complete list of custom editors ] }
- *  const editron = new Controller(jsonSchema, data, options);
- * ```
- *
- * and start rendering editors
- *
- * ```js
- *  const editor = editron.createEditor("#", document.querySelector("#editor"));
- *  // render from title only: editron.createEditor("#/title", document.querySelector("#title"));
- * ```
- *
- * to fetch the generated data use
- *
- * ```js
- *  const data = editron.getData();
- * ```
- *
- * @param  {Object} schema          - json schema describing required data/form template
- * @param  {Any} data               - initial data for given json-schema
- * @param  {Object} [options]       - configuration options
- * @param  {Array} options.editors  - list of editron-editors/widgets to use. Order defines editor to use
- *      (based on editorOf-method)
- */
-
-
-var Controller =
-/*#__PURE__*/
-function () {
-  function Controller() {
-    var _this = this;
-
-    var schema = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, Controller);
-
-    schema = UISchema.extendSchema(schema);
-    this.options = _extends({
-      editors: [].concat(_toConsumableArray(plugin.getEditors()), [__webpack_require__(/*! ./editors/oneofeditor */ "./editors/oneofeditor/index.js"), __webpack_require__(/*! ./editors/arrayeditor */ "./editors/arrayeditor/index.js"), __webpack_require__(/*! ./editors/objecteditor */ "./editors/objecteditor/index.js"), __webpack_require__(/*! ./editors/valueeditor */ "./editors/valueeditor/index.js")])
-    }, options);
-    this.disabled = false;
-    this.editors = this.options.editors;
-    this.state = new State();
-    this.instances = {};
-    this.core = new Core();
-    this._proxy = createProxy(this.options.proxy);
-    plugin.getValidators().forEach(function (_ref) {
-      var _ref2 = _toArray(_ref),
-          validationType = _ref2[0],
-          validator = _ref2.slice(1);
-
-      try {
-        if (validationType === "format") {
-          return _this.addFormatValidator.apply(_this, _toConsumableArray(validator));
-        } else if (validationType === "keyword") {
-          return _this.addKeywordValidator.apply(_this, _toConsumableArray(validator));
-        }
-
-        throw new Error("Unknown validation type '".concat(validationType, "'"));
-      } catch (e) {
-        console.log("Error:", e.message);
-      }
-
-      return false;
-    });
-    this.schemaService = new SchemaService(schema, data, this.core);
-    this.validationService = new ValidationService(this.state, schema, this.core); // enable i18n error-translations
-
-    this.validationService.setErrorHandler(function (error) {
-      return i18n.translateError(_this, error);
-    }); // merge given data with template data
-
-    data = this.schemaService.addDefaultData(data, schema);
-    this.dataService = new DataService(this.state, data); // start validation after data has been updated
-
-    this.onAfterDataUpdate = this.dataService.on(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate.bind(this)); // run initial validation
-
-    this.validateAll();
-  }
-
-  _createClass(Controller, [{
-    key: "resetUndoRedo",
-    value: function resetUndoRedo() {
-      this.dataService.resetUndoRedo();
-    }
-  }, {
-    key: "setActive",
-    value: function setActive() {
-      var _this2 = this;
-
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      var disabled = active === false;
-
-      if (this.disabled === disabled) {
-        return;
-      }
-
-      this.disabled = disabled;
-      eachInstance(this.getInstances(), function (pointer, editor) {
-        editor.setActive(!_this2.disabled);
-      });
-    }
-  }, {
-    key: "isActive",
-    value: function isActive() {
-      return !this.disabled;
-    }
-    /**
-     * Helper to create dom elements via mithril syntax
-     *
-     * @param  {String} selector    - a css selector describing the desired element
-     * @param  {Object} attributes  - a map of dom attribute:value of the element (reminder className = class)
-     * @return {HTMLDomElement} the resulting DOMHtml element (not attached)
-     */
-
-  }, {
-    key: "createElement",
-    value: function createElement(selector, attributes) {
-      // eslint-disable-line class-methods-use-this
-      return _createElement(selector, attributes);
-    }
-    /**
-     * The only entry point to create editors.
-     * Use in application and from editors to create (delegate) child editors
-     *
-     * @param  {String} pointer         - data pointer to editor in current state
-     * @param  {HTMLElement} element    - parent element of create editor. Will be appended automatically
-     * @param  {Object} [options]       - individual editor options
-     * @return {Object|undefined} created editor-instance or undefined;
-     */
-
-  }, {
-    key: "createEditor",
-    value: function createEditor(pointer, element, options) {
-      if (pointer == null || element == null) {
-        throw new Error("Missing ".concat(pointer == null ? "pointer" : "element", " in createEditor"));
-      }
-
-      assertValidPointer(pointer); // merge schema["editron:ui"] object with options. options precede
-
-      var instanceOptions = _extends({
-        id: getID(pointer),
-        pointer: pointer,
-        disabled: this.disabled
-      }, UISchema.copyOptions(pointer, this), options); // find a matching editor
-
-
-      var Editor = selectEditor(this.getEditors(), pointer, this, instanceOptions);
-
-      if (Editor === false) {
-        return undefined;
-      }
-
-      if (Editor === undefined) {
-        console.warn("Could not resolve an editor for ".concat(pointer), this.schema().get(pointer));
-        return undefined;
-      } // iniitialize editor and save editor in list
-      // @TODO loose reference to destroyed editors
-
-
-      var editor = new Editor(pointer, this, instanceOptions);
-      element.appendChild(editor.toElement());
-      editor.setActive(!this.disabled);
-      this.addInstance(pointer, editor);
-      return editor;
-    }
-    /**
-     * Call this method, when your editor is destroyed, deregistering its instance on editron
-     * @param  {Instance} editor    - editor instance to remove
-     */
-
-  }, {
-    key: "removeInstance",
-    value: function removeInstance(editor) {
-      // controller inserted child and removes it here again
-      var $element = editor.toElement();
-
-      if ($element.parentNode) {
-        $element.parentNode.removeChild($element);
-      }
-
-      removeEditorFrom(this.instances, editor);
-    }
-  }, {
-    key: "addInstance",
-    value: function addInstance(pointer, editor) {
-      this.instances[pointer] = this.instances[pointer] || [];
-      this.instances[pointer].push(editor);
-    }
-    /**
-     * Request to insert a child item (within the data) at the given pointer. If multiple options are present, a
-     * dialogue is opened to let the user select the appropriate type of child (oneof).
-     * @param {String} pointer  - to array on which to insert the child
-     * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
-     */
-
-  }, {
-    key: "addItemTo",
-    value: function addItemTo(pointer) {
-      var index = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-      addItem(this.data(), this.schema(), pointer, index);
-      LocationService["goto"](gp.join(pointer, index, true));
-    }
-    /**
-     * Get or update data from a pointer
-     * @return {DataService} DataService instance
-     */
-
-  }, {
-    key: "data",
-    value: function data() {
-      return this.dataService;
-    }
-    /**
-     * Get the json schema from a pointer or replace the schema
-     * @return {SchemaService} SchemaService instance
-     */
-
-  }, {
-    key: "schema",
-    value: function schema() {
-      return this.schemaService;
-    }
-    /**
-     * @return {Foxy} proxy instance
-     */
-
-  }, {
-    key: "proxy",
-    value: function proxy() {
-      return this._proxy;
-    }
-    /**
-     * Validate data based on a json-schema and register to generated error events
-     *
-     * - start validation
-     * - get your current errors at _pointer_
-     * - hook into validation to receive your errors at _pointer_
-     *
-     * @return {ValidationService} ValidationService instance
-     */
-
-  }, {
-    key: "validator",
-    value: function validator() {
-      return this.validationService;
-    }
-    /**
-     * ## Usage
-     *  goto(pointer) - Jump to given json pointer. This might also load another page if the root property changes.
-     *  setCurrent(pointer) - Update current pointer, but do not jump to target
-     *
-     * @return {Object} LocationService-Singleton
-     */
-
-  }, {
-    key: "location",
-    value: function location() {
-      return LocationService;
-    }
-    /**
-     * Set the application data
-     * @param {Any} data    - json data matching registered json-schema
-     */
-
-  }, {
-    key: "setData",
-    value: function setData(data) {
-      data = this.schemaService.addDefaultData(data);
-      this.data().set("#", data);
-    }
-    /**
-     * @param {JsonPointer} [pointer="#"] - location of data to fetch. Defaults to root (all) data
-     * @return {Any} data at the given location
-     */
-
-  }, {
-    key: "getData",
-    value: function getData() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-      return this.data().get(pointer);
-    }
-    /**
-     * @return {Array} registered editor-widgets used to edit the json-data
-     */
-
-  }, {
-    key: "getEditors",
-    value: function getEditors() {
-      return this.editors;
-    }
-    /**
-     * @return {Object} currently active editor/widget instances
-     */
-
-  }, {
-    key: "getInstances",
-    value: function getInstances() {
-      return this.instances;
-    }
-    /**
-     * @param {String} format       - value of _format_
-     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
-     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
-     *      als return a promise
-     */
-
-  }, {
-    key: "addFormatValidator",
-    value: function addFormatValidator(format, validator) {
-      addValidator.format(this.core, format, validator);
-    }
-    /**
-     * @param {String} datatype     - JSON-Schema datatype to register attribute, e.g. "string" or "object"
-     * @param {String} keyword      - custom keyword
-     * @param {Function} validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
-     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
-     *      als return a promise
-     */
-
-  }, {
-    key: "addKeywordValidator",
-    value: function addKeywordValidator(datatype, keyword, validator) {
-      addValidator.keyword(this.core, datatype, keyword, validator);
-    }
-    /**
-     * Change the new schema for the current data
-     * @param {Object} schema   - a valid json-schema
-     */
-
-  }, {
-    key: "setSchema",
-    value: function setSchema(schema) {
-      schema = UISchema.extendSchema(schema);
-      this.validationService.set(schema);
-      this.schemaService.setSchema(schema);
-    } // update data in schema service
-
-  }, {
-    key: "update",
-    value: function update() {
-      this.schemaService.setData(this.dataService.get());
-    }
-    /**
-     * Starts validation of current data
-     */
-
-  }, {
-    key: "validateAll",
-    value: function validateAll() {
-      var _this3 = this;
-
-      setTimeout(function () {
-        return _this3.destroyed !== true && _this3.validationService.validate(_this3.dataService.getDataByReference());
-      });
-    }
-    /**
-     * Destroy the editor, its widgets and services
-     */
-
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      var _this4 = this;
-
-      // delete all editors
-      Object.keys(this.instances).forEach(function (pointer) {
-        _this4.instances[pointer] && _this4.instances[pointer].forEach(function (instance) {
-          return instance.destroy();
-        });
-      });
-      this.destroyed = true;
-      this.instances = {};
-      this.schemaService.destroy();
-      this.validationService.destroy();
-      this.dataService.destroy();
-      this.dataService.off(DataService.EVENTS.AFTER_UPDATE, this.onAfterDataUpdate);
-    }
-  }, {
-    key: "onAfterDataUpdate",
-    value: function onAfterDataUpdate(_ref3) {
-      var _this5 = this;
-
-      var pointer = _ref3.pointer;
-      this.update(); // @feature selective-validation
-
-      if (pointer.includes("/")) {
-        // @attention validate parent-object or array, in order to support parent-validators.
-        // Any higher validators will still be ignore
-        pointer = pointer.replace(/\/[^/]+$/, "");
-      }
-
-      setTimeout(function () {
-        var data = _this5.dataService.getDataByReference();
-
-        _this5.destroyed !== true && _this5.validationService.validate(data, pointer);
-      });
-    }
-  }, {
-    key: "changePointer",
-    value: function changePointer(newPointer, editor) {
-      removeEditorFrom(this.instances, editor);
-      this.addInstance(newPointer, editor);
-    }
-  }]);
-
-  return Controller;
-}();
-
-module.exports = Controller;
-
-/***/ }),
-
-/***/ "./components/container/index.js":
-/*!***************************************!*\
-  !*** ./components/container/index.js ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var ContainerHeader = __webpack_require__(/*! ../containerheader */ "./components/containerheader/index.js");
-
-var ContainerErrors = __webpack_require__(/*! ../containererrors */ "./components/containererrors/index.js");
-
-var ContainerDescription = __webpack_require__(/*! ../containerdescription */ "./components/containerdescription/index.js");
-/**
- * @view ContainerView
- *
- * A Container Component is used for any non-value like object or arrays. They hold other values. This group may expose
- * a group-title and errors. Any childnodes must go to the container '.jed-container__children'.
- *
- * @type {Object}
- */
-
-
-var ContainerView = {
-  childContainerSelector: ".editron-container__children",
-  getChildContainer: function getChildContainer($element) {
-    var $childContainer = $element.querySelector(ContainerView.childContainerSelector);
-
-    if ($childContainer == null) {
-      throw new Error("Container-Component hast not yet been rendered");
-    }
-
-    return $childContainer;
-  },
-  view: function view(vnode) {
-    return [vnode.attrs.hideTitle === true ? null : m(ContainerHeader, vnode.attrs), m(ContainerDescription, vnode.attrs), vnode.children, m(ContainerErrors, vnode.attrs), m(this.childContainerSelector)];
-  }
-};
-module.exports = ContainerView;
-
-/***/ }),
-
-/***/ "./components/containerdescription/index.js":
-/*!**************************************************!*\
-  !*** ./components/containerdescription/index.js ***!
-  \**************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var populated = __webpack_require__(/*! ../../utils/populated */ "./utils/populated.js");
-/**
- * @name   ContainerDescription
- * @description
- * Mithril Component to render a description
- *
- * # Usage
- *
- * render by
- *
- * ```js
- *  m(ContainerDescription, { description: "description" }
- * ```
- *
- * which will result in a html-node like
- *
- * ```html
- *  <div class="editron-container__description mmf-meta">"description"</div>
- * ```
- *
- * @type {Object} m.render(ContainerDescription)
- * @param {String|Object} description  - html string or mithril-vnode of a description
- */
-
-
-module.exports = {
-  view: function view(vnode) {
-    return populated(vnode.attrs.description, m(".editron-container__description.mmf-meta", m.trust(vnode.attrs.description)));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/containererrors/index.js":
-/*!*********************************************!*\
-  !*** ./components/containererrors/index.js ***!
-  \*********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(vnode) {
-    if (Array.isArray(vnode.attrs.errors) === false || vnode.attrs.errors.length === 0) {
-      return null;
-    }
-
-    return m("ul.editron-container__errors", vnode.attrs.errors.map(function (error) {
-      return m("li", {
-        "class": "is-".concat(error.severity || "error")
-      }, error.message);
-    }));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/containerheader/index.js":
-/*!*********************************************!*\
-  !*** ./components/containerheader/index.js ***!
-  \*********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var getID = __webpack_require__(/*! ../../utils/getID */ "./utils/getID.js");
-
-var populated = __webpack_require__(/*! ../../utils/populated */ "./utils/populated.js");
-
-function getClass(_ref) {
-  var title = _ref.title,
-      icon = _ref.icon,
-      hasAction = _ref.hasAction,
-      disabled = _ref.disabled;
-  var classname = "".concat(title ? "withTitle" : "noTitle");
-  classname += " ".concat(hasAction ? "withActions" : "noActions");
-  classname += " ".concat(icon ? "withIcon" : "noIcon");
-  classname += disabled ? " is-disabled" : "";
-  return classname;
-}
-
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({
-      pointer: "",
-      icon: "",
-      title: "",
-      disabled: false // onadd
-      // ondelete
-      // onmoveup
-      // onmovedown
-
-    }, vnode.attrs);
-
-    attrs.hasAction = attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown;
-    return m(".editron-container__header", {
-      "class": getClass(attrs),
-      name: getID(attrs.pointer)
-    }, m(".editron-container__title", populated(vnode.attrs.icon, m("i.mmf-icon", attrs.icon)), !attrs.hideTitle && m("h2", attrs.title)), m(".editron-container__actions", attrs.onmoveup ? m("i.mmf-icon.mmf-icon--add", {
-      onclick: attrs.onmoveup
-    }, "arrow_upward") : "", attrs.onmovedown ? m("i.mmf-icon.mmf-icon--add", {
-      onclick: attrs.onmovedown
-    }, "arrow_downward") : "", attrs.onadd ? m("i.mmf-icon.mmf-icon--add", {
-      onclick: function onclick() {
-        return attrs.onadd();
-      }
-    }, "add") : "", attrs.ondelete ? m("i.mmf-icon.mmf-icon--delete", {
-      onclick: attrs.ondelete
-    }, "delete") : ""));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/index.js":
-/*!*****************************!*\
-  !*** ./components/index.js ***!
-  \*****************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  container: __webpack_require__(/*! ./container */ "./components/container/index.js"),
-  containerdescription: __webpack_require__(/*! ./containerdescription */ "./components/containerdescription/index.js"),
-  containererrors: __webpack_require__(/*! ./containererrors */ "./components/containererrors/index.js"),
-  containerheader: __webpack_require__(/*! ./containerheader */ "./components/containerheader/index.js"),
-  overlay: __webpack_require__(/*! ./overlay */ "./components/overlay/index.js"),
-  // overlayjson: require("./overlayjson"),
-  overlayselecttiles: __webpack_require__(/*! ./overlayselecttiles */ "./components/overlayselecttiles/index.js")
-};
-
-/***/ }),
-
-/***/ "./components/overlay/index.js":
-/*!*************************************!*\
-  !*** ./components/overlay/index.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Button = __webpack_require__(/*! mithril-material-forms */ "./node_modules/mithril-material-forms/index.js").button;
-
-module.exports = {
-  /**
-   * @View mithril
-   * Content overlay
-   *
-   * @param  {VNode} vnode                        - mithril virtual node
-   * @param  {VNode.attrs.container} container    - parent container
-   * @return {Object} virtual node
-   */
-  view: function view(vnode) {
-    return m("section.ui-overlay__card", {
-      "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
-    }, vnode.attrs.header ? m(".ui-card__header", m("h1", vnode.attrs.header)) : "", m(".ui-card__content", {
-      oncreate: function oncreate(contentNode) {
-        return contentNode.dom.appendChild(vnode.attrs.container);
-      }
-    }), m(".ui-card__footer", m(Button, {
-      onClick: vnode.attrs.onAbort
-    }, vnode.attrs.titleAbort), vnode.attrs.showSave ? m(Button, {
-      onClick: vnode.attrs.onSave
-    }, "Speichern") : ""));
-  }
-};
-
-/***/ }),
-
-/***/ "./components/overlayselecttiles/index.js":
-/*!************************************************!*\
-  !*** ./components/overlayselecttiles/index.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Tile = {
-  view: function view(vnode) {
-    return m(".editron-form-box", {
-      "data-value": vnode.attrs.value,
-      "data-type": vnode.attrs.title.toLowerCase() // @uitest
-
-    }, m(".editron-form-box__content", m(".editron-form-box__title", [vnode.attrs.icon ? m(".mmf-icon", vnode.attrs.icon) : "", vnode.attrs.title]), m(".editron-form-box__description", vnode.attrs.description)));
-  }
-};
-
-function getDataValue(node) {
-  while (node.parentNode && node.getAttribute("data-value") == null && node.className.includes("editron-form-tiles") === false) {
-    node = node.parentNode;
-  }
-
-  return node.getAttribute("data-value");
-}
-/**
- * @View mithril
- * Overlay content to pick options. Displayed as tiles
- * @type {Object}
- */
-
-
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({
-      value: 0,
-      options: [{
-        title: "Keine Optionen angegeben",
-        value: false
-      }],
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    return m(".editron-form-tiles", {
-      onclick: function onclick(e) {
-        var value = getDataValue(e.target);
-        attrs.onchange(value);
-      }
-    }, attrs.options.map(function (tile) {
-      return m(Tile, {
-        active: attrs.value === tile.value,
-        title: tile.title,
-        icon: tile.icon,
-        description: m.trust(tile.description),
-        // allow html
-        value: tile.value
-      });
-    }));
-  }
-};
-
-/***/ }),
-
-/***/ "./editors/AbstractEditor.js":
-/*!***********************************!*\
-  !*** ./editors/AbstractEditor.js ***!
-  \***********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function getTypeClass(schema) {
-  return schema.type === "array" || schema.type === "object" ? schema.type : "value";
-}
-/**
- * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
- * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
- * the tedious and redundant controller/serivce/pointer bootstraping.
- *
- * Still required is
- *
- *      1. a custom `static editorOf(p, c, o)`-method, to register on a schema
- *      2. an `update(patch)`-method to respond to changes of the data at _pointer_
- *      3. a custom `updatePointer(newPointer)`-method to respond to changes in the location of the editor. Most of
- *          times, the pointer will be used in rendering and/or when creating child-editors. Dont forget to call
- *          `super.updatePointer(newPointer)`
- *
- * and optionally an `updateErrors(errors)`-method to handle new (or removed) errors.
- *
- * Convenience methods are
- *
- *      - `getData()` to fetch the associated data of the current _pointer_
- *      - `setData(newValue)` to update the associated data of the current _pointer_
- *      - `getSchema()` returning the json-schema of the current _pointer_
- *      - `getErrors()` returning a list of current errors
- *      - `toElement()` gives you the root dom-node for this editor (aka render target)
- *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
- *
- * @param {String} pointer          - pointer referencing the current data and schema
- * @param {Controller} controller   - editron controller instance
- * @param {Object} options          - resolved options object
- */
-
-
-var AbstractEditor =
-/*#__PURE__*/
-function () {
-  _createClass(AbstractEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller, options) {
-      // eslint-disable-line
-      throw new Error("Missing editorOf-method in custom editor");
-    }
-  }]);
-
-  function AbstractEditor(pointer, controller, options) {
-    _classCallCheck(this, AbstractEditor);
-
-    this.pointer = pointer;
-    this.controller = controller;
-    this.options = options;
-    this.dom = this.controller.createElement(".editron-container.editron-container--".concat(getTypeClass(this.getSchema())), options.attrs);
-    this.update = controller.data().observe(pointer, this.update.bind(this), options.notifyNestedChanges === true);
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this), options.notifyNestedErrors === true);
-    this.errors = this.controller.validator().getErrorsAndWarnings(pointer);
-  }
-
-  _createClass(AbstractEditor, [{
-    key: "update",
-    value: function update() {
-      throw new Error("Missing implemented of method 'update' in custom editor");
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      var oldPointer = this.pointer;
-      this.controller.data().removeObserver(oldPointer, this.update);
-      this.controller.validator().removeObserver(oldPointer, this.setErrors);
-      this.pointer = newPointer;
-      this.controller.data().observe(newPointer, this.update, this.options.notifyNestedChanges === true);
-      this.setErrors = this.controller.validator().observe(newPointer, this.setErrors);
-      return [newPointer, oldPointer];
-    }
-  }, {
-    key: "getData",
-    value: function getData() {
-      return this.controller.data().get(this.pointer);
-    }
-  }, {
-    key: "setData",
-    value: function setData(data) {
-      return this.controller.data().set(this.pointer, data);
-    }
-  }, {
-    key: "getErrors",
-    value: function getErrors() {
-      return this.errors;
-    }
-  }, {
-    key: "getSchema",
-    value: function getSchema() {
-      return this.controller.schema().get(this.pointer);
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "focus",
-    value: function focus() {
-      this.controller.location().setCurrent(this.pointer);
-    }
-  }, {
-    key: "blur",
-    value: function blur() {
-      this.controller.location().blur(this.pointer);
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.dom;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.controller.removeInstance(this); // remove editor from editron and our html-element (dom) from the DOM
-
-      this.controller.data().removeObserver(this.pointer, this.update);
-      this.controller.validator().removeObserver(this.pointer, this._addError);
-      this.controller.validator().off("beforeValidation", this._clearErrors);
-    }
-  }, {
-    key: "setErrors",
-    value: function setErrors(errors) {
-      this.errors = errors;
-
-      if (this.updateErrors) {
-        this.updateErrors(this.errors);
-      }
-    }
-  }]);
-
-  return AbstractEditor;
-}();
-
-module.exports = AbstractEditor;
-
-/***/ }),
-
-/***/ "./editors/AbstractValueEditor.js":
-/*!****************************************!*\
-  !*** ./editors/AbstractValueEditor.js ***!
-  \****************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var getId = __webpack_require__(/*! ../utils/getID */ "./utils/getID.js");
-
-var convert = {
-  "boolean": function boolean(value) {
-    if (value === "true") {
-      return true;
-    }
-
-    if (value === "false") {
-      return false;
-    }
-
-    return value;
-  },
-  integer: function integer(value) {
-    var converted = parseInt(value);
-
-    if (isNaN(converted) === false) {
-      return converted;
-    }
-
-    return value;
-  },
-  number: function number(value) {
-    var converted = parseFloat(value);
-
-    if (isNaN(converted) === false) {
-      return converted;
-    }
-
-    return value;
-  }
-};
-/**
- * Convenience class, which registers required events and base methods for value-editors (not object, array)
- *
- * Usage
- * ```js
- *      MyValueEditor extends AbstractValueEditor {
- *          constructor(pointer, controller, options) {
- *              super(pointer, controller, options);
- *              this.render();
- *          }
- *          render() {
- *              m.render(this.$element, m(MyView, this.viewModel));
- *          }
- *      }
- * ```
- */
-
-var AbstractValueEditor =
-/*#__PURE__*/
-function () {
-  _createClass(AbstractValueEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type !== "object" && schema.type !== "array";
-    }
-    /**
-     * #options
-     *      - editorValueType:String - custom type of editor value (added as classname)
-     *      - editorElementProperties:Object - add custom properties to main DOM-element
-     *      - viewModel:Object - viewModel which extends base viewmodel
-     *
-     * @param  {String} pointer         - json pointer to value
-     * @param  {Controller} controller  - json editor controller
-     * @param  {Object} options
-     */
-
-  }]);
-
-  function AbstractValueEditor(pointer, controller, options) {
-    var _this = this;
-
-    _classCallCheck(this, AbstractValueEditor);
-
-    this.pointer = pointer;
-    this.controller = controller;
-    var schema = controller.schema().get(pointer);
-    options = _extends({
-      viewModel: null,
-      title: null,
-      description: null,
-      editorValueType: schema["enum"] ? "select" : schema.type,
-      editorElementProperties: null
-    }, options); // create main DOM-element for view-generation
-
-    this.$element = controller.createElement(".editron-value.editron-value--".concat(options.editorValueType), _extends({
-      name: getId(pointer)
-    }, options.attrs)); // use this model to generate the view. may be customized with `options.viewModel`
-
-    this.viewModel = _extends({
-      pointer: pointer,
-      id: getId(pointer),
-      title: options.title,
-      description: options.description,
-      value: controller.data().get(pointer),
-      instantUpdate: options.instantUpdate,
-      schema: schema,
-      options: options,
-      errors: controller.validator().getErrorsAndWarnings(pointer),
-      onfocus: function onfocus() {
-        return controller.location().setCurrent(pointer);
-      },
-      onblur: function onblur() {
-        return controller.location().blur(pointer);
-      },
-      onchange: function onchange(value) {
-        if (convert[schema.type]) {
-          value = convert[schema.type](value);
-        }
-
-        _this.setValue(value);
-      }
-    }, options.viewModel); // in order to deregister callbacks in destroy(), bind all callbacks to this class
-
-    this.update = controller.data().observe(pointer, this.update.bind(this));
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this)); // this.render();
-  }
-
-  _createClass(AbstractValueEditor, [{
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(pointer) {
-      var _this2 = this;
-
-      if (pointer === this.pointer) {
-        return;
-      }
-
-      this.controller.changePointer(pointer, this);
-      var oldPointer = this.pointer;
-      this.$element.setAttribute("name", "editor-".concat(pointer));
-      this.pointer = pointer;
-      this.viewModel.pointer = pointer;
-      this.viewModel.id = getId(pointer);
-
-      this.viewModel.onfocus = function () {
-        return _this2.controller.location().setCurrent(pointer);
-      };
-
-      this.controller.data().removeObserver(oldPointer, this.update);
-      this.controller.validator().removeObserver(oldPointer, this.setErrors);
-      this.controller.data().observe(pointer, this.update);
-      this.controller.validator().observe(pointer, this.setErrors);
-      this.update();
-    }
-  }, {
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      this.viewModel.disabled = active === false;
-
-      if (this.viewModel.options) {
-        this.viewModel.options.disabled = this.viewModel.disabled;
-      }
-
-      this.render();
-    } // update display value in view
-
-  }, {
-    key: "update",
-    value: function update() {
-      this.viewModel.value = this.controller.data().get(this.pointer);
-      this.viewModel.disabled = !this.controller.isActive();
-      this.render();
-    } // updates value in data-store
-
-  }, {
-    key: "setValue",
-    value: function setValue(value) {
-      this.controller.data().set(this.pointer, value); // do not trigger rendering here. data-observer will notify change event
-    } // adds an error to view
-
-  }, {
-    key: "setErrors",
-    value: function setErrors(errors) {
-      this.viewModel.errors = errors;
-      this.render();
-    } // update view
-
-  }, {
-    key: "render",
-    value: function render() {
-      // this.$element.innerHTML = "<b>Overwrite AbstractValueEditor.render() to generate your view</b>";
-      m.render(this.$element, m("b", "Overwrite AbstractValueEditor.render() to generate view"));
-    } // return main dom element
-
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    } // destroy this editor
-
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this); // destroy this editor only once
-
-        m.render(this.$element, m("i"));
-        this.viewModel = null;
-        this.controller.data().removeObserver(this.pointer, this.update);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.$element = null;
-      }
-    }
-  }]);
-
-  return AbstractValueEditor;
-}();
-
-module.exports = AbstractValueEditor;
-
-/***/ }),
-
-/***/ "./editors/arrayeditor/ArrayItemEditor.js":
-/*!************************************************!*\
-  !*** ./editors/arrayeditor/ArrayItemEditor.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var ArrayItemView = __webpack_require__(/*! ./ArrayItemView */ "./editors/arrayeditor/ArrayItemView.js");
-
-var arrayUtils = __webpack_require__(/*! ../../utils/array */ "./utils/array.js");
-
-var ArrayItemEditor =
-/*#__PURE__*/
-function () {
-  function ArrayItemEditor(pointer, controller) {
-    var _this = this;
-
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ArrayItemEditor);
-
-    // eslint-disable-next-line max-len
-    this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
-    this.controller = controller;
-
-    this.onAdd = function () {
-      return _this.add();
-    };
-
-    this.onRemove = function () {
-      return _this.remove();
-    };
-
-    this.viewModel = _extends({
-      disabled: false,
-      onadd: this.onAdd,
-      onremove: this.onRemove,
-      onmove: function onmove(index) {
-        return _this.move(index);
-      }
-    }, options);
-    this.render();
-    var $target = this.$element.querySelector(ArrayItemView.editorTarget);
-    this.editor = controller.createEditor(pointer, $target, {
-      ondelete: this.onRemove
-    });
-    this.updatePointer(pointer);
-  }
-
-  _createClass(ArrayItemEditor, [{
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(ArrayItemView, this.viewModel));
-    }
-  }, {
-    key: "add",
-    value: function add() {
-      arrayUtils.addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
-    }
-  }, {
-    key: "remove",
-    value: function remove() {
-      arrayUtils.removeItem(this.parentPointer, this.controller, this.viewModel.index);
-    }
-  }, {
-    key: "move",
-    value: function move(to) {
-      arrayUtils.moveItem(this.parentPointer, this.controller, this.viewModel.index, to);
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      this.parentPointer = gp.join(newPointer, "..", true);
-      this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
-      this.viewModel.pointer = newPointer;
-      this.viewModel.length = this.controller.data().get(this.parentPointer).length;
-      this.render();
-      this.editor && this.editor.updatePointer(newPointer);
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.viewModel.pointer;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.viewModel = null;
-        this.editor && this.editor.destroy();
-        this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
-      }
-    }
-  }], [{
-    key: "getIndex",
-    value: function getIndex(pointer) {
-      var parentPointer = gp.join(pointer, "..");
-      return parseInt(pointer.replace("".concat(parentPointer, "/"), ""));
-    }
-  }]);
-
-  return ArrayItemEditor;
-}();
-
-module.exports = ArrayItemEditor;
-
-/***/ }),
-
-/***/ "./editors/arrayeditor/ArrayItemView.js":
-/*!**********************************************!*\
-  !*** ./editors/arrayeditor/ArrayItemView.js ***!
-  \**********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var ArrayItemView = {
-  editorTarget: ".editron-item",
-  view: function view(_ref) {
-    var attrs = _ref.attrs;
-    var _attrs$disabled = attrs.disabled,
-        disabled = _attrs$disabled === void 0 ? false : _attrs$disabled;
-    var canRemove = attrs.minItems < attrs.length;
-    var canAdd = attrs.maxItems > attrs.length;
-    var showIndex = attrs.showIndex === true;
-    return [// CONTROLS
-    m("ul.editron-container__controls.editron-container__controls--child", {
-      "class": disabled ? "is-disabled" : undefined
-    }, attrs.move === false || attrs.index === 0 ? "" : m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.onmove(attrs.index - 1);
-      }
-    }, m("i.mmf-icon", "arrow_upward")), attrs.move === false || attrs.index === attrs.length - 1 ? "" : m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.onmove(attrs.index + 1);
-      }
-    }, m("i.mmf-icon", "arrow_downward")), attrs.remove && attrs.ondelete && canRemove ? m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.ondelete(attrs.index);
-      }
-    }, m("i.mmf-icon", "delete")) : "", attrs.add && attrs.onadd && canAdd ? m("li", {
-      onclick: function onclick() {
-        return !disabled && attrs.onadd(attrs.index);
-      }
-    }, m("i.mmf-icon", "add")) : ""), // TARGET CONTAINER FOR EDITOR
-    m(this.editorTarget, {
-      "data-index": "".concat(attrs.index + 1, " / ").concat(attrs.length),
-      "class": [disabled ? "is-disabled" : "", canRemove ? "has-remove-enabled" : "has-remove-disabled", canAdd ? "has-add-enabled" : "has-add-disabled", showIndex ? "with-index" : ""].join(" ").trim()
-    }), // ADD BUTTON
-    attrs.insert && canAdd ? m(".editron-container__separator.mmf-row", m(".editron-container__button--add", {
-      "class": disabled ? "is-disabled" : undefined,
-      onclick: function onclick(e) {
-        console.log("add", disabled);
-
-        if (!disabled) {
-          e.preventDefault();
-          attrs.onadd && attrs.onadd(attrs.index);
-        }
-      }
-    }, m("i.mmf-icon", "add_circle"))) : ""];
-  }
-};
-module.exports = ArrayItemView;
-
-/***/ }),
-
-/***/ "./editors/arrayeditor/index.js":
-/*!**************************************!*\
-  !*** ./editors/arrayeditor/index.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var ArrayItemEditor = __webpack_require__(/*! ./ArrayItemEditor */ "./editors/arrayeditor/ArrayItemEditor.js");
-
-var diffpatch = __webpack_require__(/*! ../../services/utils/diffpatch */ "./services/utils/diffpatch.js");
-
-var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
-
-var ArrayEditor =
-/*#__PURE__*/
-function () {
-  _createClass(ArrayEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type === "array";
-    }
-  }]);
-
-  function ArrayEditor(pointer, controller) {
-    var _this = this;
-
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ArrayEditor);
-
-    // add id to element, since no other input-form is associated with this editor
-    options.attrs = _extends({
-      id: options.id
-    }, options.attrs);
-    var schema = controller.schema().get(pointer);
-    var data = controller.data().get(pointer);
-
-    this.onAdd = function () {
-      var index = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-
-      if (!_this.viewModel.disabled) {
-        controller.addItemTo(_this.pointer, index);
-      }
-    };
-
-    var arrayHTMLElement = ".editron-container.editron-container--array.withAddButton";
-    this.$element = controller.createElement(arrayHTMLElement, options.attrs);
-    this.controller = controller;
-    this.pointer = pointer;
-    this.children = [];
-    this.viewModel = _extends({
-      pointer: pointer,
-      attrs: {},
-      errors: controller.validator().getErrorsAndWarnings(pointer),
-      onadd: this.onAdd,
-      length: data.length,
-      maxItems: schema.maxItems || Infinity,
-      minItems: schema.minItems || 0
-    }, options);
-    this.viewModel.controls = _extends({
-      add: false,
-      remove: true,
-      move: true,
-      insert: true,
-      showIndex: options["array:index"] === true,
-      maxItems: schema.maxItems || Infinity,
-      minItems: schema.minItems || 0
-    }, options.controls);
-    this.updateView = controller.data().observe(pointer, this.updateView.bind(this));
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-    this.render();
-    this.$items = this.$element.querySelector(View.childContainerSelector);
-    this.rebuildChildren();
-    this.updateControls();
-  }
-
-  _createClass(ArrayEditor, [{
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      var disabled = active === false;
-      this.viewModel.disabled = disabled;
-      this.viewModel.controls.disabled = disabled;
-      this.rebuildChildren();
-      this.render();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      this.rebuildChildren();
-      this.updateControls();
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      if (this.pointer === newPointer) {
-        return;
-      }
-
-      this.controller.changePointer(newPointer, this);
-      var previousPointer = this.pointer;
-      this.pointer = newPointer;
-      this.viewModel.pointer = newPointer;
-      this.viewModel.attrs.id = newPointer;
-      this.controller.data().removeObserver(previousPointer, this.updateView);
-      this.controller.validator().removeObserver(previousPointer, this.setErrors);
-      this.controller.data().observe(newPointer, this.updateView);
-      this.controller.validator().observe(newPointer, this.setErrors);
-      this.children.forEach(function (child, index) {
-        return child.updatePointer("".concat(newPointer, "/").concat(index));
-      });
-      this.render();
-    }
-  }, {
-    key: "updateView",
-    value: function updateView(changeEvent) {
-      if (changeEvent && changeEvent.patch) {
-        this.applyPatches(changeEvent.patch);
-      } else {
-        this.rebuildChildren();
-      }
-
-      this.updateControls();
-    }
-  }, {
-    key: "applyPatches",
-    value: function applyPatches(patch) {
-      var _this2 = this;
-
-      // fetch a copy of the original list
-      var originalChildren = this.children.slice(0); // and patch the current list
-
-      diffpatch.patch(this.children, patch); // search for inserted children
-
-      this.children.forEach(function (child, index) {
-        if (child instanceof ArrayItemEditor === false) {
-          var pointer = "".concat(_this2.pointer, "/").concat(index);
-          var newChild = new ArrayItemEditor(pointer, _this2.controller, _this2.viewModel.controls); // @insert?
-
-          _this2.children[index] = newChild;
-        }
-      }); // search for removed children
-
-      originalChildren.forEach(function (child) {
-        if (_this2.children.indexOf(child) === -1) {
-          child.destroy();
-        }
-      }); // update view: move and inserts nodes
-
-      var currentLocation = this.controller.location().getCurrent();
-
-      for (var i = 0, l = this.children.length; i < l; i += 1) {
-        var previousPointer = this.children[i].getPointer();
-        var currentPointer = "".concat(this.pointer, "/").concat(i); // update current location
-
-        if (currentLocation.indexOf(previousPointer) === 0) {
-          var editorLocation = currentLocation.replace(previousPointer, currentPointer);
-          this.controller.location().setCurrent(editorLocation);
-        } // update child views to match patched list
-
-
-        this.children[i].updatePointer(currentPointer);
-
-        if (this.$items.children[i] === this.children[i].toElement()) {
-          // skip moving node, already in place
-          continue;
-        } else if (i + 1 < this.$items.children.length) {
-          // move node to correct position
-          this.$items.insertBefore(this.children[i].toElement(), this.$items.children[i + 1]);
-        } else {
-          // remaining nodes may be simply appended
-          this.$items.appendChild(this.children[i].toElement());
-        }
-      }
-    }
-  }, {
-    key: "rebuildChildren",
-    value: function rebuildChildren() {
-      var _this3 = this;
-
-      var data = this.controller.data().get(this.pointer); // delete all child editors
-
-      this.children.forEach(function (editor) {
-        return editor.destroy();
-      });
-      this.children.length = 0;
-      this.$items.innerHTML = ""; // recreate child editors
-
-      data.forEach(function (item, index) {
-        var childPointer = "".concat(_this3.pointer, "/").concat(index);
-        var childEditor = new ArrayItemEditor(childPointer, _this3.controller, _this3.viewModel.controls);
-
-        _this3.$items.appendChild(childEditor.toElement());
-
-        _this3.children.push(childEditor);
-      });
-    }
-  }, {
-    key: "updateControls",
-    value: function updateControls() {
-      this.viewModel.length = this.children.length;
-      this.viewModel.onadd = this.viewModel.maxItems > this.children.length ? this.onAdd : false;
-      this.$element.classList.toggle("has-add-disabled", this.viewModel.maxItems <= this.children.length);
-      this.$element.classList.toggle("has-remove-disabled", this.viewModel.minItems >= this.children.length);
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "setErrors",
-    value: function setErrors(errors) {
-      this.viewModel.errors = errors;
-      this.render();
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel));
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this);
-        this.viewModel = null;
-        m.render(this.$element, m("i"));
-        this.controller.data().removeObserver(this.pointer, this.updateView);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.children.forEach(function (editor) {
-          return editor.destroy();
-        });
-      }
-    }
-  }]);
-
-  return ArrayEditor;
-}();
-
-module.exports = ArrayEditor;
-
-/***/ }),
-
-/***/ "./editors/index.js":
-/*!**************************!*\
-  !*** ./editors/index.js ***!
-  \**************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  AbstractEditor: __webpack_require__(/*! ./AbstractEditor */ "./editors/AbstractEditor.js"),
-  AbstractValueEditor: __webpack_require__(/*! ./AbstractValueEditor */ "./editors/AbstractValueEditor.js"),
-  ArrayEditor: __webpack_require__(/*! ./arrayeditor */ "./editors/arrayeditor/index.js"),
-  ObjectEditor: __webpack_require__(/*! ./objecteditor */ "./editors/objecteditor/index.js"),
-  OneOfEditor: __webpack_require__(/*! ./oneofeditor */ "./editors/oneofeditor/index.js"),
-  ValueEditor: __webpack_require__(/*! ./valueeditor */ "./editors/valueeditor/index.js")
-};
-
-/***/ }),
-
-/***/ "./editors/objecteditor/index.js":
-/*!***************************************!*\
-  !*** ./editors/objecteditor/index.js ***!
-  \***************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var TextareaForm = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
-
-var OverlayService = __webpack_require__(/*! ../../services/OverlayService */ "./services/OverlayService.js");
-
-var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
-
-function showJSON(controller, data, title) {
-  var element = controller.createElement(".overlay__item.overlay__item--json");
-  OverlayService.open(element, {
-    ok: true,
-    save: false
-  }); // render textarea after it is injected into dom, to correctly update textarea size
-
-  m.render(element, m(TextareaForm, {
-    title: title,
-    value: JSON.stringify(data, null, 4)
-  }));
-}
-
-var ObjectEditor =
-/*#__PURE__*/
-function () {
-  _createClass(ObjectEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type === "object";
-    }
-  }]);
-
-  function ObjectEditor(pointer, controller) {
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ObjectEditor);
-
-    // add id to element, since no other input-form is associated with this editor
-    options.attrs = _extends({
-      id: options.id
-    }, options.attrs);
-    this.$element = controller.createElement(".editron-container.editron-container--object", options.attrs);
-    this.pointer = pointer;
-    this.options = options;
-    this.controller = controller;
-    this.childEditors = [];
-    this.viewModel = _extends({
-      pointer: pointer,
-      icon: options.icon,
-      errors: [],
-      attrs: {},
-      hideTitle: options.hideTitle,
-      title: options.title,
-      description: options.description
-    }, options);
-
-    if (options.addDelete) {
-      this.viewModel.ondelete = function () {
-        return controller.data()["delete"](pointer);
-      };
-    }
-
-    this.rebuildChildren = controller.data().observe(pointer, this.rebuildChildren.bind(this));
-    this.setErrors = controller.validator().observe(pointer, this.setErrors.bind(this));
-    this.setErrors(controller.validator().getErrorsAndWarnings(pointer));
-    this.render();
-    this.$children = this.$element.querySelector(View.childContainerSelector);
-    this.rebuildChildren();
-  }
-
-  _createClass(ObjectEditor, [{
-    key: "updatePointer",
-    value: function updatePointer(pointer) {
-      var _this = this;
-
-      if (this.pointer === pointer || this.viewModel == null) {
-        return;
-      }
-
-      this.controller.changePointer(pointer, this);
-      var oldPointer = this.pointer;
-      this.$element.id = pointer;
-      var controller = this.controller;
-      this.options.attrs.id = pointer;
-      this.pointer = pointer;
-      this.viewModel.pointer = pointer;
-
-      if (this.options.addDelete) {
-        // console.log("Update ondelete", pointer);
-        this.viewModel.ondelete = function () {
-          return controller.data()["delete"](pointer);
-        };
-      }
-
-      controller.data().removeObserver(oldPointer, this.rebuildChildren);
-      controller.validator().removeObserver(oldPointer, this.setErrors);
-      controller.data().observe(pointer, this.rebuildChildren);
-      controller.validator().observe(pointer, this.setErrors);
-      this.childEditors.forEach(function (editor) {
-        editor.updatePointer("".concat(_this.pointer, "/").concat(editor._property));
-      });
-      this.render();
-    }
-  }, {
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      this.viewModel.disabled = active === false;
-      this.render();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      this.rebuildChildren();
-    }
-  }, {
-    key: "rebuildChildren",
-    value: function rebuildChildren() {
-      var _this2 = this;
-
-      if (this.viewModel == null) {
-        console.error("destroyed ObjectEditor receives an update event\n                - this may be invoked through oneOf-Editor", this);
-        return;
-      } // fetch latest data
-
-
-      var data = this.controller.data().get(this.pointer); // destroy child editor
-
-      this.childEditors.forEach(function (editor) {
-        return editor.destroy();
-      });
-      this.childEditors.length = 0; // clear html
-
-      this.$children.innerHTML = ""; // rebuild children
-
-      if (data) {
-        Object.keys(data).forEach(function (property) {
-          var editor = _this2.controller.createEditor("".concat(_this2.pointer, "/").concat(property), _this2.$children);
-
-          if (editor) {
-            editor._property = property;
-
-            _this2.childEditors.push(editor);
-          }
-        });
-      }
-
-      this.render();
-    }
-  }, {
-    key: "deleteProperty",
-    value: function deleteProperty(property) {
-      var data = this.controller.data().get(this.pointer);
-      delete data[property];
-      this.controller.data().set(this.pointer, data);
-    }
-  }, {
-    key: "showProperty",
-    value: function showProperty(property) {
-      var propertyData = this.controller.data().get("".concat(this.pointer, "/").concat(property));
-      showJSON(this.controller, propertyData, property);
-    }
-  }, {
-    key: "setErrors",
-    value: function setErrors() {
-      var _this3 = this;
-
-      var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-      // if we receive errors here, a property may be missing (which should go to schema.getTemplate) or additional,
-      // but prohibited properties exist. For the latter, add an option to show and/or delete the property. Within
-      // arrays this should come per default, as the may insert in add items...
-      this.viewModel.errors = errors.map(function (error) {
-        if (error.code === "no-additional-properties-error") {
-          var message = error.message;
-          var property = error.data.property;
-          return {
-            severity: error.type || "error",
-            message: m(".editron-error.editron-error--object-property", m("span", m.trust(message)), m("a.mmf-icon", {
-              onclick: function onclick() {
-                return _this3.showProperty(property);
-              }
-            }, "visibility"), m("a.mmf-icon", {
-              onclick: function onclick() {
-                return _this3.deleteProperty(property);
-              }
-            }, "clear"))
-          };
-        }
-
-        return error;
-      });
-      this.render();
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel));
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this);
-        m.render(this.$element, m("i"));
-        this.controller.data().removeObserver(this.pointer, this.rebuildChildren);
-        this.controller.validator().removeObserver(this.pointer, this.setErrors);
-        this.childEditors.forEach(function (editor) {
-          return editor.destroy();
-        });
-        this.childEditors.length = 0;
-        this.$children.innerHTML = "";
-        this.viewModel = null;
-      }
-    }
-  }]);
-
-  return ObjectEditor;
-}();
-
-module.exports = ObjectEditor;
-
-/***/ }),
-
-/***/ "./editors/oneofeditor/index.js":
-/*!**************************************!*\
-  !*** ./editors/oneofeditor/index.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var Select = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.js");
-
-var getId = __webpack_require__(/*! ../../utils/getID */ "./utils/getID.js");
-
-var View = __webpack_require__(/*! ../../components/container */ "./components/container/index.js");
-
-var UI_PROPERTY = __webpack_require__(/*! ../../utils/UISchema */ "./utils/UISchema.js").UI_PROPERTY;
-
-var OneOfEditor =
-/*#__PURE__*/
-function () {
-  _createClass(OneOfEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller, options) {
-      var schema = controller.schema().get(pointer);
-      return schema.oneOfSchema && !schema.items && !options.renderOneOf;
-    }
-  }]);
-
-  function OneOfEditor(pointer, controller, options) {
-    var _this = this;
-
-    _classCallCheck(this, OneOfEditor);
-
-    var childSchema = controller.schema().get(pointer); // @special case. Our options lie in `schema.oneOfSchema`
-
-    var schema = childSchema.oneOfSchema;
-    var attrs = gp.get(schema, "#/".concat(UI_PROPERTY, "/attrs"));
-    this.schema = schema;
-    this.childSchema = childSchema; // ensure requried titles are set
-
-    schema.oneOf.forEach(function (oneOfSchema, index) {
-      return oneOfSchema.title = oneOfSchema.title || "".concat(index, ".");
-    });
-    this.$element = controller.createElement(".editron-container.editron-container--oneof", attrs);
-    this.controller = controller;
-    this.pointer = pointer;
-    this.viewModel = {
-      id: getId(pointer),
-      pointer: pointer,
-      options: schema.oneOf.map(function (oneOf, index) {
-        return {
-          title: oneOf.title,
-          value: index
-        };
-      }),
-      onchange: function onchange(oneOfIndex) {
-        _this.changeChild(schema.oneOf[oneOfIndex]);
-      },
-      value: this.getIndexOf(childSchema),
-      title: schema.title,
-      description: schema.description
-    }; // use bubble=true to catch inner changes (changes are compared by a diff which may not notify parent pointer)
-
-    this.update = controller.data().observe(pointer, this.update.bind(this), true);
-    this.render();
-    this.$childContainer = this.$element.querySelector(View.childContainerSelector);
-    this.rebuild();
-  }
-
-  _createClass(OneOfEditor, [{
-    key: "setActive",
-    value: function setActive() {
-      var active = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      this.viewModel.disabled = active === false;
-      this.render();
-    }
-  }, {
-    key: "changeChild",
-    value: function changeChild(schema) {
-      this.childEditor && this.childEditor.destroy();
-      var data = this.controller.schema().getTemplate(schema);
-      this.controller.data().set(this.pointer, data);
-    }
-  }, {
-    key: "getIndexOf",
-    value: function getIndexOf(currentSchema) {
-      for (var i = 0, l = this.schema.oneOf.length; i < l; i += 1) {
-        if (this.schema.oneOf[i].title === currentSchema.title) {
-          return i;
-        }
-      }
-
-      return 0;
-    }
-  }, {
-    key: "updatePointer",
-    value: function updatePointer(newPointer) {
-      var oldPointer = this.getPointer();
-
-      if (oldPointer === newPointer) {
-        return;
-      }
-
-      this.controller.changePointer(newPointer, this);
-      this.pointer = newPointer;
-      this.viewModel.id = getId(newPointer);
-      this.viewModel.pointer = newPointer;
-      this.$element.id = newPointer;
-      this.controller.data().removeObserver(oldPointer, this.update);
-      this.controller.data().observe(newPointer, this.update, true);
-
-      if (this.childEditor) {
-        this.childEditor.updatePointer(newPointer);
-      }
-
-      this.render();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      var currentSchema = this.controller.schema().get(this.pointer);
-      delete currentSchema.oneOfSchema; // is recreated each time
-
-      if (currentSchema.title === this.childSchema.title) {
-        return;
-      }
-
-      this.viewModel.value = this.getIndexOf(currentSchema);
-      this.childSchema = currentSchema;
-      this.rebuild();
-    }
-  }, {
-    key: "rebuild",
-    value: function rebuild() {
-      this.childEditor && this.childEditor.destroy();
-      this.$childContainer.innerHTML = "";
-      this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
-        // @attention this is very important or else we create an infinite loop through selectEditor
-        renderOneOf: true
-      });
-      this.render();
-    }
-  }, {
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel, m(".editron-value", m(Select, this.viewModel))));
-    }
-  }, {
-    key: "toElement",
-    value: function toElement() {
-      return this.$element;
-    }
-  }, {
-    key: "getPointer",
-    value: function getPointer() {
-      return this.pointer;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.viewModel) {
-        this.controller.removeInstance(this);
-        this.viewModel = null;
-        m.render(this.$element, "i");
-        this.controller.data().removeObserver(this.pointer, this.update);
-      }
-    }
-  }]);
-
-  return OneOfEditor;
-}();
-
-module.exports = OneOfEditor;
-
-/***/ }),
-
-/***/ "./editors/valueeditor/View.js":
-/*!*************************************!*\
-  !*** ./editors/valueeditor/View.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var CheckboxForm = __webpack_require__(/*! mithril-material-forms/components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js");
-
-var SelectForm = __webpack_require__(/*! mithril-material-forms/components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js");
-
-var TextareaForm = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js");
-
-var InputForm = __webpack_require__(/*! mithril-material-forms/components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js");
-
-var UISchema = __webpack_require__(/*! ../../utils/UISchema */ "./utils/UISchema.js");
-
-function chooseInput(attrs) {
-  var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var schema = attrs.schema;
-
-  var config = _extends({
-    type: schema.type,
-    title: schema.title,
-    description: schema.description,
-    onblur: attrs.onblur || Function.prototype,
-    onfocus: attrs.onfocus || Function.prototype,
-    onchange: attrs.onchange || Function.prototype
-  }, attrs, options);
-
-  if (schema["enum"] && schema["enum"].length > 0) {
-    config.options = UISchema.enumOptions(schema);
-    return m(SelectForm, config);
-  }
-
-  if (schema.type === "boolean") {
-    return m(CheckboxForm, config);
-  }
-
-  if (schema.type === "string" && schema.format === "html") {
-    return m(TextareaForm, config);
-  }
-
-  if (schema.type === "string" && schema.format === "textarea") {
-    config.rows = options["textarea:rows"] || 1;
-    return m(TextareaForm, config);
-  }
-
-  return m(InputForm, config);
-}
-
-module.exports = {
-  view: function view(vnode) {
-    return chooseInput(vnode.attrs, vnode.attrs.options);
-  }
-};
-
-/***/ }),
-
-/***/ "./editors/valueeditor/index.js":
-/*!**************************************!*\
-  !*** ./editors/valueeditor/index.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
-
-function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
-
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var View = __webpack_require__(/*! ./View */ "./editors/valueeditor/View.js");
-
-var AbstractValueEditor = __webpack_require__(/*! ../AbstractValueEditor */ "./editors/AbstractValueEditor.js");
-
-var ValueEditor =
-/*#__PURE__*/
-function (_AbstractValueEditor) {
-  _inherits(ValueEditor, _AbstractValueEditor);
-
-  _createClass(ValueEditor, null, [{
-    key: "editorOf",
-    value: function editorOf(pointer, controller) {
-      var schema = controller.schema().get(pointer);
-      return schema.type !== "object" && schema.type !== "array";
-    }
-  }]);
-
-  function ValueEditor(pointer, controller) {
-    var _this;
-
-    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-
-    _classCallCheck(this, ValueEditor);
-
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(ValueEditor).call(this, pointer, controller, options));
-
-    _this.render();
-
-    return _this;
-  }
-
-  _createClass(ValueEditor, [{
-    key: "render",
-    value: function render() {
-      m.render(this.$element, m(View, this.viewModel));
-    }
-  }]);
-
-  return ValueEditor;
-}(AbstractValueEditor);
-
-module.exports = ValueEditor;
-
-/***/ }),
-
-/***/ "./editron.js":
-/*!********************!*\
-  !*** ./editron.js ***!
-  \********************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/**
- * Editron-Core. Depending on your build setup, use
- *
- * ```js
- * import { Controller } from "editron";
- * // or
- * const { Controller } = require("editron");
- * ```
- * to get the editron core entry point for a enjoyable formular world
- *
- *
- * @type {Package} exported methods and utilities
- * @property {Controller} Controller    - the main Editron-Class you want to start all form applications
- * @property {Object} components        - mithril components, for default html-generation of headers and containers
- * @property {Object} editors           - basic editron editors for object, array and simple value reprensentation
- * @property {Object} services          - services to work on data, json-schema, validation and more
- * @property {Object} utils             - utility functions, to generate ids, translate strings and resolve editors
- * @property {Object} plugin            - basic plugin implementation for editor registration
- */
-module.exports = {
-  Controller: __webpack_require__(/*! ./Controller */ "./Controller.js"),
-  components: __webpack_require__(/*! ./components */ "./components/index.js"),
-  editors: __webpack_require__(/*! ./editors */ "./editors/index.js"),
-  services: __webpack_require__(/*! ./services */ "./services/index.js"),
-  utils: __webpack_require__(/*! ./utils */ "./utils/index.js"),
-  plugin: __webpack_require__(/*! ./plugin */ "./plugin/index.js")
-};
-
-/***/ }),
-
 /***/ "./editron.scss":
 /*!**********************!*\
   !*** ./editron.scss ***!
@@ -2390,6 +96,102 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = __webpack_require__.p + "editron.css";
+
+/***/ }),
+
+/***/ "./editron.ts":
+/*!********************!*\
+  !*** ./editron.ts ***!
+  \********************/
+/*! exports provided: default, components, services, utils, AbstractEditor, AbstractValueEditor, ArrayEditor, ObjectEditor, OneOfEditor, ValueEditor, plugin, DelegationPlugin, RemoteDataPlugin, SelectionPlugin, SortablePlugin, SyncPlugin */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _src_Controller__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/Controller */ "./src/Controller.ts");
+/* harmony import */ var _src_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/components */ "./src/components/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "components", function() { return _src_components__WEBPACK_IMPORTED_MODULE_1__; });
+/* harmony import */ var _src_services__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/services */ "./src/services/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "services", function() { return _src_services__WEBPACK_IMPORTED_MODULE_2__; });
+/* harmony import */ var _src_utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./src/utils */ "./src/utils/index.ts");
+/* harmony reexport (module object) */ __webpack_require__.d(__webpack_exports__, "utils", function() { return _src_utils__WEBPACK_IMPORTED_MODULE_3__; });
+/* harmony import */ var _src_editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./src/editors/AbstractEditor */ "./src/editors/AbstractEditor.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AbstractEditor", function() { return _src_editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _src_editors_AbstractValueEditor__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./src/editors/AbstractValueEditor */ "./src/editors/AbstractValueEditor.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "AbstractValueEditor", function() { return _src_editors_AbstractValueEditor__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _src_editors_arrayeditor__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./src/editors/arrayeditor */ "./src/editors/arrayeditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ArrayEditor", function() { return _src_editors_arrayeditor__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _src_editors_objecteditor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./src/editors/objecteditor */ "./src/editors/objecteditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ObjectEditor", function() { return _src_editors_objecteditor__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _src_editors_oneofeditor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./src/editors/oneofeditor */ "./src/editors/oneofeditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "OneOfEditor", function() { return _src_editors_oneofeditor__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+/* harmony import */ var _src_editors_valueeditor__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./src/editors/valueeditor */ "./src/editors/valueeditor/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ValueEditor", function() { return _src_editors_valueeditor__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+/* harmony import */ var _src_plugin__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./src/plugin */ "./src/plugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "plugin", function() { return _src_plugin__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+
+/* harmony import */ var _src_plugin_delegationplugin__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./src/plugin/delegationplugin */ "./src/plugin/delegationplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "DelegationPlugin", function() { return _src_plugin_delegationplugin__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+
+/* harmony import */ var _src_plugin_remotedataplugin__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./src/plugin/remotedataplugin */ "./src/plugin/remotedataplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "RemoteDataPlugin", function() { return _src_plugin_remotedataplugin__WEBPACK_IMPORTED_MODULE_12__["default"]; });
+
+/* harmony import */ var _src_plugin_selectionplugin__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./src/plugin/selectionplugin */ "./src/plugin/selectionplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SelectionPlugin", function() { return _src_plugin_selectionplugin__WEBPACK_IMPORTED_MODULE_13__["default"]; });
+
+/* harmony import */ var _src_plugin_sortableplugin__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./src/plugin/sortableplugin */ "./src/plugin/sortableplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SortablePlugin", function() { return _src_plugin_sortableplugin__WEBPACK_IMPORTED_MODULE_14__["default"]; });
+
+/* harmony import */ var _src_plugin_syncplugin__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./src/plugin/syncplugin */ "./src/plugin/syncplugin/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SyncPlugin", function() { return _src_plugin_syncplugin__WEBPACK_IMPORTED_MODULE_15__["default"]; });
+
+/**
+ * Editron-Core. Depending on your build setup, use
+ *
+ * ```js
+ * import { Controller } from "editron";
+ * // or
+ * const Controller = require("editron").Controller;
+ * ```
+ *
+ * to get the editron core entry point for a enjoyable formular world
+ *
+ * @type exported methods and utilities
+ * @property Controller    - the main Editron-Class you want to start all form applications
+ * @property components        - mithril components, for default html-generation of headers and containers
+ * @property editors           - basic editron editors for object, array and simple value reprensentation
+ * @property services          - services to work on data, json-schema, validation and more
+ * @property utils             - utility functions, to generate ids, translate strings and resolve editors
+ * @property plugin            - basic plugin implementation for editor registration
+ */
+
+/* harmony default export */ __webpack_exports__["default"] = (_src_Controller__WEBPACK_IMPORTED_MODULE_0__["default"]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /***/ }),
 
@@ -2475,9 +277,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return o;
     });
 
-    var r =
-    /*#__PURE__*/
-    function () {
+    var r = /*#__PURE__*/function () {
       function r() {
         var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -2648,2959 +448,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }]);
 });
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
-
-/***/ }),
-
-/***/ "./node_modules/autosize/dist/autosize.js":
-/*!************************************************!*\
-  !*** ./node_modules/autosize/dist/autosize.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
-	autosize 4.0.2
-	license: MIT
-	http://www.jacklmoore.com/autosize
-*/
-(function (global, factory) {
-  if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
-				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
-				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
-  } else { var mod; }
-})(this, function (module, exports) {
-  'use strict';
-
-  var map = typeof Map === "function" ? new Map() : function () {
-    var keys = [];
-    var values = [];
-    return {
-      has: function has(key) {
-        return keys.indexOf(key) > -1;
-      },
-      get: function get(key) {
-        return values[keys.indexOf(key)];
-      },
-      set: function set(key, value) {
-        if (keys.indexOf(key) === -1) {
-          keys.push(key);
-          values.push(value);
-        }
-      },
-      "delete": function _delete(key) {
-        var index = keys.indexOf(key);
-
-        if (index > -1) {
-          keys.splice(index, 1);
-          values.splice(index, 1);
-        }
-      }
-    };
-  }();
-
-  var createEvent = function createEvent(name) {
-    return new Event(name, {
-      bubbles: true
-    });
-  };
-
-  try {
-    new Event('test');
-  } catch (e) {
-    // IE does not support `new Event()`
-    createEvent = function createEvent(name) {
-      var evt = document.createEvent('Event');
-      evt.initEvent(name, true, false);
-      return evt;
-    };
-  }
-
-  function assign(ta) {
-    if (!ta || !ta.nodeName || ta.nodeName !== 'TEXTAREA' || map.has(ta)) return;
-    var heightOffset = null;
-    var clientWidth = null;
-    var cachedHeight = null;
-
-    function init() {
-      var style = window.getComputedStyle(ta, null);
-
-      if (style.resize === 'vertical') {
-        ta.style.resize = 'none';
-      } else if (style.resize === 'both') {
-        ta.style.resize = 'horizontal';
-      }
-
-      if (style.boxSizing === 'content-box') {
-        heightOffset = -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
-      } else {
-        heightOffset = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
-      } // Fix when a textarea is not on document body and heightOffset is Not a Number
-
-
-      if (isNaN(heightOffset)) {
-        heightOffset = 0;
-      }
-
-      update();
-    }
-
-    function changeOverflow(value) {
-      {
-        // Chrome/Safari-specific fix:
-        // When the textarea y-overflow is hidden, Chrome/Safari do not reflow the text to account for the space
-        // made available by removing the scrollbar. The following forces the necessary text reflow.
-        var width = ta.style.width;
-        ta.style.width = '0px'; // Force reflow:
-
-        /* jshint ignore:start */
-
-        ta.offsetWidth;
-        /* jshint ignore:end */
-
-        ta.style.width = width;
-      }
-      ta.style.overflowY = value;
-    }
-
-    function getParentOverflows(el) {
-      var arr = [];
-
-      while (el && el.parentNode && el.parentNode instanceof Element) {
-        if (el.parentNode.scrollTop) {
-          arr.push({
-            node: el.parentNode,
-            scrollTop: el.parentNode.scrollTop
-          });
-        }
-
-        el = el.parentNode;
-      }
-
-      return arr;
-    }
-
-    function resize() {
-      if (ta.scrollHeight === 0) {
-        // If the scrollHeight is 0, then the element probably has display:none or is detached from the DOM.
-        return;
-      }
-
-      var overflows = getParentOverflows(ta);
-      var docTop = document.documentElement && document.documentElement.scrollTop; // Needed for Mobile IE (ticket #240)
-
-      ta.style.height = '';
-      ta.style.height = ta.scrollHeight + heightOffset + 'px'; // used to check if an update is actually necessary on window.resize
-
-      clientWidth = ta.clientWidth; // prevents scroll-position jumping
-
-      overflows.forEach(function (el) {
-        el.node.scrollTop = el.scrollTop;
-      });
-
-      if (docTop) {
-        document.documentElement.scrollTop = docTop;
-      }
-    }
-
-    function update() {
-      resize();
-      var styleHeight = Math.round(parseFloat(ta.style.height));
-      var computed = window.getComputedStyle(ta, null); // Using offsetHeight as a replacement for computed.height in IE, because IE does not account use of border-box
-
-      var actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(computed.height)) : ta.offsetHeight; // The actual height not matching the style height (set via the resize method) indicates that 
-      // the max-height has been exceeded, in which case the overflow should be allowed.
-
-      if (actualHeight < styleHeight) {
-        if (computed.overflowY === 'hidden') {
-          changeOverflow('scroll');
-          resize();
-          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
-        }
-      } else {
-        // Normally keep overflow set to hidden, to avoid flash of scrollbar as the textarea expands.
-        if (computed.overflowY !== 'hidden') {
-          changeOverflow('hidden');
-          resize();
-          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
-        }
-      }
-
-      if (cachedHeight !== actualHeight) {
-        cachedHeight = actualHeight;
-        var evt = createEvent('autosize:resized');
-
-        try {
-          ta.dispatchEvent(evt);
-        } catch (err) {// Firefox will throw an error on dispatchEvent for a detached element
-          // https://bugzilla.mozilla.org/show_bug.cgi?id=889376
-        }
-      }
-    }
-
-    var pageResize = function pageResize() {
-      if (ta.clientWidth !== clientWidth) {
-        update();
-      }
-    };
-
-    var destroy = function (style) {
-      window.removeEventListener('resize', pageResize, false);
-      ta.removeEventListener('input', update, false);
-      ta.removeEventListener('keyup', update, false);
-      ta.removeEventListener('autosize:destroy', destroy, false);
-      ta.removeEventListener('autosize:update', update, false);
-      Object.keys(style).forEach(function (key) {
-        ta.style[key] = style[key];
-      });
-      map["delete"](ta);
-    }.bind(ta, {
-      height: ta.style.height,
-      resize: ta.style.resize,
-      overflowY: ta.style.overflowY,
-      overflowX: ta.style.overflowX,
-      wordWrap: ta.style.wordWrap
-    });
-
-    ta.addEventListener('autosize:destroy', destroy, false); // IE9 does not fire onpropertychange or oninput for deletions,
-    // so binding to onkeyup to catch most of those events.
-    // There is no way that I know of to detect something like 'cut' in IE9.
-
-    if ('onpropertychange' in ta && 'oninput' in ta) {
-      ta.addEventListener('keyup', update, false);
-    }
-
-    window.addEventListener('resize', pageResize, false);
-    ta.addEventListener('input', update, false);
-    ta.addEventListener('autosize:update', update, false);
-    ta.style.overflowX = 'hidden';
-    ta.style.wordWrap = 'break-word';
-    map.set(ta, {
-      destroy: destroy,
-      update: update
-    });
-    init();
-  }
-
-  function destroy(ta) {
-    var methods = map.get(ta);
-
-    if (methods) {
-      methods.destroy();
-    }
-  }
-
-  function update(ta) {
-    var methods = map.get(ta);
-
-    if (methods) {
-      methods.update();
-    }
-  }
-
-  var autosize = null; // Do nothing in Node.js environment and IE8 (or lower)
-
-  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
-    autosize = function autosize(el) {
-      return el;
-    };
-
-    autosize.destroy = function (el) {
-      return el;
-    };
-
-    autosize.update = function (el) {
-      return el;
-    };
-  } else {
-    autosize = function autosize(el, options) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], function (x) {
-          return assign(x, options);
-        });
-      }
-
-      return el;
-    };
-
-    autosize.destroy = function (el) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], destroy);
-      }
-
-      return el;
-    };
-
-    autosize.update = function (el) {
-      if (el) {
-        Array.prototype.forEach.call(el.length ? el : [el], update);
-      }
-
-      return el;
-    };
-  }
-
-  exports["default"] = autosize;
-  module.exports = exports['default'];
-});
-
-/***/ }),
-
-/***/ "./node_modules/deepmerge/dist/cjs.js":
-/*!********************************************!*\
-  !*** ./node_modules/deepmerge/dist/cjs.js ***!
-  \********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-var isMergeableObject = function isMergeableObject(value) {
-  return isNonNullObject(value) && !isSpecial(value);
-};
-
-function isNonNullObject(value) {
-  return !!value && _typeof(value) === 'object';
-}
-
-function isSpecial(value) {
-  var stringValue = Object.prototype.toString.call(value);
-  return stringValue === '[object RegExp]' || stringValue === '[object Date]' || isReactElement(value);
-} // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
-
-
-var canUseSymbol = typeof Symbol === 'function' && Symbol["for"];
-var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol["for"]('react.element') : 0xeac7;
-
-function isReactElement(value) {
-  return value.$$typeof === REACT_ELEMENT_TYPE;
-}
-
-function emptyTarget(val) {
-  return Array.isArray(val) ? [] : {};
-}
-
-function cloneUnlessOtherwiseSpecified(value, options) {
-  return options.clone !== false && options.isMergeableObject(value) ? deepmerge(emptyTarget(value), value, options) : value;
-}
-
-function defaultArrayMerge(target, source, options) {
-  return target.concat(source).map(function (element) {
-    return cloneUnlessOtherwiseSpecified(element, options);
-  });
-}
-
-function getMergeFunction(key, options) {
-  if (!options.customMerge) {
-    return deepmerge;
-  }
-
-  var customMerge = options.customMerge(key);
-  return typeof customMerge === 'function' ? customMerge : deepmerge;
-}
-
-function getEnumerableOwnPropertySymbols(target) {
-  return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function (symbol) {
-    return target.propertyIsEnumerable(symbol);
-  }) : [];
-}
-
-function getKeys(target) {
-  return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target));
-}
-
-function propertyIsOnObject(object, property) {
-  try {
-    return property in object;
-  } catch (_) {
-    return false;
-  }
-} // Protects from prototype poisoning and unexpected merging up the prototype chain.
-
-
-function propertyIsUnsafe(target, key) {
-  return propertyIsOnObject(target, key) // Properties are safe to merge if they don't exist in the target yet,
-  && !(Object.hasOwnProperty.call(target, key) // unsafe if they exist up the prototype chain,
-  && Object.propertyIsEnumerable.call(target, key)); // and also unsafe if they're nonenumerable.
-}
-
-function mergeObject(target, source, options) {
-  var destination = {};
-
-  if (options.isMergeableObject(target)) {
-    getKeys(target).forEach(function (key) {
-      destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
-    });
-  }
-
-  getKeys(source).forEach(function (key) {
-    if (propertyIsUnsafe(target, key)) {
-      return;
-    }
-
-    if (propertyIsOnObject(target, key) && options.isMergeableObject(source[key])) {
-      destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
-    } else {
-      destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
-    }
-  });
-  return destination;
-}
-
-function deepmerge(target, source, options) {
-  options = options || {};
-  options.arrayMerge = options.arrayMerge || defaultArrayMerge;
-  options.isMergeableObject = options.isMergeableObject || isMergeableObject; // cloneUnlessOtherwiseSpecified is added to `options` so that custom arrayMerge()
-  // implementations can use it. The caller may not replace it.
-
-  options.cloneUnlessOtherwiseSpecified = cloneUnlessOtherwiseSpecified;
-  var sourceIsArray = Array.isArray(source);
-  var targetIsArray = Array.isArray(target);
-  var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
-
-  if (!sourceAndTargetTypesMatch) {
-    return cloneUnlessOtherwiseSpecified(source, options);
-  } else if (sourceIsArray) {
-    return options.arrayMerge(target, source, options);
-  } else {
-    return mergeObject(target, source, options);
-  }
-}
-
-deepmerge.all = function deepmergeAll(array, options) {
-  if (!Array.isArray(array)) {
-    throw new Error('first argument should be an array');
-  }
-
-  return array.reduce(function (prev, next) {
-    return deepmerge(prev, next, options);
-  }, {});
-};
-
-var deepmerge_1 = deepmerge;
-module.exports = deepmerge_1;
-
-/***/ }),
-
-/***/ "./node_modules/diff_match_patch/lib/diff_match_patch.js":
-/*!***************************************************************!*\
-  !*** ./node_modules/diff_match_patch/lib/diff_match_patch.js ***!
-  \***************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-/**
- * Diff Match and Patch
- *
- * Copyright 2006 Google Inc.
- * http://code.google.com/p/google-diff-match-patch/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @fileoverview Computes the difference between two texts to create a patch.
- * Applies the patch onto another text, allowing for errors.
- * @author fraser@google.com (Neil Fraser)
- */
-
-/**
- * Class containing the diff, match and patch methods.
- * @constructor
- */
-function diff_match_patch() {
-  // Defaults.
-  // Redefine these in your program to override the defaults.
-  // Number of seconds to map a diff before giving up (0 for infinity).
-  this.Diff_Timeout = 1.0; // Cost of an empty edit operation in terms of edit characters.
-
-  this.Diff_EditCost = 4; // The size beyond which the double-ended diff activates.
-  // Double-ending is twice as fast, but less accurate.
-
-  this.Diff_DualThreshold = 32; // At what point is no match declared (0.0 = perfection, 1.0 = very loose).
-
-  this.Match_Threshold = 0.5; // How far to search for a match (0 = exact location, 1000+ = broad match).
-  // A match this many characters away from the expected location will add
-  // 1.0 to the score (0.0 is a perfect match).
-
-  this.Match_Distance = 1000; // When deleting a large block of text (over ~64 characters), how close does
-  // the contents have to match the expected contents. (0.0 = perfection,
-  // 1.0 = very loose).  Note that Match_Threshold controls how closely the
-  // end points of a delete need to match.
-
-  this.Patch_DeleteThreshold = 0.5; // Chunk size for context length.
-
-  this.Patch_Margin = 4;
-  /**
-   * Compute the number of bits in an int.
-   * The normal answer for JavaScript is 32.
-   * @return {number} Max bits
-   */
-
-  function getMaxBits() {
-    var maxbits = 0;
-    var oldi = 1;
-    var newi = 2;
-
-    while (oldi != newi) {
-      maxbits++;
-      oldi = newi;
-      newi = newi << 1;
-    }
-
-    return maxbits;
-  } // How many bits in a number?
-
-
-  this.Match_MaxBits = getMaxBits();
-} //  DIFF FUNCTIONS
-
-/**
- * The data structure representing a diff is an array of tuples:
- * [[DIFF_DELETE, 'Hello'], [DIFF_INSERT, 'Goodbye'], [DIFF_EQUAL, ' world.']]
- * which means: delete 'Hello', add 'Goodbye' and keep ' world.'
- */
-
-
-var DIFF_DELETE = -1;
-var DIFF_INSERT = 1;
-var DIFF_EQUAL = 0;
-/**
- * Find the differences between two texts.  Simplifies the problem by stripping
- * any common prefix or suffix off the texts before diffing.
- * @param {string} text1 Old string to be diffed.
- * @param {string} text2 New string to be diffed.
- * @param {boolean} opt_checklines Optional speedup flag.  If present and false,
- *     then don't run a line-level diff first to identify the changed areas.
- *     Defaults to true, which does a faster, slightly less optimal diff
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- */
-
-diff_match_patch.prototype.diff_main = function (text1, text2, opt_checklines) {
-  // Check for null inputs.
-  if (text1 == null || text2 == null) {
-    throw new Error('Null input. (diff_main)');
-  } // Check for equality (speedup).
-
-
-  if (text1 == text2) {
-    return [[DIFF_EQUAL, text1]];
-  }
-
-  if (typeof opt_checklines == 'undefined') {
-    opt_checklines = true;
-  }
-
-  var checklines = opt_checklines; // Trim off common prefix (speedup).
-
-  var commonlength = this.diff_commonPrefix(text1, text2);
-  var commonprefix = text1.substring(0, commonlength);
-  text1 = text1.substring(commonlength);
-  text2 = text2.substring(commonlength); // Trim off common suffix (speedup).
-
-  commonlength = this.diff_commonSuffix(text1, text2);
-  var commonsuffix = text1.substring(text1.length - commonlength);
-  text1 = text1.substring(0, text1.length - commonlength);
-  text2 = text2.substring(0, text2.length - commonlength); // Compute the diff on the middle block.
-
-  var diffs = this.diff_compute(text1, text2, checklines); // Restore the prefix and suffix.
-
-  if (commonprefix) {
-    diffs.unshift([DIFF_EQUAL, commonprefix]);
-  }
-
-  if (commonsuffix) {
-    diffs.push([DIFF_EQUAL, commonsuffix]);
-  }
-
-  this.diff_cleanupMerge(diffs);
-  return diffs;
-};
-/**
- * Find the differences between two texts.  Assumes that the texts do not
- * have any common prefix or suffix.
- * @param {string} text1 Old string to be diffed.
- * @param {string} text2 New string to be diffed.
- * @param {boolean} checklines Speedup flag.  If false, then don't run a
- *     line-level diff first to identify the changed areas.
- *     If true, then run a faster, slightly less optimal diff
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_compute = function (text1, text2, checklines) {
-  var diffs;
-
-  if (!text1) {
-    // Just add some text (speedup).
-    return [[DIFF_INSERT, text2]];
-  }
-
-  if (!text2) {
-    // Just delete some text (speedup).
-    return [[DIFF_DELETE, text1]];
-  }
-
-  var longtext = text1.length > text2.length ? text1 : text2;
-  var shorttext = text1.length > text2.length ? text2 : text1;
-  var i = longtext.indexOf(shorttext);
-
-  if (i != -1) {
-    // Shorter text is inside the longer text (speedup).
-    diffs = [[DIFF_INSERT, longtext.substring(0, i)], [DIFF_EQUAL, shorttext], [DIFF_INSERT, longtext.substring(i + shorttext.length)]]; // Swap insertions for deletions if diff is reversed.
-
-    if (text1.length > text2.length) {
-      diffs[0][0] = diffs[2][0] = DIFF_DELETE;
-    }
-
-    return diffs;
-  }
-
-  longtext = shorttext = null; // Garbage collect.
-  // Check to see if the problem can be split in two.
-
-  var hm = this.diff_halfMatch(text1, text2);
-
-  if (hm) {
-    // A half-match was found, sort out the return data.
-    var text1_a = hm[0];
-    var text1_b = hm[1];
-    var text2_a = hm[2];
-    var text2_b = hm[3];
-    var mid_common = hm[4]; // Send both pairs off for separate processing.
-
-    var diffs_a = this.diff_main(text1_a, text2_a, checklines);
-    var diffs_b = this.diff_main(text1_b, text2_b, checklines); // Merge the results.
-
-    return diffs_a.concat([[DIFF_EQUAL, mid_common]], diffs_b);
-  } // Perform a real diff.
-
-
-  if (checklines && (text1.length < 100 || text2.length < 100)) {
-    // Too trivial for the overhead.
-    checklines = false;
-  }
-
-  var linearray;
-
-  if (checklines) {
-    // Scan the text on a line-by-line basis first.
-    var a = this.diff_linesToChars(text1, text2);
-    text1 = a[0];
-    text2 = a[1];
-    linearray = a[2];
-  }
-
-  diffs = this.diff_map(text1, text2);
-
-  if (!diffs) {
-    // No acceptable result.
-    diffs = [[DIFF_DELETE, text1], [DIFF_INSERT, text2]];
-  }
-
-  if (checklines) {
-    // Convert the diff back to original text.
-    this.diff_charsToLines(diffs, linearray); // Eliminate freak matches (e.g. blank lines)
-
-    this.diff_cleanupSemantic(diffs); // Rediff any replacement blocks, this time character-by-character.
-    // Add a dummy entry at the end.
-
-    diffs.push([DIFF_EQUAL, '']);
-    var pointer = 0;
-    var count_delete = 0;
-    var count_insert = 0;
-    var text_delete = '';
-    var text_insert = '';
-
-    while (pointer < diffs.length) {
-      switch (diffs[pointer][0]) {
-        case DIFF_INSERT:
-          count_insert++;
-          text_insert += diffs[pointer][1];
-          break;
-
-        case DIFF_DELETE:
-          count_delete++;
-          text_delete += diffs[pointer][1];
-          break;
-
-        case DIFF_EQUAL:
-          // Upon reaching an equality, check for prior redundancies.
-          if (count_delete >= 1 && count_insert >= 1) {
-            // Delete the offending records and add the merged ones.
-            var a = this.diff_main(text_delete, text_insert, false);
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert);
-            pointer = pointer - count_delete - count_insert;
-
-            for (var j = a.length - 1; j >= 0; j--) {
-              diffs.splice(pointer, 0, a[j]);
-            }
-
-            pointer = pointer + a.length;
-          }
-
-          count_insert = 0;
-          count_delete = 0;
-          text_delete = '';
-          text_insert = '';
-          break;
-      }
-
-      pointer++;
-    }
-
-    diffs.pop(); // Remove the dummy entry at the end.
-  }
-
-  return diffs;
-};
-/**
- * Split two texts into an array of strings.  Reduce the texts to a string of
- * hashes where each Unicode character represents one line.
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {Array.<string|Array.<string>>} Three element Array, containing the
- *     encoded text1, the encoded text2 and the array of unique strings.  The
- *     zeroth element of the array of unique strings is intentionally blank.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_linesToChars = function (text1, text2) {
-  var lineArray = []; // e.g. lineArray[4] == 'Hello\n'
-
-  var lineHash = {}; // e.g. lineHash['Hello\n'] == 4
-  // '\x00' is a valid character, but various debuggers don't like it.
-  // So we'll insert a junk entry to avoid generating a null character.
-
-  lineArray[0] = '';
-  /**
-   * Split a text into an array of strings.  Reduce the texts to a string of
-   * hashes where each Unicode character represents one line.
-   * Modifies linearray and linehash through being a closure.
-   * @param {string} text String to encode.
-   * @return {string} Encoded string.
-   * @private
-   */
-
-  function diff_linesToCharsMunge(text) {
-    var chars = ''; // Walk the text, pulling out a substring for each line.
-    // text.split('\n') would would temporarily double our memory footprint.
-    // Modifying text would create many large strings to garbage collect.
-
-    var lineStart = 0;
-    var lineEnd = -1; // Keeping our own length variable is faster than looking it up.
-
-    var lineArrayLength = lineArray.length;
-
-    while (lineEnd < text.length - 1) {
-      lineEnd = text.indexOf('\n', lineStart);
-
-      if (lineEnd == -1) {
-        lineEnd = text.length - 1;
-      }
-
-      var line = text.substring(lineStart, lineEnd + 1);
-      lineStart = lineEnd + 1;
-
-      if (lineHash.hasOwnProperty ? lineHash.hasOwnProperty(line) : lineHash[line] !== undefined) {
-        chars += String.fromCharCode(lineHash[line]);
-      } else {
-        chars += String.fromCharCode(lineArrayLength);
-        lineHash[line] = lineArrayLength;
-        lineArray[lineArrayLength++] = line;
-      }
-    }
-
-    return chars;
-  }
-
-  var chars1 = diff_linesToCharsMunge(text1);
-  var chars2 = diff_linesToCharsMunge(text2);
-  return [chars1, chars2, lineArray];
-};
-/**
- * Rehydrate the text in a diff from a string of line hashes to real lines of
- * text.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @param {Array.<string>} lineArray Array of unique strings.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_charsToLines = function (diffs, lineArray) {
-  for (var x = 0; x < diffs.length; x++) {
-    var chars = diffs[x][1];
-    var text = [];
-
-    for (var y = 0; y < chars.length; y++) {
-      text[y] = lineArray[chars.charCodeAt(y)];
-    }
-
-    diffs[x][1] = text.join('');
-  }
-};
-/**
- * Explore the intersection points between the two texts.
- * @param {string} text1 Old string to be diffed.
- * @param {string} text2 New string to be diffed.
- * @return {?Array.<Array.<number|string>>} Array of diff tuples or null if no
- *     diff available.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_map = function (text1, text2) {
-  // Don't run for too long.
-  var ms_end = new Date().getTime() + this.Diff_Timeout * 1000; // Cache the text lengths to prevent multiple calls.
-
-  var text1_length = text1.length;
-  var text2_length = text2.length;
-  var max_d = text1_length + text2_length - 1;
-  var doubleEnd = this.Diff_DualThreshold * 2 < max_d; // JavaScript efficiency note: (x << 32) + y doesn't work since numbers are
-  // only 32 bit.  Use x + ',' + y to create a hash instead.
-
-  var v_map1 = [];
-  var v_map2 = [];
-  var v1 = {};
-  var v2 = {};
-  v1[1] = 0;
-  v2[1] = 0;
-  var x, y;
-  var footstep; // Used to track overlapping paths.
-
-  var footsteps = {};
-  var done = false; // If the total number of characters is odd, then the front path will collide
-  // with the reverse path.
-
-  var front = (text1_length + text2_length) % 2;
-
-  for (var d = 0; d < max_d; d++) {
-    // Bail out if timeout reached.
-    if (this.Diff_Timeout > 0 && new Date().getTime() > ms_end) {
-      return null;
-    } // Walk the front path one step.
-
-
-    v_map1[d] = {};
-
-    for (var k = -d; k <= d; k += 2) {
-      if (k == -d || k != d && v1[k - 1] < v1[k + 1]) {
-        x = v1[k + 1];
-      } else {
-        x = v1[k - 1] + 1;
-      }
-
-      y = x - k;
-
-      if (doubleEnd) {
-        footstep = x + ',' + y;
-
-        if (front && footsteps[footstep] !== undefined) {
-          done = true;
-        }
-
-        if (!front) {
-          footsteps[footstep] = d;
-        }
-      }
-
-      while (!done && x < text1_length && y < text2_length && text1.charAt(x) == text2.charAt(y)) {
-        x++;
-        y++;
-
-        if (doubleEnd) {
-          footstep = x + ',' + y;
-
-          if (front && footsteps[footstep] !== undefined) {
-            done = true;
-          }
-
-          if (!front) {
-            footsteps[footstep] = d;
-          }
-        }
-      }
-
-      v1[k] = x;
-      v_map1[d][x + ',' + y] = true;
-
-      if (x == text1_length && y == text2_length) {
-        // Reached the end in single-path mode.
-        return this.diff_path1(v_map1, text1, text2);
-      } else if (done) {
-        // Front path ran over reverse path.
-        v_map2 = v_map2.slice(0, footsteps[footstep] + 1);
-        var a = this.diff_path1(v_map1, text1.substring(0, x), text2.substring(0, y));
-        return a.concat(this.diff_path2(v_map2, text1.substring(x), text2.substring(y)));
-      }
-    }
-
-    if (doubleEnd) {
-      // Walk the reverse path one step.
-      v_map2[d] = {};
-
-      for (var k = -d; k <= d; k += 2) {
-        if (k == -d || k != d && v2[k - 1] < v2[k + 1]) {
-          x = v2[k + 1];
-        } else {
-          x = v2[k - 1] + 1;
-        }
-
-        y = x - k;
-        footstep = text1_length - x + ',' + (text2_length - y);
-
-        if (!front && footsteps[footstep] !== undefined) {
-          done = true;
-        }
-
-        if (front) {
-          footsteps[footstep] = d;
-        }
-
-        while (!done && x < text1_length && y < text2_length && text1.charAt(text1_length - x - 1) == text2.charAt(text2_length - y - 1)) {
-          x++;
-          y++;
-          footstep = text1_length - x + ',' + (text2_length - y);
-
-          if (!front && footsteps[footstep] !== undefined) {
-            done = true;
-          }
-
-          if (front) {
-            footsteps[footstep] = d;
-          }
-        }
-
-        v2[k] = x;
-        v_map2[d][x + ',' + y] = true;
-
-        if (done) {
-          // Reverse path ran over front path.
-          v_map1 = v_map1.slice(0, footsteps[footstep] + 1);
-          var a = this.diff_path1(v_map1, text1.substring(0, text1_length - x), text2.substring(0, text2_length - y));
-          return a.concat(this.diff_path2(v_map2, text1.substring(text1_length - x), text2.substring(text2_length - y)));
-        }
-      }
-    }
-  } // Number of diffs equals number of characters, no commonality at all.
-
-
-  return null;
-};
-/**
- * Work from the middle back to the start to determine the path.
- * @param {Array.<Object>} v_map Array of paths.
- * @param {string} text1 Old string fragment to be diffed.
- * @param {string} text2 New string fragment to be diffed.
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_path1 = function (v_map, text1, text2) {
-  var path = [];
-  var x = text1.length;
-  var y = text2.length;
-  /** @type {?number} */
-
-  var last_op = null;
-
-  for (var d = v_map.length - 2; d >= 0; d--) {
-    while (1) {
-      if (v_map[d][x - 1 + ',' + y] !== undefined) {
-        x--;
-
-        if (last_op === DIFF_DELETE) {
-          path[0][1] = text1.charAt(x) + path[0][1];
-        } else {
-          path.unshift([DIFF_DELETE, text1.charAt(x)]);
-        }
-
-        last_op = DIFF_DELETE;
-        break;
-      } else if (v_map[d][x + ',' + (y - 1)] !== undefined) {
-        y--;
-
-        if (last_op === DIFF_INSERT) {
-          path[0][1] = text2.charAt(y) + path[0][1];
-        } else {
-          path.unshift([DIFF_INSERT, text2.charAt(y)]);
-        }
-
-        last_op = DIFF_INSERT;
-        break;
-      } else {
-        x--;
-        y--;
-
-        if (text1.charAt(x) != text2.charAt(y)) {
-          throw new Error('No diagonal.  Can\'t happen. (diff_path1)');
-        }
-
-        if (last_op === DIFF_EQUAL) {
-          path[0][1] = text1.charAt(x) + path[0][1];
-        } else {
-          path.unshift([DIFF_EQUAL, text1.charAt(x)]);
-        }
-
-        last_op = DIFF_EQUAL;
-      }
-    }
-  }
-
-  return path;
-};
-/**
- * Work from the middle back to the end to determine the path.
- * @param {Array.<Object>} v_map Array of paths.
- * @param {string} text1 Old string fragment to be diffed.
- * @param {string} text2 New string fragment to be diffed.
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @private
- */
-
-
-diff_match_patch.prototype.diff_path2 = function (v_map, text1, text2) {
-  var path = [];
-  var pathLength = 0;
-  var x = text1.length;
-  var y = text2.length;
-  /** @type {?number} */
-
-  var last_op = null;
-
-  for (var d = v_map.length - 2; d >= 0; d--) {
-    while (1) {
-      if (v_map[d][x - 1 + ',' + y] !== undefined) {
-        x--;
-
-        if (last_op === DIFF_DELETE) {
-          path[pathLength - 1][1] += text1.charAt(text1.length - x - 1);
-        } else {
-          path[pathLength++] = [DIFF_DELETE, text1.charAt(text1.length - x - 1)];
-        }
-
-        last_op = DIFF_DELETE;
-        break;
-      } else if (v_map[d][x + ',' + (y - 1)] !== undefined) {
-        y--;
-
-        if (last_op === DIFF_INSERT) {
-          path[pathLength - 1][1] += text2.charAt(text2.length - y - 1);
-        } else {
-          path[pathLength++] = [DIFF_INSERT, text2.charAt(text2.length - y - 1)];
-        }
-
-        last_op = DIFF_INSERT;
-        break;
-      } else {
-        x--;
-        y--;
-
-        if (text1.charAt(text1.length - x - 1) != text2.charAt(text2.length - y - 1)) {
-          throw new Error('No diagonal.  Can\'t happen. (diff_path2)');
-        }
-
-        if (last_op === DIFF_EQUAL) {
-          path[pathLength - 1][1] += text1.charAt(text1.length - x - 1);
-        } else {
-          path[pathLength++] = [DIFF_EQUAL, text1.charAt(text1.length - x - 1)];
-        }
-
-        last_op = DIFF_EQUAL;
-      }
-    }
-  }
-
-  return path;
-};
-/**
- * Determine the common prefix of two strings
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {number} The number of characters common to the start of each
- *     string.
- */
-
-
-diff_match_patch.prototype.diff_commonPrefix = function (text1, text2) {
-  // Quick check for common null cases.
-  if (!text1 || !text2 || text1.charAt(0) != text2.charAt(0)) {
-    return 0;
-  } // Binary search.
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
-
-
-  var pointermin = 0;
-  var pointermax = Math.min(text1.length, text2.length);
-  var pointermid = pointermax;
-  var pointerstart = 0;
-
-  while (pointermin < pointermid) {
-    if (text1.substring(pointerstart, pointermid) == text2.substring(pointerstart, pointermid)) {
-      pointermin = pointermid;
-      pointerstart = pointermin;
-    } else {
-      pointermax = pointermid;
-    }
-
-    pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
-  }
-
-  return pointermid;
-};
-/**
- * Determine the common suffix of two strings
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {number} The number of characters common to the end of each string.
- */
-
-
-diff_match_patch.prototype.diff_commonSuffix = function (text1, text2) {
-  // Quick check for common null cases.
-  if (!text1 || !text2 || text1.charAt(text1.length - 1) != text2.charAt(text2.length - 1)) {
-    return 0;
-  } // Binary search.
-  // Performance analysis: http://neil.fraser.name/news/2007/10/09/
-
-
-  var pointermin = 0;
-  var pointermax = Math.min(text1.length, text2.length);
-  var pointermid = pointermax;
-  var pointerend = 0;
-
-  while (pointermin < pointermid) {
-    if (text1.substring(text1.length - pointermid, text1.length - pointerend) == text2.substring(text2.length - pointermid, text2.length - pointerend)) {
-      pointermin = pointermid;
-      pointerend = pointermin;
-    } else {
-      pointermax = pointermid;
-    }
-
-    pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
-  }
-
-  return pointermid;
-};
-/**
- * Do the two texts share a substring which is at least half the length of the
- * longer text?
- * @param {string} text1 First string.
- * @param {string} text2 Second string.
- * @return {?Array.<string>} Five element Array, containing the prefix of
- *     text1, the suffix of text1, the prefix of text2, the suffix of
- *     text2 and the common middle.  Or null if there was no match.
- */
-
-
-diff_match_patch.prototype.diff_halfMatch = function (text1, text2) {
-  var longtext = text1.length > text2.length ? text1 : text2;
-  var shorttext = text1.length > text2.length ? text2 : text1;
-
-  if (longtext.length < 10 || shorttext.length < 1) {
-    return null; // Pointless.
-  }
-
-  var dmp = this; // 'this' becomes 'window' in a closure.
-
-  /**
-   * Does a substring of shorttext exist within longtext such that the substring
-   * is at least half the length of longtext?
-   * Closure, but does not reference any external variables.
-   * @param {string} longtext Longer string.
-   * @param {string} shorttext Shorter string.
-   * @param {number} i Start index of quarter length substring within longtext
-   * @return {?Array.<string>} Five element Array, containing the prefix of
-   *     longtext, the suffix of longtext, the prefix of shorttext, the suffix
-   *     of shorttext and the common middle.  Or null if there was no match.
-   * @private
-   */
-
-  function diff_halfMatchI(longtext, shorttext, i) {
-    // Start with a 1/4 length substring at position i as a seed.
-    var seed = longtext.substring(i, i + Math.floor(longtext.length / 4));
-    var j = -1;
-    var best_common = '';
-    var best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b;
-
-    while ((j = shorttext.indexOf(seed, j + 1)) != -1) {
-      var prefixLength = dmp.diff_commonPrefix(longtext.substring(i), shorttext.substring(j));
-      var suffixLength = dmp.diff_commonSuffix(longtext.substring(0, i), shorttext.substring(0, j));
-
-      if (best_common.length < suffixLength + prefixLength) {
-        best_common = shorttext.substring(j - suffixLength, j) + shorttext.substring(j, j + prefixLength);
-        best_longtext_a = longtext.substring(0, i - suffixLength);
-        best_longtext_b = longtext.substring(i + prefixLength);
-        best_shorttext_a = shorttext.substring(0, j - suffixLength);
-        best_shorttext_b = shorttext.substring(j + prefixLength);
-      }
-    }
-
-    if (best_common.length >= longtext.length / 2) {
-      return [best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b, best_common];
-    } else {
-      return null;
-    }
-  } // First check if the second quarter is the seed for a half-match.
-
-
-  var hm1 = diff_halfMatchI(longtext, shorttext, Math.ceil(longtext.length / 4)); // Check again based on the third quarter.
-
-  var hm2 = diff_halfMatchI(longtext, shorttext, Math.ceil(longtext.length / 2));
-  var hm;
-
-  if (!hm1 && !hm2) {
-    return null;
-  } else if (!hm2) {
-    hm = hm1;
-  } else if (!hm1) {
-    hm = hm2;
-  } else {
-    // Both matched.  Select the longest.
-    hm = hm1[4].length > hm2[4].length ? hm1 : hm2;
-  } // A half-match was found, sort out the return data.
-
-
-  var text1_a, text1_b, text2_a, text2_b;
-
-  if (text1.length > text2.length) {
-    text1_a = hm[0];
-    text1_b = hm[1];
-    text2_a = hm[2];
-    text2_b = hm[3];
-  } else {
-    text2_a = hm[0];
-    text2_b = hm[1];
-    text1_a = hm[2];
-    text1_b = hm[3];
-  }
-
-  var mid_common = hm[4];
-  return [text1_a, text1_b, text2_a, text2_b, mid_common];
-};
-/**
- * Reduce the number of edits by eliminating semantically trivial equalities.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupSemantic = function (diffs) {
-  var changes = false;
-  var equalities = []; // Stack of indices where equalities are found.
-
-  var equalitiesLength = 0; // Keeping our own length var is faster in JS.
-
-  var lastequality = null; // Always equal to equalities[equalitiesLength-1][1]
-
-  var pointer = 0; // Index of current position.
-  // Number of characters that changed prior to the equality.
-
-  var length_changes1 = 0; // Number of characters that changed after the equality.
-
-  var length_changes2 = 0;
-
-  while (pointer < diffs.length) {
-    if (diffs[pointer][0] == DIFF_EQUAL) {
-      // equality found
-      equalities[equalitiesLength++] = pointer;
-      length_changes1 = length_changes2;
-      length_changes2 = 0;
-      lastequality = diffs[pointer][1];
-    } else {
-      // an insertion or deletion
-      length_changes2 += diffs[pointer][1].length;
-
-      if (lastequality !== null && lastequality.length <= length_changes1 && lastequality.length <= length_changes2) {
-        // Duplicate record
-        diffs.splice(equalities[equalitiesLength - 1], 0, [DIFF_DELETE, lastequality]); // Change second copy to insert.
-
-        diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT; // Throw away the equality we just deleted.
-
-        equalitiesLength--; // Throw away the previous equality (it needs to be reevaluated).
-
-        equalitiesLength--;
-        pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
-        length_changes1 = 0; // Reset the counters.
-
-        length_changes2 = 0;
-        lastequality = null;
-        changes = true;
-      }
-    }
-
-    pointer++;
-  }
-
-  if (changes) {
-    this.diff_cleanupMerge(diffs);
-  }
-
-  this.diff_cleanupSemanticLossless(diffs);
-};
-/**
- * Look for single edits surrounded on both sides by equalities
- * which can be shifted sideways to align the edit to a word boundary.
- * e.g: The c<ins>at c</ins>ame. -> The <ins>cat </ins>came.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupSemanticLossless = function (diffs) {
-  // Define some regex patterns for matching boundaries.
-  var punctuation = /[^a-zA-Z0-9]/;
-  var whitespace = /\s/;
-  var linebreak = /[\r\n]/;
-  var blanklineEnd = /\n\r?\n$/;
-  var blanklineStart = /^\r?\n\r?\n/;
-  /**
-   * Given two strings, compute a score representing whether the internal
-   * boundary falls on logical boundaries.
-   * Scores range from 5 (best) to 0 (worst).
-   * Closure, makes reference to regex patterns defined above.
-   * @param {string} one First string.
-   * @param {string} two Second string.
-   * @return {number} The score.
-   */
-
-  function diff_cleanupSemanticScore(one, two) {
-    if (!one || !two) {
-      // Edges are the best.
-      return 5;
-    } // Each port of this function behaves slightly differently due to
-    // subtle differences in each language's definition of things like
-    // 'whitespace'.  Since this function's purpose is largely cosmetic,
-    // the choice has been made to use each language's native features
-    // rather than force total conformity.
-
-
-    var score = 0; // One point for non-alphanumeric.
-
-    if (one.charAt(one.length - 1).match(punctuation) || two.charAt(0).match(punctuation)) {
-      score++; // Two points for whitespace.
-
-      if (one.charAt(one.length - 1).match(whitespace) || two.charAt(0).match(whitespace)) {
-        score++; // Three points for line breaks.
-
-        if (one.charAt(one.length - 1).match(linebreak) || two.charAt(0).match(linebreak)) {
-          score++; // Four points for blank lines.
-
-          if (one.match(blanklineEnd) || two.match(blanklineStart)) {
-            score++;
-          }
-        }
-      }
-    }
-
-    return score;
-  }
-
-  var pointer = 1; // Intentionally ignore the first and last element (don't need checking).
-
-  while (pointer < diffs.length - 1) {
-    if (diffs[pointer - 1][0] == DIFF_EQUAL && diffs[pointer + 1][0] == DIFF_EQUAL) {
-      // This is a single edit surrounded by equalities.
-      var equality1 = diffs[pointer - 1][1];
-      var edit = diffs[pointer][1];
-      var equality2 = diffs[pointer + 1][1]; // First, shift the edit as far left as possible.
-
-      var commonOffset = this.diff_commonSuffix(equality1, edit);
-
-      if (commonOffset) {
-        var commonString = edit.substring(edit.length - commonOffset);
-        equality1 = equality1.substring(0, equality1.length - commonOffset);
-        edit = commonString + edit.substring(0, edit.length - commonOffset);
-        equality2 = commonString + equality2;
-      } // Second, step character by character right, looking for the best fit.
-
-
-      var bestEquality1 = equality1;
-      var bestEdit = edit;
-      var bestEquality2 = equality2;
-      var bestScore = diff_cleanupSemanticScore(equality1, edit) + diff_cleanupSemanticScore(edit, equality2);
-
-      while (edit.charAt(0) === equality2.charAt(0)) {
-        equality1 += edit.charAt(0);
-        edit = edit.substring(1) + equality2.charAt(0);
-        equality2 = equality2.substring(1);
-        var score = diff_cleanupSemanticScore(equality1, edit) + diff_cleanupSemanticScore(edit, equality2); // The >= encourages trailing rather than leading whitespace on edits.
-
-        if (score >= bestScore) {
-          bestScore = score;
-          bestEquality1 = equality1;
-          bestEdit = edit;
-          bestEquality2 = equality2;
-        }
-      }
-
-      if (diffs[pointer - 1][1] != bestEquality1) {
-        // We have an improvement, save it back to the diff.
-        if (bestEquality1) {
-          diffs[pointer - 1][1] = bestEquality1;
-        } else {
-          diffs.splice(pointer - 1, 1);
-          pointer--;
-        }
-
-        diffs[pointer][1] = bestEdit;
-
-        if (bestEquality2) {
-          diffs[pointer + 1][1] = bestEquality2;
-        } else {
-          diffs.splice(pointer + 1, 1);
-          pointer--;
-        }
-      }
-    }
-
-    pointer++;
-  }
-};
-/**
- * Reduce the number of edits by eliminating operationally trivial equalities.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupEfficiency = function (diffs) {
-  var changes = false;
-  var equalities = []; // Stack of indices where equalities are found.
-
-  var equalitiesLength = 0; // Keeping our own length var is faster in JS.
-
-  var lastequality = ''; // Always equal to equalities[equalitiesLength-1][1]
-
-  var pointer = 0; // Index of current position.
-  // Is there an insertion operation before the last equality.
-
-  var pre_ins = false; // Is there a deletion operation before the last equality.
-
-  var pre_del = false; // Is there an insertion operation after the last equality.
-
-  var post_ins = false; // Is there a deletion operation after the last equality.
-
-  var post_del = false;
-
-  while (pointer < diffs.length) {
-    if (diffs[pointer][0] == DIFF_EQUAL) {
-      // equality found
-      if (diffs[pointer][1].length < this.Diff_EditCost && (post_ins || post_del)) {
-        // Candidate found.
-        equalities[equalitiesLength++] = pointer;
-        pre_ins = post_ins;
-        pre_del = post_del;
-        lastequality = diffs[pointer][1];
-      } else {
-        // Not a candidate, and can never become one.
-        equalitiesLength = 0;
-        lastequality = '';
-      }
-
-      post_ins = post_del = false;
-    } else {
-      // an insertion or deletion
-      if (diffs[pointer][0] == DIFF_DELETE) {
-        post_del = true;
-      } else {
-        post_ins = true;
-      }
-      /*
-       * Five types to be split:
-       * <ins>A</ins><del>B</del>XY<ins>C</ins><del>D</del>
-       * <ins>A</ins>X<ins>C</ins><del>D</del>
-       * <ins>A</ins><del>B</del>X<ins>C</ins>
-       * <ins>A</del>X<ins>C</ins><del>D</del>
-       * <ins>A</ins><del>B</del>X<del>C</del>
-       */
-
-
-      if (lastequality && (pre_ins && pre_del && post_ins && post_del || lastequality.length < this.Diff_EditCost / 2 && pre_ins + pre_del + post_ins + post_del == 3)) {
-        // Duplicate record
-        diffs.splice(equalities[equalitiesLength - 1], 0, [DIFF_DELETE, lastequality]); // Change second copy to insert.
-
-        diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT;
-        equalitiesLength--; // Throw away the equality we just deleted;
-
-        lastequality = '';
-
-        if (pre_ins && pre_del) {
-          // No changes made which could affect previous entry, keep going.
-          post_ins = post_del = true;
-          equalitiesLength = 0;
-        } else {
-          equalitiesLength--; // Throw away the previous equality;
-
-          pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
-          post_ins = post_del = false;
-        }
-
-        changes = true;
-      }
-    }
-
-    pointer++;
-  }
-
-  if (changes) {
-    this.diff_cleanupMerge(diffs);
-  }
-};
-/**
- * Reorder and merge like edit sections.  Merge equalities.
- * Any edit section can move as long as it doesn't cross an equality.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- */
-
-
-diff_match_patch.prototype.diff_cleanupMerge = function (diffs) {
-  diffs.push([DIFF_EQUAL, '']); // Add a dummy entry at the end.
-
-  var pointer = 0;
-  var count_delete = 0;
-  var count_insert = 0;
-  var text_delete = '';
-  var text_insert = '';
-  var commonlength;
-
-  while (pointer < diffs.length) {
-    switch (diffs[pointer][0]) {
-      case DIFF_INSERT:
-        count_insert++;
-        text_insert += diffs[pointer][1];
-        pointer++;
-        break;
-
-      case DIFF_DELETE:
-        count_delete++;
-        text_delete += diffs[pointer][1];
-        pointer++;
-        break;
-
-      case DIFF_EQUAL:
-        // Upon reaching an equality, check for prior redundancies.
-        if (count_delete !== 0 || count_insert !== 0) {
-          if (count_delete !== 0 && count_insert !== 0) {
-            // Factor out any common prefixies.
-            commonlength = this.diff_commonPrefix(text_insert, text_delete);
-
-            if (commonlength !== 0) {
-              if (pointer - count_delete - count_insert > 0 && diffs[pointer - count_delete - count_insert - 1][0] == DIFF_EQUAL) {
-                diffs[pointer - count_delete - count_insert - 1][1] += text_insert.substring(0, commonlength);
-              } else {
-                diffs.splice(0, 0, [DIFF_EQUAL, text_insert.substring(0, commonlength)]);
-                pointer++;
-              }
-
-              text_insert = text_insert.substring(commonlength);
-              text_delete = text_delete.substring(commonlength);
-            } // Factor out any common suffixies.
-
-
-            commonlength = this.diff_commonSuffix(text_insert, text_delete);
-
-            if (commonlength !== 0) {
-              diffs[pointer][1] = text_insert.substring(text_insert.length - commonlength) + diffs[pointer][1];
-              text_insert = text_insert.substring(0, text_insert.length - commonlength);
-              text_delete = text_delete.substring(0, text_delete.length - commonlength);
-            }
-          } // Delete the offending records and add the merged ones.
-
-
-          if (count_delete === 0) {
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert, [DIFF_INSERT, text_insert]);
-          } else if (count_insert === 0) {
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert, [DIFF_DELETE, text_delete]);
-          } else {
-            diffs.splice(pointer - count_delete - count_insert, count_delete + count_insert, [DIFF_DELETE, text_delete], [DIFF_INSERT, text_insert]);
-          }
-
-          pointer = pointer - count_delete - count_insert + (count_delete ? 1 : 0) + (count_insert ? 1 : 0) + 1;
-        } else if (pointer !== 0 && diffs[pointer - 1][0] == DIFF_EQUAL) {
-          // Merge this equality with the previous one.
-          diffs[pointer - 1][1] += diffs[pointer][1];
-          diffs.splice(pointer, 1);
-        } else {
-          pointer++;
-        }
-
-        count_insert = 0;
-        count_delete = 0;
-        text_delete = '';
-        text_insert = '';
-        break;
-    }
-  }
-
-  if (diffs[diffs.length - 1][1] === '') {
-    diffs.pop(); // Remove the dummy entry at the end.
-  } // Second pass: look for single edits surrounded on both sides by equalities
-  // which can be shifted sideways to eliminate an equality.
-  // e.g: A<ins>BA</ins>C -> <ins>AB</ins>AC
-
-
-  var changes = false;
-  pointer = 1; // Intentionally ignore the first and last element (don't need checking).
-
-  while (pointer < diffs.length - 1) {
-    if (diffs[pointer - 1][0] == DIFF_EQUAL && diffs[pointer + 1][0] == DIFF_EQUAL) {
-      // This is a single edit surrounded by equalities.
-      if (diffs[pointer][1].substring(diffs[pointer][1].length - diffs[pointer - 1][1].length) == diffs[pointer - 1][1]) {
-        // Shift the edit over the previous equality.
-        diffs[pointer][1] = diffs[pointer - 1][1] + diffs[pointer][1].substring(0, diffs[pointer][1].length - diffs[pointer - 1][1].length);
-        diffs[pointer + 1][1] = diffs[pointer - 1][1] + diffs[pointer + 1][1];
-        diffs.splice(pointer - 1, 1);
-        changes = true;
-      } else if (diffs[pointer][1].substring(0, diffs[pointer + 1][1].length) == diffs[pointer + 1][1]) {
-        // Shift the edit over the next equality.
-        diffs[pointer - 1][1] += diffs[pointer + 1][1];
-        diffs[pointer][1] = diffs[pointer][1].substring(diffs[pointer + 1][1].length) + diffs[pointer + 1][1];
-        diffs.splice(pointer + 1, 1);
-        changes = true;
-      }
-    }
-
-    pointer++;
-  } // If shifts were made, the diff needs reordering and another shift sweep.
-
-
-  if (changes) {
-    this.diff_cleanupMerge(diffs);
-  }
-};
-/**
- * loc is a location in text1, compute and return the equivalent location in
- * text2.
- * e.g. 'The cat' vs 'The big cat', 1->1, 5->8
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @param {number} loc Location within text1.
- * @return {number} Location within text2.
- */
-
-
-diff_match_patch.prototype.diff_xIndex = function (diffs, loc) {
-  var chars1 = 0;
-  var chars2 = 0;
-  var last_chars1 = 0;
-  var last_chars2 = 0;
-  var x;
-
-  for (x = 0; x < diffs.length; x++) {
-    if (diffs[x][0] !== DIFF_INSERT) {
-      // Equality or deletion.
-      chars1 += diffs[x][1].length;
-    }
-
-    if (diffs[x][0] !== DIFF_DELETE) {
-      // Equality or insertion.
-      chars2 += diffs[x][1].length;
-    }
-
-    if (chars1 > loc) {
-      // Overshot the location.
-      break;
-    }
-
-    last_chars1 = chars1;
-    last_chars2 = chars2;
-  } // Was the location was deleted?
-
-
-  if (diffs.length != x && diffs[x][0] === DIFF_DELETE) {
-    return last_chars2;
-  } // Add the remaining character length.
-
-
-  return last_chars2 + (loc - last_chars1);
-};
-/**
- * Convert a diff array into a pretty HTML report.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} HTML representation.
- */
-
-
-diff_match_patch.prototype.diff_prettyHtml = function (diffs) {
-  var html = [];
-  var i = 0;
-
-  for (var x = 0; x < diffs.length; x++) {
-    var op = diffs[x][0]; // Operation (insert, delete, equal)
-
-    var data = diffs[x][1]; // Text of change.
-
-    var text = data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '&para;<BR>');
-
-    switch (op) {
-      case DIFF_INSERT:
-        html[x] = '<INS STYLE="background:#E6FFE6;" TITLE="i=' + i + '">' + text + '</INS>';
-        break;
-
-      case DIFF_DELETE:
-        html[x] = '<DEL STYLE="background:#FFE6E6;" TITLE="i=' + i + '">' + text + '</DEL>';
-        break;
-
-      case DIFF_EQUAL:
-        html[x] = '<SPAN TITLE="i=' + i + '">' + text + '</SPAN>';
-        break;
-    }
-
-    if (op !== DIFF_DELETE) {
-      i += data.length;
-    }
-  }
-
-  return html.join('');
-};
-/**
- * Compute and return the source text (all equalities and deletions).
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} Source text.
- */
-
-
-diff_match_patch.prototype.diff_text1 = function (diffs) {
-  var text = [];
-
-  for (var x = 0; x < diffs.length; x++) {
-    if (diffs[x][0] !== DIFF_INSERT) {
-      text[x] = diffs[x][1];
-    }
-  }
-
-  return text.join('');
-};
-/**
- * Compute and return the destination text (all equalities and insertions).
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} Destination text.
- */
-
-
-diff_match_patch.prototype.diff_text2 = function (diffs) {
-  var text = [];
-
-  for (var x = 0; x < diffs.length; x++) {
-    if (diffs[x][0] !== DIFF_DELETE) {
-      text[x] = diffs[x][1];
-    }
-  }
-
-  return text.join('');
-};
-/**
- * Compute the Levenshtein distance; the number of inserted, deleted or
- * substituted characters.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {number} Number of changes.
- */
-
-
-diff_match_patch.prototype.diff_levenshtein = function (diffs) {
-  var levenshtein = 0;
-  var insertions = 0;
-  var deletions = 0;
-
-  for (var x = 0; x < diffs.length; x++) {
-    var op = diffs[x][0];
-    var data = diffs[x][1];
-
-    switch (op) {
-      case DIFF_INSERT:
-        insertions += data.length;
-        break;
-
-      case DIFF_DELETE:
-        deletions += data.length;
-        break;
-
-      case DIFF_EQUAL:
-        // A deletion and an insertion is one substitution.
-        levenshtein += Math.max(insertions, deletions);
-        insertions = 0;
-        deletions = 0;
-        break;
-    }
-  }
-
-  levenshtein += Math.max(insertions, deletions);
-  return levenshtein;
-};
-/**
- * Crush the diff into an encoded string which describes the operations
- * required to transform text1 into text2.
- * E.g. =3\t-2\t+ing  -> Keep 3 chars, delete 2 chars, insert 'ing'.
- * Operations are tab-separated.  Inserted text is escaped using %xx notation.
- * @param {Array.<Array.<number|string>>} diffs Array of diff tuples.
- * @return {string} Delta text.
- */
-
-
-diff_match_patch.prototype.diff_toDelta = function (diffs) {
-  var text = [];
-
-  for (var x = 0; x < diffs.length; x++) {
-    switch (diffs[x][0]) {
-      case DIFF_INSERT:
-        text[x] = '+' + encodeURI(diffs[x][1]);
-        break;
-
-      case DIFF_DELETE:
-        text[x] = '-' + diffs[x][1].length;
-        break;
-
-      case DIFF_EQUAL:
-        text[x] = '=' + diffs[x][1].length;
-        break;
-    }
-  } // Opera doesn't know how to encode char 0.
-
-
-  return text.join('\t').replace(/\x00/g, '%00').replace(/%20/g, ' ');
-};
-/**
- * Given the original text1, and an encoded string which describes the
- * operations required to transform text1 into text2, compute the full diff.
- * @param {string} text1 Source string for the diff.
- * @param {string} delta Delta text.
- * @return {Array.<Array.<number|string>>} Array of diff tuples.
- * @throws {Error} If invalid input.
- */
-
-
-diff_match_patch.prototype.diff_fromDelta = function (text1, delta) {
-  var diffs = [];
-  var diffsLength = 0; // Keeping our own length var is faster in JS.
-
-  var pointer = 0; // Cursor in text1
-  // Opera doesn't know how to decode char 0.
-
-  delta = delta.replace(/%00/g, '\0');
-  var tokens = delta.split(/\t/g);
-
-  for (var x = 0; x < tokens.length; x++) {
-    // Each token begins with a one character parameter which specifies the
-    // operation of this token (delete, insert, equality).
-    var param = tokens[x].substring(1);
-
-    switch (tokens[x].charAt(0)) {
-      case '+':
-        try {
-          diffs[diffsLength++] = [DIFF_INSERT, decodeURI(param)];
-        } catch (ex) {
-          // Malformed URI sequence.
-          throw new Error('Illegal escape in diff_fromDelta: ' + param);
-        }
-
-        break;
-
-      case '-': // Fall through.
-
-      case '=':
-        var n = parseInt(param, 10);
-
-        if (isNaN(n) || n < 0) {
-          throw new Error('Invalid number in diff_fromDelta: ' + param);
-        }
-
-        var text = text1.substring(pointer, pointer += n);
-
-        if (tokens[x].charAt(0) == '=') {
-          diffs[diffsLength++] = [DIFF_EQUAL, text];
-        } else {
-          diffs[diffsLength++] = [DIFF_DELETE, text];
-        }
-
-        break;
-
-      default:
-        // Blank tokens are ok (from a trailing \t).
-        // Anything else is an error.
-        if (tokens[x]) {
-          throw new Error('Invalid diff operation in diff_fromDelta: ' + tokens[x]);
-        }
-
-    }
-  }
-
-  if (pointer != text1.length) {
-    throw new Error('Delta length (' + pointer + ') does not equal source text length (' + text1.length + ').');
-  }
-
-  return diffs;
-}; //  MATCH FUNCTIONS
-
-/**
- * Locate the best instance of 'pattern' in 'text' near 'loc'.
- * @param {string} text The text to search.
- * @param {string} pattern The pattern to search for.
- * @param {number} loc The location to search around.
- * @return {number} Best match index or -1.
- */
-
-
-diff_match_patch.prototype.match_main = function (text, pattern, loc) {
-  // Check for null inputs.
-  if (text == null || pattern == null || loc == null) {
-    throw new Error('Null input. (match_main)');
-  }
-
-  loc = Math.max(0, Math.min(loc, text.length));
-
-  if (text == pattern) {
-    // Shortcut (potentially not guaranteed by the algorithm)
-    return 0;
-  } else if (!text.length) {
-    // Nothing to match.
-    return -1;
-  } else if (text.substring(loc, loc + pattern.length) == pattern) {
-    // Perfect match at the perfect spot!  (Includes case of null pattern)
-    return loc;
-  } else {
-    // Do a fuzzy compare.
-    return this.match_bitap(text, pattern, loc);
-  }
-};
-/**
- * Locate the best instance of 'pattern' in 'text' near 'loc' using the
- * Bitap algorithm.
- * @param {string} text The text to search.
- * @param {string} pattern The pattern to search for.
- * @param {number} loc The location to search around.
- * @return {number} Best match index or -1.
- * @private
- */
-
-
-diff_match_patch.prototype.match_bitap = function (text, pattern, loc) {
-  if (pattern.length > this.Match_MaxBits) {
-    throw new Error('Pattern too long for this browser.');
-  } // Initialise the alphabet.
-
-
-  var s = this.match_alphabet(pattern);
-  var dmp = this; // 'this' becomes 'window' in a closure.
-
-  /**
-   * Compute and return the score for a match with e errors and x location.
-   * Accesses loc and pattern through being a closure.
-   * @param {number} e Number of errors in match.
-   * @param {number} x Location of match.
-   * @return {number} Overall score for match (0.0 = good, 1.0 = bad).
-   * @private
-   */
-
-  function match_bitapScore(e, x) {
-    var accuracy = e / pattern.length;
-    var proximity = Math.abs(loc - x);
-
-    if (!dmp.Match_Distance) {
-      // Dodge divide by zero error.
-      return proximity ? 1.0 : accuracy;
-    }
-
-    return accuracy + proximity / dmp.Match_Distance;
-  } // Highest score beyond which we give up.
-
-
-  var score_threshold = this.Match_Threshold; // Is there a nearby exact match? (speedup)
-
-  var best_loc = text.indexOf(pattern, loc);
-
-  if (best_loc != -1) {
-    score_threshold = Math.min(match_bitapScore(0, best_loc), score_threshold); // What about in the other direction? (speedup)
-
-    best_loc = text.lastIndexOf(pattern, loc + pattern.length);
-
-    if (best_loc != -1) {
-      score_threshold = Math.min(match_bitapScore(0, best_loc), score_threshold);
-    }
-  } // Initialise the bit arrays.
-
-
-  var matchmask = 1 << pattern.length - 1;
-  best_loc = -1;
-  var bin_min, bin_mid;
-  var bin_max = pattern.length + text.length;
-  var last_rd;
-
-  for (var d = 0; d < pattern.length; d++) {
-    // Scan for the best match; each iteration allows for one more error.
-    // Run a binary search to determine how far from 'loc' we can stray at this
-    // error level.
-    bin_min = 0;
-    bin_mid = bin_max;
-
-    while (bin_min < bin_mid) {
-      if (match_bitapScore(d, loc + bin_mid) <= score_threshold) {
-        bin_min = bin_mid;
-      } else {
-        bin_max = bin_mid;
-      }
-
-      bin_mid = Math.floor((bin_max - bin_min) / 2 + bin_min);
-    } // Use the result from this iteration as the maximum for the next.
-
-
-    bin_max = bin_mid;
-    var start = Math.max(1, loc - bin_mid + 1);
-    var finish = Math.min(loc + bin_mid, text.length) + pattern.length;
-    var rd = Array(finish + 2);
-    rd[finish + 1] = (1 << d) - 1;
-
-    for (var j = finish; j >= start; j--) {
-      // The alphabet (s) is a sparse hash, so the following line generates
-      // warnings.
-      var charMatch = s[text.charAt(j - 1)];
-
-      if (d === 0) {
-        // First pass: exact match.
-        rd[j] = (rd[j + 1] << 1 | 1) & charMatch;
-      } else {
-        // Subsequent passes: fuzzy match.
-        rd[j] = (rd[j + 1] << 1 | 1) & charMatch | ((last_rd[j + 1] | last_rd[j]) << 1 | 1) | last_rd[j + 1];
-      }
-
-      if (rd[j] & matchmask) {
-        var score = match_bitapScore(d, j - 1); // This match will almost certainly be better than any existing match.
-        // But check anyway.
-
-        if (score <= score_threshold) {
-          // Told you so.
-          score_threshold = score;
-          best_loc = j - 1;
-
-          if (best_loc > loc) {
-            // When passing loc, don't exceed our current distance from loc.
-            start = Math.max(1, 2 * loc - best_loc);
-          } else {
-            // Already passed loc, downhill from here on in.
-            break;
-          }
-        }
-      }
-    } // No hope for a (better) match at greater error levels.
-
-
-    if (match_bitapScore(d + 1, loc) > score_threshold) {
-      break;
-    }
-
-    last_rd = rd;
-  }
-
-  return best_loc;
-};
-/**
- * Initialise the alphabet for the Bitap algorithm.
- * @param {string} pattern The text to encode.
- * @return {Object} Hash of character locations.
- * @private
- */
-
-
-diff_match_patch.prototype.match_alphabet = function (pattern) {
-  var s = {};
-
-  for (var i = 0; i < pattern.length; i++) {
-    s[pattern.charAt(i)] = 0;
-  }
-
-  for (var i = 0; i < pattern.length; i++) {
-    s[pattern.charAt(i)] |= 1 << pattern.length - i - 1;
-  }
-
-  return s;
-}; //  PATCH FUNCTIONS
-
-/**
- * Increase the context until it is unique,
- * but don't let the pattern expand beyond Match_MaxBits.
- * @param {patch_obj} patch The patch to grow.
- * @param {string} text Source text.
- * @private
- */
-
-
-diff_match_patch.prototype.patch_addContext = function (patch, text) {
-  if (text.length == 0) {
-    return;
-  }
-
-  var pattern = text.substring(patch.start2, patch.start2 + patch.length1);
-  var padding = 0; // Look for the first and last matches of pattern in text.  If two different
-  // matches are found, increase the pattern length.
-
-  while (text.indexOf(pattern) != text.lastIndexOf(pattern) && pattern.length < this.Match_MaxBits - this.Patch_Margin - this.Patch_Margin) {
-    padding += this.Patch_Margin;
-    pattern = text.substring(patch.start2 - padding, patch.start2 + patch.length1 + padding);
-  } // Add one chunk for good luck.
-
-
-  padding += this.Patch_Margin; // Add the prefix.
-
-  var prefix = text.substring(patch.start2 - padding, patch.start2);
-
-  if (prefix) {
-    patch.diffs.unshift([DIFF_EQUAL, prefix]);
-  } // Add the suffix.
-
-
-  var suffix = text.substring(patch.start2 + patch.length1, patch.start2 + patch.length1 + padding);
-
-  if (suffix) {
-    patch.diffs.push([DIFF_EQUAL, suffix]);
-  } // Roll back the start points.
-
-
-  patch.start1 -= prefix.length;
-  patch.start2 -= prefix.length; // Extend the lengths.
-
-  patch.length1 += prefix.length + suffix.length;
-  patch.length2 += prefix.length + suffix.length;
-};
-/**
- * Compute a list of patches to turn text1 into text2.
- * Use diffs if provided, otherwise compute it ourselves.
- * There are four ways to call this function, depending on what data is
- * available to the caller:
- * Method 1:
- * a = text1, b = text2
- * Method 2:
- * a = diffs
- * Method 3 (optimal):
- * a = text1, b = diffs
- * Method 4 (deprecated, use method 3):
- * a = text1, b = text2, c = diffs
- *
- * @param {string|Array.<Array.<number|string>>} a text1 (methods 1,3,4) or
- * Array of diff tuples for text1 to text2 (method 2).
- * @param {string|Array.<Array.<number|string>>} opt_b text2 (methods 1,4) or
- * Array of diff tuples for text1 to text2 (method 3) or undefined (method 2).
- * @param {string|Array.<Array.<number|string>>} opt_c Array of diff tuples for
- * text1 to text2 (method 4) or undefined (methods 1,2,3).
- * @return {Array.<patch_obj>} Array of patch objects.
- */
-
-
-diff_match_patch.prototype.patch_make = function (a, opt_b, opt_c) {
-  var text1, diffs;
-
-  if (typeof a == 'string' && typeof opt_b == 'string' && typeof opt_c == 'undefined') {
-    // Method 1: text1, text2
-    // Compute diffs from text1 and text2.
-    text1 = a;
-    diffs = this.diff_main(text1, opt_b, true);
-
-    if (diffs.length > 2) {
-      this.diff_cleanupSemantic(diffs);
-      this.diff_cleanupEfficiency(diffs);
-    }
-  } else if (a && _typeof(a) == 'object' && typeof opt_b == 'undefined' && typeof opt_c == 'undefined') {
-    // Method 2: diffs
-    // Compute text1 from diffs.
-    diffs = a;
-    text1 = this.diff_text1(diffs);
-  } else if (typeof a == 'string' && opt_b && _typeof(opt_b) == 'object' && typeof opt_c == 'undefined') {
-    // Method 3: text1, diffs
-    text1 = a;
-    diffs = opt_b;
-  } else if (typeof a == 'string' && typeof opt_b == 'string' && opt_c && _typeof(opt_c) == 'object') {
-    // Method 4: text1, text2, diffs
-    // text2 is not used.
-    text1 = a;
-    diffs = opt_c;
-  } else {
-    throw new Error('Unknown call format to patch_make.');
-  }
-
-  if (diffs.length === 0) {
-    return []; // Get rid of the null case.
-  }
-
-  var patches = [];
-  var patch = new patch_obj();
-  var patchDiffLength = 0; // Keeping our own length var is faster in JS.
-
-  var char_count1 = 0; // Number of characters into the text1 string.
-
-  var char_count2 = 0; // Number of characters into the text2 string.
-  // Start with text1 (prepatch_text) and apply the diffs until we arrive at
-  // text2 (postpatch_text).  We recreate the patches one by one to determine
-  // context info.
-
-  var prepatch_text = text1;
-  var postpatch_text = text1;
-
-  for (var x = 0; x < diffs.length; x++) {
-    var diff_type = diffs[x][0];
-    var diff_text = diffs[x][1];
-
-    if (!patchDiffLength && diff_type !== DIFF_EQUAL) {
-      // A new patch starts here.
-      patch.start1 = char_count1;
-      patch.start2 = char_count2;
-    }
-
-    switch (diff_type) {
-      case DIFF_INSERT:
-        patch.diffs[patchDiffLength++] = diffs[x];
-        patch.length2 += diff_text.length;
-        postpatch_text = postpatch_text.substring(0, char_count2) + diff_text + postpatch_text.substring(char_count2);
-        break;
-
-      case DIFF_DELETE:
-        patch.length1 += diff_text.length;
-        patch.diffs[patchDiffLength++] = diffs[x];
-        postpatch_text = postpatch_text.substring(0, char_count2) + postpatch_text.substring(char_count2 + diff_text.length);
-        break;
-
-      case DIFF_EQUAL:
-        if (diff_text.length <= 2 * this.Patch_Margin && patchDiffLength && diffs.length != x + 1) {
-          // Small equality inside a patch.
-          patch.diffs[patchDiffLength++] = diffs[x];
-          patch.length1 += diff_text.length;
-          patch.length2 += diff_text.length;
-        } else if (diff_text.length >= 2 * this.Patch_Margin) {
-          // Time for a new patch.
-          if (patchDiffLength) {
-            this.patch_addContext(patch, prepatch_text);
-            patches.push(patch);
-            patch = new patch_obj();
-            patchDiffLength = 0; // Unlike Unidiff, our patch lists have a rolling context.
-            // http://code.google.com/p/google-diff-match-patch/wiki/Unidiff
-            // Update prepatch text & pos to reflect the application of the
-            // just completed patch.
-
-            prepatch_text = postpatch_text;
-            char_count1 = char_count2;
-          }
-        }
-
-        break;
-    } // Update the current character count.
-
-
-    if (diff_type !== DIFF_INSERT) {
-      char_count1 += diff_text.length;
-    }
-
-    if (diff_type !== DIFF_DELETE) {
-      char_count2 += diff_text.length;
-    }
-  } // Pick up the leftover patch if not empty.
-
-
-  if (patchDiffLength) {
-    this.patch_addContext(patch, prepatch_text);
-    patches.push(patch);
-  }
-
-  return patches;
-};
-/**
- * Given an array of patches, return another array that is identical.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @return {Array.<patch_obj>} Array of patch objects.
- */
-
-
-diff_match_patch.prototype.patch_deepCopy = function (patches) {
-  // Making deep copies is hard in JavaScript.
-  var patchesCopy = [];
-
-  for (var x = 0; x < patches.length; x++) {
-    var patch = patches[x];
-    var patchCopy = new patch_obj();
-    patchCopy.diffs = [];
-
-    for (var y = 0; y < patch.diffs.length; y++) {
-      patchCopy.diffs[y] = patch.diffs[y].slice();
-    }
-
-    patchCopy.start1 = patch.start1;
-    patchCopy.start2 = patch.start2;
-    patchCopy.length1 = patch.length1;
-    patchCopy.length2 = patch.length2;
-    patchesCopy[x] = patchCopy;
-  }
-
-  return patchesCopy;
-};
-/**
- * Merge a set of patches onto the text.  Return a patched text, as well
- * as a list of true/false values indicating which patches were applied.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @param {string} text Old text.
- * @return {Array.<string|Array.<boolean>>} Two element Array, containing the
- *      new text and an array of boolean values.
- */
-
-
-diff_match_patch.prototype.patch_apply = function (patches, text) {
-  if (patches.length == 0) {
-    return [text, []];
-  } // Deep copy the patches so that no changes are made to originals.
-
-
-  patches = this.patch_deepCopy(patches);
-  var nullPadding = this.patch_addPadding(patches);
-  text = nullPadding + text + nullPadding;
-  this.patch_splitMax(patches); // delta keeps track of the offset between the expected and actual location
-  // of the previous patch.  If there are patches expected at positions 10 and
-  // 20, but the first patch was found at 12, delta is 2 and the second patch
-  // has an effective expected position of 22.
-
-  var delta = 0;
-  var results = [];
-
-  for (var x = 0; x < patches.length; x++) {
-    var expected_loc = patches[x].start2 + delta;
-    var text1 = this.diff_text1(patches[x].diffs);
-    var start_loc;
-    var end_loc = -1;
-
-    if (text1.length > this.Match_MaxBits) {
-      // patch_splitMax will only provide an oversized pattern in the case of
-      // a monster delete.
-      start_loc = this.match_main(text, text1.substring(0, this.Match_MaxBits), expected_loc);
-
-      if (start_loc != -1) {
-        end_loc = this.match_main(text, text1.substring(text1.length - this.Match_MaxBits), expected_loc + text1.length - this.Match_MaxBits);
-
-        if (end_loc == -1 || start_loc >= end_loc) {
-          // Can't find valid trailing context.  Drop this patch.
-          start_loc = -1;
-        }
-      }
-    } else {
-      start_loc = this.match_main(text, text1, expected_loc);
-    }
-
-    if (start_loc == -1) {
-      // No match found.  :(
-      results[x] = false; // Subtract the delta for this failed patch from subsequent patches.
-
-      delta -= patches[x].length2 - patches[x].length1;
-    } else {
-      // Found a match.  :)
-      results[x] = true;
-      delta = start_loc - expected_loc;
-      var text2;
-
-      if (end_loc == -1) {
-        text2 = text.substring(start_loc, start_loc + text1.length);
-      } else {
-        text2 = text.substring(start_loc, end_loc + this.Match_MaxBits);
-      }
-
-      if (text1 == text2) {
-        // Perfect match, just shove the replacement text in.
-        text = text.substring(0, start_loc) + this.diff_text2(patches[x].diffs) + text.substring(start_loc + text1.length);
-      } else {
-        // Imperfect match.  Run a diff to get a framework of equivalent
-        // indices.
-        var diffs = this.diff_main(text1, text2, false);
-
-        if (text1.length > this.Match_MaxBits && this.diff_levenshtein(diffs) / text1.length > this.Patch_DeleteThreshold) {
-          // The end points match, but the content is unacceptably bad.
-          results[x] = false;
-        } else {
-          this.diff_cleanupSemanticLossless(diffs);
-          var index1 = 0;
-          var index2;
-
-          for (var y = 0; y < patches[x].diffs.length; y++) {
-            var mod = patches[x].diffs[y];
-
-            if (mod[0] !== DIFF_EQUAL) {
-              index2 = this.diff_xIndex(diffs, index1);
-            }
-
-            if (mod[0] === DIFF_INSERT) {
-              // Insertion
-              text = text.substring(0, start_loc + index2) + mod[1] + text.substring(start_loc + index2);
-            } else if (mod[0] === DIFF_DELETE) {
-              // Deletion
-              text = text.substring(0, start_loc + index2) + text.substring(start_loc + this.diff_xIndex(diffs, index1 + mod[1].length));
-            }
-
-            if (mod[0] !== DIFF_DELETE) {
-              index1 += mod[1].length;
-            }
-          }
-        }
-      }
-    }
-  } // Strip the padding off.
-
-
-  text = text.substring(nullPadding.length, text.length - nullPadding.length);
-  return [text, results];
-};
-/**
- * Add some padding on text start and end so that edges can match something.
- * Intended to be called only from within patch_apply.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @return {string} The padding string added to each side.
- */
-
-
-diff_match_patch.prototype.patch_addPadding = function (patches) {
-  var paddingLength = this.Patch_Margin;
-  var nullPadding = '';
-
-  for (var x = 1; x <= paddingLength; x++) {
-    nullPadding += String.fromCharCode(x);
-  } // Bump all the patches forward.
-
-
-  for (var x = 0; x < patches.length; x++) {
-    patches[x].start1 += paddingLength;
-    patches[x].start2 += paddingLength;
-  } // Add some padding on start of first diff.
-
-
-  var patch = patches[0];
-  var diffs = patch.diffs;
-
-  if (diffs.length == 0 || diffs[0][0] != DIFF_EQUAL) {
-    // Add nullPadding equality.
-    diffs.unshift([DIFF_EQUAL, nullPadding]);
-    patch.start1 -= paddingLength; // Should be 0.
-
-    patch.start2 -= paddingLength; // Should be 0.
-
-    patch.length1 += paddingLength;
-    patch.length2 += paddingLength;
-  } else if (paddingLength > diffs[0][1].length) {
-    // Grow first equality.
-    var extraLength = paddingLength - diffs[0][1].length;
-    diffs[0][1] = nullPadding.substring(diffs[0][1].length) + diffs[0][1];
-    patch.start1 -= extraLength;
-    patch.start2 -= extraLength;
-    patch.length1 += extraLength;
-    patch.length2 += extraLength;
-  } // Add some padding on end of last diff.
-
-
-  patch = patches[patches.length - 1];
-  diffs = patch.diffs;
-
-  if (diffs.length == 0 || diffs[diffs.length - 1][0] != DIFF_EQUAL) {
-    // Add nullPadding equality.
-    diffs.push([DIFF_EQUAL, nullPadding]);
-    patch.length1 += paddingLength;
-    patch.length2 += paddingLength;
-  } else if (paddingLength > diffs[diffs.length - 1][1].length) {
-    // Grow last equality.
-    var extraLength = paddingLength - diffs[diffs.length - 1][1].length;
-    diffs[diffs.length - 1][1] += nullPadding.substring(0, extraLength);
-    patch.length1 += extraLength;
-    patch.length2 += extraLength;
-  }
-
-  return nullPadding;
-};
-/**
- * Look through the patches and break up any which are longer than the maximum
- * limit of the match algorithm.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- */
-
-
-diff_match_patch.prototype.patch_splitMax = function (patches) {
-  for (var x = 0; x < patches.length; x++) {
-    if (patches[x].length1 > this.Match_MaxBits) {
-      var bigpatch = patches[x]; // Remove the big old patch.
-
-      patches.splice(x--, 1);
-      var patch_size = this.Match_MaxBits;
-      var start1 = bigpatch.start1;
-      var start2 = bigpatch.start2;
-      var precontext = '';
-
-      while (bigpatch.diffs.length !== 0) {
-        // Create one of several smaller patches.
-        var patch = new patch_obj();
-        var empty = true;
-        patch.start1 = start1 - precontext.length;
-        patch.start2 = start2 - precontext.length;
-
-        if (precontext !== '') {
-          patch.length1 = patch.length2 = precontext.length;
-          patch.diffs.push([DIFF_EQUAL, precontext]);
-        }
-
-        while (bigpatch.diffs.length !== 0 && patch.length1 < patch_size - this.Patch_Margin) {
-          var diff_type = bigpatch.diffs[0][0];
-          var diff_text = bigpatch.diffs[0][1];
-
-          if (diff_type === DIFF_INSERT) {
-            // Insertions are harmless.
-            patch.length2 += diff_text.length;
-            start2 += diff_text.length;
-            patch.diffs.push(bigpatch.diffs.shift());
-            empty = false;
-          } else if (diff_type === DIFF_DELETE && patch.diffs.length == 1 && patch.diffs[0][0] == DIFF_EQUAL && diff_text.length > 2 * patch_size) {
-            // This is a large deletion.  Let it pass in one chunk.
-            patch.length1 += diff_text.length;
-            start1 += diff_text.length;
-            empty = false;
-            patch.diffs.push([diff_type, diff_text]);
-            bigpatch.diffs.shift();
-          } else {
-            // Deletion or equality.  Only take as much as we can stomach.
-            diff_text = diff_text.substring(0, patch_size - patch.length1 - this.Patch_Margin);
-            patch.length1 += diff_text.length;
-            start1 += diff_text.length;
-
-            if (diff_type === DIFF_EQUAL) {
-              patch.length2 += diff_text.length;
-              start2 += diff_text.length;
-            } else {
-              empty = false;
-            }
-
-            patch.diffs.push([diff_type, diff_text]);
-
-            if (diff_text == bigpatch.diffs[0][1]) {
-              bigpatch.diffs.shift();
-            } else {
-              bigpatch.diffs[0][1] = bigpatch.diffs[0][1].substring(diff_text.length);
-            }
-          }
-        } // Compute the head context for the next patch.
-
-
-        precontext = this.diff_text2(patch.diffs);
-        precontext = precontext.substring(precontext.length - this.Patch_Margin); // Append the end context for this patch.
-
-        var postcontext = this.diff_text1(bigpatch.diffs).substring(0, this.Patch_Margin);
-
-        if (postcontext !== '') {
-          patch.length1 += postcontext.length;
-          patch.length2 += postcontext.length;
-
-          if (patch.diffs.length !== 0 && patch.diffs[patch.diffs.length - 1][0] === DIFF_EQUAL) {
-            patch.diffs[patch.diffs.length - 1][1] += postcontext;
-          } else {
-            patch.diffs.push([DIFF_EQUAL, postcontext]);
-          }
-        }
-
-        if (!empty) {
-          patches.splice(++x, 0, patch);
-        }
-      }
-    }
-  }
-};
-/**
- * Take a list of patches and return a textual representation.
- * @param {Array.<patch_obj>} patches Array of patch objects.
- * @return {string} Text representation of patches.
- */
-
-
-diff_match_patch.prototype.patch_toText = function (patches) {
-  var text = [];
-
-  for (var x = 0; x < patches.length; x++) {
-    text[x] = patches[x];
-  }
-
-  return text.join('');
-};
-/**
- * Parse a textual representation of patches and return a list of patch objects.
- * @param {string} textline Text representation of patches.
- * @return {Array.<patch_obj>} Array of patch objects.
- * @throws {Error} If invalid input.
- */
-
-
-diff_match_patch.prototype.patch_fromText = function (textline) {
-  var patches = [];
-
-  if (!textline) {
-    return patches;
-  } // Opera doesn't know how to decode char 0.
-
-
-  textline = textline.replace(/%00/g, '\0');
-  var text = textline.split('\n');
-  var textPointer = 0;
-
-  while (textPointer < text.length) {
-    var m = text[textPointer].match(/^@@ -(\d+),?(\d*) \+(\d+),?(\d*) @@$/);
-
-    if (!m) {
-      throw new Error('Invalid patch string: ' + text[textPointer]);
-    }
-
-    var patch = new patch_obj();
-    patches.push(patch);
-    patch.start1 = parseInt(m[1], 10);
-
-    if (m[2] === '') {
-      patch.start1--;
-      patch.length1 = 1;
-    } else if (m[2] == '0') {
-      patch.length1 = 0;
-    } else {
-      patch.start1--;
-      patch.length1 = parseInt(m[2], 10);
-    }
-
-    patch.start2 = parseInt(m[3], 10);
-
-    if (m[4] === '') {
-      patch.start2--;
-      patch.length2 = 1;
-    } else if (m[4] == '0') {
-      patch.length2 = 0;
-    } else {
-      patch.start2--;
-      patch.length2 = parseInt(m[4], 10);
-    }
-
-    textPointer++;
-
-    while (textPointer < text.length) {
-      var sign = text[textPointer].charAt(0);
-
-      try {
-        var line = decodeURI(text[textPointer].substring(1));
-      } catch (ex) {
-        // Malformed URI sequence.
-        throw new Error('Illegal escape in patch_fromText: ' + line);
-      }
-
-      if (sign == '-') {
-        // Deletion.
-        patch.diffs.push([DIFF_DELETE, line]);
-      } else if (sign == '+') {
-        // Insertion.
-        patch.diffs.push([DIFF_INSERT, line]);
-      } else if (sign == ' ') {
-        // Minor equality.
-        patch.diffs.push([DIFF_EQUAL, line]);
-      } else if (sign == '@') {
-        // Start of next patch.
-        break;
-      } else if (sign === '') {// Blank line?  Whatever.
-      } else {
-        // WTF?
-        throw new Error('Invalid patch mode "' + sign + '" in: ' + line);
-      }
-
-      textPointer++;
-    }
-  }
-
-  return patches;
-};
-/**
- * Class representing one patch operation.
- * @constructor
- */
-
-
-function patch_obj() {
-  /** @type {Array.<Array.<number|string>>} */
-  this.diffs = [];
-  /** @type {?number} */
-
-  this.start1 = null;
-  /** @type {?number} */
-
-  this.start2 = null;
-  /** @type {number} */
-
-  this.length1 = 0;
-  /** @type {number} */
-
-  this.length2 = 0;
-}
-/**
- * Emmulate GNU diff's format.
- * Header: @@ -382,8 +481,9 @@
- * Indicies are printed as 1-based, not 0-based.
- * @return {string} The GNU diff string.
- */
-
-
-patch_obj.prototype.toString = function () {
-  var coords1, coords2;
-
-  if (this.length1 === 0) {
-    coords1 = this.start1 + ',0';
-  } else if (this.length1 == 1) {
-    coords1 = this.start1 + 1;
-  } else {
-    coords1 = this.start1 + 1 + ',' + this.length1;
-  }
-
-  if (this.length2 === 0) {
-    coords2 = this.start2 + ',0';
-  } else if (this.length2 == 1) {
-    coords2 = this.start2 + 1;
-  } else {
-    coords2 = this.start2 + 1 + ',' + this.length2;
-  }
-
-  var text = ['@@ -' + coords1 + ' +' + coords2 + ' @@\n'];
-  var op; // Escape the body of the patch with %xx notation.
-
-  for (var x = 0; x < this.diffs.length; x++) {
-    switch (this.diffs[x][0]) {
-      case DIFF_INSERT:
-        op = '+';
-        break;
-
-      case DIFF_DELETE:
-        op = '-';
-        break;
-
-      case DIFF_EQUAL:
-        op = ' ';
-        break;
-    }
-
-    text[x + 1] = op + encodeURI(this.diffs[x][1]) + '\n';
-  } // Opera doesn't know how to encode char 0.
-
-
-  return text.join('').replace(/\x00/g, '%00').replace(/%20/g, ' ');
-}; // Export these global variables so that they survive Google's JS compiler.
-
-/*changed by lfborjas: changed `window` for `exports` to make it suitable for the node.js module conventions*/
-
-
-exports['diff_match_patch'] = diff_match_patch;
-exports['patch_obj'] = patch_obj;
-exports['DIFF_DELETE'] = DIFF_DELETE;
-exports['DIFF_INSERT'] = DIFF_INSERT;
-exports['DIFF_EQUAL'] = DIFF_EQUAL;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/asArray.js":
-/*!**************************************************!*\
-  !*** ./node_modules/gson-conform/lib/asArray.js ***!
-  \**************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Converts an object to an array
- *
- * @param  {Mixed} value to convert to array
- * @return {Array} to array converted input
- */
-
-function asArray(value) {
-  if (Array.isArray(value)) {
-    return value; // prevent duplication
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    return Object.keys(value).map(function (key) {
-      return value[key];
-    });
-  } else {
-    return [];
-  }
-}
-
-module.exports = asArray;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/forEach.js":
-/*!**************************************************!*\
-  !*** ./node_modules/gson-conform/lib/forEach.js ***!
-  \**************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Iterates over object or array, passing each key, value and parentObject to the callback
- *
- * @param  {Object|Array} value	to iterate
- * @param  {Function} callback	receiving key on given input value
- */
-
-function forEach(object, callback) {
-  var keys;
-
-  if (Array.isArray(object)) {
-    object.forEach(callback);
-  } else if (Object.prototype.toString.call(object) === "[object Object]") {
-    Object.keys(object).forEach(function (key) {
-      callback(object[key], key, object);
-    });
-  }
-}
-
-module.exports = forEach;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/index.js":
-/*!************************************************!*\
-  !*** ./node_modules/gson-conform/lib/index.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-exports.values = __webpack_require__(/*! ./values */ "./node_modules/gson-conform/lib/values.js");
-exports.asArray = __webpack_require__(/*! ./asArray */ "./node_modules/gson-conform/lib/asArray.js");
-exports.forEach = __webpack_require__(/*! ./forEach */ "./node_modules/gson-conform/lib/forEach.js");
-exports.keyOf = __webpack_require__(/*! ./keyOf */ "./node_modules/gson-conform/lib/keyOf.js");
-exports.keys = __webpack_require__(/*! ./keys */ "./node_modules/gson-conform/lib/keys.js");
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/keyOf.js":
-/*!************************************************!*\
-  !*** ./node_modules/gson-conform/lib/keyOf.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var forEach = __webpack_require__(/*! ./forEach */ "./node_modules/gson-conform/lib/forEach.js");
-/**
- * Returns the key of the value
- *
- * @param  {Object|Array} data	to scan
- * @param  {Mixed} value 		to search
- * @return {String|Number} key of (last) found result or null
- */
-
-
-function keyOf(data, value) {
-  var resultKey = null;
-  forEach(data, function (itemValue, itemKey) {
-    if (value === itemValue) {
-      resultKey = itemKey;
-    }
-  });
-  return resultKey;
-}
-
-module.exports = keyOf;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/keys.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-conform/lib/keys.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Returns all keys of the given input data
- *
- * @param  {Mixed} value
- * @return {Array} containing keys of given value
- */
-
-function keys(value) {
-  var keys;
-
-  if (Array.isArray(value)) {
-    keys = value.map(function (value, index) {
-      return index;
-    });
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    return Object.keys(value);
-  } else {
-    keys = [];
-  }
-
-  return keys;
-}
-
-module.exports = keys;
-
-/***/ }),
-
-/***/ "./node_modules/gson-conform/lib/values.js":
-/*!*************************************************!*\
-  !*** ./node_modules/gson-conform/lib/values.js ***!
-  \*************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/**
- * Returns all values of the given input data
- * @param  {Mixed} value input data
- * @return {Array} array of input data's values
- */
-
-function values(value) {
-  var values;
-
-  if (Array.isArray(value)) {
-    // []
-    values = value;
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    // {}
-    values = Object.keys(value).map(function (key) {
-      return value[key];
-    });
-  } else if (value != null) {
-    // *
-    values = [value];
-  } else {
-    values = [];
-  }
-
-  return values;
-}
-
-module.exports = values;
 
 /***/ }),
 
@@ -5952,450 +799,6 @@ module.exports = split;
 
 /***/ }),
 
-/***/ "./node_modules/gson-query/lib/common.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-query/lib/common.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-var rIsRegExp = /^\{.*\}$/;
-/**
- * Removes root prefix of pointer
- *
- * @param  {String} pointer
- * @return {String} simple pointer path
- */
-
-function stripPointerPrefix(pointer) {
-  pointer = pointer.toString();
-  return pointer.replace(/[#/]*/, "");
-}
-
-function convertToRegExp(pointerPartial) {
-  return new RegExp(pointerPartial.replace(/^\{|\}$/g, ""));
-}
-
-function splitRegExp(pointer) {
-  pointer = pointer.replace(/^\{|\/\{/g, "§{");
-  pointer = pointer.replace(/\}\/|\}$/g, "}§");
-  return pointer.split("§");
-}
-/**
- * Can not be used in conjuction with filters...
- * REMOVE stripPointer...
- *
- * @param  {String} pointer
- * @return {Array}
- */
-
-
-function parsePointer(pointer) {
-  var partials;
-  var current;
-  var result;
-  pointer = stripPointerPrefix(pointer);
-
-  if (pointer.indexOf("{") === -1) {
-    return pointer.split("/");
-  }
-
-  result = [];
-  partials = splitRegExp(pointer);
-
-  while ((current = partials.shift()) != null) {
-    if (current === "") {
-      continue;
-    }
-
-    if (rIsRegExp.test(current)) {
-      result.push(current);
-    } else {
-      result.push.apply(result, current.split("/"));
-    }
-  }
-
-  return result;
-}
-
-exports.rIsRegExp = rIsRegExp;
-exports.convertToRegExp = convertToRegExp;
-exports.splitRegExp = splitRegExp;
-exports.parsePointer = parsePointer;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/delete.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-query/lib/delete.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var pointerDelete = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js")["delete"];
-
-var removeUndefinedItems = __webpack_require__(/*! gson-pointer/lib/removeUndefinedItems */ "./node_modules/gson-pointer/lib/removeUndefinedItems.js");
-
-var queryGet = __webpack_require__(/*! ./get */ "./node_modules/gson-query/lib/get.js");
-
-var POINTER = 3;
-var PARENT = 2;
-
-function queryDelete(obj, jsonPointer) {
-  var matches = queryGet(obj, jsonPointer, queryGet.ALL);
-  matches.forEach(function (match) {
-    pointerDelete(obj, match[POINTER], true);
-  });
-  matches.forEach(function (match) {
-    if (Array.isArray(match[PARENT])) {
-      removeUndefinedItems(match[PARENT]);
-    }
-  });
-  return obj;
-}
-
-module.exports = queryDelete;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/filter.js":
-/*!***********************************************!*\
-  !*** ./node_modules/gson-query/lib/filter.js ***!
-  \***********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var o = __webpack_require__(/*! gson-conform */ "./node_modules/gson-conform/lib/index.js");
-
-var common = __webpack_require__(/*! ./common */ "./node_modules/gson-query/lib/common.js");
-
-var f = {
-  queryKey: function queryKey(obj, query) {
-    return function (key) {
-      return valid(obj[key], query);
-    };
-  },
-  queryRegExp: function queryRegExp(obj, query, regex) {
-    return function (key) {
-      return regex.test(key) ? valid(obj[key], query) : false;
-    };
-  }
-};
-var MAP = {
-  "false": false,
-  "true": true,
-  "null": null
-};
-/**
- * Filter properties by query: select|if:property
- *
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Array} values matching the given query
- */
-
-function filterValues(obj, query) {
-  return filterKeys(obj, query).map(function (key) {
-    return obj[key];
-  });
-}
-
-var selectCurly = /(\{[^}]*\})/g;
-var selectPlaceholder = /§§§\d+§§§/g;
-
-function splitQuery(value) {
-  // nothing to escape
-  if (value.indexOf("?") === -1 || value.indexOf("{") === -1) {
-    return value.split("?", 2);
-  } // @todo this must be simpler to solve
-
-
-  var map = {};
-  var temp = value.replace(selectCurly, function replace(match, group, index) {
-    var id = "§§§" + index + "§§§";
-    map[id] = match;
-    return id;
-  });
-  var result = temp.split("?", 2);
-
-  for (var i = 0; i < result.length; i += 1) {
-    result[i] = result[i].replace(selectPlaceholder, function revertReplacement(match) {
-      return map[match];
-    });
-  }
-
-  return result;
-}
-/**
- * Filter properties by query: select|if:property
- *
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Array} object keys matching the given query
- */
-
-
-function filterKeys(obj, query) {
-  if (obj && query) {
-    var matches = splitQuery(query);
-    var propertyQuery = matches[0];
-    var filterQuery = matches[1];
-    var keys;
-    var regex;
-
-    if (propertyQuery === "*" || propertyQuery === "**") {
-      keys = o.keys(obj);
-      return keys.filter(f.queryKey(obj, filterQuery));
-    } else if (common.rIsRegExp.test(propertyQuery)) {
-      keys = o.keys(obj);
-      regex = common.convertToRegExp(propertyQuery);
-      return keys.filter(f.queryRegExp(obj, filterQuery, regex));
-    } else if (obj[propertyQuery] && valid(obj[propertyQuery], filterQuery)) {
-      return [propertyQuery];
-    }
-  }
-
-  return [];
-}
-/**
- * Returns true if the query matches. Query: key:value&key:value
- * @param  {Object|Array} obj
- * @param  {String} query key:value pairs separated by &
- * @return {Boolean} if query matched object
- */
-
-
-function valid(obj, query) {
-  if (!query) {
-    return true;
-  }
-
-  if (!obj) {
-    return false;
-  }
-
-  var key;
-  var value;
-  var isValid = true;
-  var truthy;
-  var tests = query.replace(/(&&)/g, "§$1§").replace(/(\|\|)/g, "§$1§").split("§");
-  var or = false;
-
-  for (var i = 0, l = tests.length; i < l; i += 2) {
-    if (tests[i].indexOf(":!") > -1) {
-      truthy = false;
-      value = tests[i].split(":!");
-    } else if (tests[i].indexOf(":") === -1) {
-      truthy = false;
-      value = [tests[i], undefined];
-    } else {
-      truthy = true;
-      value = tests[i].split(":");
-    }
-
-    key = value[0];
-    value = value[1];
-
-    if (value === "undefined") {
-      value = undefined; // undefined is unmappable
-    } else {
-      value = MAP[value] === undefined ? value : MAP[value];
-    } // perform filter test, exception undefined is not matched for negated non-undefined values
-
-
-    value = truthy ? value === obj[key] : value !== obj[key] && (obj[key] !== undefined || key === undefined);
-
-    if (or) {
-      isValid = isValid || value;
-    } else {
-      isValid = isValid && value;
-    }
-
-    or = tests[i + 1] === "||";
-  }
-
-  return isValid;
-}
-
-exports.values = filterValues;
-exports.keys = filterKeys;
-exports.valid = valid;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/get.js":
-/*!********************************************!*\
-  !*** ./node_modules/gson-query/lib/get.js ***!
-  \********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* eslint no-unused-vars: 0 */
-var query = __webpack_require__(/*! ./run */ "./node_modules/gson-query/lib/run.js");
-/**
- * Returns the query results as an array or object, depending on its callback
- *
- * ## return type
- *
- * - get.ALL = 'all' returns all arguments of query callback [value, key, parent, pointer]
- * - get.POINTER = 'pointer' returns only the json pointers to the targets
- * - get.VALUE = 'value' Default. Returns only the matched value
- * - get.MAP = Returns an object with all available pointers and their data, like { pointer: value }
- *
- * @param  {Mixed} obj
- * @param  {Pointer} jsonPointer
- * @param  {String} type			- type of return value. Defaults to "value"
- * @return {Array|Object} containing result in specified format
- */
-
-
-function queryGet(obj, jsonPointer, type) {
-  var matches = type === queryGet.MAP ? {} : [];
-  var cb = getCbFactory(type, matches);
-  query(obj, jsonPointer, cb);
-  return matches;
-}
-
-queryGet.ALL = "all";
-queryGet.MAP = "map";
-queryGet.POINTER = "pointer";
-queryGet.VALUE = "value";
-
-function getCbFactory(type, matches) {
-  if (typeof type === "function") {
-    return function cb(value, key, obj, pointer) {
-      matches.push(type(obj[key], key, obj, pointer));
-    };
-  }
-
-  switch (type) {
-    case queryGet.ALL:
-      return function cbGetAll(value, key, obj, pointer) {
-        matches.push([obj[key], key, obj, pointer]);
-      };
-
-    case queryGet.MAP:
-      return function cbGetMap(value, key, obj, pointer) {
-        matches[pointer] = value;
-      };
-
-    case queryGet.POINTER:
-      return function cbGetPointer(value, key, obj, pointer) {
-        matches.push(pointer);
-      };
-
-    case queryGet.VALUE:
-      return function cbGetValue(value, key, obj, pointer) {
-        matches.push(value);
-      };
-
-    default:
-      return function cbGetValue(value, key, obj, pointer) {
-        matches.push(value);
-      };
-  }
-}
-
-module.exports = queryGet;
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/index.js":
-/*!**********************************************!*\
-  !*** ./node_modules/gson-query/lib/index.js ***!
-  \**********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports.get = __webpack_require__(/*! ./get */ "./node_modules/gson-query/lib/get.js");
-exports.run = __webpack_require__(/*! ./run */ "./node_modules/gson-query/lib/run.js");
-exports["delete"] = __webpack_require__(/*! ./delete */ "./node_modules/gson-query/lib/delete.js");
-exports.filter = __webpack_require__(/*! ./filter */ "./node_modules/gson-query/lib/filter.js");
-
-/***/ }),
-
-/***/ "./node_modules/gson-query/lib/run.js":
-/*!********************************************!*\
-  !*** ./node_modules/gson-query/lib/run.js ***!
-  \********************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var filter = __webpack_require__(/*! ./filter */ "./node_modules/gson-query/lib/filter.js");
-
-var parsePointer = __webpack_require__(/*! ./common */ "./node_modules/gson-query/lib/common.js").parsePointer; // @note gson-pointer: only strings are valid pointer properties to join. Ensure key is a string (could be index)
-
-
-var join = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js").join;
-/**
- * callback for each match of json-glob-pointer
- *
- * @param  {Any} obj
- * @param  {String} jsonPointer - function (value, key, parentObject, pointerToValue)
- * @param  {Function} cb
- */
-
-
-function queryRun(obj, jsonPointer, cb) {
-  // get steps into obj
-  var steps = parsePointer(jsonPointer); // cleanup first and last
-
-  if (steps[0] === "") {
-    // @todo due to pointer cleanup, this is probably never called
-    steps.shift();
-  }
-
-  if (steps[steps.length - 1] === "") {
-    steps.length -= 1;
-  }
-
-  _query(obj, steps, cb, "#");
-}
-
-function cbPassAll(obj, cb, pointer) {
-  return function (key) {
-    cb(obj[key], key, obj, join(pointer, String(key)));
-  };
-}
-
-function _query(obj, steps, cb, pointer) {
-  var matches;
-  var query = steps.shift();
-
-  if (steps.length === 0) {
-    // get keys matching the query and call back
-    matches = filter.keys(obj, query);
-    matches.forEach(cbPassAll(obj, cb, pointer));
-  } else if (/^\*\*/.test(query)) {
-    // run next query on current object
-    _query(obj, steps.slice(0), cb, pointer);
-  } else {
-    matches = filter.keys(obj, query);
-    matches.forEach(function (key) {
-      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
-    });
-  }
-
-  if (/^\*\*/.test(query)) {
-    // match this query (**) again
-    steps.unshift(query);
-    matches = filter.keys(obj, query);
-    matches.forEach(function (key) {
-      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
-    });
-  }
-}
-
-module.exports = queryRun;
-
-/***/ }),
-
 /***/ "./node_modules/json-schema-library/index.js":
 /*!***************************************************!*\
   !*** ./node_modules/json-schema-library/index.js ***!
@@ -6472,9 +875,7 @@ function copy(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-var SchemaService =
-/*#__PURE__*/
-function () {
+var SchemaService = /*#__PURE__*/function () {
   function SchemaService(schema, data) {
     _classCallCheck(this, SchemaService);
 
@@ -6996,7 +1397,7 @@ module.exports = {
   MinItemsError: "Too few items in `{{pointer}}`, should be at least `{{minimum}}`, but got `{{length}}`",
   MinLengthError: "Value `{{pointer}}` should have a minimum length of `{{minLength}}`, but got `{{length}}`.",
   MinPropertiesError: "Too few properties in `{{pointer}}`, should be at least `{{minimum}}`, but got `{{length}}`",
-  MissingOneOfPropertyError: "Value at `{{pointer}}aroperty `{{property}}`",
+  MissingOneOfPropertyError: "Value at `{{pointer}}` property: `{{property}}`",
   MissingDependencyError: "The required propery '{{missingProperty}}' in `{{pointer}}` is missing",
   MultipleOfError: "Expected `{{value}}` in `{{pointer}}` to be multiple of `{{multipleOf}}`",
   MultipleOneOfError: "Value `{{value}}` should not match multiple schemas in oneOf `{{matches}}`",
@@ -7040,9 +1441,7 @@ var _resolveAllOf = __webpack_require__(/*! ../resolveAllOf */ "./node_modules/j
 /* eslint no-unused-vars: 0 no-empty-function: 0 */
 
 
-module.exports =
-/*#__PURE__*/
-function () {
+module.exports = /*#__PURE__*/function () {
   function CoreInterface(schema) {
     _classCallCheck(this, CoreInterface);
 
@@ -7153,15 +1552,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var CoreInterface = __webpack_require__(/*! ./CoreInterface */ "./node_modules/json-schema-library/lib/cores/CoreInterface.js");
 
@@ -7185,17 +1588,17 @@ var remotes = __webpack_require__(/*! ../../remotes */ "./node_modules/json-sche
 
 remotes["http://json-schema.org/draft-04/schema"] = compileSchema(__webpack_require__(/*! ../../remotes/draft04.json */ "./node_modules/json-schema-library/remotes/draft04.json"));
 
-var Draft04Core =
-/*#__PURE__*/
-function (_CoreInterface) {
+var Draft04Core = /*#__PURE__*/function (_CoreInterface) {
   _inherits(Draft04Core, _CoreInterface);
+
+  var _super = _createSuper(Draft04Core);
 
   function Draft04Core(schema) {
     var _this;
 
     _classCallCheck(this, Draft04Core);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Draft04Core).call(this, schema));
+    _this = _super.call(this, schema);
     _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__(/*! ../validation/typeKeywordMapping */ "./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
     _this.validateKeyword = _extends({}, __webpack_require__(/*! ../validation/keyword */ "./node_modules/json-schema-library/lib/validation/keyword.js"));
     _this.validateType = _extends({}, __webpack_require__(/*! ../validation/type */ "./node_modules/json-schema-library/lib/validation/type.js"));
@@ -7281,15 +1684,19 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
 function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
 
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
-
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
 var CoreInterface = __webpack_require__(/*! ./CoreInterface */ "./node_modules/json-schema-library/lib/cores/CoreInterface.js");
 
@@ -7307,17 +1714,17 @@ var _getSchema = __webpack_require__(/*! ../getSchema */ "./node_modules/json-sc
 
 var _each = __webpack_require__(/*! ../each */ "./node_modules/json-schema-library/lib/each.js");
 
-var JsonEditorCore =
-/*#__PURE__*/
-function (_CoreInterface) {
+var JsonEditorCore = /*#__PURE__*/function (_CoreInterface) {
   _inherits(JsonEditorCore, _CoreInterface);
+
+  var _super = _createSuper(JsonEditorCore);
 
   function JsonEditorCore(schema) {
     var _this;
 
     _classCallCheck(this, JsonEditorCore);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(JsonEditorCore).call(this, schema));
+    _this = _super.call(this, schema);
     _this.typeKeywords = JSON.parse(JSON.stringify(__webpack_require__(/*! ../validation/typeKeywordMapping */ "./node_modules/json-schema-library/lib/validation/typeKeywordMapping.js")));
     _this.validateKeyword = _extends({}, __webpack_require__(/*! ../validation/keyword */ "./node_modules/json-schema-library/lib/validation/keyword.js")); // set properties required per default and prevent no duplicate errors.
     // This is required for fuzzy resolveOneOf
@@ -7567,7 +1974,9 @@ module.exports = function getChildSchemaSelection(core, property) {
 
   if (result.type === "error") {
     if (result.code === "one-of-error") {
-      return result.data.oneOf;
+      return result.data.oneOf.map(function (item) {
+        return core.resolveRef(item);
+      });
     }
 
     return result;
@@ -8089,13 +2498,17 @@ module.exports = function resolveAnyOf(core, data) {
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
 
@@ -8181,7 +2594,7 @@ module.exports = function resolveOneOf(core, data) {
       if (result.length > 0) {
         errors.push.apply(errors, _toConsumableArray(result));
       } else {
-        return schema.oneOf[i];
+        return one; // return resolved schema
       }
     }
 
@@ -8260,13 +2673,17 @@ module.exports = function resolveOneOf(core, data) {
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var filter = __webpack_require__(/*! ./utils/filter */ "./node_modules/json-schema-library/lib/utils/filter.js");
 
@@ -8385,7 +2802,7 @@ module.exports = function resolveRefMerge(schema, rootSchema) {
 
 var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
-var gq = __webpack_require__(/*! gson-query */ "./node_modules/gson-query/lib/index.js");
+var gq = __webpack_require__(/*! gson-query */ "./node_modules/json-schema-library/node_modules/gson-query/lib/index.js");
 
 var getTypeId = __webpack_require__(/*! ./getTypeId */ "./node_modules/json-schema-library/lib/schema/getTypeId.js");
 
@@ -8915,7 +3332,7 @@ module.exports = flattenArray;
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-var deepmerge = __webpack_require__(/*! deepmerge */ "./node_modules/deepmerge/dist/cjs.js");
+var deepmerge = __webpack_require__(/*! deepmerge */ "./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js");
 
 var overwriteMerge = function overwriteMerge(destinationArray, sourceArray) {
   return sourceArray;
@@ -9221,7 +3638,7 @@ module.exports = errors;
 /* eslint-disable max-len */
 var errors = __webpack_require__(/*! ./errors */ "./node_modules/json-schema-library/lib/validation/errors.js");
 
-var validUrl = __webpack_require__(/*! valid-url */ "./node_modules/valid-url/index.js"); // https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
+var validUrl = __webpack_require__(/*! valid-url */ "./node_modules/json-schema-library/node_modules/valid-url/index.js"); // https://gist.github.com/marcelotmelo/b67f58a08bee6c2468f8
 
 
 var isValidDateTime = new RegExp("^([0-9]+)-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])[Tt]([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]|60)(\\.[0-9]+)?(([Zz])|([\\+|\\-]([01][0-9]|2[0-3]):[0-5][0-9]))$"); // https://stackoverflow.com/questions/23483855/javascript-regex-to-validate-ipv4-and-ipv6-address-no-hostnames
@@ -9330,13 +3747,17 @@ module.exports = FormatValidation;
 /*! all exports used */
 /***/ (function(module, exports, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
@@ -9968,6 +4389,892 @@ module.exports = {
   number: ["enum", "format", "maximum", "minimum", "multipleOf", "not", "oneOf", "allOf", "anyOf"],
   "null": ["enum", "format", "not", "oneOf", "allOf", "anyOf"]
 };
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/deepmerge/dist/cjs.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+var isMergeableObject = function isMergeableObject(value) {
+  return isNonNullObject(value) && !isSpecial(value);
+};
+
+function isNonNullObject(value) {
+  return !!value && _typeof(value) === 'object';
+}
+
+function isSpecial(value) {
+  var stringValue = Object.prototype.toString.call(value);
+  return stringValue === '[object RegExp]' || stringValue === '[object Date]' || isReactElement(value);
+} // see https://github.com/facebook/react/blob/b5ac963fb791d1298e7f396236383bc955f916c1/src/isomorphic/classic/element/ReactElement.js#L21-L25
+
+
+var canUseSymbol = typeof Symbol === 'function' && Symbol["for"];
+var REACT_ELEMENT_TYPE = canUseSymbol ? Symbol["for"]('react.element') : 0xeac7;
+
+function isReactElement(value) {
+  return value.$$typeof === REACT_ELEMENT_TYPE;
+}
+
+function emptyTarget(val) {
+  return Array.isArray(val) ? [] : {};
+}
+
+function cloneUnlessOtherwiseSpecified(value, options) {
+  return options.clone !== false && options.isMergeableObject(value) ? deepmerge(emptyTarget(value), value, options) : value;
+}
+
+function defaultArrayMerge(target, source, options) {
+  return target.concat(source).map(function (element) {
+    return cloneUnlessOtherwiseSpecified(element, options);
+  });
+}
+
+function getMergeFunction(key, options) {
+  if (!options.customMerge) {
+    return deepmerge;
+  }
+
+  var customMerge = options.customMerge(key);
+  return typeof customMerge === 'function' ? customMerge : deepmerge;
+}
+
+function getEnumerableOwnPropertySymbols(target) {
+  return Object.getOwnPropertySymbols ? Object.getOwnPropertySymbols(target).filter(function (symbol) {
+    return target.propertyIsEnumerable(symbol);
+  }) : [];
+}
+
+function getKeys(target) {
+  return Object.keys(target).concat(getEnumerableOwnPropertySymbols(target));
+}
+
+function mergeObject(target, source, options) {
+  var destination = {};
+
+  if (options.isMergeableObject(target)) {
+    getKeys(target).forEach(function (key) {
+      destination[key] = cloneUnlessOtherwiseSpecified(target[key], options);
+    });
+  }
+
+  getKeys(source).forEach(function (key) {
+    if (!options.isMergeableObject(source[key]) || !target[key]) {
+      destination[key] = cloneUnlessOtherwiseSpecified(source[key], options);
+    } else {
+      destination[key] = getMergeFunction(key, options)(target[key], source[key], options);
+    }
+  });
+  return destination;
+}
+
+function deepmerge(target, source, options) {
+  options = options || {};
+  options.arrayMerge = options.arrayMerge || defaultArrayMerge;
+  options.isMergeableObject = options.isMergeableObject || isMergeableObject;
+  var sourceIsArray = Array.isArray(source);
+  var targetIsArray = Array.isArray(target);
+  var sourceAndTargetTypesMatch = sourceIsArray === targetIsArray;
+
+  if (!sourceAndTargetTypesMatch) {
+    return cloneUnlessOtherwiseSpecified(source, options);
+  } else if (sourceIsArray) {
+    return options.arrayMerge(target, source, options);
+  } else {
+    return mergeObject(target, source, options);
+  }
+}
+
+deepmerge.all = function deepmergeAll(array, options) {
+  if (!Array.isArray(array)) {
+    throw new Error('first argument should be an array');
+  }
+
+  return array.reduce(function (prev, next) {
+    return deepmerge(prev, next, options);
+  }, {});
+};
+
+var deepmerge_1 = deepmerge;
+module.exports = deepmerge_1;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Converts an object to an array
+ *
+ * @param  {Mixed} value to convert to array
+ * @return {Array} to array converted input
+ */
+
+function asArray(value) {
+  if (Array.isArray(value)) {
+    return value; // prevent duplication
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    return Object.keys(value).map(function (key) {
+      return value[key];
+    });
+  } else {
+    return [];
+  }
+}
+
+module.exports = asArray;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js ***!
+  \***********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Iterates over object or array, passing each key, value and parentObject to the callback
+ *
+ * @param  {Object|Array} value	to iterate
+ * @param  {Function} callback	receiving key on given input value
+ */
+
+function forEach(object, callback) {
+  var keys;
+
+  if (Array.isArray(object)) {
+    object.forEach(callback);
+  } else if (Object.prototype.toString.call(object) === "[object Object]") {
+    Object.keys(object).forEach(function (key) {
+      callback(object[key], key, object);
+    });
+  }
+}
+
+module.exports = forEach;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js ***!
+  \*********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.values = __webpack_require__(/*! ./values */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js");
+exports.asArray = __webpack_require__(/*! ./asArray */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/asArray.js");
+exports.forEach = __webpack_require__(/*! ./forEach */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js");
+exports.keyOf = __webpack_require__(/*! ./keyOf */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js");
+exports.keys = __webpack_require__(/*! ./keys */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js");
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js":
+/*!*********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/keyOf.js ***!
+  \*********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var forEach = __webpack_require__(/*! ./forEach */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/forEach.js");
+/**
+ * Returns the key of the value
+ *
+ * @param  {Object|Array} data	to scan
+ * @param  {Mixed} value 		to search
+ * @return {String|Number} key of (last) found result or null
+ */
+
+
+function keyOf(data, value) {
+  var resultKey = null;
+  forEach(data, function (itemValue, itemKey) {
+    if (value === itemValue) {
+      resultKey = itemKey;
+    }
+  });
+  return resultKey;
+}
+
+module.exports = keyOf;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/keys.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Returns all keys of the given input data
+ *
+ * @param  {Mixed} value
+ * @return {Array} containing keys of given value
+ */
+
+function keys(value) {
+  var keys;
+
+  if (Array.isArray(value)) {
+    keys = value.map(function (value, index) {
+      return index;
+    });
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    return Object.keys(value);
+  } else {
+    keys = [];
+  }
+
+  return keys;
+}
+
+module.exports = keys;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-conform/lib/values.js ***!
+  \**********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Returns all values of the given input data
+ * @param  {Mixed} value input data
+ * @return {Array} array of input data's values
+ */
+
+function values(value) {
+  var values;
+
+  if (Array.isArray(value)) {
+    // []
+    values = value;
+  } else if (Object.prototype.toString.call(value) === "[object Object]") {
+    // {}
+    values = Object.keys(value).map(function (key) {
+      return value[key];
+    });
+  } else if (value != null) {
+    // *
+    values = [value];
+  } else {
+    values = [];
+  }
+
+  return values;
+}
+
+module.exports = values;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/common.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports) {
+
+var rIsRegExp = /^\{.*\}$/;
+/**
+ * Removes root prefix of pointer
+ *
+ * @param  {String} pointer
+ * @return {String} simple pointer path
+ */
+
+function stripPointerPrefix(pointer) {
+  pointer = pointer.toString();
+  return pointer.replace(/[#/]*/, "");
+}
+
+function convertToRegExp(pointerPartial) {
+  return new RegExp(pointerPartial.replace(/^\{|\}$/g, ""));
+}
+
+function splitRegExp(pointer) {
+  pointer = pointer.replace(/^\{|\/\{/g, "§{");
+  pointer = pointer.replace(/\}\/|\}$/g, "}§");
+  return pointer.split("§");
+}
+/**
+ * Can not be used in conjuction with filters...
+ * REMOVE stripPointer...
+ *
+ * @param  {String} pointer
+ * @return {Array}
+ */
+
+
+function parsePointer(pointer) {
+  var partials;
+  var current;
+  var result;
+  pointer = stripPointerPrefix(pointer);
+
+  if (pointer.indexOf("{") === -1) {
+    return pointer.split("/");
+  }
+
+  result = [];
+  partials = splitRegExp(pointer);
+
+  while ((current = partials.shift()) != null) {
+    if (current === "") {
+      continue;
+    }
+
+    if (rIsRegExp.test(current)) {
+      result.push(current);
+    } else {
+      result.push.apply(result, current.split("/"));
+    }
+  }
+
+  return result;
+}
+
+exports.rIsRegExp = rIsRegExp;
+exports.convertToRegExp = convertToRegExp;
+exports.splitRegExp = splitRegExp;
+exports.parsePointer = parsePointer;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var pointerDelete = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js")["delete"];
+
+var removeUndefinedItems = __webpack_require__(/*! gson-pointer/lib/removeUndefinedItems */ "./node_modules/gson-pointer/lib/removeUndefinedItems.js");
+
+var queryGet = __webpack_require__(/*! ./get */ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js");
+
+var POINTER = 3;
+var PARENT = 2;
+
+function queryDelete(obj, jsonPointer) {
+  var matches = queryGet(obj, jsonPointer, queryGet.ALL);
+  matches.forEach(function (match) {
+    pointerDelete(obj, match[POINTER], true);
+  });
+  matches.forEach(function (match) {
+    if (Array.isArray(match[PARENT])) {
+      removeUndefinedItems(match[PARENT]);
+    }
+  });
+  return obj;
+}
+
+module.exports = queryDelete;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js":
+/*!********************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var o = __webpack_require__(/*! gson-conform */ "./node_modules/json-schema-library/node_modules/gson-conform/lib/index.js");
+
+var common = __webpack_require__(/*! ./common */ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js");
+
+var f = {
+  queryKey: function queryKey(obj, query) {
+    return function (key) {
+      return valid(obj[key], query);
+    };
+  },
+  queryRegExp: function queryRegExp(obj, query, regex) {
+    return function (key) {
+      return regex.test(key) ? valid(obj[key], query) : false;
+    };
+  }
+};
+var MAP = {
+  "false": false,
+  "true": true,
+  "null": null
+};
+/**
+ * Filter properties by query: select|if:property
+ *
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Array} values matching the given query
+ */
+
+function filterValues(obj, query) {
+  return filterKeys(obj, query).map(function (key) {
+    return obj[key];
+  });
+}
+/**
+ * Filter properties by query: select|if:property
+ *
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Array} object keys matching the given query
+ */
+
+
+function filterKeys(obj, query) {
+  if (obj && query) {
+    var matches = query.split("?", 2);
+    var keys;
+    var regex;
+
+    if (matches[0] === "*" || matches[0] === "**") {
+      keys = o.keys(obj);
+      return keys.filter(f.queryKey(obj, matches[1]));
+    } else if (common.rIsRegExp.test(matches[0])) {
+      keys = o.keys(obj);
+      regex = common.convertToRegExp(matches[0]);
+      return keys.filter(f.queryRegExp(obj, matches[1], regex));
+    } else if (obj[matches[0]] && valid(obj[matches[0]], matches[1])) {
+      return [matches[0]];
+    }
+  }
+
+  return [];
+}
+/**
+ * Returns true if the query matches. Query: key:value&key:value
+ * @param  {Object|Array} obj
+ * @param  {String} query key:value pairs separated by &
+ * @return {Boolean} if query matched object
+ */
+
+
+function valid(obj, query) {
+  if (!query) {
+    return true;
+  }
+
+  if (!obj) {
+    return false;
+  }
+
+  var key;
+  var value;
+  var isValid = true;
+  var truthy;
+  var tests = query.replace(/(&&)/g, "§$1§").replace(/(\|\|)/g, "§$1§").split("§");
+  var or = false;
+
+  for (var i = 0, l = tests.length; i < l; i += 2) {
+    if (tests[i].indexOf(":!") > -1) {
+      truthy = false;
+      value = tests[i].split(":!");
+    } else if (tests[i].indexOf(":") === -1) {
+      truthy = false;
+      value = [tests[i], undefined];
+    } else {
+      truthy = true;
+      value = tests[i].split(":");
+    }
+
+    key = value[0];
+    value = value[1];
+
+    if (value === "undefined") {
+      // undefined is unmappable
+      value = undefined;
+    } else {
+      value = MAP[value] === undefined ? value : MAP[value];
+    }
+
+    value = truthy ? value === obj[key] : value !== obj[key] && (obj[key] !== undefined || key === undefined);
+
+    if (or) {
+      isValid = isValid || value;
+    } else {
+      isValid = isValid && value;
+    }
+
+    or = tests[i + 1] === "||";
+  }
+
+  return isValid;
+}
+
+exports.values = filterValues;
+exports.keys = filterKeys;
+exports.valid = valid;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/get.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* eslint no-unused-vars: 0 */
+var query = __webpack_require__(/*! ./run */ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js");
+/**
+ * Returns the query results as an array or object, depending on its callback
+ *
+ * ## return type
+ *
+ * - get.ALL = 'all' returns all arguments of query callback [value, key, parent, pointer]
+ * - get.POINTER = 'pointer' returns only the json pointers to the targets
+ * - get.VALUE = 'value' Default. Returns only the matched value
+ * - get.MAP = Returns an object with all available pointers and their data, like { pointer: value }
+ *
+ * @param  {Mixed} obj
+ * @param  {Pointer} jsonPointer
+ * @param  {String} type			- type of return value. Defaults to "value"
+ * @return {Array|Object} containing result in specified format
+ */
+
+
+function queryGet(obj, jsonPointer, type) {
+  var matches = type === queryGet.MAP ? {} : [];
+  var cb = getCbFactory(type, matches);
+  query(obj, jsonPointer, cb);
+  return matches;
+}
+
+queryGet.ALL = "all";
+queryGet.MAP = "map";
+queryGet.POINTER = "pointer";
+queryGet.VALUE = "value";
+
+function getCbFactory(type, matches) {
+  if (typeof type === "function") {
+    return function cb(value, key, obj, pointer) {
+      matches.push(type(obj[key], key, obj, pointer));
+    };
+  }
+
+  switch (type) {
+    case queryGet.ALL:
+      return function cbGetAll(value, key, obj, pointer) {
+        matches.push([obj[key], key, obj, pointer]);
+      };
+
+    case queryGet.MAP:
+      return function cbGetMap(value, key, obj, pointer) {
+        matches[pointer] = value;
+      };
+
+    case queryGet.POINTER:
+      return function cbGetPointer(value, key, obj, pointer) {
+        matches.push(pointer);
+      };
+
+    case queryGet.VALUE:
+      return function cbGetValue(value, key, obj, pointer) {
+        matches.push(value);
+      };
+
+    default:
+      return function cbGetValue(value, key, obj, pointer) {
+        matches.push(value);
+      };
+  }
+}
+
+module.exports = queryGet;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/index.js":
+/*!*******************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/index.js ***!
+  \*******************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports.get = __webpack_require__(/*! ./get */ "./node_modules/json-schema-library/node_modules/gson-query/lib/get.js");
+exports.run = __webpack_require__(/*! ./run */ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js");
+exports["delete"] = __webpack_require__(/*! ./delete */ "./node_modules/json-schema-library/node_modules/gson-query/lib/delete.js");
+exports.filter = __webpack_require__(/*! ./filter */ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js");
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/gson-query/lib/run.js":
+/*!*****************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/gson-query/lib/run.js ***!
+  \*****************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var filter = __webpack_require__(/*! ./filter */ "./node_modules/json-schema-library/node_modules/gson-query/lib/filter.js");
+
+var parsePointer = __webpack_require__(/*! ./common */ "./node_modules/json-schema-library/node_modules/gson-query/lib/common.js").parsePointer; // @note gson-pointer: only strings are valid pointer properties to join. Ensure key is a string (could be index)
+
+
+var join = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js").join;
+/**
+ * callback for each match of json-glob-pointer
+ *
+ * @param  {Any} obj
+ * @param  {String} jsonPointer - function (value, key, parentObject, pointerToValue)
+ * @param  {Function} cb
+ */
+
+
+function queryRun(obj, jsonPointer, cb) {
+  // get steps into obj
+  var steps = parsePointer(jsonPointer); // cleanup first and last
+
+  if (steps[0] === "") {
+    // @todo due to pointer cleanup, this is probably never called
+    steps.shift();
+  }
+
+  if (steps[steps.length - 1] === "") {
+    steps.length -= 1;
+  }
+
+  _query(obj, steps, cb, "#");
+}
+
+function cbPassAll(obj, cb, pointer) {
+  return function (key) {
+    cb(obj[key], key, obj, join(pointer, String(key)));
+  };
+}
+
+function _query(obj, steps, cb, pointer) {
+  var matches;
+  var query = steps.shift();
+
+  if (steps.length === 0) {
+    // get keys matching the query and call back
+    matches = filter.keys(obj, query);
+    matches.forEach(cbPassAll(obj, cb, pointer));
+  } else if (/^\*\*/.test(query)) {
+    // run next query on current object
+    _query(obj, steps.slice(0), cb, pointer);
+  } else {
+    matches = filter.keys(obj, query);
+    matches.forEach(function (key) {
+      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
+    });
+  }
+
+  if (/^\*\*/.test(query)) {
+    // match this query (**) again
+    steps.unshift(query);
+    matches = filter.keys(obj, query);
+    matches.forEach(function (key) {
+      _query(obj[key], steps.slice(0), cb, join(pointer, String(key)));
+    });
+  }
+}
+
+module.exports = queryRun;
+
+/***/ }),
+
+/***/ "./node_modules/json-schema-library/node_modules/valid-url/index.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/json-schema-library/node_modules/valid-url/index.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(module) {(function (module) {
+  'use strict';
+
+  module.exports.is_uri = is_iri;
+  module.exports.is_http_uri = is_http_iri;
+  module.exports.is_https_uri = is_https_iri;
+  module.exports.is_web_uri = is_web_iri; // Create aliases
+
+  module.exports.isUri = is_iri;
+  module.exports.isHttpUri = is_http_iri;
+  module.exports.isHttpsUri = is_https_iri;
+  module.exports.isWebUri = is_web_iri; // private function
+  // internal URI spitter method - direct from RFC 3986
+
+  var splitUri = function splitUri(uri) {
+    var splitted = uri.match(/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/);
+    return splitted;
+  };
+
+  function is_iri(value) {
+    if (!value) {
+      return;
+    } // check for illegal characters
+
+
+    if (/[^a-z0-9\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\.\-\_\~\%]/i.test(value)) return; // check for hex escapes that aren't complete
+
+    if (/%[^0-9a-f]/i.test(value)) return;
+    if (/%[0-9a-f](:?[^0-9a-f]|$)/i.test(value)) return;
+    var splitted = [];
+    var scheme = '';
+    var authority = '';
+    var path = '';
+    var query = '';
+    var fragment = '';
+    var out = ''; // from RFC 3986
+
+    splitted = splitUri(value);
+    scheme = splitted[1];
+    authority = splitted[2];
+    path = splitted[3];
+    query = splitted[4];
+    fragment = splitted[5]; // scheme and path are required, though the path can be empty
+
+    if (!(scheme && scheme.length && path.length >= 0)) return; // if authority is present, the path must be empty or begin with a /
+
+    if (authority && authority.length) {
+      if (!(path.length === 0 || /^\//.test(path))) return;
+    } else {
+      // if authority is not present, the path must not start with //
+      if (/^\/\//.test(path)) return;
+    } // scheme must begin with a letter, then consist of letters, digits, +, ., or -
+
+
+    if (!/^[a-z][a-z0-9\+\-\.]*$/.test(scheme.toLowerCase())) return; // re-assemble the URL per section 5.3 in RFC 3986
+
+    out += scheme + ':';
+
+    if (authority && authority.length) {
+      out += '//' + authority;
+    }
+
+    out += path;
+
+    if (query && query.length) {
+      out += '?' + query;
+    }
+
+    if (fragment && fragment.length) {
+      out += '#' + fragment;
+    }
+
+    return out;
+  }
+
+  function is_http_iri(value, allowHttps) {
+    if (!is_iri(value)) {
+      return;
+    }
+
+    var splitted = [];
+    var scheme = '';
+    var authority = '';
+    var path = '';
+    var port = '';
+    var query = '';
+    var fragment = '';
+    var out = ''; // from RFC 3986
+
+    splitted = splitUri(value);
+    scheme = splitted[1];
+    authority = splitted[2];
+    path = splitted[3];
+    query = splitted[4];
+    fragment = splitted[5];
+    if (!scheme) return;
+
+    if (allowHttps) {
+      if (scheme.toLowerCase() != 'https') return;
+    } else {
+      if (scheme.toLowerCase() != 'http') return;
+    } // fully-qualified URIs must have an authority section that is
+    // a valid host
+
+
+    if (!authority) {
+      return;
+    } // enable port component
+
+
+    if (/:(\d+)$/.test(authority)) {
+      port = authority.match(/:(\d+)$/)[0];
+      authority = authority.replace(/:\d+$/, '');
+    }
+
+    out += scheme + ':';
+    out += '//' + authority;
+
+    if (port) {
+      out += port;
+    }
+
+    out += path;
+
+    if (query && query.length) {
+      out += '?' + query;
+    }
+
+    if (fragment && fragment.length) {
+      out += '#' + fragment;
+    }
+
+    return out;
+  }
+
+  function is_https_iri(value) {
+    return is_http_iri(value, true);
+  }
+
+  function is_web_iri(value) {
+    return is_http_iri(value) || is_https_iri(value);
+  }
+})(module);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
@@ -15697,883 +11004,1872 @@ function isPlainObject(value) {
 
 /***/ }),
 
-/***/ "./node_modules/mithril-material-forms/components/button/index.js":
+/***/ "./node_modules/mithril-material-forms/components/button/index.ts":
 /*!************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/button/index.js ***!
+  !*** ./node_modules/mithril-material-forms/components/button/index.ts ***!
   \************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  getClassNames: function getClassNames(attrs) {
-    var classNames = [];
-    classNames.push(attrs.raised ? "mmf-button--raised" : "mmf-button--flat");
-    classNames.push(attrs.disabled ? "is-disabled" : "is-enabled");
-
-    if (attrs["class"]) {
-      classNames.push(attrs["class"]);
-    }
-
-    return classNames.join(" ");
-  },
-  view: function view(vnode) {
-    var attrs = _extends({
-      disabled: false,
-      onclick: function onclick(event) {
-        return vnode.attrs.onclick(event);
-      }
-    }, vnode.attrs);
-
-    attrs["class"] = this.getClassNames(vnode.attrs);
-    return m("button.mmf-button", attrs, vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/checkbox/index.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/checkbox/index.js ***!
-  \**************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(_ref) {
-    var attrs = _ref.attrs;
-    return m("input.mmf-checkbox", {
-      id: attrs.id,
-      type: "checkbox",
-      disabled: attrs.disabled === true,
-      checked: attrs.value,
-      onchange: function onchange(e) {
-        return attrs.onchange(e.target.checked);
-      },
-      onfocus: attrs.onfocus,
-      onblur: attrs.onblur
-    });
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/checkboxform/index.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/checkboxform/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Checkbox = __webpack_require__(/*! ../checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-var defaultOptions = {
-  id: null,
-  title: "",
-  disabled: false,
-  value: "",
-  errors: [],
-  description: "",
-  placeholder: "",
-  onchange: Function.prototype
-};
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({}, defaultOptions, vnode.attrs);
-
-    return m(".mmf-form.mmf-form--checkbox.mmf-form--".concat(attrs.disabled ? "disabled" : "enabled"), {
-      "class": Errors.getErrorClass(attrs.errors)
-    }, m(Checkbox, {
-      id: vnode.attrs.id,
-      disabled: attrs.disabled,
-      value: vnode.attrs.value,
-      onchange: vnode.attrs.onchange,
-      onfocus: vnode.attrs.onfocus,
-      onblur: vnode.attrs.onblur
-    }), m(Label, attrs), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/errors/getErrorClass.js":
-/*!********************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/errors/getErrorClass.js ***!
-  \********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-module.exports = function getErrorClass(errors) {
-  if (errors == null || errors.length === 0) {
-    return "no-error";
-  }
-
-  for (var i = 0, l = errors.length; i < l; i += 1) {
-    if (typeof errors[i] === "string" || errors[i].severity !== "warning") {
-      return "has-error";
-    }
-  }
-
-  return "has-warning";
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/errors/index.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/errors/index.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-function isVNode(object) {
-  return typeof object.tag === "string" && object.attrs != null && _typeof(object.attrs) === "object";
-}
-
-module.exports = {
-  getErrorClass: __webpack_require__(/*! ./getErrorClass */ "./node_modules/mithril-material-forms/components/errors/getErrorClass.js"),
-  view: function view(vnode) {
-    if (vnode.attrs.errors == null || vnode.attrs.errors.length === 0) {
-      return "";
-    }
-
-    return m("ul.mmf-form__errors", vnode.attrs.errors.map(function (error) {
-      if (isVNode(error)) {
-        return m("li.mmf-form__error.mmf-form__error--".concat(error.attrs.severity), error);
-      }
-
-      if (error && _typeof(error) === "object") {
-        if (error.severity === "warning") {
-          return m("li.mmf-form__error.mmf-form__error--warning", m.trust(error.message));
-        }
-
-        return m("li.mmf-form__error.mmf-form__error--error", m.trust(error.message));
-      }
-
-      return m("li.mmf-form__error.mmf-form__error--error", m.trust(error));
-    }));
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/imagepreview/index.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/imagepreview/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var RATIO_DEFAULT = [16, 9];
-
-function isEmpty(value) {
-  return value == null || value === "";
-}
-
-function getRatioStyle(ratio) {
-  return "".concat(getRatio(ratio).toFixed(2), "%");
-}
-
-function getRatio(ratio) {
-  var dim = ratio.split(":").map(parseFloat);
-  dim = dim.length === 2 ? dim : RATIO_DEFAULT;
-  return 100 * dim[1] / dim[0];
-}
-
-var MetaDescription = {
-  view: function view(vnode) {
-    var attrs = vnode.attrs;
-    return [isEmpty(attrs.url) ? m(".mmf-preview__placeholder", attrs.placeholder) : [attrs.description ? m(".mmf-preview__description", m.trust(attrs.description)) : "", m(".mmf-preview__overflow-indicator")], vnode.children];
-  }
-};
-var InlineImage = {
-  view: function view(vnode) {
-    var attrs = vnode.attrs;
-    return m(".mmf-preview__content", {
-      style: isEmpty(attrs.url) ? "" : "padding-bottom: ".concat(getRatioStyle(attrs.maxRatio), ";"),
-      oncreate: attrs.oncreate
-    }, isEmpty(attrs.url) ? m(".mmf-preview__placeholder", attrs.placeholder) : [m("img", {
-      src: attrs.url,
-      onload: attrs.onload
-    }), attrs.description ? m(".mmf-preview__description", m.trust(attrs.description)) : "", m(".mmf-preview__overflow-indicator")], vnode.children);
-  }
-};
-var ImagePreview = {
-  overflowContainer: null,
-  updateRatio: function updateRatio(maxRatio, image) {
-    if (this.overflowContainer != null && image.naturalWidth) {
-      var ratioMax = getRatio(maxRatio);
-      var ratioImg = getRatio("".concat(image.naturalWidth, ":").concat(image.naturalHeight));
-
-      if (ratioMax >= ratioImg) {
-        this.overflowContainer.style.paddingBottom = "".concat(ratioImg.toFixed(2), "%");
-        this.overflowContainer.classList.remove("with-overflow");
-        this.hasOverflow = false;
-      } else {
-        this.overflowContainer.style.paddingBottom = "".concat(ratioMax.toFixed(2), "%");
-        this.overflowContainer.classList.add("with-overflow");
-        this.hasOverflow = true;
-      }
-    }
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var attrs = _extends({
-      url: null,
-      "class": "",
-      asBackgroundImage: false,
-      description: null,
-      placeholder: null,
-      onclick: null,
-      maxRatio: "16:9",
-      // "private"
-      onload: function onload(event) {
-        return _this.updateRatio(attrs.maxRatio, event.currentTarget);
-      },
-      oncreate: function oncreate(content) {
-        _this.overflowContainer = content.dom;
-      }
-    }, vnode.attrs);
-
-    return m(".mmf-preview.mmf-preview--image", {
-      "class": attrs["class"] + (isEmpty(attrs.url) ? "" : " with-image"),
-      style: attrs.asBackgroundImage && !isEmpty(attrs.url) ? "background-image: url(".concat(attrs.url, ");") : ""
-    }, attrs.asBackgroundImage ? m(MetaDescription, attrs, vnode.children) : m(InlineImage, attrs, vnode.children));
-  }
-};
-module.exports = ImagePreview;
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/input/index.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/input/index.js ***!
-  \***********************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  value: null,
-  hasFocus: false,
-  onupdate: function onupdate(vnode) {
-    // @prevent redraw of input
-    vnode.dom.id = vnode.attrs.id; // updating the pointer dependend attributes outside of mithril
-  },
-  view: function view(_ref) {
-    var _this = this;
-
-    var attrs = _ref.attrs;
-    var value = attrs.value;
-
-    if (this.hasFocus && this.value != null) {
-      value = this.value; // this will remove any changes applied to this data from "outside"
-    }
-
-    this.value = value;
-    var inputAttributes = {
-      // id: attrs.id, // if the element is pointer sensitive it will be rebuild on pointer updates, loosing focus
-      type: attrs.type,
-      value: value,
-      placeholder: attrs.placeholder,
-      disabled: attrs.disabled === true,
-      oninput: function oninput(e) {
-        return _this.value = e.target.value;
-      },
-      // @fixme this might trigger updates, but ensures the property is always set (on initial rendering)
-      oncreate: function oncreate(vnode) {
-        return vnode.dom.id = attrs.id;
-      },
-      onfocus: function onfocus(event) {
-        _this.hasFocus = true;
-        attrs.onfocus && attrs.onfocus(event);
-      },
-      onblur: function onblur(event) {
-        _this.hasFocus = false;
-        attrs.onblur && attrs.onblur(event);
-      }
-    };
-    var updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
-
-    inputAttributes[updateEvent] = function () {
-      return attrs.onchange(_this.value);
-    };
-
-    return m("input.mmf-input", inputAttributes);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/inputform/index.js":
-/*!***************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/inputform/index.js ***!
-  \***************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Input = __webpack_require__(/*! ../input */ "./node_modules/mithril-material-forms/components/input/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var sanitizeValue = __webpack_require__(/*! ./sanitizeValue */ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-var TYPES = {
-  string: "text",
-  integer: "number",
-  number: "number"
-};
-module.exports = {
-  oncreate: function oncreate(vnode) {
-    this.$form = vnode.dom;
-  },
-  updateClasses: function updateClasses(value) {
-    var hasValue = value !== "";
-    this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
-    this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
-  },
-  onfocus: function onfocus() {
-    this.$form.classList.add("hasFocus");
-    this.$form.classList.remove("hasNoFocus");
-  },
-  onblur: function onblur(value) {
-    this.$form.classList.add("hasNoFocus");
-    this.$form.classList.remove("hasFocus");
-    this.updateClasses(value);
-  },
-  hasFocus: function hasFocus() {
-    return this.$form && this.$form.classList.contains("hasFocus");
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var inputType = TYPES[vnode.attrs.type] || "text";
-
-    var attrs = _extends({
-      id: null,
-      title: "",
-      value: "",
-      errors: [],
-      description: "",
-      placeholder: "",
-      instantUpdate: false,
-      onblur: Function.prototype,
-      onfocus: Function.prototype,
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    var focusClass = this.hasFocus() ? "hasFocus" : "hasNoFocus";
-    var errorClass = Errors.getErrorClass(attrs.errors);
-    var emptyClass = attrs.value === "" ? "isEmpty" : "isNotEmpty";
-    var view = m(".mmf-form.mmf-form--input.mmf-form--".concat(attrs.disabled ? "disabled" : "enabled"), {
-      "class": "".concat(focusClass, " ").concat(errorClass, " ").concat(emptyClass)
-    }, m(Label, attrs), m(Input, {
-      type: inputType,
-      id: attrs.id,
-      disabled: attrs.disabled,
-      instantUpdate: attrs.instantUpdate,
-      placeholder: attrs.placeholder,
-      onchange: function onchange(value) {
-        return attrs.onchange(sanitizeValue(inputType, value));
-      },
-      value: attrs.value,
-      onfocus: function onfocus(e) {
-        _this.onfocus();
-
-        attrs.onfocus && attrs.onfocus(e);
-      },
-      onblur: function onblur(e) {
-        _this.onblur(e.target.value);
-
-        attrs.onblur && attrs.onblur(e);
-      }
-    }), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-    return view;
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js":
-/*!***********************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/inputform/sanitizeValue.js ***!
-  \***********************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-module.exports = function sanitizeValue(type, value) {
-  if (type === "number") {
-    var intValue = parseInt(value);
-    var floatValue = parseFloat(value);
-
-    if (floatValue == value) {
-      // eslint-disable-line
-      return floatValue;
-    } else if (isNaN(intValue)) {
-      return value;
-    }
-
-    return intValue;
-  }
-
-  return value;
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/label/index.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/label/index.js ***!
-  \***********************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(vnode) {
-    return m("label.mmf-label", {
-      "for": vnode.attrs.id,
-      "class": vnode.attrs["class"]
-    }, vnode.attrs.title);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/select/index.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/select/index.js ***!
-  \************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = {
-  view: function view(vnode) {
-    var _this = this;
-
-    return m("div.mmf-select__wrapper", {
-      "class": vnode.attrs.disabled === true ? "is-disabled" : "is-enabled",
-      oncreate: function oncreate(_vnode) {
-        return _this.$wrapper = _vnode.dom;
-      }
-    }, m("select.mmf-select", {
-      id: vnode.attrs.id,
-      value: vnode.attrs.value,
-      disabled: vnode.attrs.disabled,
-      "class": vnode.attrs["class"],
-      onfocus: function onfocus() {
-        _this.$wrapper && _this.$wrapper.classList.add("has-focus");
-        vnode.attrs.onfocus && vnode.attrs.onfocus(vnode);
-      },
-      onblur: function onblur() {
-        _this.$wrapper && _this.$wrapper.classList.remove("has-focus");
-        vnode.attrs.onblur && vnode.attrs.onblur(vnode);
-      },
-      // @reminder will always be string, which must be specified in json-schema or else datatype must
-      // be passed to select-component
-      onchange: function onchange(e) {
-        return vnode.attrs.onchange(e.target.value);
-      }
-    }, vnode.attrs.options.map(function (value) {
-      var title = value.title || value; // value must be a string or else is discarded
-
-      value = "".concat(value.value == null ? value : value.value);
-      return m("option", {
-        value: value
-      }, title);
-    })));
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/selectform/index.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/selectform/index.js ***!
-  \****************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Select = __webpack_require__(/*! ../select */ "./node_modules/mithril-material-forms/components/select/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-module.exports = {
-  view: function view(vnode) {
-    var attrs = _extends({
-      id: null,
-      value: "",
-      options: [{
-        title: "-",
-        value: false
-      }],
-      errors: [],
-      description: "",
-      placeholder: "",
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    return m(".mmf-form.mmf-form--select.mmf-form--".concat(attrs.disabled ? "disabled" : "enabled"), {
-      "class": Errors.getErrorClass(attrs.errors)
-    }, m(Select, attrs), m(Label, _extends({
-      "class": "mmf-grow-2"
-    }, attrs)), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/textarea/index.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/textarea/index.js ***!
-  \**************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var autosize = __webpack_require__(/*! autosize */ "./node_modules/autosize/dist/autosize.js");
-
-var raf = window.requestAnimationFrame;
-module.exports = {
-  textarea: null,
-  focus: false,
-  onupdate: function onupdate(vnode) {
-    raf(function () {
-      return autosize.update(vnode.dom);
-    });
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var attrs = _extends({
-      id: null,
-      value: "",
-      rows: 1,
-      placeholder: "",
-      disabled: false,
-      instantUpdate: false,
-      onblur: Function.prototype,
-      onfocus: Function.prototype,
-      onchange: Function.prototype,
-      oncreate: Function.prototype,
-      onbeforeremove: Function.prototype
-    }, vnode.attrs);
-
-    var disabled = attrs.disabled === true;
-
-    if (this.focus) {
-      // keep current value, while input is being active this prevents
-      // jumps in cursor, caused by race conditions
-      // @attention - this may produce other problems
-      attrs.value = this.textarea.value;
-    }
-
-    var textareaAttributes = {
-      id: attrs.id,
-      value: attrs.value,
-      rows: attrs.rows,
-      disabled: disabled,
-      placeholder: attrs.placeholder,
-      onblur: function onblur() {
-        _this.focus = false;
-        attrs.onblur && attrs.onblur();
-      },
-      onfocus: function onfocus() {
-        _this.focus = true;
-        attrs.onfocus && attrs.onfocus();
-      },
-      onupdate: function onupdate(node) {
-        return autosize.update(node.dom);
-      },
-      oncreate: function oncreate(node) {
-        _this.textarea = node.dom;
-        attrs.oncreate(node);
-        autosize(node.dom);
-        autosize.update(vnode.dom);
-      },
-      onbeforeremove: function onbeforeremove(node) {
-        attrs.onbeforeremove(node);
-        autosize.destroy(node.dom);
-      }
-    };
-    var updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
-
-    textareaAttributes[updateEvent] = function (e) {
-      return attrs.onchange(e.target.value);
-    };
-
-    return m("textarea.mmf-textarea", textareaAttributes);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/components/textareaform/index.js":
-/*!******************************************************************************!*\
-  !*** ./node_modules/mithril-material-forms/components/textareaform/index.js ***!
-  \******************************************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-var Textarea = __webpack_require__(/*! ../textarea */ "./node_modules/mithril-material-forms/components/textarea/index.js");
-
-var Label = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.js");
-
-var Errors = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.js");
-
-function isEmpty(value) {
-  return value == null || value === "";
-}
-
-module.exports = {
-  oncreate: function oncreate(vnode) {
-    this.$form = vnode.dom;
-    this.onblur(vnode.attrs.value);
-  },
-  onfocus: function onfocus() {
-    this.$form.classList.remove("hasNoFocus");
-    this.$form.classList.add("hasFocus");
-  },
-  onblur: function onblur(value) {
-    this.$form.classList.remove("hasFocus");
-    this.$form.classList.add("hasNoFocus");
-    this.updateClasses(value);
-  },
-  updateClasses: function updateClasses(value) {
-    var hasValue = isEmpty(value) === false;
-    this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
-    this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
-  },
-  onupdate: function onupdate(vnode) {
-    this.updateClasses(vnode.attrs.value);
-  },
-  view: function view(vnode) {
-    var _this = this;
-
-    var attrs = _extends({
-      id: null,
-      title: "",
-      value: "",
-      errors: [],
-      disabled: false,
-      description: "",
-      placeholder: "",
-      rows: 1,
-      instantUpdate: false,
-      onblur: Function.prototype,
-      onfocus: Function.prototype,
-      onchange: Function.prototype
-    }, vnode.attrs);
-
-    var disabled = attrs.disabled === true;
-    return m(".mmf-form.mmf-form--textarea.mmf-form--".concat(disabled ? "disabled" : "enabled"), {
-      "class": Errors.getErrorClass(attrs.errors)
-    }, m(Label, attrs), m(Textarea, {
-      id: attrs.id,
-      value: attrs.value,
-      disabled: disabled,
-      instantUpdate: attrs.instantUpdate,
-      placeholder: attrs.placeholder,
-      rows: attrs.rows,
-      // onchange: m.withAttr("value", attrs.onchange),
-      onchange: attrs.onchange,
-      onblur: function onblur(e) {
-        _this.onblur(e.target.value);
-
-        attrs.onblur(e);
-      },
-      onfocus: function onfocus(e) {
-        _this.onfocus();
-
-        attrs.onfocus(e);
-      }
-    }), m(Errors, attrs), attrs.description ? m(".mmf-meta", attrs.description) : "", vnode.children);
-  }
-};
-
-/***/ }),
-
-/***/ "./node_modules/mithril-material-forms/index.js":
-/*!******************************************************!*\
-  !*** ./node_modules/mithril-material-forms/index.js ***!
-  \******************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  button: __webpack_require__(/*! ./components/button */ "./node_modules/mithril-material-forms/components/button/index.js"),
-  checkbox: __webpack_require__(/*! ./components/checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.js"),
-  checkboxForm: __webpack_require__(/*! ./components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.js"),
-  errors: __webpack_require__(/*! ./components/errors */ "./node_modules/mithril-material-forms/components/errors/index.js"),
-  input: __webpack_require__(/*! ./components/input */ "./node_modules/mithril-material-forms/components/input/index.js"),
-  inputForm: __webpack_require__(/*! ./components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.js"),
-  label: __webpack_require__(/*! ./components/label */ "./node_modules/mithril-material-forms/components/label/index.js"),
-  select: __webpack_require__(/*! ./components/select */ "./node_modules/mithril-material-forms/components/select/index.js"),
-  selectForm: __webpack_require__(/*! ./components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.js"),
-  textarea: __webpack_require__(/*! ./components/textarea */ "./node_modules/mithril-material-forms/components/textarea/index.js"),
-  textareaForm: __webpack_require__(/*! ./components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.js"),
-  imagePreview: __webpack_require__(/*! ./components/imagepreview */ "./node_modules/mithril-material-forms/components/imagepreview/index.js")
-};
-
-/***/ }),
-
-/***/ "./node_modules/mitt/dist/mitt.es.js":
-/*!*******************************************!*\
-  !*** ./node_modules/mitt/dist/mitt.es.js ***!
-  \*******************************************/
 /*! exports provided: default */
 /*! all exports used */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-//      
-// An event handler can take an optional event argument
-// and should not return a value
-// An array of all currently registered event handlers for a type
-// A map of event types and their corresponding event handlers.
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 
-/** Mitt: Tiny (~200b) functional event emitter / pubsub.
- *  @name mitt
- *  @returns {Mitt}
- */
-function mitt(all) {
-  all = all || Object.create(null);
-  return {
-    /**
-     * Register an event handler for the given type.
-     *
-     * @param  {String} type	Type of event to listen for, or `"*"` for all events
-     * @param  {Function} handler Function to call in response to given event
-     * @memberOf mitt
-     */
-    on: function on(type, handler) {
-      (all[type] || (all[type] = [])).push(handler);
+/* harmony default export */ __webpack_exports__["default"] = ({
+    getClassNames(attrs) {
+        const classNames = [];
+        classNames.push(attrs.raised ? "mmf-button--raised" : "mmf-button--flat");
+        classNames.push(attrs.disabled ? "is-disabled" : "is-enabled");
+        if (attrs.class) {
+            classNames.push(attrs.class);
+        }
+        return classNames.join(" ");
     },
-
-    /**
-     * Remove an event handler for the given type.
-     *
-     * @param  {String} type	Type of event to unregister `handler` from, or `"*"`
-     * @param  {Function} handler Handler function to remove
-     * @memberOf mitt
-     */
-    off: function off(type, handler) {
-      if (all[type]) {
-        all[type].splice(all[type].indexOf(handler) >>> 0, 1);
-      }
-    },
-
-    /**
-     * Invoke all handlers for the given type.
-     * If present, `"*"` handlers are invoked after type-matched handlers.
-     *
-     * @param {String} type  The event type to invoke
-     * @param {Any} [evt]  Any value (object is recommended and powerful), passed to each handler
-     * @memberOf mitt
-     */
-    emit: function emit(type, evt) {
-      (all[type] || []).slice().map(function (handler) {
-        handler(evt);
-      });
-      (all['*'] || []).slice().map(function (handler) {
-        handler(type, evt);
-      });
+    view(vnode) {
+        const attrs = {
+            disabled: false,
+            // onclick is assigned via mithril
+            ...vnode.attrs,
+            class: this.getClassNames(vnode.attrs)
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("button.mmf-button", attrs, vnode.children);
     }
-  };
-}
+});
 
-/* harmony default export */ __webpack_exports__["default"] = (mitt);
 
 /***/ }),
 
-/***/ "./node_modules/mitt/dist/mitt.js":
-/*!****************************************!*\
-  !*** ./node_modules/mitt/dist/mitt.js ***!
-  \****************************************/
+/***/ "./node_modules/mithril-material-forms/components/checkbox/index.ts":
+/*!**************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/checkbox/index.ts ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view({ attrs }) {
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("input.mmf-checkbox", {
+            "data-id": attrs.id,
+            type: "checkbox",
+            disabled: attrs.disabled === true,
+            checked: attrs.value,
+            onchange: e => attrs.onchange(e.target.checked),
+            onfocus: attrs.onfocus,
+            onblur: attrs.onblur
+        });
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/checkboxform/index.ts":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/checkboxform/index.ts ***!
+  \******************************************************************************/
+/*! exports provided: defaultOptions, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultOptions", function() { return defaultOptions; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _checkbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+
+
+
+
+const defaultOptions = {
+    id: null,
+    title: "",
+    disabled: false,
+    value: "",
+    errors: [],
+    description: "",
+    placeholder: "",
+    onchange: Function.prototype
+};
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = { ...defaultOptions, ...vnode.attrs };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.mmf-form.mmf-form--checkbox.mmf-form--${attrs.disabled ? "disabled" : "enabled"}`, {
+            "class": Object(_errors__WEBPACK_IMPORTED_MODULE_3__["getErrorClass"])(attrs.errors)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], {
+            ...attrs,
+            invertOrder: attrs.invertOrder !== true
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_checkbox__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            id: vnode.attrs.id,
+            disabled: attrs.disabled,
+            value: vnode.attrs.value,
+            onchange: vnode.attrs.onchange,
+            onfocus: vnode.attrs.onfocus,
+            onblur: vnode.attrs.onblur
+        })), mithril__WEBPACK_IMPORTED_MODULE_0___default()(_errors__WEBPACK_IMPORTED_MODULE_3__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-meta", attrs.description), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/errors/getErrorClass.ts":
+/*!********************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/errors/getErrorClass.ts ***!
+  \********************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getErrorClass; });
+function isVNode(object) {
+    return typeof object.tag === "string" && object.attrs != null && typeof object.attrs === "object";
+}
+/**
+ * returns class for existing errors, warnings or no-error
+ */
+function getErrorClass(errors) {
+    if (errors == null || errors.length === 0) {
+        return "no-error";
+    }
+    for (let i = 0, l = errors.length; i < l; i += 1) {
+        const error = errors[i];
+        if (isVNode(error) || typeof error === "string") {
+            return "has-error";
+        }
+        else if (error && error.severity !== "warning") {
+            return "has-error";
+        }
+    }
+    return "has-warning";
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/errors/index.ts":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/errors/index.ts ***!
+  \************************************************************************/
+/*! exports provided: getErrorClass, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _getErrorClass__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./getErrorClass */ "./node_modules/mithril-material-forms/components/errors/getErrorClass.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "getErrorClass", function() { return _getErrorClass__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+
+
+function isVNode(object) {
+    return typeof object.tag === "string" && object.attrs != null && typeof object.attrs === "object";
+}
+function isError(object) {
+    return object && object.message;
+}
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const { errors } = vnode.attrs;
+        if (errors == null || errors.length === 0) {
+            return "";
+        }
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul.mmf-form__errors", errors.map(error => {
+            if (isVNode(error)) {
+                return mithril__WEBPACK_IMPORTED_MODULE_0___default()(`li.mmf-form__error.mmf-form__error--${error.attrs.severity}`, error);
+            }
+            if (isError(error)) {
+                if (error.severity === "warning") {
+                    return mithril__WEBPACK_IMPORTED_MODULE_0___default()("li.mmf-form__error.mmf-form__error--warning", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(error.message));
+                }
+                return mithril__WEBPACK_IMPORTED_MODULE_0___default()("li.mmf-form__error.mmf-form__error--error", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(error.message));
+            }
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()("li.mmf-form__error.mmf-form__error--error", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(error));
+        }));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/imagepreview/index.ts":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/imagepreview/index.ts ***!
+  \******************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _isEmpty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../isEmpty */ "./node_modules/mithril-material-forms/components/isEmpty.ts");
+
+
+const RATIO_DEFAULT = [16, 9];
+/** returns ratio as css-property */
+const getRatioStyleProperty = (ratio) => `padding-bottom: ${getRatio(ratio).toFixed(2)}%;`;
+function getRatio(ratio) {
+    let dim = ratio.split(":").map(parseFloat);
+    dim = dim.length === 2 ? dim : RATIO_DEFAULT;
+    return (100 * dim[1] / dim[0]);
+}
+const MetaDescription = {
+    view(vnode) {
+        const { attrs } = vnode;
+        return [
+            Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) ?
+                mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__placeholder", attrs.placeholder) : [
+                attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__description", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(attrs.description)),
+                mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__overflow-indicator")
+            ],
+            vnode.children
+        ];
+    }
+};
+const InlineImage = {
+    view(vnode) {
+        const { attrs } = vnode;
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__content", {
+            style: !Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) && getRatioStyleProperty(attrs.maxRatio),
+            oncreate: attrs.oncreate
+        }, Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) ?
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__placeholder", attrs.placeholder) : [
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()("img", {
+                src: attrs.url,
+                onload: attrs.onload
+            }),
+            attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__description", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(attrs.description)),
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview__overflow-indicator")
+        ], vnode.children);
+    }
+};
+const ImagePreview = {
+    updateRatio(maxRatio, image) {
+        if (this.overflowContainer != null && image.naturalWidth) {
+            const ratioMax = getRatio(maxRatio);
+            const ratioImg = getRatio(`${image.naturalWidth}:${image.naturalHeight}`);
+            if (ratioMax >= ratioImg) {
+                this.overflowContainer.style.paddingBottom = `${ratioImg.toFixed(2)}%`;
+                this.overflowContainer.classList.remove("with-overflow");
+                this.hasOverflow = false;
+            }
+            else {
+                this.overflowContainer.style.paddingBottom = `${ratioMax.toFixed(2)}%`;
+                this.overflowContainer.classList.add("with-overflow");
+                this.hasOverflow = true;
+            }
+        }
+    },
+    view(vnode) {
+        const attrs = {
+            url: null,
+            "class": "",
+            asBackgroundImage: false,
+            description: null,
+            placeholder: null,
+            onclick: null,
+            maxRatio: "16:9",
+            // "private"
+            onload: event => this.updateRatio(vnode.attrs.maxRatio, event.currentTarget),
+            oncreate: content => { this.overflowContainer = content.dom; },
+            ...vnode.attrs
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-preview.mmf-preview--image", {
+            "class": attrs.class + (Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url) ? "" : " with-image"),
+            style: (attrs.asBackgroundImage && !Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(attrs.url)) &&
+                `background-image: url(${attrs.url});`
+        }, attrs.asBackgroundImage ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(MetaDescription, attrs, vnode.children) : mithril__WEBPACK_IMPORTED_MODULE_0___default()(InlineImage, attrs, vnode.children));
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (ImagePreview);
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/input/index.ts":
+/*!***********************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/input/index.ts ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    value: null,
+    hasFocus: false,
+    view({ attrs }) {
+        let { value } = attrs;
+        if (this.hasFocus && this.value != null) {
+            value = this.value; // this will remove any changes applied to this data from "outside"
+        }
+        this.value = value;
+        const inputAttributes = {
+            value,
+            type: attrs.type,
+            class: attrs.class,
+            // id: attrs.id -- if the element is pointer sensitive it will be rebuild on pointer updates, loosing focus
+            "data-id": attrs.id,
+            placeholder: attrs.placeholder,
+            disabled: attrs.disabled === true,
+            oninput: e => (this.value = e.target.value),
+            onfocus: event => {
+                this.hasFocus = true;
+                attrs.onfocus && attrs.onfocus(event);
+            },
+            onblur: event => {
+                this.hasFocus = false;
+                attrs.onblur && attrs.onblur(event);
+            }
+        };
+        const updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
+        inputAttributes[updateEvent] = () => attrs.onchange(this.value);
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("input.mmf-input", inputAttributes);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/inputform/index.ts":
+/*!***************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/inputform/index.ts ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _input__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../input */ "./node_modules/mithril-material-forms/components/input/index.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var _sanitizeValue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./sanitizeValue */ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.ts");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+
+
+
+
+
+const TYPES = {
+    string: "text",
+    integer: "number",
+    number: "number"
+};
+const InputForm = {
+    oncreate(vnode) {
+        this.$form = vnode.dom;
+    },
+    updateClasses(value) {
+        const hasValue = value !== "";
+        this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
+        this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
+    },
+    onfocus() {
+        this.$form.classList.add("hasFocus");
+        this.$form.classList.remove("hasNoFocus");
+    },
+    onblur(value) {
+        this.$form.classList.add("hasNoFocus");
+        this.$form.classList.remove("hasFocus");
+        this.updateClasses(value);
+    },
+    hasFocus() {
+        return this.$form && this.$form.classList.contains("hasFocus");
+    },
+    view(vnode) {
+        const inputType = TYPES[vnode.attrs.type] || vnode.attrs.type || "text";
+        const attrs = {
+            id: null,
+            title: "",
+            value: "",
+            errors: [],
+            description: "",
+            placeholder: "",
+            instantUpdate: false,
+            onblur: Function.prototype,
+            onfocus: Function.prototype,
+            onchange: Function.prototype,
+            ...vnode.attrs
+        };
+        const focusClass = this.hasFocus() ? "hasFocus" : "hasNoFocus";
+        const errorClass = Object(_errors__WEBPACK_IMPORTED_MODULE_4__["getErrorClass"])(attrs.errors);
+        const emptyClass = attrs.value === "" ? "isEmpty" : "isNotEmpty";
+        const view = mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.mmf-form.mmf-form--input.mmf-form--${attrs.disabled ? "disabled" : "enabled"}`, {
+            "class": `${focusClass} ${errorClass} ${emptyClass}`
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], attrs, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_input__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            type: inputType,
+            id: attrs.id,
+            disabled: attrs.disabled,
+            instantUpdate: attrs.instantUpdate,
+            placeholder: attrs.placeholder,
+            onchange: value => attrs.onchange(Object(_sanitizeValue__WEBPACK_IMPORTED_MODULE_3__["default"])(inputType, value)),
+            value: attrs.value,
+            onfocus: e => {
+                this.onfocus();
+                attrs.onfocus && attrs.onfocus(e);
+            },
+            onblur: e => {
+                this.onblur(e.target.value);
+                attrs.onblur && attrs.onblur(e);
+            }
+        })), mithril__WEBPACK_IMPORTED_MODULE_0___default()(_errors__WEBPACK_IMPORTED_MODULE_4__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-meta", attrs.description), vnode.children);
+        return view;
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (InputForm);
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/inputform/sanitizeValue.ts":
+/*!***********************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/inputform/sanitizeValue.ts ***!
+  \***********************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return sanitizeValue; });
+function sanitizeValue(type, value) {
+    if (type === "number") {
+        const intValue = parseInt(value);
+        const floatValue = parseFloat(value);
+        if (floatValue == value) { // eslint-disable-line
+            return floatValue;
+        }
+        else if (isNaN(intValue)) {
+            return value;
+        }
+        return intValue;
+    }
+    return value;
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/isEmpty.ts":
+/*!*******************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/isEmpty.ts ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isEmpty; });
+/** returns true, if value is undefined or an empty string */
+function isEmpty(value) {
+    return value == null || value === "";
+}
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/label/index.ts":
+/*!***********************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/label/index.ts ***!
+  \***********************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const { invertOrder, id, title, class: classNames } = vnode.attrs;
+        if (invertOrder === true) {
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()("label.order--label-last", {
+                "for": id,
+                "class": classNames
+            }, vnode.children, title && mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title));
+        }
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("label.order--label-first", {
+            "for": id,
+            "class": classNames
+        }, title && mithril__WEBPACK_IMPORTED_MODULE_0___default()("span.mmf-label", title), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/select/index.ts":
+/*!************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/select/index.ts ***!
+  \************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+const isOptionValue = (option) => option && option.value !== undefined;
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("div.mmf-select__wrapper", {
+            "class": vnode.attrs.disabled === true ? "is-disabled" : "is-enabled",
+            oncreate: _vnode => (this.$wrapper = _vnode.dom)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("select.mmf-select", {
+            "data-id": vnode.attrs.id,
+            value: vnode.attrs.value,
+            disabled: vnode.attrs.disabled,
+            "class": vnode.attrs.class,
+            onfocus: () => {
+                this.$wrapper && this.$wrapper.classList.add("has-focus");
+                vnode.attrs.onfocus && vnode.attrs.onfocus(vnode);
+            },
+            onblur: () => {
+                this.$wrapper && this.$wrapper.classList.remove("has-focus");
+                vnode.attrs.onblur && vnode.attrs.onblur(vnode);
+            },
+            // @reminder will always be string, which must be specified in json-schema or else datatype must
+            // be passed to select-component
+            onchange: e => vnode.attrs.onchange(e.target.value)
+        }, vnode.attrs.options.map(value => {
+            if (isOptionValue(value)) {
+                // value must be a string or else is discarded
+                return mithril__WEBPACK_IMPORTED_MODULE_0___default()("option", { value: `${value.value}` }, value.title || value.value);
+            }
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()("option", { value: `${value}` }, value);
+        })));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/selectform/index.ts":
+/*!****************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/selectform/index.ts ***!
+  \****************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _select__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../select */ "./node_modules/mithril-material-forms/components/select/index.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = {
+            id: null,
+            value: "",
+            options: [{ title: "-", value: false }],
+            errors: [],
+            invertOrder: false,
+            description: "",
+            placeholder: "",
+            onchange: Function.prototype,
+            ...vnode.attrs
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.mmf-form.mmf-form--select.mmf-form--${attrs.disabled ? "disabled" : "enabled"}`, {
+            "class": Object(_errors__WEBPACK_IMPORTED_MODULE_3__["getErrorClass"])(attrs.errors)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], {
+            "class": "mmf-grow-2",
+            ...attrs,
+            invertOrder: attrs.invertOrder !== true
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_select__WEBPACK_IMPORTED_MODULE_1__["default"], attrs)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(_errors__WEBPACK_IMPORTED_MODULE_3__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-meta", attrs.description), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/textarea/index.ts":
+/*!**************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/textarea/index.ts ***!
+  \**************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var autosize__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! autosize */ "./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js");
+/* harmony import */ var autosize__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(autosize__WEBPACK_IMPORTED_MODULE_1__);
+
+
+const raf = window.requestAnimationFrame;
+const emptyFunction = Function.prototype;
+/* harmony default export */ __webpack_exports__["default"] = ({
+    boolean: false,
+    onupdate(vnode) {
+        raf(() => autosize__WEBPACK_IMPORTED_MODULE_1___default.a.update(vnode.dom));
+    },
+    view(vnode) {
+        const attrs = {
+            value: "",
+            rows: 1,
+            placeholder: "",
+            disabled: false,
+            instantUpdate: false,
+            onblur: emptyFunction,
+            onfocus: emptyFunction,
+            onchange: emptyFunction,
+            oncreate: emptyFunction,
+            onbeforeremove: emptyFunction,
+            ...vnode.attrs
+        };
+        const disabled = attrs.disabled === true;
+        if (this.focus) {
+            // keep current value, while input is being active this prevents
+            // jumps in cursor, caused by race conditions
+            // @attention - this may produce other problems
+            attrs.value = this.textarea.value;
+        }
+        const textareaAttributes = {
+            "data-id": attrs.id,
+            value: attrs.value,
+            class: attrs.class,
+            rows: attrs.rows,
+            disabled,
+            placeholder: attrs.placeholder,
+            onblur: e => {
+                this.focus = false;
+                attrs.onblur && attrs.onblur(e);
+            },
+            onfocus: e => {
+                this.focus = true;
+                attrs.onfocus && attrs.onfocus(e);
+            },
+            onupdate: node => autosize__WEBPACK_IMPORTED_MODULE_1___default.a.update(node.dom),
+            oncreate: node => {
+                this.textarea = node.dom;
+                attrs.oncreate(node);
+                autosize__WEBPACK_IMPORTED_MODULE_1___default()(node.dom);
+                autosize__WEBPACK_IMPORTED_MODULE_1___default.a.update(node.dom);
+            },
+            onbeforeremove: node => {
+                attrs.onbeforeremove(node);
+                autosize__WEBPACK_IMPORTED_MODULE_1___default.a.destroy(node.dom);
+            }
+        };
+        const updateEvent = attrs.instantUpdate === true ? "onkeyup" : "onchange";
+        textareaAttributes[updateEvent] = e => attrs.onchange(e.target.value);
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("textarea.mmf-textarea", textareaAttributes);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/components/textareaform/index.ts":
+/*!******************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/components/textareaform/index.ts ***!
+  \******************************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _errors__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+/* harmony import */ var _isEmpty__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../isEmpty */ "./node_modules/mithril-material-forms/components/isEmpty.ts");
+/* harmony import */ var _label__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _textarea__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../textarea */ "./node_modules/mithril-material-forms/components/textarea/index.ts");
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    oncreate(vnode) {
+        this.$form = vnode.dom;
+        this.onblur(vnode.attrs.value);
+    },
+    onfocus() {
+        this.$form.classList.remove("hasNoFocus");
+        this.$form.classList.add("hasFocus");
+    },
+    onblur(value) {
+        this.$form.classList.remove("hasFocus");
+        this.$form.classList.add("hasNoFocus");
+        this.updateClasses(value);
+    },
+    updateClasses(value) {
+        const hasValue = Object(_isEmpty__WEBPACK_IMPORTED_MODULE_1__["default"])(value) === false;
+        this.$form.classList.remove(hasValue ? "isEmpty" : "isNotEmpty");
+        this.$form.classList.add(hasValue === false ? "isEmpty" : "isNotEmpty");
+    },
+    onupdate(vnode) {
+        this.updateClasses(vnode.attrs.value);
+    },
+    view(vnode) {
+        const attrs = Object.assign({
+            id: null,
+            title: "",
+            value: "",
+            errors: [],
+            disabled: false,
+            description: "",
+            placeholder: "",
+            rows: 1,
+            instantUpdate: false,
+            onblur: Function.prototype,
+            onfocus: Function.prototype,
+            onchange: Function.prototype
+        }, vnode.attrs);
+        const disabled = attrs.disabled === true;
+        return mithril__WEBPACK_IMPORTED_MODULE_3___default()(`.mmf-form.mmf-form--textarea.mmf-form--${disabled ? "disabled" : "enabled"}`, {
+            "class": Object(_errors__WEBPACK_IMPORTED_MODULE_0__["getErrorClass"])(attrs.errors)
+        }, mithril__WEBPACK_IMPORTED_MODULE_3___default()(_label__WEBPACK_IMPORTED_MODULE_2__["default"], attrs, mithril__WEBPACK_IMPORTED_MODULE_3___default()(_textarea__WEBPACK_IMPORTED_MODULE_4__["default"], {
+            id: attrs.id,
+            value: attrs.value,
+            disabled,
+            instantUpdate: attrs.instantUpdate,
+            placeholder: attrs.placeholder,
+            rows: attrs.rows,
+            onchange: attrs.onchange,
+            onblur: e => {
+                this.onblur(e.target.value);
+                attrs.onblur(e);
+            },
+            onfocus: e => {
+                this.onfocus();
+                attrs.onfocus(e);
+            }
+        })), mithril__WEBPACK_IMPORTED_MODULE_3___default()(_errors__WEBPACK_IMPORTED_MODULE_0__["default"], attrs), attrs.description && mithril__WEBPACK_IMPORTED_MODULE_3___default()(".mmf-meta", attrs.description), vnode.children);
+    }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/dist/mmf.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/mithril-material-forms/dist/mmf.js ***!
+  \*********************************************************/
 /*! no static exports found */
 /*! all exports used */
 /***/ (function(module, exports) {
 
-function n(n) {
-  return n = n || Object.create(null), {
-    on: function on(c, e) {
-      (n[c] || (n[c] = [])).push(e);
+function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+/*! For license information please see mmf.js.LICENSE.txt */
+var MMF = function (e) {
+  var t = {};
+
+  function r(o) {
+    if (t[o]) return t[o].exports;
+    var n = t[o] = {
+      i: o,
+      l: !1,
+      exports: {}
+    };
+    return e[o].call(n.exports, n, n.exports, r), n.l = !0, n.exports;
+  }
+
+  return r.m = e, r.c = t, r.d = function (e, t, o) {
+    r.o(e, t) || Object.defineProperty(e, t, {
+      enumerable: !0,
+      get: o
+    });
+  }, r.r = function (e) {
+    "undefined" != typeof Symbol && Symbol.toStringTag && Object.defineProperty(e, Symbol.toStringTag, {
+      value: "Module"
+    }), Object.defineProperty(e, "__esModule", {
+      value: !0
+    });
+  }, r.t = function (e, t) {
+    if (1 & t && (e = r(e)), 8 & t) return e;
+    if (4 & t && "object" == _typeof(e) && e && e.__esModule) return e;
+    var o = Object.create(null);
+    if (r.r(o), Object.defineProperty(o, "default", {
+      enumerable: !0,
+      value: e
+    }), 2 & t && "string" != typeof e) for (var n in e) {
+      r.d(o, n, function (t) {
+        return e[t];
+      }.bind(null, n));
+    }
+    return o;
+  }, r.n = function (e) {
+    var t = e && e.__esModule ? function () {
+      return e["default"];
+    } : function () {
+      return e;
+    };
+    return r.d(t, "a", t), t;
+  }, r.o = function (e, t) {
+    return Object.prototype.hasOwnProperty.call(e, t);
+  }, r.p = "", r(r.s = 3);
+}([function (e, t) {
+  e.exports = m;
+}, function (e, t, r) {
+  var o, n, s;
+  n = [e, t], void 0 === (s = "function" == typeof (o = function o(e, t) {
+    "use strict";
+
+    var r,
+        o,
+        n = "function" == typeof Map ? new Map() : (r = [], o = [], {
+      has: function has(e) {
+        return r.indexOf(e) > -1;
+      },
+      get: function get(e) {
+        return o[r.indexOf(e)];
+      },
+      set: function set(e, t) {
+        -1 === r.indexOf(e) && (r.push(e), o.push(t));
+      },
+      "delete": function _delete(e) {
+        var t = r.indexOf(e);
+        t > -1 && (r.splice(t, 1), o.splice(t, 1));
+      }
+    }),
+        s = function s(e) {
+      return new Event(e, {
+        bubbles: !0
+      });
+    };
+
+    try {
+      new Event("test");
+    } catch (e) {
+      s = function s(e) {
+        var t = document.createEvent("Event");
+        return t.initEvent(e, !0, !1), t;
+      };
+    }
+
+    function a(e) {
+      if (e && e.nodeName && "TEXTAREA" === e.nodeName && !n.has(e)) {
+        var t,
+            r = null,
+            o = null,
+            a = null,
+            i = function i() {
+          e.clientWidth !== o && d();
+        },
+            l = function (t) {
+          window.removeEventListener("resize", i, !1), e.removeEventListener("input", d, !1), e.removeEventListener("keyup", d, !1), e.removeEventListener("autosize:destroy", l, !1), e.removeEventListener("autosize:update", d, !1), Object.keys(t).forEach(function (r) {
+            e.style[r] = t[r];
+          }), n["delete"](e);
+        }.bind(e, {
+          height: e.style.height,
+          resize: e.style.resize,
+          overflowY: e.style.overflowY,
+          overflowX: e.style.overflowX,
+          wordWrap: e.style.wordWrap
+        });
+
+        e.addEventListener("autosize:destroy", l, !1), "onpropertychange" in e && "oninput" in e && e.addEventListener("keyup", d, !1), window.addEventListener("resize", i, !1), e.addEventListener("input", d, !1), e.addEventListener("autosize:update", d, !1), e.style.overflowX = "hidden", e.style.wordWrap = "break-word", n.set(e, {
+          destroy: l,
+          update: d
+        }), "vertical" === (t = window.getComputedStyle(e, null)).resize ? e.style.resize = "none" : "both" === t.resize && (e.style.resize = "horizontal"), r = "content-box" === t.boxSizing ? -(parseFloat(t.paddingTop) + parseFloat(t.paddingBottom)) : parseFloat(t.borderTopWidth) + parseFloat(t.borderBottomWidth), isNaN(r) && (r = 0), d();
+      }
+
+      function u(t) {
+        var r = e.style.width;
+        e.style.width = "0px", e.offsetWidth, e.style.width = r, e.style.overflowY = t;
+      }
+
+      function c() {
+        if (0 !== e.scrollHeight) {
+          var t = function (e) {
+            for (var t = []; e && e.parentNode && e.parentNode instanceof Element;) {
+              e.parentNode.scrollTop && t.push({
+                node: e.parentNode,
+                scrollTop: e.parentNode.scrollTop
+              }), e = e.parentNode;
+            }
+
+            return t;
+          }(e),
+              n = document.documentElement && document.documentElement.scrollTop;
+
+          e.style.height = "", e.style.height = e.scrollHeight + r + "px", o = e.clientWidth, t.forEach(function (e) {
+            e.node.scrollTop = e.scrollTop;
+          }), n && (document.documentElement.scrollTop = n);
+        }
+      }
+
+      function d() {
+        c();
+        var t = Math.round(parseFloat(e.style.height)),
+            r = window.getComputedStyle(e, null),
+            o = "content-box" === r.boxSizing ? Math.round(parseFloat(r.height)) : e.offsetHeight;
+
+        if (o < t ? "hidden" === r.overflowY && (u("scroll"), c(), o = "content-box" === r.boxSizing ? Math.round(parseFloat(window.getComputedStyle(e, null).height)) : e.offsetHeight) : "hidden" !== r.overflowY && (u("hidden"), c(), o = "content-box" === r.boxSizing ? Math.round(parseFloat(window.getComputedStyle(e, null).height)) : e.offsetHeight), a !== o) {
+          a = o;
+          var n = s("autosize:resized");
+
+          try {
+            e.dispatchEvent(n);
+          } catch (e) {}
+        }
+      }
+    }
+
+    function i(e) {
+      var t = n.get(e);
+      t && t.destroy();
+    }
+
+    function l(e) {
+      var t = n.get(e);
+      t && t.update();
+    }
+
+    var u = null;
+    "undefined" == typeof window || "function" != typeof window.getComputedStyle ? ((u = function u(e) {
+      return e;
+    }).destroy = function (e) {
+      return e;
+    }, u.update = function (e) {
+      return e;
+    }) : ((u = function u(e, t) {
+      return e && Array.prototype.forEach.call(e.length ? e : [e], function (e) {
+        return a(e);
+      }), e;
+    }).destroy = function (e) {
+      return e && Array.prototype.forEach.call(e.length ? e : [e], i), e;
+    }, u.update = function (e) {
+      return e && Array.prototype.forEach.call(e.length ? e : [e], l), e;
+    }), t["default"] = u, e.exports = t["default"];
+  }) ? o.apply(t, n) : o) || (e.exports = s);
+},, function (e, t, r) {
+  "use strict";
+
+  r.r(t), r.d(t, "Button", function () {
+    return s;
+  }), r.d(t, "Checkbox", function () {
+    return a;
+  }), r.d(t, "CheckboxForm", function () {
+    return d;
+  }), r.d(t, "Errors", function () {
+    return u;
+  }), r.d(t, "Input", function () {
+    return f;
+  }), r.d(t, "InputForm", function () {
+    return m;
+  }), r.d(t, "Label", function () {
+    return i;
+  }), r.d(t, "Select", function () {
+    return h;
+  }), r.d(t, "SelectForm", function () {
+    return v;
+  }), r.d(t, "Textarea", function () {
+    return F;
+  }), r.d(t, "TextareaForm", function () {
+    return _;
+  }), r.d(t, "ImagePreview", function () {
+    return k;
+  });
+  var o = r(0),
+      n = r.n(o),
+      s = {
+    getClassNames: function getClassNames(e) {
+      var t = [];
+      return t.push(e.raised ? "mmf-button--raised" : "mmf-button--flat"), t.push(e.disabled ? "is-disabled" : "is-enabled"), e["class"] && t.push(e["class"]), t.join(" ");
     },
-    off: function off(c, e) {
-      n[c] && n[c].splice(n[c].indexOf(e) >>> 0, 1);
-    },
-    emit: function emit(c, e) {
-      (n[c] || []).slice().map(function (n) {
-        n(e);
-      }), (n["*"] || []).slice().map(function (n) {
-        n(c, e);
+    view: function view(e) {
+      var t = _objectSpread(_objectSpread({
+        disabled: !1,
+        onclick: function onclick(t) {
+          return e.attrs.onclick(t);
+        }
+      }, e.attrs), {}, {
+        "class": this.getClassNames(e.attrs)
+      });
+
+      return n()("button.mmf-button", t, e.children);
+    }
+  },
+      a = {
+    view: function view(_ref) {
+      var e = _ref.attrs;
+      return n()("input.mmf-checkbox", {
+        id: e.id,
+        type: "checkbox",
+        disabled: !0 === e.disabled,
+        checked: e.value,
+        onchange: function onchange(t) {
+          return e.onchange(t.target.checked);
+        },
+        onfocus: e.onfocus,
+        onblur: e.onblur
       });
     }
+  },
+      i = {
+    view: function view(e) {
+      var _e$attrs = e.attrs,
+          t = _e$attrs.invertOrder,
+          r = _e$attrs.id,
+          o = _e$attrs.title,
+          s = _e$attrs["class"];
+      return !0 === t ? n()("label.order--label-last", {
+        "for": r,
+        "class": s
+      }, e.children, n()("span.mmf-label", o)) : n()("label.order--label-first", {
+        "for": r,
+        "class": s
+      }, n()("span.mmf-label", o), e.children);
+    }
   };
-}
 
-module.exports = n;
+  function l(e) {
+    if (null == e || 0 === e.length) return "no-error";
+
+    for (var _t = 0, _r = e.length; _t < _r; _t += 1) {
+      var _r2 = e[_t];
+      if ("string" == typeof _r2) return "has-error";
+      if (_r2 && "warning" !== _r2.severity) return "has-error";
+    }
+
+    return "has-warning";
+  }
+
+  var u = {
+    view: function view(e) {
+      var t = e.attrs.errors;
+      return null == t || 0 === t.length ? "" : n()("ul.mmf-form__errors", t.map(function (e) {
+        return "string" == typeof (t = e).tag && null != t.attrs && "object" == _typeof(t.attrs) ? n()("li.mmf-form__error.mmf-form__error--" + e.attrs.severity, e) : function (e) {
+          return e && e.message && e.severity;
+        }(e) ? "warning" === e.severity ? n()("li.mmf-form__error.mmf-form__error--warning", n.a.trust(e.message)) : n()("li.mmf-form__error.mmf-form__error--error", n.a.trust(e.message)) : n()("li.mmf-form__error.mmf-form__error--error", n.a.trust(e));
+        var t;
+      }));
+    }
+  };
+  var c = {
+    id: null,
+    title: "",
+    disabled: !1,
+    value: "",
+    errors: [],
+    description: "",
+    placeholder: "",
+    onchange: Function.prototype
+  };
+  var d = {
+    view: function view(e) {
+      var t = _objectSpread(_objectSpread({}, c), e.attrs);
+
+      return n()(".mmf-form.mmf-form--checkbox.mmf-form--" + (t.disabled ? "disabled" : "enabled"), {
+        "class": l(t.errors)
+      }, n()(i, _objectSpread(_objectSpread({}, t), {}, {
+        invertOrder: !0 !== t.invertOrder
+      }), n()(a, {
+        id: e.attrs.id,
+        disabled: t.disabled,
+        value: e.attrs.value,
+        onchange: e.attrs.onchange,
+        onfocus: e.attrs.onfocus,
+        onblur: e.attrs.onblur
+      })), n()(u, t), t.description && n()(".mmf-meta", t.description), e.children);
+    }
+  },
+      f = {
+    value: null,
+    hasFocus: !1,
+    onupdate: function onupdate(e) {
+      e.dom.id = e.attrs.id;
+    },
+    view: function view(_ref2) {
+      var _this = this;
+
+      var e = _ref2.attrs;
+      var t = e.value;
+      this.hasFocus && null != this.value && (t = this.value), this.value = t;
+      var r = {
+        type: e.type,
+        value: t,
+        placeholder: e.placeholder,
+        disabled: !0 === e.disabled,
+        oninput: function oninput(e) {
+          return _this.value = e.target.value;
+        },
+        oncreate: function oncreate(t) {
+          return t.dom.id = e.id;
+        },
+        onfocus: function onfocus(t) {
+          _this.hasFocus = !0, e.onfocus && e.onfocus(t);
+        },
+        onblur: function onblur(t) {
+          _this.hasFocus = !1, e.onblur && e.onblur(t);
+        }
+      };
+      return r[!0 === e.instantUpdate ? "onkeyup" : "onchange"] = function () {
+        return e.onchange(_this.value);
+      }, n()("input.mmf-input", r);
+    }
+  };
+  var p = {
+    string: "text",
+    integer: "number",
+    number: "number"
+  };
+  var m = {
+    oncreate: function oncreate(e) {
+      this.$form = e.dom;
+    },
+    updateClasses: function updateClasses(e) {
+      var t = "" !== e;
+      this.$form.classList.remove(t ? "isEmpty" : "isNotEmpty"), this.$form.classList.add(!1 === t ? "isEmpty" : "isNotEmpty");
+    },
+    onfocus: function onfocus() {
+      this.$form.classList.add("hasFocus"), this.$form.classList.remove("hasNoFocus");
+    },
+    onblur: function onblur(e) {
+      this.$form.classList.add("hasNoFocus"), this.$form.classList.remove("hasFocus"), this.updateClasses(e);
+    },
+    hasFocus: function hasFocus() {
+      return this.$form && this.$form.classList.contains("hasFocus");
+    },
+    view: function view(e) {
+      var _this2 = this;
+
+      var t = p[e.attrs.type] || e.attrs.type || "text",
+          r = _extends({
+        id: null,
+        title: "",
+        value: "",
+        errors: [],
+        description: "",
+        placeholder: "",
+        instantUpdate: !1,
+        onblur: Function.prototype,
+        onfocus: Function.prototype,
+        onchange: Function.prototype
+      }, e.attrs),
+          o = this.hasFocus() ? "hasFocus" : "hasNoFocus",
+          s = l(r.errors),
+          a = "" === r.value ? "isEmpty" : "isNotEmpty";
+
+      return n()(".mmf-form.mmf-form--input.mmf-form--" + (r.disabled ? "disabled" : "enabled"), {
+        "class": "".concat(o, " ").concat(s, " ").concat(a)
+      }, n()(i, r, n()(f, {
+        type: t,
+        id: r.id,
+        disabled: r.disabled,
+        instantUpdate: r.instantUpdate,
+        placeholder: r.placeholder,
+        onchange: function onchange(e) {
+          return r.onchange(function (e, t) {
+            if ("number" === e) {
+              var _e = parseInt(t),
+                  _r3 = parseFloat(t);
+
+              return _r3 == t ? _r3 : isNaN(_e) ? t : _e;
+            }
+
+            return t;
+          }(t, e));
+        },
+        value: r.value,
+        onfocus: function onfocus(e) {
+          _this2.onfocus(), r.onfocus && r.onfocus(e);
+        },
+        onblur: function onblur(e) {
+          _this2.onblur(e.target.value), r.onblur && r.onblur(e);
+        }
+      })), n()(u, r), r.description && n()(".mmf-meta", r.description), e.children);
+    }
+  };
+  var h = {
+    view: function view(e) {
+      var _this3 = this;
+
+      return n()("div.mmf-select__wrapper", {
+        "class": !0 === e.attrs.disabled ? "is-disabled" : "is-enabled",
+        oncreate: function oncreate(e) {
+          return _this3.$wrapper = e.dom;
+        }
+      }, n()("select.mmf-select", {
+        id: e.attrs.id,
+        value: e.attrs.value,
+        disabled: e.attrs.disabled,
+        "class": e.attrs["class"],
+        onfocus: function onfocus() {
+          _this3.$wrapper && _this3.$wrapper.classList.add("has-focus"), e.attrs.onfocus && e.attrs.onfocus(e);
+        },
+        onblur: function onblur() {
+          _this3.$wrapper && _this3.$wrapper.classList.remove("has-focus"), e.attrs.onblur && e.attrs.onblur(e);
+        },
+        onchange: function onchange(t) {
+          return e.attrs.onchange(t.target.value);
+        }
+      }, e.attrs.options.map(function (e) {
+        return (t = e) && void 0 !== t.value ? n()("option", {
+          value: "" + e.value
+        }, e.title || e.value) : n()("option", {
+          value: "" + e
+        }, e);
+        var t;
+      })));
+    }
+  },
+      v = {
+    view: function view(e) {
+      var t = _objectSpread({
+        id: null,
+        value: "",
+        options: [{
+          title: "-",
+          value: !1
+        }],
+        errors: [],
+        description: "",
+        placeholder: "",
+        onchange: Function.prototype
+      }, e.attrs);
+
+      return n()(".mmf-form.mmf-form--select.mmf-form--" + (t.disabled ? "disabled" : "enabled"), {
+        "class": l(t.errors)
+      }, n()(i, _objectSpread({
+        "class": "mmf-grow-2"
+      }, t), n()(h, t)), n()(u, t), t.description && n()(".mmf-meta", t.description), e.children);
+    }
+  },
+      b = r(1),
+      g = r.n(b);
+  var y = window.requestAnimationFrame,
+      w = Function.prototype;
+  var F = {
+    "boolean": !1,
+    onupdate: function onupdate(e) {
+      y(function () {
+        return g.a.update(e.dom);
+      });
+    },
+    view: function view(e) {
+      var _this4 = this;
+
+      var t = _extends({
+        id: null,
+        value: "",
+        rows: 1,
+        placeholder: "",
+        disabled: !1,
+        instantUpdate: !1,
+        onblur: w,
+        onfocus: w,
+        onchange: w,
+        oncreate: w,
+        onbeforeremove: w
+      }, e.attrs),
+          r = !0 === t.disabled;
+
+      this.focus && (t.value = this.textarea.value);
+      var o = {
+        id: t.id,
+        value: t.value,
+        rows: t.rows,
+        disabled: r,
+        placeholder: t.placeholder,
+        onblur: function onblur(e) {
+          _this4.focus = !1, t.onblur && t.onblur(e);
+        },
+        onfocus: function onfocus(e) {
+          _this4.focus = !0, t.onfocus && t.onfocus(e);
+        },
+        onupdate: function onupdate(e) {
+          return g.a.update(e.dom);
+        },
+        oncreate: function oncreate(e) {
+          _this4.textarea = e.dom, t.oncreate(e), g()(e.dom), g.a.update(e.dom);
+        },
+        onbeforeremove: function onbeforeremove(e) {
+          t.onbeforeremove(e), g.a.destroy(e.dom);
+        }
+      };
+      return o[!0 === t.instantUpdate ? "onkeyup" : "onchange"] = function (e) {
+        return t.onchange(e.target.value);
+      }, n()("textarea.mmf-textarea", o);
+    }
+  };
+
+  function x(e) {
+    return null == e || "" === e;
+  }
+
+  var _ = {
+    oncreate: function oncreate(e) {
+      this.$form = e.dom, this.onblur(e.attrs.value);
+    },
+    onfocus: function onfocus() {
+      this.$form.classList.remove("hasNoFocus"), this.$form.classList.add("hasFocus");
+    },
+    onblur: function onblur(e) {
+      this.$form.classList.remove("hasFocus"), this.$form.classList.add("hasNoFocus"), this.updateClasses(e);
+    },
+    updateClasses: function updateClasses(e) {
+      var t = !1 === x(e);
+      this.$form.classList.remove(t ? "isEmpty" : "isNotEmpty"), this.$form.classList.add(!1 === t ? "isEmpty" : "isNotEmpty");
+    },
+    onupdate: function onupdate(e) {
+      this.updateClasses(e.attrs.value);
+    },
+    view: function view(e) {
+      var _this5 = this;
+
+      var t = _extends({
+        id: null,
+        title: "",
+        value: "",
+        errors: [],
+        disabled: !1,
+        description: "",
+        placeholder: "",
+        rows: 1,
+        instantUpdate: !1,
+        onblur: Function.prototype,
+        onfocus: Function.prototype,
+        onchange: Function.prototype
+      }, e.attrs),
+          r = !0 === t.disabled;
+
+      return n()(".mmf-form.mmf-form--textarea.mmf-form--" + (r ? "disabled" : "enabled"), {
+        "class": l(t.errors)
+      }, n()(i, t, n()(F, {
+        id: t.id,
+        value: t.value,
+        disabled: r,
+        instantUpdate: t.instantUpdate,
+        placeholder: t.placeholder,
+        rows: t.rows,
+        onchange: t.onchange,
+        onblur: function onblur(e) {
+          _this5.onblur(e.target.value), t.onblur(e);
+        },
+        onfocus: function onfocus(e) {
+          _this5.onfocus(), t.onfocus(e);
+        }
+      })), n()(u, t), t.description && n()(".mmf-meta", t.description), e.children);
+    }
+  };
+  var E = [16, 9];
+
+  function L(e) {
+    var t = e.split(":").map(parseFloat);
+    return t = 2 === t.length ? t : E, 100 * t[1] / t[0];
+  }
+
+  var $ = {
+    view: function view(e) {
+      var t = e.attrs;
+      return [x(t.url) ? n()(".mmf-preview__placeholder", t.placeholder) : [t.description ? n()(".mmf-preview__description", n.a.trust(t.description)) : "", n()(".mmf-preview__overflow-indicator")], e.children];
+    }
+  },
+      N = {
+    view: function view(e) {
+      var t = e.attrs;
+      return n()(".mmf-preview__content", {
+        style: x(t.url) ? "" : (r = t.maxRatio, "padding-bottom: ".concat(L(r).toFixed(2), "%;")),
+        oncreate: t.oncreate
+      }, x(t.url) ? n()(".mmf-preview__placeholder", t.placeholder) : [n()("img", {
+        src: t.url,
+        onload: t.onload
+      }), t.description ? n()(".mmf-preview__description", n.a.trust(t.description)) : "", n()(".mmf-preview__overflow-indicator")], e.children);
+      var r;
+    }
+  };
+  var k = {
+    updateRatio: function updateRatio(e, t) {
+      if (null != this.overflowContainer && t.naturalWidth) {
+        var _r4 = L(e),
+            _o = L("".concat(t.naturalWidth, ":").concat(t.naturalHeight));
+
+        _r4 >= _o ? (this.overflowContainer.style.paddingBottom = _o.toFixed(2) + "%", this.overflowContainer.classList.remove("with-overflow"), this.hasOverflow = !1) : (this.overflowContainer.style.paddingBottom = _r4.toFixed(2) + "%", this.overflowContainer.classList.add("with-overflow"), this.hasOverflow = !0);
+      }
+    },
+    view: function view(e) {
+      var _this6 = this;
+
+      var t = _objectSpread({
+        url: null,
+        "class": "",
+        asBackgroundImage: !1,
+        description: null,
+        placeholder: null,
+        onclick: null,
+        maxRatio: "16:9",
+        onload: function onload(t) {
+          return _this6.updateRatio(e.attrs.maxRatio, t.currentTarget);
+        },
+        oncreate: function oncreate(e) {
+          _this6.overflowContainer = e.dom;
+        }
+      }, e.attrs);
+
+      return n()(".mmf-preview.mmf-preview--image", {
+        "class": t["class"] + (x(t.url) ? "" : " with-image"),
+        style: t.asBackgroundImage && !x(t.url) ? "background-image: url(".concat(t.url, ");") : ""
+      }, t.asBackgroundImage ? n()($, t, e.children) : n()(N, t, e.children));
+    }
+  };
+}]);
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/index.ts":
+/*!******************************************************!*\
+  !*** ./node_modules/mithril-material-forms/index.ts ***!
+  \******************************************************/
+/*! exports provided: Button, Checkbox, CheckboxForm, Errors, Input, InputForm, Label, Select, SelectForm, Textarea, TextareaForm, ImagePreview */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _components_button__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/button */ "./node_modules/mithril-material-forms/components/button/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Button", function() { return _components_button__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _components_checkbox__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/checkbox */ "./node_modules/mithril-material-forms/components/checkbox/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Checkbox", function() { return _components_checkbox__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _components_checkboxform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "CheckboxForm", function() { return _components_checkboxform__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _components_errors__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/errors */ "./node_modules/mithril-material-forms/components/errors/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Errors", function() { return _components_errors__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _components_input__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/input */ "./node_modules/mithril-material-forms/components/input/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Input", function() { return _components_input__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _components_inputform__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "InputForm", function() { return _components_inputform__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _components_label__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./components/label */ "./node_modules/mithril-material-forms/components/label/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Label", function() { return _components_label__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _components_select__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/select */ "./node_modules/mithril-material-forms/components/select/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Select", function() { return _components_select__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _components_selectform__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SelectForm", function() { return _components_selectform__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+/* harmony import */ var _components_textarea__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/textarea */ "./node_modules/mithril-material-forms/components/textarea/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Textarea", function() { return _components_textarea__WEBPACK_IMPORTED_MODULE_9__["default"]; });
+
+/* harmony import */ var _components_textareaform__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TextareaForm", function() { return _components_textareaform__WEBPACK_IMPORTED_MODULE_10__["default"]; });
+
+/* harmony import */ var _components_imagepreview__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/imagepreview */ "./node_modules/mithril-material-forms/components/imagepreview/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ImagePreview", function() { return _components_imagepreview__WEBPACK_IMPORTED_MODULE_11__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js":
+/*!************************************************************************************!*\
+  !*** ./node_modules/mithril-material-forms/node_modules/autosize/dist/autosize.js ***!
+  \************************************************************************************/
+/*! no static exports found */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	autosize 4.0.2
+	license: MIT
+	http://www.jacklmoore.com/autosize
+*/
+(function (global, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [module, exports], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else { var mod; }
+})(this, function (module, exports) {
+  'use strict';
+
+  var map = typeof Map === "function" ? new Map() : function () {
+    var keys = [];
+    var values = [];
+    return {
+      has: function has(key) {
+        return keys.indexOf(key) > -1;
+      },
+      get: function get(key) {
+        return values[keys.indexOf(key)];
+      },
+      set: function set(key, value) {
+        if (keys.indexOf(key) === -1) {
+          keys.push(key);
+          values.push(value);
+        }
+      },
+      "delete": function _delete(key) {
+        var index = keys.indexOf(key);
+
+        if (index > -1) {
+          keys.splice(index, 1);
+          values.splice(index, 1);
+        }
+      }
+    };
+  }();
+
+  var createEvent = function createEvent(name) {
+    return new Event(name, {
+      bubbles: true
+    });
+  };
+
+  try {
+    new Event('test');
+  } catch (e) {
+    // IE does not support `new Event()`
+    createEvent = function createEvent(name) {
+      var evt = document.createEvent('Event');
+      evt.initEvent(name, true, false);
+      return evt;
+    };
+  }
+
+  function assign(ta) {
+    if (!ta || !ta.nodeName || ta.nodeName !== 'TEXTAREA' || map.has(ta)) return;
+    var heightOffset = null;
+    var clientWidth = null;
+    var cachedHeight = null;
+
+    function init() {
+      var style = window.getComputedStyle(ta, null);
+
+      if (style.resize === 'vertical') {
+        ta.style.resize = 'none';
+      } else if (style.resize === 'both') {
+        ta.style.resize = 'horizontal';
+      }
+
+      if (style.boxSizing === 'content-box') {
+        heightOffset = -(parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+      } else {
+        heightOffset = parseFloat(style.borderTopWidth) + parseFloat(style.borderBottomWidth);
+      } // Fix when a textarea is not on document body and heightOffset is Not a Number
+
+
+      if (isNaN(heightOffset)) {
+        heightOffset = 0;
+      }
+
+      update();
+    }
+
+    function changeOverflow(value) {
+      {
+        // Chrome/Safari-specific fix:
+        // When the textarea y-overflow is hidden, Chrome/Safari do not reflow the text to account for the space
+        // made available by removing the scrollbar. The following forces the necessary text reflow.
+        var width = ta.style.width;
+        ta.style.width = '0px'; // Force reflow:
+
+        /* jshint ignore:start */
+
+        ta.offsetWidth;
+        /* jshint ignore:end */
+
+        ta.style.width = width;
+      }
+      ta.style.overflowY = value;
+    }
+
+    function getParentOverflows(el) {
+      var arr = [];
+
+      while (el && el.parentNode && el.parentNode instanceof Element) {
+        if (el.parentNode.scrollTop) {
+          arr.push({
+            node: el.parentNode,
+            scrollTop: el.parentNode.scrollTop
+          });
+        }
+
+        el = el.parentNode;
+      }
+
+      return arr;
+    }
+
+    function resize() {
+      if (ta.scrollHeight === 0) {
+        // If the scrollHeight is 0, then the element probably has display:none or is detached from the DOM.
+        return;
+      }
+
+      var overflows = getParentOverflows(ta);
+      var docTop = document.documentElement && document.documentElement.scrollTop; // Needed for Mobile IE (ticket #240)
+
+      ta.style.height = '';
+      ta.style.height = ta.scrollHeight + heightOffset + 'px'; // used to check if an update is actually necessary on window.resize
+
+      clientWidth = ta.clientWidth; // prevents scroll-position jumping
+
+      overflows.forEach(function (el) {
+        el.node.scrollTop = el.scrollTop;
+      });
+
+      if (docTop) {
+        document.documentElement.scrollTop = docTop;
+      }
+    }
+
+    function update() {
+      resize();
+      var styleHeight = Math.round(parseFloat(ta.style.height));
+      var computed = window.getComputedStyle(ta, null); // Using offsetHeight as a replacement for computed.height in IE, because IE does not account use of border-box
+
+      var actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(computed.height)) : ta.offsetHeight; // The actual height not matching the style height (set via the resize method) indicates that 
+      // the max-height has been exceeded, in which case the overflow should be allowed.
+
+      if (actualHeight < styleHeight) {
+        if (computed.overflowY === 'hidden') {
+          changeOverflow('scroll');
+          resize();
+          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
+        }
+      } else {
+        // Normally keep overflow set to hidden, to avoid flash of scrollbar as the textarea expands.
+        if (computed.overflowY !== 'hidden') {
+          changeOverflow('hidden');
+          resize();
+          actualHeight = computed.boxSizing === 'content-box' ? Math.round(parseFloat(window.getComputedStyle(ta, null).height)) : ta.offsetHeight;
+        }
+      }
+
+      if (cachedHeight !== actualHeight) {
+        cachedHeight = actualHeight;
+        var evt = createEvent('autosize:resized');
+
+        try {
+          ta.dispatchEvent(evt);
+        } catch (err) {// Firefox will throw an error on dispatchEvent for a detached element
+          // https://bugzilla.mozilla.org/show_bug.cgi?id=889376
+        }
+      }
+    }
+
+    var pageResize = function pageResize() {
+      if (ta.clientWidth !== clientWidth) {
+        update();
+      }
+    };
+
+    var destroy = function (style) {
+      window.removeEventListener('resize', pageResize, false);
+      ta.removeEventListener('input', update, false);
+      ta.removeEventListener('keyup', update, false);
+      ta.removeEventListener('autosize:destroy', destroy, false);
+      ta.removeEventListener('autosize:update', update, false);
+      Object.keys(style).forEach(function (key) {
+        ta.style[key] = style[key];
+      });
+      map["delete"](ta);
+    }.bind(ta, {
+      height: ta.style.height,
+      resize: ta.style.resize,
+      overflowY: ta.style.overflowY,
+      overflowX: ta.style.overflowX,
+      wordWrap: ta.style.wordWrap
+    });
+
+    ta.addEventListener('autosize:destroy', destroy, false); // IE9 does not fire onpropertychange or oninput for deletions,
+    // so binding to onkeyup to catch most of those events.
+    // There is no way that I know of to detect something like 'cut' in IE9.
+
+    if ('onpropertychange' in ta && 'oninput' in ta) {
+      ta.addEventListener('keyup', update, false);
+    }
+
+    window.addEventListener('resize', pageResize, false);
+    ta.addEventListener('input', update, false);
+    ta.addEventListener('autosize:update', update, false);
+    ta.style.overflowX = 'hidden';
+    ta.style.wordWrap = 'break-word';
+    map.set(ta, {
+      destroy: destroy,
+      update: update
+    });
+    init();
+  }
+
+  function destroy(ta) {
+    var methods = map.get(ta);
+
+    if (methods) {
+      methods.destroy();
+    }
+  }
+
+  function update(ta) {
+    var methods = map.get(ta);
+
+    if (methods) {
+      methods.update();
+    }
+  }
+
+  var autosize = null; // Do nothing in Node.js environment and IE8 (or lower)
+
+  if (typeof window === 'undefined' || typeof window.getComputedStyle !== 'function') {
+    autosize = function autosize(el) {
+      return el;
+    };
+
+    autosize.destroy = function (el) {
+      return el;
+    };
+
+    autosize.update = function (el) {
+      return el;
+    };
+  } else {
+    autosize = function autosize(el, options) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], function (x) {
+          return assign(x, options);
+        });
+      }
+
+      return el;
+    };
+
+    autosize.destroy = function (el) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], destroy);
+      }
+
+      return el;
+    };
+
+    autosize.update = function (el) {
+      if (el) {
+        Array.prototype.forEach.call(el.length ? el : [el], update);
+      }
+
+      return el;
+    };
+  }
+
+  exports["default"] = autosize;
+  module.exports = exports['default'];
+});
+
+/***/ }),
+
+/***/ "./node_modules/nanoevents/index.js":
+/*!******************************************!*\
+  !*** ./node_modules/nanoevents/index.js ***!
+  \******************************************/
+/*! exports provided: createNanoEvents */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createNanoEvents", function() { return createNanoEvents; });
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+var createNanoEvents = function createNanoEvents() {
+  return {
+    events: {},
+    emit: function emit(event) {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      var _iterator = _createForOfIteratorHelper(this.events[event] || []),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var i = _step.value;
+          i.apply(void 0, args);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+    },
+    on: function on(event, cb) {
+      var _this = this;
+
+      ;
+      (this.events[event] = this.events[event] || []).push(cb);
+      return function () {
+        return _this.events[event] = _this.events[event].filter(function (i) {
+          return i !== cb;
+        });
+      };
+    }
+  };
+};
+
+
 
 /***/ }),
 
@@ -17893,6 +14189,3718 @@ function warning(message) {
 
 /***/ }),
 
+/***/ "./node_modules/sortablejs/modular/sortable.esm.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/sortablejs/modular/sortable.esm.js ***!
+  \*********************************************************/
+/*! exports provided: default, MultiDrag, Sortable, Swap */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MultiDrag", function() { return MultiDragPlugin; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Sortable", function() { return Sortable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Swap", function() { return SwapPlugin; });
+function _typeof2(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof2 = function _typeof2(obj) { return typeof obj; }; } else { _typeof2 = function _typeof2(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof2(obj); }
+
+/**!
+ * Sortable 1.10.2
+ * @author	RubaXa   <trash@rubaxa.org>
+ * @author	owenm    <owen23355@gmail.com>
+ * @license MIT
+ */
+function _typeof(obj) {
+  if (typeof Symbol === "function" && _typeof2(Symbol.iterator) === "symbol") {
+    _typeof = function _typeof(obj) {
+      return _typeof2(obj);
+    };
+  } else {
+    _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : _typeof2(obj);
+    };
+  }
+
+  return _typeof(obj);
+}
+
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+function _extends() {
+  _extends = Object.assign || function (target) {
+    for (var i = 1; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (Object.prototype.hasOwnProperty.call(source, key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+
+  return _extends.apply(this, arguments);
+}
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+        return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+      }));
+    }
+
+    ownKeys.forEach(function (key) {
+      _defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+function _objectWithoutPropertiesLoose(source, excluded) {
+  if (source == null) return {};
+  var target = {};
+  var sourceKeys = Object.keys(source);
+  var key, i;
+
+  for (i = 0; i < sourceKeys.length; i++) {
+    key = sourceKeys[i];
+    if (excluded.indexOf(key) >= 0) continue;
+    target[key] = source[key];
+  }
+
+  return target;
+}
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+
+  var target = _objectWithoutPropertiesLoose(source, excluded);
+
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread();
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+}
+
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance");
+}
+
+var version = "1.10.2";
+
+function userAgent(pattern) {
+  if (typeof window !== 'undefined' && window.navigator) {
+    return !! /*@__PURE__*/navigator.userAgent.match(pattern);
+  }
+}
+
+var IE11OrLess = userAgent(/(?:Trident.*rv[ :]?11\.|msie|iemobile|Windows Phone)/i);
+var Edge = userAgent(/Edge/i);
+var FireFox = userAgent(/firefox/i);
+var Safari = userAgent(/safari/i) && !userAgent(/chrome/i) && !userAgent(/android/i);
+var IOS = userAgent(/iP(ad|od|hone)/i);
+var ChromeForAndroid = userAgent(/chrome/i) && userAgent(/android/i);
+var captureMode = {
+  capture: false,
+  passive: false
+};
+
+function on(el, event, fn) {
+  el.addEventListener(event, fn, !IE11OrLess && captureMode);
+}
+
+function off(el, event, fn) {
+  el.removeEventListener(event, fn, !IE11OrLess && captureMode);
+}
+
+function matches(
+/**HTMLElement*/
+el,
+/**String*/
+selector) {
+  if (!selector) return;
+  selector[0] === '>' && (selector = selector.substring(1));
+
+  if (el) {
+    try {
+      if (el.matches) {
+        return el.matches(selector);
+      } else if (el.msMatchesSelector) {
+        return el.msMatchesSelector(selector);
+      } else if (el.webkitMatchesSelector) {
+        return el.webkitMatchesSelector(selector);
+      }
+    } catch (_) {
+      return false;
+    }
+  }
+
+  return false;
+}
+
+function getParentOrHost(el) {
+  return el.host && el !== document && el.host.nodeType ? el.host : el.parentNode;
+}
+
+function closest(
+/**HTMLElement*/
+el,
+/**String*/
+selector,
+/**HTMLElement*/
+ctx, includeCTX) {
+  if (el) {
+    ctx = ctx || document;
+
+    do {
+      if (selector != null && (selector[0] === '>' ? el.parentNode === ctx && matches(el, selector) : matches(el, selector)) || includeCTX && el === ctx) {
+        return el;
+      }
+
+      if (el === ctx) break;
+      /* jshint boss:true */
+    } while (el = getParentOrHost(el));
+  }
+
+  return null;
+}
+
+var R_SPACE = /\s+/g;
+
+function toggleClass(el, name, state) {
+  if (el && name) {
+    if (el.classList) {
+      el.classList[state ? 'add' : 'remove'](name);
+    } else {
+      var className = (' ' + el.className + ' ').replace(R_SPACE, ' ').replace(' ' + name + ' ', ' ');
+      el.className = (className + (state ? ' ' + name : '')).replace(R_SPACE, ' ');
+    }
+  }
+}
+
+function css(el, prop, val) {
+  var style = el && el.style;
+
+  if (style) {
+    if (val === void 0) {
+      if (document.defaultView && document.defaultView.getComputedStyle) {
+        val = document.defaultView.getComputedStyle(el, '');
+      } else if (el.currentStyle) {
+        val = el.currentStyle;
+      }
+
+      return prop === void 0 ? val : val[prop];
+    } else {
+      if (!(prop in style) && prop.indexOf('webkit') === -1) {
+        prop = '-webkit-' + prop;
+      }
+
+      style[prop] = val + (typeof val === 'string' ? '' : 'px');
+    }
+  }
+}
+
+function matrix(el, selfOnly) {
+  var appliedTransforms = '';
+
+  if (typeof el === 'string') {
+    appliedTransforms = el;
+  } else {
+    do {
+      var transform = css(el, 'transform');
+
+      if (transform && transform !== 'none') {
+        appliedTransforms = transform + ' ' + appliedTransforms;
+      }
+      /* jshint boss:true */
+
+    } while (!selfOnly && (el = el.parentNode));
+  }
+
+  var matrixFn = window.DOMMatrix || window.WebKitCSSMatrix || window.CSSMatrix || window.MSCSSMatrix;
+  /*jshint -W056 */
+
+  return matrixFn && new matrixFn(appliedTransforms);
+}
+
+function find(ctx, tagName, iterator) {
+  if (ctx) {
+    var list = ctx.getElementsByTagName(tagName),
+        i = 0,
+        n = list.length;
+
+    if (iterator) {
+      for (; i < n; i++) {
+        iterator(list[i], i);
+      }
+    }
+
+    return list;
+  }
+
+  return [];
+}
+
+function getWindowScrollingElement() {
+  var scrollingElement = document.scrollingElement;
+
+  if (scrollingElement) {
+    return scrollingElement;
+  } else {
+    return document.documentElement;
+  }
+}
+/**
+ * Returns the "bounding client rect" of given element
+ * @param  {HTMLElement} el                       The element whose boundingClientRect is wanted
+ * @param  {[Boolean]} relativeToContainingBlock  Whether the rect should be relative to the containing block of (including) the container
+ * @param  {[Boolean]} relativeToNonStaticParent  Whether the rect should be relative to the relative parent of (including) the contaienr
+ * @param  {[Boolean]} undoScale                  Whether the container's scale() should be undone
+ * @param  {[HTMLElement]} container              The parent the element will be placed in
+ * @return {Object}                               The boundingClientRect of el, with specified adjustments
+ */
+
+
+function getRect(el, relativeToContainingBlock, relativeToNonStaticParent, undoScale, container) {
+  if (!el.getBoundingClientRect && el !== window) return;
+  var elRect, top, left, bottom, right, height, width;
+
+  if (el !== window && el !== getWindowScrollingElement()) {
+    elRect = el.getBoundingClientRect();
+    top = elRect.top;
+    left = elRect.left;
+    bottom = elRect.bottom;
+    right = elRect.right;
+    height = elRect.height;
+    width = elRect.width;
+  } else {
+    top = 0;
+    left = 0;
+    bottom = window.innerHeight;
+    right = window.innerWidth;
+    height = window.innerHeight;
+    width = window.innerWidth;
+  }
+
+  if ((relativeToContainingBlock || relativeToNonStaticParent) && el !== window) {
+    // Adjust for translate()
+    container = container || el.parentNode; // solves #1123 (see: https://stackoverflow.com/a/37953806/6088312)
+    // Not needed on <= IE11
+
+    if (!IE11OrLess) {
+      do {
+        if (container && container.getBoundingClientRect && (css(container, 'transform') !== 'none' || relativeToNonStaticParent && css(container, 'position') !== 'static')) {
+          var containerRect = container.getBoundingClientRect(); // Set relative to edges of padding box of container
+
+          top -= containerRect.top + parseInt(css(container, 'border-top-width'));
+          left -= containerRect.left + parseInt(css(container, 'border-left-width'));
+          bottom = top + elRect.height;
+          right = left + elRect.width;
+          break;
+        }
+        /* jshint boss:true */
+
+      } while (container = container.parentNode);
+    }
+  }
+
+  if (undoScale && el !== window) {
+    // Adjust for scale()
+    var elMatrix = matrix(container || el),
+        scaleX = elMatrix && elMatrix.a,
+        scaleY = elMatrix && elMatrix.d;
+
+    if (elMatrix) {
+      top /= scaleY;
+      left /= scaleX;
+      width /= scaleX;
+      height /= scaleY;
+      bottom = top + height;
+      right = left + width;
+    }
+  }
+
+  return {
+    top: top,
+    left: left,
+    bottom: bottom,
+    right: right,
+    width: width,
+    height: height
+  };
+}
+/**
+ * Checks if a side of an element is scrolled past a side of its parents
+ * @param  {HTMLElement}  el           The element who's side being scrolled out of view is in question
+ * @param  {String}       elSide       Side of the element in question ('top', 'left', 'right', 'bottom')
+ * @param  {String}       parentSide   Side of the parent in question ('top', 'left', 'right', 'bottom')
+ * @return {HTMLElement}               The parent scroll element that the el's side is scrolled past, or null if there is no such element
+ */
+
+
+function isScrolledPast(el, elSide, parentSide) {
+  var parent = getParentAutoScrollElement(el, true),
+      elSideVal = getRect(el)[elSide];
+  /* jshint boss:true */
+
+  while (parent) {
+    var parentSideVal = getRect(parent)[parentSide],
+        visible = void 0;
+
+    if (parentSide === 'top' || parentSide === 'left') {
+      visible = elSideVal >= parentSideVal;
+    } else {
+      visible = elSideVal <= parentSideVal;
+    }
+
+    if (!visible) return parent;
+    if (parent === getWindowScrollingElement()) break;
+    parent = getParentAutoScrollElement(parent, false);
+  }
+
+  return false;
+}
+/**
+ * Gets nth child of el, ignoring hidden children, sortable's elements (does not ignore clone if it's visible)
+ * and non-draggable elements
+ * @param  {HTMLElement} el       The parent element
+ * @param  {Number} childNum      The index of the child
+ * @param  {Object} options       Parent Sortable's options
+ * @return {HTMLElement}          The child at index childNum, or null if not found
+ */
+
+
+function getChild(el, childNum, options) {
+  var currentChild = 0,
+      i = 0,
+      children = el.children;
+
+  while (i < children.length) {
+    if (children[i].style.display !== 'none' && children[i] !== Sortable.ghost && children[i] !== Sortable.dragged && closest(children[i], options.draggable, el, false)) {
+      if (currentChild === childNum) {
+        return children[i];
+      }
+
+      currentChild++;
+    }
+
+    i++;
+  }
+
+  return null;
+}
+/**
+ * Gets the last child in the el, ignoring ghostEl or invisible elements (clones)
+ * @param  {HTMLElement} el       Parent element
+ * @param  {selector} selector    Any other elements that should be ignored
+ * @return {HTMLElement}          The last child, ignoring ghostEl
+ */
+
+
+function lastChild(el, selector) {
+  var last = el.lastElementChild;
+
+  while (last && (last === Sortable.ghost || css(last, 'display') === 'none' || selector && !matches(last, selector))) {
+    last = last.previousElementSibling;
+  }
+
+  return last || null;
+}
+/**
+ * Returns the index of an element within its parent for a selected set of
+ * elements
+ * @param  {HTMLElement} el
+ * @param  {selector} selector
+ * @return {number}
+ */
+
+
+function index(el, selector) {
+  var index = 0;
+
+  if (!el || !el.parentNode) {
+    return -1;
+  }
+  /* jshint boss:true */
+
+
+  while (el = el.previousElementSibling) {
+    if (el.nodeName.toUpperCase() !== 'TEMPLATE' && el !== Sortable.clone && (!selector || matches(el, selector))) {
+      index++;
+    }
+  }
+
+  return index;
+}
+/**
+ * Returns the scroll offset of the given element, added with all the scroll offsets of parent elements.
+ * The value is returned in real pixels.
+ * @param  {HTMLElement} el
+ * @return {Array}             Offsets in the format of [left, top]
+ */
+
+
+function getRelativeScrollOffset(el) {
+  var offsetLeft = 0,
+      offsetTop = 0,
+      winScroller = getWindowScrollingElement();
+
+  if (el) {
+    do {
+      var elMatrix = matrix(el),
+          scaleX = elMatrix.a,
+          scaleY = elMatrix.d;
+      offsetLeft += el.scrollLeft * scaleX;
+      offsetTop += el.scrollTop * scaleY;
+    } while (el !== winScroller && (el = el.parentNode));
+  }
+
+  return [offsetLeft, offsetTop];
+}
+/**
+ * Returns the index of the object within the given array
+ * @param  {Array} arr   Array that may or may not hold the object
+ * @param  {Object} obj  An object that has a key-value pair unique to and identical to a key-value pair in the object you want to find
+ * @return {Number}      The index of the object in the array, or -1
+ */
+
+
+function indexOfObject(arr, obj) {
+  for (var i in arr) {
+    if (!arr.hasOwnProperty(i)) continue;
+
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key) && obj[key] === arr[i][key]) return Number(i);
+    }
+  }
+
+  return -1;
+}
+
+function getParentAutoScrollElement(el, includeSelf) {
+  // skip to window
+  if (!el || !el.getBoundingClientRect) return getWindowScrollingElement();
+  var elem = el;
+  var gotSelf = false;
+
+  do {
+    // we don't need to get elem css if it isn't even overflowing in the first place (performance)
+    if (elem.clientWidth < elem.scrollWidth || elem.clientHeight < elem.scrollHeight) {
+      var elemCSS = css(elem);
+
+      if (elem.clientWidth < elem.scrollWidth && (elemCSS.overflowX == 'auto' || elemCSS.overflowX == 'scroll') || elem.clientHeight < elem.scrollHeight && (elemCSS.overflowY == 'auto' || elemCSS.overflowY == 'scroll')) {
+        if (!elem.getBoundingClientRect || elem === document.body) return getWindowScrollingElement();
+        if (gotSelf || includeSelf) return elem;
+        gotSelf = true;
+      }
+    }
+    /* jshint boss:true */
+
+  } while (elem = elem.parentNode);
+
+  return getWindowScrollingElement();
+}
+
+function extend(dst, src) {
+  if (dst && src) {
+    for (var key in src) {
+      if (src.hasOwnProperty(key)) {
+        dst[key] = src[key];
+      }
+    }
+  }
+
+  return dst;
+}
+
+function isRectEqual(rect1, rect2) {
+  return Math.round(rect1.top) === Math.round(rect2.top) && Math.round(rect1.left) === Math.round(rect2.left) && Math.round(rect1.height) === Math.round(rect2.height) && Math.round(rect1.width) === Math.round(rect2.width);
+}
+
+var _throttleTimeout;
+
+function throttle(callback, ms) {
+  return function () {
+    if (!_throttleTimeout) {
+      var args = arguments,
+          _this = this;
+
+      if (args.length === 1) {
+        callback.call(_this, args[0]);
+      } else {
+        callback.apply(_this, args);
+      }
+
+      _throttleTimeout = setTimeout(function () {
+        _throttleTimeout = void 0;
+      }, ms);
+    }
+  };
+}
+
+function cancelThrottle() {
+  clearTimeout(_throttleTimeout);
+  _throttleTimeout = void 0;
+}
+
+function scrollBy(el, x, y) {
+  el.scrollLeft += x;
+  el.scrollTop += y;
+}
+
+function clone(el) {
+  var Polymer = window.Polymer;
+  var $ = window.jQuery || window.Zepto;
+
+  if (Polymer && Polymer.dom) {
+    return Polymer.dom(el).cloneNode(true);
+  } else if ($) {
+    return $(el).clone(true)[0];
+  } else {
+    return el.cloneNode(true);
+  }
+}
+
+function setRect(el, rect) {
+  css(el, 'position', 'absolute');
+  css(el, 'top', rect.top);
+  css(el, 'left', rect.left);
+  css(el, 'width', rect.width);
+  css(el, 'height', rect.height);
+}
+
+function unsetRect(el) {
+  css(el, 'position', '');
+  css(el, 'top', '');
+  css(el, 'left', '');
+  css(el, 'width', '');
+  css(el, 'height', '');
+}
+
+var expando = 'Sortable' + new Date().getTime();
+
+function AnimationStateManager() {
+  var animationStates = [],
+      animationCallbackId;
+  return {
+    captureAnimationState: function captureAnimationState() {
+      animationStates = [];
+      if (!this.options.animation) return;
+      var children = [].slice.call(this.el.children);
+      children.forEach(function (child) {
+        if (css(child, 'display') === 'none' || child === Sortable.ghost) return;
+        animationStates.push({
+          target: child,
+          rect: getRect(child)
+        });
+
+        var fromRect = _objectSpread({}, animationStates[animationStates.length - 1].rect); // If animating: compensate for current animation
+
+
+        if (child.thisAnimationDuration) {
+          var childMatrix = matrix(child, true);
+
+          if (childMatrix) {
+            fromRect.top -= childMatrix.f;
+            fromRect.left -= childMatrix.e;
+          }
+        }
+
+        child.fromRect = fromRect;
+      });
+    },
+    addAnimationState: function addAnimationState(state) {
+      animationStates.push(state);
+    },
+    removeAnimationState: function removeAnimationState(target) {
+      animationStates.splice(indexOfObject(animationStates, {
+        target: target
+      }), 1);
+    },
+    animateAll: function animateAll(callback) {
+      var _this = this;
+
+      if (!this.options.animation) {
+        clearTimeout(animationCallbackId);
+        if (typeof callback === 'function') callback();
+        return;
+      }
+
+      var animating = false,
+          animationTime = 0;
+      animationStates.forEach(function (state) {
+        var time = 0,
+            target = state.target,
+            fromRect = target.fromRect,
+            toRect = getRect(target),
+            prevFromRect = target.prevFromRect,
+            prevToRect = target.prevToRect,
+            animatingRect = state.rect,
+            targetMatrix = matrix(target, true);
+
+        if (targetMatrix) {
+          // Compensate for current animation
+          toRect.top -= targetMatrix.f;
+          toRect.left -= targetMatrix.e;
+        }
+
+        target.toRect = toRect;
+
+        if (target.thisAnimationDuration) {
+          // Could also check if animatingRect is between fromRect and toRect
+          if (isRectEqual(prevFromRect, toRect) && !isRectEqual(fromRect, toRect) && // Make sure animatingRect is on line between toRect & fromRect
+          (animatingRect.top - toRect.top) / (animatingRect.left - toRect.left) === (fromRect.top - toRect.top) / (fromRect.left - toRect.left)) {
+            // If returning to same place as started from animation and on same axis
+            time = calculateRealTime(animatingRect, prevFromRect, prevToRect, _this.options);
+          }
+        } // if fromRect != toRect: animate
+
+
+        if (!isRectEqual(toRect, fromRect)) {
+          target.prevFromRect = fromRect;
+          target.prevToRect = toRect;
+
+          if (!time) {
+            time = _this.options.animation;
+          }
+
+          _this.animate(target, animatingRect, toRect, time);
+        }
+
+        if (time) {
+          animating = true;
+          animationTime = Math.max(animationTime, time);
+          clearTimeout(target.animationResetTimer);
+          target.animationResetTimer = setTimeout(function () {
+            target.animationTime = 0;
+            target.prevFromRect = null;
+            target.fromRect = null;
+            target.prevToRect = null;
+            target.thisAnimationDuration = null;
+          }, time);
+          target.thisAnimationDuration = time;
+        }
+      });
+      clearTimeout(animationCallbackId);
+
+      if (!animating) {
+        if (typeof callback === 'function') callback();
+      } else {
+        animationCallbackId = setTimeout(function () {
+          if (typeof callback === 'function') callback();
+        }, animationTime);
+      }
+
+      animationStates = [];
+    },
+    animate: function animate(target, currentRect, toRect, duration) {
+      if (duration) {
+        css(target, 'transition', '');
+        css(target, 'transform', '');
+        var elMatrix = matrix(this.el),
+            scaleX = elMatrix && elMatrix.a,
+            scaleY = elMatrix && elMatrix.d,
+            translateX = (currentRect.left - toRect.left) / (scaleX || 1),
+            translateY = (currentRect.top - toRect.top) / (scaleY || 1);
+        target.animatingX = !!translateX;
+        target.animatingY = !!translateY;
+        css(target, 'transform', 'translate3d(' + translateX + 'px,' + translateY + 'px,0)');
+        repaint(target); // repaint
+
+        css(target, 'transition', 'transform ' + duration + 'ms' + (this.options.easing ? ' ' + this.options.easing : ''));
+        css(target, 'transform', 'translate3d(0,0,0)');
+        typeof target.animated === 'number' && clearTimeout(target.animated);
+        target.animated = setTimeout(function () {
+          css(target, 'transition', '');
+          css(target, 'transform', '');
+          target.animated = false;
+          target.animatingX = false;
+          target.animatingY = false;
+        }, duration);
+      }
+    }
+  };
+}
+
+function repaint(target) {
+  return target.offsetWidth;
+}
+
+function calculateRealTime(animatingRect, fromRect, toRect, options) {
+  return Math.sqrt(Math.pow(fromRect.top - animatingRect.top, 2) + Math.pow(fromRect.left - animatingRect.left, 2)) / Math.sqrt(Math.pow(fromRect.top - toRect.top, 2) + Math.pow(fromRect.left - toRect.left, 2)) * options.animation;
+}
+
+var plugins = [];
+var defaults = {
+  initializeByDefault: true
+};
+var PluginManager = {
+  mount: function mount(plugin) {
+    // Set default static properties
+    for (var option in defaults) {
+      if (defaults.hasOwnProperty(option) && !(option in plugin)) {
+        plugin[option] = defaults[option];
+      }
+    }
+
+    plugins.push(plugin);
+  },
+  pluginEvent: function pluginEvent(eventName, sortable, evt) {
+    var _this = this;
+
+    this.eventCanceled = false;
+
+    evt.cancel = function () {
+      _this.eventCanceled = true;
+    };
+
+    var eventNameGlobal = eventName + 'Global';
+    plugins.forEach(function (plugin) {
+      if (!sortable[plugin.pluginName]) return; // Fire global events if it exists in this sortable
+
+      if (sortable[plugin.pluginName][eventNameGlobal]) {
+        sortable[plugin.pluginName][eventNameGlobal](_objectSpread({
+          sortable: sortable
+        }, evt));
+      } // Only fire plugin event if plugin is enabled in this sortable,
+      // and plugin has event defined
+
+
+      if (sortable.options[plugin.pluginName] && sortable[plugin.pluginName][eventName]) {
+        sortable[plugin.pluginName][eventName](_objectSpread({
+          sortable: sortable
+        }, evt));
+      }
+    });
+  },
+  initializePlugins: function initializePlugins(sortable, el, defaults, options) {
+    plugins.forEach(function (plugin) {
+      var pluginName = plugin.pluginName;
+      if (!sortable.options[pluginName] && !plugin.initializeByDefault) return;
+      var initialized = new plugin(sortable, el, sortable.options);
+      initialized.sortable = sortable;
+      initialized.options = sortable.options;
+      sortable[pluginName] = initialized; // Add default options from plugin
+
+      _extends(defaults, initialized.defaults);
+    });
+
+    for (var option in sortable.options) {
+      if (!sortable.options.hasOwnProperty(option)) continue;
+      var modified = this.modifyOption(sortable, option, sortable.options[option]);
+
+      if (typeof modified !== 'undefined') {
+        sortable.options[option] = modified;
+      }
+    }
+  },
+  getEventProperties: function getEventProperties(name, sortable) {
+    var eventProperties = {};
+    plugins.forEach(function (plugin) {
+      if (typeof plugin.eventProperties !== 'function') return;
+
+      _extends(eventProperties, plugin.eventProperties.call(sortable[plugin.pluginName], name));
+    });
+    return eventProperties;
+  },
+  modifyOption: function modifyOption(sortable, name, value) {
+    var modifiedValue;
+    plugins.forEach(function (plugin) {
+      // Plugin must exist on the Sortable
+      if (!sortable[plugin.pluginName]) return; // If static option listener exists for this option, call in the context of the Sortable's instance of this plugin
+
+      if (plugin.optionListeners && typeof plugin.optionListeners[name] === 'function') {
+        modifiedValue = plugin.optionListeners[name].call(sortable[plugin.pluginName], value);
+      }
+    });
+    return modifiedValue;
+  }
+};
+
+function dispatchEvent(_ref) {
+  var sortable = _ref.sortable,
+      rootEl = _ref.rootEl,
+      name = _ref.name,
+      targetEl = _ref.targetEl,
+      cloneEl = _ref.cloneEl,
+      toEl = _ref.toEl,
+      fromEl = _ref.fromEl,
+      oldIndex = _ref.oldIndex,
+      newIndex = _ref.newIndex,
+      oldDraggableIndex = _ref.oldDraggableIndex,
+      newDraggableIndex = _ref.newDraggableIndex,
+      originalEvent = _ref.originalEvent,
+      putSortable = _ref.putSortable,
+      extraEventProperties = _ref.extraEventProperties;
+  sortable = sortable || rootEl && rootEl[expando];
+  if (!sortable) return;
+  var evt,
+      options = sortable.options,
+      onName = 'on' + name.charAt(0).toUpperCase() + name.substr(1); // Support for new CustomEvent feature
+
+  if (window.CustomEvent && !IE11OrLess && !Edge) {
+    evt = new CustomEvent(name, {
+      bubbles: true,
+      cancelable: true
+    });
+  } else {
+    evt = document.createEvent('Event');
+    evt.initEvent(name, true, true);
+  }
+
+  evt.to = toEl || rootEl;
+  evt.from = fromEl || rootEl;
+  evt.item = targetEl || rootEl;
+  evt.clone = cloneEl;
+  evt.oldIndex = oldIndex;
+  evt.newIndex = newIndex;
+  evt.oldDraggableIndex = oldDraggableIndex;
+  evt.newDraggableIndex = newDraggableIndex;
+  evt.originalEvent = originalEvent;
+  evt.pullMode = putSortable ? putSortable.lastPutMode : undefined;
+
+  var allEventProperties = _objectSpread({}, extraEventProperties, PluginManager.getEventProperties(name, sortable));
+
+  for (var option in allEventProperties) {
+    evt[option] = allEventProperties[option];
+  }
+
+  if (rootEl) {
+    rootEl.dispatchEvent(evt);
+  }
+
+  if (options[onName]) {
+    options[onName].call(sortable, evt);
+  }
+}
+
+var pluginEvent = function pluginEvent(eventName, sortable) {
+  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
+      originalEvent = _ref.evt,
+      data = _objectWithoutProperties(_ref, ["evt"]);
+
+  PluginManager.pluginEvent.bind(Sortable)(eventName, sortable, _objectSpread({
+    dragEl: dragEl,
+    parentEl: parentEl,
+    ghostEl: ghostEl,
+    rootEl: rootEl,
+    nextEl: nextEl,
+    lastDownEl: lastDownEl,
+    cloneEl: cloneEl,
+    cloneHidden: cloneHidden,
+    dragStarted: moved,
+    putSortable: putSortable,
+    activeSortable: Sortable.active,
+    originalEvent: originalEvent,
+    oldIndex: oldIndex,
+    oldDraggableIndex: oldDraggableIndex,
+    newIndex: newIndex,
+    newDraggableIndex: newDraggableIndex,
+    hideGhostForTarget: _hideGhostForTarget,
+    unhideGhostForTarget: _unhideGhostForTarget,
+    cloneNowHidden: function cloneNowHidden() {
+      cloneHidden = true;
+    },
+    cloneNowShown: function cloneNowShown() {
+      cloneHidden = false;
+    },
+    dispatchSortableEvent: function dispatchSortableEvent(name) {
+      _dispatchEvent({
+        sortable: sortable,
+        name: name,
+        originalEvent: originalEvent
+      });
+    }
+  }, data));
+};
+
+function _dispatchEvent(info) {
+  dispatchEvent(_objectSpread({
+    putSortable: putSortable,
+    cloneEl: cloneEl,
+    targetEl: dragEl,
+    rootEl: rootEl,
+    oldIndex: oldIndex,
+    oldDraggableIndex: oldDraggableIndex,
+    newIndex: newIndex,
+    newDraggableIndex: newDraggableIndex
+  }, info));
+}
+
+var dragEl,
+    parentEl,
+    ghostEl,
+    rootEl,
+    nextEl,
+    lastDownEl,
+    cloneEl,
+    cloneHidden,
+    oldIndex,
+    newIndex,
+    oldDraggableIndex,
+    newDraggableIndex,
+    activeGroup,
+    putSortable,
+    awaitingDragStarted = false,
+    ignoreNextClick = false,
+    sortables = [],
+    tapEvt,
+    touchEvt,
+    lastDx,
+    lastDy,
+    tapDistanceLeft,
+    tapDistanceTop,
+    moved,
+    lastTarget,
+    lastDirection,
+    pastFirstInvertThresh = false,
+    isCircumstantialInvert = false,
+    targetMoveDistance,
+    // For positioning ghost absolutely
+ghostRelativeParent,
+    ghostRelativeParentInitialScroll = [],
+    // (left, top)
+_silent = false,
+    savedInputChecked = [];
+/** @const */
+
+var documentExists = typeof document !== 'undefined',
+    PositionGhostAbsolutely = IOS,
+    CSSFloatProperty = Edge || IE11OrLess ? 'cssFloat' : 'float',
+    // This will not pass for IE9, because IE9 DnD only works on anchors
+supportDraggable = documentExists && !ChromeForAndroid && !IOS && 'draggable' in document.createElement('div'),
+    supportCssPointerEvents = function () {
+  if (!documentExists) return; // false when <= IE11
+
+  if (IE11OrLess) {
+    return false;
+  }
+
+  var el = document.createElement('x');
+  el.style.cssText = 'pointer-events:auto';
+  return el.style.pointerEvents === 'auto';
+}(),
+    _detectDirection = function _detectDirection(el, options) {
+  var elCSS = css(el),
+      elWidth = parseInt(elCSS.width) - parseInt(elCSS.paddingLeft) - parseInt(elCSS.paddingRight) - parseInt(elCSS.borderLeftWidth) - parseInt(elCSS.borderRightWidth),
+      child1 = getChild(el, 0, options),
+      child2 = getChild(el, 1, options),
+      firstChildCSS = child1 && css(child1),
+      secondChildCSS = child2 && css(child2),
+      firstChildWidth = firstChildCSS && parseInt(firstChildCSS.marginLeft) + parseInt(firstChildCSS.marginRight) + getRect(child1).width,
+      secondChildWidth = secondChildCSS && parseInt(secondChildCSS.marginLeft) + parseInt(secondChildCSS.marginRight) + getRect(child2).width;
+
+  if (elCSS.display === 'flex') {
+    return elCSS.flexDirection === 'column' || elCSS.flexDirection === 'column-reverse' ? 'vertical' : 'horizontal';
+  }
+
+  if (elCSS.display === 'grid') {
+    return elCSS.gridTemplateColumns.split(' ').length <= 1 ? 'vertical' : 'horizontal';
+  }
+
+  if (child1 && firstChildCSS["float"] && firstChildCSS["float"] !== 'none') {
+    var touchingSideChild2 = firstChildCSS["float"] === 'left' ? 'left' : 'right';
+    return child2 && (secondChildCSS.clear === 'both' || secondChildCSS.clear === touchingSideChild2) ? 'vertical' : 'horizontal';
+  }
+
+  return child1 && (firstChildCSS.display === 'block' || firstChildCSS.display === 'flex' || firstChildCSS.display === 'table' || firstChildCSS.display === 'grid' || firstChildWidth >= elWidth && elCSS[CSSFloatProperty] === 'none' || child2 && elCSS[CSSFloatProperty] === 'none' && firstChildWidth + secondChildWidth > elWidth) ? 'vertical' : 'horizontal';
+},
+    _dragElInRowColumn = function _dragElInRowColumn(dragRect, targetRect, vertical) {
+  var dragElS1Opp = vertical ? dragRect.left : dragRect.top,
+      dragElS2Opp = vertical ? dragRect.right : dragRect.bottom,
+      dragElOppLength = vertical ? dragRect.width : dragRect.height,
+      targetS1Opp = vertical ? targetRect.left : targetRect.top,
+      targetS2Opp = vertical ? targetRect.right : targetRect.bottom,
+      targetOppLength = vertical ? targetRect.width : targetRect.height;
+  return dragElS1Opp === targetS1Opp || dragElS2Opp === targetS2Opp || dragElS1Opp + dragElOppLength / 2 === targetS1Opp + targetOppLength / 2;
+},
+
+/**
+ * Detects first nearest empty sortable to X and Y position using emptyInsertThreshold.
+ * @param  {Number} x      X position
+ * @param  {Number} y      Y position
+ * @return {HTMLElement}   Element of the first found nearest Sortable
+ */
+_detectNearestEmptySortable = function _detectNearestEmptySortable(x, y) {
+  var ret;
+  sortables.some(function (sortable) {
+    if (lastChild(sortable)) return;
+    var rect = getRect(sortable),
+        threshold = sortable[expando].options.emptyInsertThreshold,
+        insideHorizontally = x >= rect.left - threshold && x <= rect.right + threshold,
+        insideVertically = y >= rect.top - threshold && y <= rect.bottom + threshold;
+
+    if (threshold && insideHorizontally && insideVertically) {
+      return ret = sortable;
+    }
+  });
+  return ret;
+},
+    _prepareGroup = function _prepareGroup(options) {
+  function toFn(value, pull) {
+    return function (to, from, dragEl, evt) {
+      var sameGroup = to.options.group.name && from.options.group.name && to.options.group.name === from.options.group.name;
+
+      if (value == null && (pull || sameGroup)) {
+        // Default pull value
+        // Default pull and put value if same group
+        return true;
+      } else if (value == null || value === false) {
+        return false;
+      } else if (pull && value === 'clone') {
+        return value;
+      } else if (typeof value === 'function') {
+        return toFn(value(to, from, dragEl, evt), pull)(to, from, dragEl, evt);
+      } else {
+        var otherGroup = (pull ? to : from).options.group.name;
+        return value === true || typeof value === 'string' && value === otherGroup || value.join && value.indexOf(otherGroup) > -1;
+      }
+    };
+  }
+
+  var group = {};
+  var originalGroup = options.group;
+
+  if (!originalGroup || _typeof(originalGroup) != 'object') {
+    originalGroup = {
+      name: originalGroup
+    };
+  }
+
+  group.name = originalGroup.name;
+  group.checkPull = toFn(originalGroup.pull, true);
+  group.checkPut = toFn(originalGroup.put);
+  group.revertClone = originalGroup.revertClone;
+  options.group = group;
+},
+    _hideGhostForTarget = function _hideGhostForTarget() {
+  if (!supportCssPointerEvents && ghostEl) {
+    css(ghostEl, 'display', 'none');
+  }
+},
+    _unhideGhostForTarget = function _unhideGhostForTarget() {
+  if (!supportCssPointerEvents && ghostEl) {
+    css(ghostEl, 'display', '');
+  }
+}; // #1184 fix - Prevent click event on fallback if dragged but item not changed position
+
+
+if (documentExists) {
+  document.addEventListener('click', function (evt) {
+    if (ignoreNextClick) {
+      evt.preventDefault();
+      evt.stopPropagation && evt.stopPropagation();
+      evt.stopImmediatePropagation && evt.stopImmediatePropagation();
+      ignoreNextClick = false;
+      return false;
+    }
+  }, true);
+}
+
+var nearestEmptyInsertDetectEvent = function nearestEmptyInsertDetectEvent(evt) {
+  if (dragEl) {
+    evt = evt.touches ? evt.touches[0] : evt;
+
+    var nearest = _detectNearestEmptySortable(evt.clientX, evt.clientY);
+
+    if (nearest) {
+      // Create imitation event
+      var event = {};
+
+      for (var i in evt) {
+        if (evt.hasOwnProperty(i)) {
+          event[i] = evt[i];
+        }
+      }
+
+      event.target = event.rootEl = nearest;
+      event.preventDefault = void 0;
+      event.stopPropagation = void 0;
+
+      nearest[expando]._onDragOver(event);
+    }
+  }
+};
+
+var _checkOutsideTargetEl = function _checkOutsideTargetEl(evt) {
+  if (dragEl) {
+    dragEl.parentNode[expando]._isOutsideThisEl(evt.target);
+  }
+};
+/**
+ * @class  Sortable
+ * @param  {HTMLElement}  el
+ * @param  {Object}       [options]
+ */
+
+
+function Sortable(el, options) {
+  if (!(el && el.nodeType && el.nodeType === 1)) {
+    throw "Sortable: `el` must be an HTMLElement, not ".concat({}.toString.call(el));
+  }
+
+  this.el = el; // root element
+
+  this.options = options = _extends({}, options); // Export instance
+
+  el[expando] = this;
+  var defaults = {
+    group: null,
+    sort: true,
+    disabled: false,
+    store: null,
+    handle: null,
+    draggable: /^[uo]l$/i.test(el.nodeName) ? '>li' : '>*',
+    swapThreshold: 1,
+    // percentage; 0 <= x <= 1
+    invertSwap: false,
+    // invert always
+    invertedSwapThreshold: null,
+    // will be set to same as swapThreshold if default
+    removeCloneOnHide: true,
+    direction: function direction() {
+      return _detectDirection(el, this.options);
+    },
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    ignore: 'a, img',
+    filter: null,
+    preventOnFilter: true,
+    animation: 0,
+    easing: null,
+    setData: function setData(dataTransfer, dragEl) {
+      dataTransfer.setData('Text', dragEl.textContent);
+    },
+    dropBubble: false,
+    dragoverBubble: false,
+    dataIdAttr: 'data-id',
+    delay: 0,
+    delayOnTouchOnly: false,
+    touchStartThreshold: (Number.parseInt ? Number : window).parseInt(window.devicePixelRatio, 10) || 1,
+    forceFallback: false,
+    fallbackClass: 'sortable-fallback',
+    fallbackOnBody: false,
+    fallbackTolerance: 0,
+    fallbackOffset: {
+      x: 0,
+      y: 0
+    },
+    supportPointer: Sortable.supportPointer !== false && 'PointerEvent' in window,
+    emptyInsertThreshold: 5
+  };
+  PluginManager.initializePlugins(this, el, defaults); // Set default options
+
+  for (var name in defaults) {
+    !(name in options) && (options[name] = defaults[name]);
+  }
+
+  _prepareGroup(options); // Bind all private methods
+
+
+  for (var fn in this) {
+    if (fn.charAt(0) === '_' && typeof this[fn] === 'function') {
+      this[fn] = this[fn].bind(this);
+    }
+  } // Setup drag mode
+
+
+  this.nativeDraggable = options.forceFallback ? false : supportDraggable;
+
+  if (this.nativeDraggable) {
+    // Touch start threshold cannot be greater than the native dragstart threshold
+    this.options.touchStartThreshold = 1;
+  } // Bind events
+
+
+  if (options.supportPointer) {
+    on(el, 'pointerdown', this._onTapStart);
+  } else {
+    on(el, 'mousedown', this._onTapStart);
+    on(el, 'touchstart', this._onTapStart);
+  }
+
+  if (this.nativeDraggable) {
+    on(el, 'dragover', this);
+    on(el, 'dragenter', this);
+  }
+
+  sortables.push(this.el); // Restore sorting
+
+  options.store && options.store.get && this.sort(options.store.get(this) || []); // Add animation state manager
+
+  _extends(this, AnimationStateManager());
+}
+
+Sortable.prototype =
+/** @lends Sortable.prototype */
+{
+  constructor: Sortable,
+  _isOutsideThisEl: function _isOutsideThisEl(target) {
+    if (!this.el.contains(target) && target !== this.el) {
+      lastTarget = null;
+    }
+  },
+  _getDirection: function _getDirection(evt, target) {
+    return typeof this.options.direction === 'function' ? this.options.direction.call(this, evt, target, dragEl) : this.options.direction;
+  },
+  _onTapStart: function _onTapStart(
+  /** Event|TouchEvent */
+  evt) {
+    if (!evt.cancelable) return;
+
+    var _this = this,
+        el = this.el,
+        options = this.options,
+        preventOnFilter = options.preventOnFilter,
+        type = evt.type,
+        touch = evt.touches && evt.touches[0] || evt.pointerType && evt.pointerType === 'touch' && evt,
+        target = (touch || evt).target,
+        originalTarget = evt.target.shadowRoot && (evt.path && evt.path[0] || evt.composedPath && evt.composedPath()[0]) || target,
+        filter = options.filter;
+
+    _saveInputCheckedState(el); // Don't trigger start event when an element is been dragged, otherwise the evt.oldindex always wrong when set option.group.
+
+
+    if (dragEl) {
+      return;
+    }
+
+    if (/mousedown|pointerdown/.test(type) && evt.button !== 0 || options.disabled) {
+      return; // only left button and enabled
+    } // cancel dnd if original target is content editable
+
+
+    if (originalTarget.isContentEditable) {
+      return;
+    }
+
+    target = closest(target, options.draggable, el, false);
+
+    if (target && target.animated) {
+      return;
+    }
+
+    if (lastDownEl === target) {
+      // Ignoring duplicate `down`
+      return;
+    } // Get the index of the dragged element within its parent
+
+
+    oldIndex = index(target);
+    oldDraggableIndex = index(target, options.draggable); // Check filter
+
+    if (typeof filter === 'function') {
+      if (filter.call(this, evt, target, this)) {
+        _dispatchEvent({
+          sortable: _this,
+          rootEl: originalTarget,
+          name: 'filter',
+          targetEl: target,
+          toEl: el,
+          fromEl: el
+        });
+
+        pluginEvent('filter', _this, {
+          evt: evt
+        });
+        preventOnFilter && evt.cancelable && evt.preventDefault();
+        return; // cancel dnd
+      }
+    } else if (filter) {
+      filter = filter.split(',').some(function (criteria) {
+        criteria = closest(originalTarget, criteria.trim(), el, false);
+
+        if (criteria) {
+          _dispatchEvent({
+            sortable: _this,
+            rootEl: criteria,
+            name: 'filter',
+            targetEl: target,
+            fromEl: el,
+            toEl: el
+          });
+
+          pluginEvent('filter', _this, {
+            evt: evt
+          });
+          return true;
+        }
+      });
+
+      if (filter) {
+        preventOnFilter && evt.cancelable && evt.preventDefault();
+        return; // cancel dnd
+      }
+    }
+
+    if (options.handle && !closest(originalTarget, options.handle, el, false)) {
+      return;
+    } // Prepare `dragstart`
+
+
+    this._prepareDragStart(evt, touch, target);
+  },
+  _prepareDragStart: function _prepareDragStart(
+  /** Event */
+  evt,
+  /** Touch */
+  touch,
+  /** HTMLElement */
+  target) {
+    var _this = this,
+        el = _this.el,
+        options = _this.options,
+        ownerDocument = el.ownerDocument,
+        dragStartFn;
+
+    if (target && !dragEl && target.parentNode === el) {
+      var dragRect = getRect(target);
+      rootEl = el;
+      dragEl = target;
+      parentEl = dragEl.parentNode;
+      nextEl = dragEl.nextSibling;
+      lastDownEl = target;
+      activeGroup = options.group;
+      Sortable.dragged = dragEl;
+      tapEvt = {
+        target: dragEl,
+        clientX: (touch || evt).clientX,
+        clientY: (touch || evt).clientY
+      };
+      tapDistanceLeft = tapEvt.clientX - dragRect.left;
+      tapDistanceTop = tapEvt.clientY - dragRect.top;
+      this._lastX = (touch || evt).clientX;
+      this._lastY = (touch || evt).clientY;
+      dragEl.style['will-change'] = 'all';
+
+      dragStartFn = function dragStartFn() {
+        pluginEvent('delayEnded', _this, {
+          evt: evt
+        });
+
+        if (Sortable.eventCanceled) {
+          _this._onDrop();
+
+          return;
+        } // Delayed drag has been triggered
+        // we can re-enable the events: touchmove/mousemove
+
+
+        _this._disableDelayedDragEvents();
+
+        if (!FireFox && _this.nativeDraggable) {
+          dragEl.draggable = true;
+        } // Bind the events: dragstart/dragend
+
+
+        _this._triggerDragStart(evt, touch); // Drag start event
+
+
+        _dispatchEvent({
+          sortable: _this,
+          name: 'choose',
+          originalEvent: evt
+        }); // Chosen item
+
+
+        toggleClass(dragEl, options.chosenClass, true);
+      }; // Disable "draggable"
+
+
+      options.ignore.split(',').forEach(function (criteria) {
+        find(dragEl, criteria.trim(), _disableDraggable);
+      });
+      on(ownerDocument, 'dragover', nearestEmptyInsertDetectEvent);
+      on(ownerDocument, 'mousemove', nearestEmptyInsertDetectEvent);
+      on(ownerDocument, 'touchmove', nearestEmptyInsertDetectEvent);
+      on(ownerDocument, 'mouseup', _this._onDrop);
+      on(ownerDocument, 'touchend', _this._onDrop);
+      on(ownerDocument, 'touchcancel', _this._onDrop); // Make dragEl draggable (must be before delay for FireFox)
+
+      if (FireFox && this.nativeDraggable) {
+        this.options.touchStartThreshold = 4;
+        dragEl.draggable = true;
+      }
+
+      pluginEvent('delayStart', this, {
+        evt: evt
+      }); // Delay is impossible for native DnD in Edge or IE
+
+      if (options.delay && (!options.delayOnTouchOnly || touch) && (!this.nativeDraggable || !(Edge || IE11OrLess))) {
+        if (Sortable.eventCanceled) {
+          this._onDrop();
+
+          return;
+        } // If the user moves the pointer or let go the click or touch
+        // before the delay has been reached:
+        // disable the delayed drag
+
+
+        on(ownerDocument, 'mouseup', _this._disableDelayedDrag);
+        on(ownerDocument, 'touchend', _this._disableDelayedDrag);
+        on(ownerDocument, 'touchcancel', _this._disableDelayedDrag);
+        on(ownerDocument, 'mousemove', _this._delayedDragTouchMoveHandler);
+        on(ownerDocument, 'touchmove', _this._delayedDragTouchMoveHandler);
+        options.supportPointer && on(ownerDocument, 'pointermove', _this._delayedDragTouchMoveHandler);
+        _this._dragStartTimer = setTimeout(dragStartFn, options.delay);
+      } else {
+        dragStartFn();
+      }
+    }
+  },
+  _delayedDragTouchMoveHandler: function _delayedDragTouchMoveHandler(
+  /** TouchEvent|PointerEvent **/
+  e) {
+    var touch = e.touches ? e.touches[0] : e;
+
+    if (Math.max(Math.abs(touch.clientX - this._lastX), Math.abs(touch.clientY - this._lastY)) >= Math.floor(this.options.touchStartThreshold / (this.nativeDraggable && window.devicePixelRatio || 1))) {
+      this._disableDelayedDrag();
+    }
+  },
+  _disableDelayedDrag: function _disableDelayedDrag() {
+    dragEl && _disableDraggable(dragEl);
+    clearTimeout(this._dragStartTimer);
+
+    this._disableDelayedDragEvents();
+  },
+  _disableDelayedDragEvents: function _disableDelayedDragEvents() {
+    var ownerDocument = this.el.ownerDocument;
+    off(ownerDocument, 'mouseup', this._disableDelayedDrag);
+    off(ownerDocument, 'touchend', this._disableDelayedDrag);
+    off(ownerDocument, 'touchcancel', this._disableDelayedDrag);
+    off(ownerDocument, 'mousemove', this._delayedDragTouchMoveHandler);
+    off(ownerDocument, 'touchmove', this._delayedDragTouchMoveHandler);
+    off(ownerDocument, 'pointermove', this._delayedDragTouchMoveHandler);
+  },
+  _triggerDragStart: function _triggerDragStart(
+  /** Event */
+  evt,
+  /** Touch */
+  touch) {
+    touch = touch || evt.pointerType == 'touch' && evt;
+
+    if (!this.nativeDraggable || touch) {
+      if (this.options.supportPointer) {
+        on(document, 'pointermove', this._onTouchMove);
+      } else if (touch) {
+        on(document, 'touchmove', this._onTouchMove);
+      } else {
+        on(document, 'mousemove', this._onTouchMove);
+      }
+    } else {
+      on(dragEl, 'dragend', this);
+      on(rootEl, 'dragstart', this._onDragStart);
+    }
+
+    try {
+      if (document.selection) {
+        // Timeout neccessary for IE9
+        _nextTick(function () {
+          document.selection.empty();
+        });
+      } else {
+        window.getSelection().removeAllRanges();
+      }
+    } catch (err) {}
+  },
+  _dragStarted: function _dragStarted(fallback, evt) {
+    awaitingDragStarted = false;
+
+    if (rootEl && dragEl) {
+      pluginEvent('dragStarted', this, {
+        evt: evt
+      });
+
+      if (this.nativeDraggable) {
+        on(document, 'dragover', _checkOutsideTargetEl);
+      }
+
+      var options = this.options; // Apply effect
+
+      !fallback && toggleClass(dragEl, options.dragClass, false);
+      toggleClass(dragEl, options.ghostClass, true);
+      Sortable.active = this;
+      fallback && this._appendGhost(); // Drag start event
+
+      _dispatchEvent({
+        sortable: this,
+        name: 'start',
+        originalEvent: evt
+      });
+    } else {
+      this._nulling();
+    }
+  },
+  _emulateDragOver: function _emulateDragOver() {
+    if (touchEvt) {
+      this._lastX = touchEvt.clientX;
+      this._lastY = touchEvt.clientY;
+
+      _hideGhostForTarget();
+
+      var target = document.elementFromPoint(touchEvt.clientX, touchEvt.clientY);
+      var parent = target;
+
+      while (target && target.shadowRoot) {
+        target = target.shadowRoot.elementFromPoint(touchEvt.clientX, touchEvt.clientY);
+        if (target === parent) break;
+        parent = target;
+      }
+
+      dragEl.parentNode[expando]._isOutsideThisEl(target);
+
+      if (parent) {
+        do {
+          if (parent[expando]) {
+            var inserted = void 0;
+            inserted = parent[expando]._onDragOver({
+              clientX: touchEvt.clientX,
+              clientY: touchEvt.clientY,
+              target: target,
+              rootEl: parent
+            });
+
+            if (inserted && !this.options.dragoverBubble) {
+              break;
+            }
+          }
+
+          target = parent; // store last element
+        }
+        /* jshint boss:true */
+        while (parent = parent.parentNode);
+      }
+
+      _unhideGhostForTarget();
+    }
+  },
+  _onTouchMove: function _onTouchMove(
+  /**TouchEvent*/
+  evt) {
+    if (tapEvt) {
+      var options = this.options,
+          fallbackTolerance = options.fallbackTolerance,
+          fallbackOffset = options.fallbackOffset,
+          touch = evt.touches ? evt.touches[0] : evt,
+          ghostMatrix = ghostEl && matrix(ghostEl, true),
+          scaleX = ghostEl && ghostMatrix && ghostMatrix.a,
+          scaleY = ghostEl && ghostMatrix && ghostMatrix.d,
+          relativeScrollOffset = PositionGhostAbsolutely && ghostRelativeParent && getRelativeScrollOffset(ghostRelativeParent),
+          dx = (touch.clientX - tapEvt.clientX + fallbackOffset.x) / (scaleX || 1) + (relativeScrollOffset ? relativeScrollOffset[0] - ghostRelativeParentInitialScroll[0] : 0) / (scaleX || 1),
+          dy = (touch.clientY - tapEvt.clientY + fallbackOffset.y) / (scaleY || 1) + (relativeScrollOffset ? relativeScrollOffset[1] - ghostRelativeParentInitialScroll[1] : 0) / (scaleY || 1); // only set the status to dragging, when we are actually dragging
+
+      if (!Sortable.active && !awaitingDragStarted) {
+        if (fallbackTolerance && Math.max(Math.abs(touch.clientX - this._lastX), Math.abs(touch.clientY - this._lastY)) < fallbackTolerance) {
+          return;
+        }
+
+        this._onDragStart(evt, true);
+      }
+
+      if (ghostEl) {
+        if (ghostMatrix) {
+          ghostMatrix.e += dx - (lastDx || 0);
+          ghostMatrix.f += dy - (lastDy || 0);
+        } else {
+          ghostMatrix = {
+            a: 1,
+            b: 0,
+            c: 0,
+            d: 1,
+            e: dx,
+            f: dy
+          };
+        }
+
+        var cssMatrix = "matrix(".concat(ghostMatrix.a, ",").concat(ghostMatrix.b, ",").concat(ghostMatrix.c, ",").concat(ghostMatrix.d, ",").concat(ghostMatrix.e, ",").concat(ghostMatrix.f, ")");
+        css(ghostEl, 'webkitTransform', cssMatrix);
+        css(ghostEl, 'mozTransform', cssMatrix);
+        css(ghostEl, 'msTransform', cssMatrix);
+        css(ghostEl, 'transform', cssMatrix);
+        lastDx = dx;
+        lastDy = dy;
+        touchEvt = touch;
+      }
+
+      evt.cancelable && evt.preventDefault();
+    }
+  },
+  _appendGhost: function _appendGhost() {
+    // Bug if using scale(): https://stackoverflow.com/questions/2637058
+    // Not being adjusted for
+    if (!ghostEl) {
+      var container = this.options.fallbackOnBody ? document.body : rootEl,
+          rect = getRect(dragEl, true, PositionGhostAbsolutely, true, container),
+          options = this.options; // Position absolutely
+
+      if (PositionGhostAbsolutely) {
+        // Get relatively positioned parent
+        ghostRelativeParent = container;
+
+        while (css(ghostRelativeParent, 'position') === 'static' && css(ghostRelativeParent, 'transform') === 'none' && ghostRelativeParent !== document) {
+          ghostRelativeParent = ghostRelativeParent.parentNode;
+        }
+
+        if (ghostRelativeParent !== document.body && ghostRelativeParent !== document.documentElement) {
+          if (ghostRelativeParent === document) ghostRelativeParent = getWindowScrollingElement();
+          rect.top += ghostRelativeParent.scrollTop;
+          rect.left += ghostRelativeParent.scrollLeft;
+        } else {
+          ghostRelativeParent = getWindowScrollingElement();
+        }
+
+        ghostRelativeParentInitialScroll = getRelativeScrollOffset(ghostRelativeParent);
+      }
+
+      ghostEl = dragEl.cloneNode(true);
+      toggleClass(ghostEl, options.ghostClass, false);
+      toggleClass(ghostEl, options.fallbackClass, true);
+      toggleClass(ghostEl, options.dragClass, true);
+      css(ghostEl, 'transition', '');
+      css(ghostEl, 'transform', '');
+      css(ghostEl, 'box-sizing', 'border-box');
+      css(ghostEl, 'margin', 0);
+      css(ghostEl, 'top', rect.top);
+      css(ghostEl, 'left', rect.left);
+      css(ghostEl, 'width', rect.width);
+      css(ghostEl, 'height', rect.height);
+      css(ghostEl, 'opacity', '0.8');
+      css(ghostEl, 'position', PositionGhostAbsolutely ? 'absolute' : 'fixed');
+      css(ghostEl, 'zIndex', '100000');
+      css(ghostEl, 'pointerEvents', 'none');
+      Sortable.ghost = ghostEl;
+      container.appendChild(ghostEl); // Set transform-origin
+
+      css(ghostEl, 'transform-origin', tapDistanceLeft / parseInt(ghostEl.style.width) * 100 + '% ' + tapDistanceTop / parseInt(ghostEl.style.height) * 100 + '%');
+    }
+  },
+  _onDragStart: function _onDragStart(
+  /**Event*/
+  evt,
+  /**boolean*/
+  fallback) {
+    var _this = this;
+
+    var dataTransfer = evt.dataTransfer;
+    var options = _this.options;
+    pluginEvent('dragStart', this, {
+      evt: evt
+    });
+
+    if (Sortable.eventCanceled) {
+      this._onDrop();
+
+      return;
+    }
+
+    pluginEvent('setupClone', this);
+
+    if (!Sortable.eventCanceled) {
+      cloneEl = clone(dragEl);
+      cloneEl.draggable = false;
+      cloneEl.style['will-change'] = '';
+
+      this._hideClone();
+
+      toggleClass(cloneEl, this.options.chosenClass, false);
+      Sortable.clone = cloneEl;
+    } // #1143: IFrame support workaround
+
+
+    _this.cloneId = _nextTick(function () {
+      pluginEvent('clone', _this);
+      if (Sortable.eventCanceled) return;
+
+      if (!_this.options.removeCloneOnHide) {
+        rootEl.insertBefore(cloneEl, dragEl);
+      }
+
+      _this._hideClone();
+
+      _dispatchEvent({
+        sortable: _this,
+        name: 'clone'
+      });
+    });
+    !fallback && toggleClass(dragEl, options.dragClass, true); // Set proper drop events
+
+    if (fallback) {
+      ignoreNextClick = true;
+      _this._loopId = setInterval(_this._emulateDragOver, 50);
+    } else {
+      // Undo what was set in _prepareDragStart before drag started
+      off(document, 'mouseup', _this._onDrop);
+      off(document, 'touchend', _this._onDrop);
+      off(document, 'touchcancel', _this._onDrop);
+
+      if (dataTransfer) {
+        dataTransfer.effectAllowed = 'move';
+        options.setData && options.setData.call(_this, dataTransfer, dragEl);
+      }
+
+      on(document, 'drop', _this); // #1276 fix:
+
+      css(dragEl, 'transform', 'translateZ(0)');
+    }
+
+    awaitingDragStarted = true;
+    _this._dragStartId = _nextTick(_this._dragStarted.bind(_this, fallback, evt));
+    on(document, 'selectstart', _this);
+    moved = true;
+
+    if (Safari) {
+      css(document.body, 'user-select', 'none');
+    }
+  },
+  // Returns true - if no further action is needed (either inserted or another condition)
+  _onDragOver: function _onDragOver(
+  /**Event*/
+  evt) {
+    var el = this.el,
+        target = evt.target,
+        dragRect,
+        targetRect,
+        revert,
+        options = this.options,
+        group = options.group,
+        activeSortable = Sortable.active,
+        isOwner = activeGroup === group,
+        canSort = options.sort,
+        fromSortable = putSortable || activeSortable,
+        vertical,
+        _this = this,
+        completedFired = false;
+
+    if (_silent) return;
+
+    function dragOverEvent(name, extra) {
+      pluginEvent(name, _this, _objectSpread({
+        evt: evt,
+        isOwner: isOwner,
+        axis: vertical ? 'vertical' : 'horizontal',
+        revert: revert,
+        dragRect: dragRect,
+        targetRect: targetRect,
+        canSort: canSort,
+        fromSortable: fromSortable,
+        target: target,
+        completed: completed,
+        onMove: function onMove(target, after) {
+          return _onMove(rootEl, el, dragEl, dragRect, target, getRect(target), evt, after);
+        },
+        changed: changed
+      }, extra));
+    } // Capture animation state
+
+
+    function capture() {
+      dragOverEvent('dragOverAnimationCapture');
+
+      _this.captureAnimationState();
+
+      if (_this !== fromSortable) {
+        fromSortable.captureAnimationState();
+      }
+    } // Return invocation when dragEl is inserted (or completed)
+
+
+    function completed(insertion) {
+      dragOverEvent('dragOverCompleted', {
+        insertion: insertion
+      });
+
+      if (insertion) {
+        // Clones must be hidden before folding animation to capture dragRectAbsolute properly
+        if (isOwner) {
+          activeSortable._hideClone();
+        } else {
+          activeSortable._showClone(_this);
+        }
+
+        if (_this !== fromSortable) {
+          // Set ghost class to new sortable's ghost class
+          toggleClass(dragEl, putSortable ? putSortable.options.ghostClass : activeSortable.options.ghostClass, false);
+          toggleClass(dragEl, options.ghostClass, true);
+        }
+
+        if (putSortable !== _this && _this !== Sortable.active) {
+          putSortable = _this;
+        } else if (_this === Sortable.active && putSortable) {
+          putSortable = null;
+        } // Animation
+
+
+        if (fromSortable === _this) {
+          _this._ignoreWhileAnimating = target;
+        }
+
+        _this.animateAll(function () {
+          dragOverEvent('dragOverAnimationComplete');
+          _this._ignoreWhileAnimating = null;
+        });
+
+        if (_this !== fromSortable) {
+          fromSortable.animateAll();
+          fromSortable._ignoreWhileAnimating = null;
+        }
+      } // Null lastTarget if it is not inside a previously swapped element
+
+
+      if (target === dragEl && !dragEl.animated || target === el && !target.animated) {
+        lastTarget = null;
+      } // no bubbling and not fallback
+
+
+      if (!options.dragoverBubble && !evt.rootEl && target !== document) {
+        dragEl.parentNode[expando]._isOutsideThisEl(evt.target); // Do not detect for empty insert if already inserted
+
+
+        !insertion && nearestEmptyInsertDetectEvent(evt);
+      }
+
+      !options.dragoverBubble && evt.stopPropagation && evt.stopPropagation();
+      return completedFired = true;
+    } // Call when dragEl has been inserted
+
+
+    function changed() {
+      newIndex = index(dragEl);
+      newDraggableIndex = index(dragEl, options.draggable);
+
+      _dispatchEvent({
+        sortable: _this,
+        name: 'change',
+        toEl: el,
+        newIndex: newIndex,
+        newDraggableIndex: newDraggableIndex,
+        originalEvent: evt
+      });
+    }
+
+    if (evt.preventDefault !== void 0) {
+      evt.cancelable && evt.preventDefault();
+    }
+
+    target = closest(target, options.draggable, el, true);
+    dragOverEvent('dragOver');
+    if (Sortable.eventCanceled) return completedFired;
+
+    if (dragEl.contains(evt.target) || target.animated && target.animatingX && target.animatingY || _this._ignoreWhileAnimating === target) {
+      return completed(false);
+    }
+
+    ignoreNextClick = false;
+
+    if (activeSortable && !options.disabled && (isOwner ? canSort || (revert = !rootEl.contains(dragEl)) // Reverting item into the original list
+    : putSortable === this || (this.lastPutMode = activeGroup.checkPull(this, activeSortable, dragEl, evt)) && group.checkPut(this, activeSortable, dragEl, evt))) {
+      vertical = this._getDirection(evt, target) === 'vertical';
+      dragRect = getRect(dragEl);
+      dragOverEvent('dragOverValid');
+      if (Sortable.eventCanceled) return completedFired;
+
+      if (revert) {
+        parentEl = rootEl; // actualization
+
+        capture();
+
+        this._hideClone();
+
+        dragOverEvent('revert');
+
+        if (!Sortable.eventCanceled) {
+          if (nextEl) {
+            rootEl.insertBefore(dragEl, nextEl);
+          } else {
+            rootEl.appendChild(dragEl);
+          }
+        }
+
+        return completed(true);
+      }
+
+      var elLastChild = lastChild(el, options.draggable);
+
+      if (!elLastChild || _ghostIsLast(evt, vertical, this) && !elLastChild.animated) {
+        // If already at end of list: Do not insert
+        if (elLastChild === dragEl) {
+          return completed(false);
+        } // assign target only if condition is true
+
+
+        if (elLastChild && el === evt.target) {
+          target = elLastChild;
+        }
+
+        if (target) {
+          targetRect = getRect(target);
+        }
+
+        if (_onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, !!target) !== false) {
+          capture();
+          el.appendChild(dragEl);
+          parentEl = el; // actualization
+
+          changed();
+          return completed(true);
+        }
+      } else if (target.parentNode === el) {
+        targetRect = getRect(target);
+        var direction = 0,
+            targetBeforeFirstSwap,
+            differentLevel = dragEl.parentNode !== el,
+            differentRowCol = !_dragElInRowColumn(dragEl.animated && dragEl.toRect || dragRect, target.animated && target.toRect || targetRect, vertical),
+            side1 = vertical ? 'top' : 'left',
+            scrolledPastTop = isScrolledPast(target, 'top', 'top') || isScrolledPast(dragEl, 'top', 'top'),
+            scrollBefore = scrolledPastTop ? scrolledPastTop.scrollTop : void 0;
+
+        if (lastTarget !== target) {
+          targetBeforeFirstSwap = targetRect[side1];
+          pastFirstInvertThresh = false;
+          isCircumstantialInvert = !differentRowCol && options.invertSwap || differentLevel;
+        }
+
+        direction = _getSwapDirection(evt, target, targetRect, vertical, differentRowCol ? 1 : options.swapThreshold, options.invertedSwapThreshold == null ? options.swapThreshold : options.invertedSwapThreshold, isCircumstantialInvert, lastTarget === target);
+        var sibling;
+
+        if (direction !== 0) {
+          // Check if target is beside dragEl in respective direction (ignoring hidden elements)
+          var dragIndex = index(dragEl);
+
+          do {
+            dragIndex -= direction;
+            sibling = parentEl.children[dragIndex];
+          } while (sibling && (css(sibling, 'display') === 'none' || sibling === ghostEl));
+        } // If dragEl is already beside target: Do not insert
+
+
+        if (direction === 0 || sibling === target) {
+          return completed(false);
+        }
+
+        lastTarget = target;
+        lastDirection = direction;
+        var nextSibling = target.nextElementSibling,
+            after = false;
+        after = direction === 1;
+
+        var moveVector = _onMove(rootEl, el, dragEl, dragRect, target, targetRect, evt, after);
+
+        if (moveVector !== false) {
+          if (moveVector === 1 || moveVector === -1) {
+            after = moveVector === 1;
+          }
+
+          _silent = true;
+          setTimeout(_unsilent, 30);
+          capture();
+
+          if (after && !nextSibling) {
+            el.appendChild(dragEl);
+          } else {
+            target.parentNode.insertBefore(dragEl, after ? nextSibling : target);
+          } // Undo chrome's scroll adjustment (has no effect on other browsers)
+
+
+          if (scrolledPastTop) {
+            scrollBy(scrolledPastTop, 0, scrollBefore - scrolledPastTop.scrollTop);
+          }
+
+          parentEl = dragEl.parentNode; // actualization
+          // must be done before animation
+
+          if (targetBeforeFirstSwap !== undefined && !isCircumstantialInvert) {
+            targetMoveDistance = Math.abs(targetBeforeFirstSwap - getRect(target)[side1]);
+          }
+
+          changed();
+          return completed(true);
+        }
+      }
+
+      if (el.contains(dragEl)) {
+        return completed(false);
+      }
+    }
+
+    return false;
+  },
+  _ignoreWhileAnimating: null,
+  _offMoveEvents: function _offMoveEvents() {
+    off(document, 'mousemove', this._onTouchMove);
+    off(document, 'touchmove', this._onTouchMove);
+    off(document, 'pointermove', this._onTouchMove);
+    off(document, 'dragover', nearestEmptyInsertDetectEvent);
+    off(document, 'mousemove', nearestEmptyInsertDetectEvent);
+    off(document, 'touchmove', nearestEmptyInsertDetectEvent);
+  },
+  _offUpEvents: function _offUpEvents() {
+    var ownerDocument = this.el.ownerDocument;
+    off(ownerDocument, 'mouseup', this._onDrop);
+    off(ownerDocument, 'touchend', this._onDrop);
+    off(ownerDocument, 'pointerup', this._onDrop);
+    off(ownerDocument, 'touchcancel', this._onDrop);
+    off(document, 'selectstart', this);
+  },
+  _onDrop: function _onDrop(
+  /**Event*/
+  evt) {
+    var el = this.el,
+        options = this.options; // Get the index of the dragged element within its parent
+
+    newIndex = index(dragEl);
+    newDraggableIndex = index(dragEl, options.draggable);
+    pluginEvent('drop', this, {
+      evt: evt
+    });
+    parentEl = dragEl && dragEl.parentNode; // Get again after plugin event
+
+    newIndex = index(dragEl);
+    newDraggableIndex = index(dragEl, options.draggable);
+
+    if (Sortable.eventCanceled) {
+      this._nulling();
+
+      return;
+    }
+
+    awaitingDragStarted = false;
+    isCircumstantialInvert = false;
+    pastFirstInvertThresh = false;
+    clearInterval(this._loopId);
+    clearTimeout(this._dragStartTimer);
+
+    _cancelNextTick(this.cloneId);
+
+    _cancelNextTick(this._dragStartId); // Unbind events
+
+
+    if (this.nativeDraggable) {
+      off(document, 'drop', this);
+      off(el, 'dragstart', this._onDragStart);
+    }
+
+    this._offMoveEvents();
+
+    this._offUpEvents();
+
+    if (Safari) {
+      css(document.body, 'user-select', '');
+    }
+
+    css(dragEl, 'transform', '');
+
+    if (evt) {
+      if (moved) {
+        evt.cancelable && evt.preventDefault();
+        !options.dropBubble && evt.stopPropagation();
+      }
+
+      ghostEl && ghostEl.parentNode && ghostEl.parentNode.removeChild(ghostEl);
+
+      if (rootEl === parentEl || putSortable && putSortable.lastPutMode !== 'clone') {
+        // Remove clone(s)
+        cloneEl && cloneEl.parentNode && cloneEl.parentNode.removeChild(cloneEl);
+      }
+
+      if (dragEl) {
+        if (this.nativeDraggable) {
+          off(dragEl, 'dragend', this);
+        }
+
+        _disableDraggable(dragEl);
+
+        dragEl.style['will-change'] = ''; // Remove classes
+        // ghostClass is added in dragStarted
+
+        if (moved && !awaitingDragStarted) {
+          toggleClass(dragEl, putSortable ? putSortable.options.ghostClass : this.options.ghostClass, false);
+        }
+
+        toggleClass(dragEl, this.options.chosenClass, false); // Drag stop event
+
+        _dispatchEvent({
+          sortable: this,
+          name: 'unchoose',
+          toEl: parentEl,
+          newIndex: null,
+          newDraggableIndex: null,
+          originalEvent: evt
+        });
+
+        if (rootEl !== parentEl) {
+          if (newIndex >= 0) {
+            // Add event
+            _dispatchEvent({
+              rootEl: parentEl,
+              name: 'add',
+              toEl: parentEl,
+              fromEl: rootEl,
+              originalEvent: evt
+            }); // Remove event
+
+
+            _dispatchEvent({
+              sortable: this,
+              name: 'remove',
+              toEl: parentEl,
+              originalEvent: evt
+            }); // drag from one list and drop into another
+
+
+            _dispatchEvent({
+              rootEl: parentEl,
+              name: 'sort',
+              toEl: parentEl,
+              fromEl: rootEl,
+              originalEvent: evt
+            });
+
+            _dispatchEvent({
+              sortable: this,
+              name: 'sort',
+              toEl: parentEl,
+              originalEvent: evt
+            });
+          }
+
+          putSortable && putSortable.save();
+        } else {
+          if (newIndex !== oldIndex) {
+            if (newIndex >= 0) {
+              // drag & drop within the same list
+              _dispatchEvent({
+                sortable: this,
+                name: 'update',
+                toEl: parentEl,
+                originalEvent: evt
+              });
+
+              _dispatchEvent({
+                sortable: this,
+                name: 'sort',
+                toEl: parentEl,
+                originalEvent: evt
+              });
+            }
+          }
+        }
+
+        if (Sortable.active) {
+          /* jshint eqnull:true */
+          if (newIndex == null || newIndex === -1) {
+            newIndex = oldIndex;
+            newDraggableIndex = oldDraggableIndex;
+          }
+
+          _dispatchEvent({
+            sortable: this,
+            name: 'end',
+            toEl: parentEl,
+            originalEvent: evt
+          }); // Save sorting
+
+
+          this.save();
+        }
+      }
+    }
+
+    this._nulling();
+  },
+  _nulling: function _nulling() {
+    pluginEvent('nulling', this);
+    rootEl = dragEl = parentEl = ghostEl = nextEl = cloneEl = lastDownEl = cloneHidden = tapEvt = touchEvt = moved = newIndex = newDraggableIndex = oldIndex = oldDraggableIndex = lastTarget = lastDirection = putSortable = activeGroup = Sortable.dragged = Sortable.ghost = Sortable.clone = Sortable.active = null;
+    savedInputChecked.forEach(function (el) {
+      el.checked = true;
+    });
+    savedInputChecked.length = lastDx = lastDy = 0;
+  },
+  handleEvent: function handleEvent(
+  /**Event*/
+  evt) {
+    switch (evt.type) {
+      case 'drop':
+      case 'dragend':
+        this._onDrop(evt);
+
+        break;
+
+      case 'dragenter':
+      case 'dragover':
+        if (dragEl) {
+          this._onDragOver(evt);
+
+          _globalDragOver(evt);
+        }
+
+        break;
+
+      case 'selectstart':
+        evt.preventDefault();
+        break;
+    }
+  },
+
+  /**
+   * Serializes the item into an array of string.
+   * @returns {String[]}
+   */
+  toArray: function toArray() {
+    var order = [],
+        el,
+        children = this.el.children,
+        i = 0,
+        n = children.length,
+        options = this.options;
+
+    for (; i < n; i++) {
+      el = children[i];
+
+      if (closest(el, options.draggable, this.el, false)) {
+        order.push(el.getAttribute(options.dataIdAttr) || _generateId(el));
+      }
+    }
+
+    return order;
+  },
+
+  /**
+   * Sorts the elements according to the array.
+   * @param  {String[]}  order  order of the items
+   */
+  sort: function sort(order) {
+    var items = {},
+        rootEl = this.el;
+    this.toArray().forEach(function (id, i) {
+      var el = rootEl.children[i];
+
+      if (closest(el, this.options.draggable, rootEl, false)) {
+        items[id] = el;
+      }
+    }, this);
+    order.forEach(function (id) {
+      if (items[id]) {
+        rootEl.removeChild(items[id]);
+        rootEl.appendChild(items[id]);
+      }
+    });
+  },
+
+  /**
+   * Save the current sorting
+   */
+  save: function save() {
+    var store = this.options.store;
+    store && store.set && store.set(this);
+  },
+
+  /**
+   * For each element in the set, get the first element that matches the selector by testing the element itself and traversing up through its ancestors in the DOM tree.
+   * @param   {HTMLElement}  el
+   * @param   {String}       [selector]  default: `options.draggable`
+   * @returns {HTMLElement|null}
+   */
+  closest: function closest$1(el, selector) {
+    return closest(el, selector || this.options.draggable, this.el, false);
+  },
+
+  /**
+   * Set/get option
+   * @param   {string} name
+   * @param   {*}      [value]
+   * @returns {*}
+   */
+  option: function option(name, value) {
+    var options = this.options;
+
+    if (value === void 0) {
+      return options[name];
+    } else {
+      var modifiedValue = PluginManager.modifyOption(this, name, value);
+
+      if (typeof modifiedValue !== 'undefined') {
+        options[name] = modifiedValue;
+      } else {
+        options[name] = value;
+      }
+
+      if (name === 'group') {
+        _prepareGroup(options);
+      }
+    }
+  },
+
+  /**
+   * Destroy
+   */
+  destroy: function destroy() {
+    pluginEvent('destroy', this);
+    var el = this.el;
+    el[expando] = null;
+    off(el, 'mousedown', this._onTapStart);
+    off(el, 'touchstart', this._onTapStart);
+    off(el, 'pointerdown', this._onTapStart);
+
+    if (this.nativeDraggable) {
+      off(el, 'dragover', this);
+      off(el, 'dragenter', this);
+    } // Remove draggable attributes
+
+
+    Array.prototype.forEach.call(el.querySelectorAll('[draggable]'), function (el) {
+      el.removeAttribute('draggable');
+    });
+
+    this._onDrop();
+
+    this._disableDelayedDragEvents();
+
+    sortables.splice(sortables.indexOf(this.el), 1);
+    this.el = el = null;
+  },
+  _hideClone: function _hideClone() {
+    if (!cloneHidden) {
+      pluginEvent('hideClone', this);
+      if (Sortable.eventCanceled) return;
+      css(cloneEl, 'display', 'none');
+
+      if (this.options.removeCloneOnHide && cloneEl.parentNode) {
+        cloneEl.parentNode.removeChild(cloneEl);
+      }
+
+      cloneHidden = true;
+    }
+  },
+  _showClone: function _showClone(putSortable) {
+    if (putSortable.lastPutMode !== 'clone') {
+      this._hideClone();
+
+      return;
+    }
+
+    if (cloneHidden) {
+      pluginEvent('showClone', this);
+      if (Sortable.eventCanceled) return; // show clone at dragEl or original position
+
+      if (rootEl.contains(dragEl) && !this.options.group.revertClone) {
+        rootEl.insertBefore(cloneEl, dragEl);
+      } else if (nextEl) {
+        rootEl.insertBefore(cloneEl, nextEl);
+      } else {
+        rootEl.appendChild(cloneEl);
+      }
+
+      if (this.options.group.revertClone) {
+        this.animate(dragEl, cloneEl);
+      }
+
+      css(cloneEl, 'display', '');
+      cloneHidden = false;
+    }
+  }
+};
+
+function _globalDragOver(
+/**Event*/
+evt) {
+  if (evt.dataTransfer) {
+    evt.dataTransfer.dropEffect = 'move';
+  }
+
+  evt.cancelable && evt.preventDefault();
+}
+
+function _onMove(fromEl, toEl, dragEl, dragRect, targetEl, targetRect, originalEvent, willInsertAfter) {
+  var evt,
+      sortable = fromEl[expando],
+      onMoveFn = sortable.options.onMove,
+      retVal; // Support for new CustomEvent feature
+
+  if (window.CustomEvent && !IE11OrLess && !Edge) {
+    evt = new CustomEvent('move', {
+      bubbles: true,
+      cancelable: true
+    });
+  } else {
+    evt = document.createEvent('Event');
+    evt.initEvent('move', true, true);
+  }
+
+  evt.to = toEl;
+  evt.from = fromEl;
+  evt.dragged = dragEl;
+  evt.draggedRect = dragRect;
+  evt.related = targetEl || toEl;
+  evt.relatedRect = targetRect || getRect(toEl);
+  evt.willInsertAfter = willInsertAfter;
+  evt.originalEvent = originalEvent;
+  fromEl.dispatchEvent(evt);
+
+  if (onMoveFn) {
+    retVal = onMoveFn.call(sortable, evt, originalEvent);
+  }
+
+  return retVal;
+}
+
+function _disableDraggable(el) {
+  el.draggable = false;
+}
+
+function _unsilent() {
+  _silent = false;
+}
+
+function _ghostIsLast(evt, vertical, sortable) {
+  var rect = getRect(lastChild(sortable.el, sortable.options.draggable));
+  var spacer = 10;
+  return vertical ? evt.clientX > rect.right + spacer || evt.clientX <= rect.right && evt.clientY > rect.bottom && evt.clientX >= rect.left : evt.clientX > rect.right && evt.clientY > rect.top || evt.clientX <= rect.right && evt.clientY > rect.bottom + spacer;
+}
+
+function _getSwapDirection(evt, target, targetRect, vertical, swapThreshold, invertedSwapThreshold, invertSwap, isLastTarget) {
+  var mouseOnAxis = vertical ? evt.clientY : evt.clientX,
+      targetLength = vertical ? targetRect.height : targetRect.width,
+      targetS1 = vertical ? targetRect.top : targetRect.left,
+      targetS2 = vertical ? targetRect.bottom : targetRect.right,
+      invert = false;
+
+  if (!invertSwap) {
+    // Never invert or create dragEl shadow when target movemenet causes mouse to move past the end of regular swapThreshold
+    if (isLastTarget && targetMoveDistance < targetLength * swapThreshold) {
+      // multiplied only by swapThreshold because mouse will already be inside target by (1 - threshold) * targetLength / 2
+      // check if past first invert threshold on side opposite of lastDirection
+      if (!pastFirstInvertThresh && (lastDirection === 1 ? mouseOnAxis > targetS1 + targetLength * invertedSwapThreshold / 2 : mouseOnAxis < targetS2 - targetLength * invertedSwapThreshold / 2)) {
+        // past first invert threshold, do not restrict inverted threshold to dragEl shadow
+        pastFirstInvertThresh = true;
+      }
+
+      if (!pastFirstInvertThresh) {
+        // dragEl shadow (target move distance shadow)
+        if (lastDirection === 1 ? mouseOnAxis < targetS1 + targetMoveDistance // over dragEl shadow
+        : mouseOnAxis > targetS2 - targetMoveDistance) {
+          return -lastDirection;
+        }
+      } else {
+        invert = true;
+      }
+    } else {
+      // Regular
+      if (mouseOnAxis > targetS1 + targetLength * (1 - swapThreshold) / 2 && mouseOnAxis < targetS2 - targetLength * (1 - swapThreshold) / 2) {
+        return _getInsertDirection(target);
+      }
+    }
+  }
+
+  invert = invert || invertSwap;
+
+  if (invert) {
+    // Invert of regular
+    if (mouseOnAxis < targetS1 + targetLength * invertedSwapThreshold / 2 || mouseOnAxis > targetS2 - targetLength * invertedSwapThreshold / 2) {
+      return mouseOnAxis > targetS1 + targetLength / 2 ? 1 : -1;
+    }
+  }
+
+  return 0;
+}
+/**
+ * Gets the direction dragEl must be swapped relative to target in order to make it
+ * seem that dragEl has been "inserted" into that element's position
+ * @param  {HTMLElement} target       The target whose position dragEl is being inserted at
+ * @return {Number}                   Direction dragEl must be swapped
+ */
+
+
+function _getInsertDirection(target) {
+  if (index(dragEl) < index(target)) {
+    return 1;
+  } else {
+    return -1;
+  }
+}
+/**
+ * Generate id
+ * @param   {HTMLElement} el
+ * @returns {String}
+ * @private
+ */
+
+
+function _generateId(el) {
+  var str = el.tagName + el.className + el.src + el.href + el.textContent,
+      i = str.length,
+      sum = 0;
+
+  while (i--) {
+    sum += str.charCodeAt(i);
+  }
+
+  return sum.toString(36);
+}
+
+function _saveInputCheckedState(root) {
+  savedInputChecked.length = 0;
+  var inputs = root.getElementsByTagName('input');
+  var idx = inputs.length;
+
+  while (idx--) {
+    var el = inputs[idx];
+    el.checked && savedInputChecked.push(el);
+  }
+}
+
+function _nextTick(fn) {
+  return setTimeout(fn, 0);
+}
+
+function _cancelNextTick(id) {
+  return clearTimeout(id);
+} // Fixed #973:
+
+
+if (documentExists) {
+  on(document, 'touchmove', function (evt) {
+    if ((Sortable.active || awaitingDragStarted) && evt.cancelable) {
+      evt.preventDefault();
+    }
+  });
+} // Export utils
+
+
+Sortable.utils = {
+  on: on,
+  off: off,
+  css: css,
+  find: find,
+  is: function is(el, selector) {
+    return !!closest(el, selector, el, false);
+  },
+  extend: extend,
+  throttle: throttle,
+  closest: closest,
+  toggleClass: toggleClass,
+  clone: clone,
+  index: index,
+  nextTick: _nextTick,
+  cancelNextTick: _cancelNextTick,
+  detectDirection: _detectDirection,
+  getChild: getChild
+};
+/**
+ * Get the Sortable instance of an element
+ * @param  {HTMLElement} element The element
+ * @return {Sortable|undefined}         The instance of Sortable
+ */
+
+Sortable.get = function (element) {
+  return element[expando];
+};
+/**
+ * Mount a plugin to Sortable
+ * @param  {...SortablePlugin|SortablePlugin[]} plugins       Plugins being mounted
+ */
+
+
+Sortable.mount = function () {
+  for (var _len = arguments.length, plugins = new Array(_len), _key = 0; _key < _len; _key++) {
+    plugins[_key] = arguments[_key];
+  }
+
+  if (plugins[0].constructor === Array) plugins = plugins[0];
+  plugins.forEach(function (plugin) {
+    if (!plugin.prototype || !plugin.prototype.constructor) {
+      throw "Sortable: Mounted plugin must be a constructor function, not ".concat({}.toString.call(plugin));
+    }
+
+    if (plugin.utils) Sortable.utils = _objectSpread({}, Sortable.utils, plugin.utils);
+    PluginManager.mount(plugin);
+  });
+};
+/**
+ * Create sortable instance
+ * @param {HTMLElement}  el
+ * @param {Object}      [options]
+ */
+
+
+Sortable.create = function (el, options) {
+  return new Sortable(el, options);
+}; // Export
+
+
+Sortable.version = version;
+var autoScrolls = [],
+    scrollEl,
+    scrollRootEl,
+    scrolling = false,
+    lastAutoScrollX,
+    lastAutoScrollY,
+    touchEvt$1,
+    pointerElemChangedInterval;
+
+function AutoScrollPlugin() {
+  function AutoScroll() {
+    this.defaults = {
+      scroll: true,
+      scrollSensitivity: 30,
+      scrollSpeed: 10,
+      bubbleScroll: true
+    }; // Bind all private methods
+
+    for (var fn in this) {
+      if (fn.charAt(0) === '_' && typeof this[fn] === 'function') {
+        this[fn] = this[fn].bind(this);
+      }
+    }
+  }
+
+  AutoScroll.prototype = {
+    dragStarted: function dragStarted(_ref) {
+      var originalEvent = _ref.originalEvent;
+
+      if (this.sortable.nativeDraggable) {
+        on(document, 'dragover', this._handleAutoScroll);
+      } else {
+        if (this.options.supportPointer) {
+          on(document, 'pointermove', this._handleFallbackAutoScroll);
+        } else if (originalEvent.touches) {
+          on(document, 'touchmove', this._handleFallbackAutoScroll);
+        } else {
+          on(document, 'mousemove', this._handleFallbackAutoScroll);
+        }
+      }
+    },
+    dragOverCompleted: function dragOverCompleted(_ref2) {
+      var originalEvent = _ref2.originalEvent; // For when bubbling is canceled and using fallback (fallback 'touchmove' always reached)
+
+      if (!this.options.dragOverBubble && !originalEvent.rootEl) {
+        this._handleAutoScroll(originalEvent);
+      }
+    },
+    drop: function drop() {
+      if (this.sortable.nativeDraggable) {
+        off(document, 'dragover', this._handleAutoScroll);
+      } else {
+        off(document, 'pointermove', this._handleFallbackAutoScroll);
+        off(document, 'touchmove', this._handleFallbackAutoScroll);
+        off(document, 'mousemove', this._handleFallbackAutoScroll);
+      }
+
+      clearPointerElemChangedInterval();
+      clearAutoScrolls();
+      cancelThrottle();
+    },
+    nulling: function nulling() {
+      touchEvt$1 = scrollRootEl = scrollEl = scrolling = pointerElemChangedInterval = lastAutoScrollX = lastAutoScrollY = null;
+      autoScrolls.length = 0;
+    },
+    _handleFallbackAutoScroll: function _handleFallbackAutoScroll(evt) {
+      this._handleAutoScroll(evt, true);
+    },
+    _handleAutoScroll: function _handleAutoScroll(evt, fallback) {
+      var _this = this;
+
+      var x = (evt.touches ? evt.touches[0] : evt).clientX,
+          y = (evt.touches ? evt.touches[0] : evt).clientY,
+          elem = document.elementFromPoint(x, y);
+      touchEvt$1 = evt; // IE does not seem to have native autoscroll,
+      // Edge's autoscroll seems too conditional,
+      // MACOS Safari does not have autoscroll,
+      // Firefox and Chrome are good
+
+      if (fallback || Edge || IE11OrLess || Safari) {
+        autoScroll(evt, this.options, elem, fallback); // Listener for pointer element change
+
+        var ogElemScroller = getParentAutoScrollElement(elem, true);
+
+        if (scrolling && (!pointerElemChangedInterval || x !== lastAutoScrollX || y !== lastAutoScrollY)) {
+          pointerElemChangedInterval && clearPointerElemChangedInterval(); // Detect for pointer elem change, emulating native DnD behaviour
+
+          pointerElemChangedInterval = setInterval(function () {
+            var newElem = getParentAutoScrollElement(document.elementFromPoint(x, y), true);
+
+            if (newElem !== ogElemScroller) {
+              ogElemScroller = newElem;
+              clearAutoScrolls();
+            }
+
+            autoScroll(evt, _this.options, newElem, fallback);
+          }, 10);
+          lastAutoScrollX = x;
+          lastAutoScrollY = y;
+        }
+      } else {
+        // if DnD is enabled (and browser has good autoscrolling), first autoscroll will already scroll, so get parent autoscroll of first autoscroll
+        if (!this.options.bubbleScroll || getParentAutoScrollElement(elem, true) === getWindowScrollingElement()) {
+          clearAutoScrolls();
+          return;
+        }
+
+        autoScroll(evt, this.options, getParentAutoScrollElement(elem, false), false);
+      }
+    }
+  };
+  return _extends(AutoScroll, {
+    pluginName: 'scroll',
+    initializeByDefault: true
+  });
+}
+
+function clearAutoScrolls() {
+  autoScrolls.forEach(function (autoScroll) {
+    clearInterval(autoScroll.pid);
+  });
+  autoScrolls = [];
+}
+
+function clearPointerElemChangedInterval() {
+  clearInterval(pointerElemChangedInterval);
+}
+
+var autoScroll = throttle(function (evt, options, rootEl, isFallback) {
+  // Bug: https://bugzilla.mozilla.org/show_bug.cgi?id=505521
+  if (!options.scroll) return;
+  var x = (evt.touches ? evt.touches[0] : evt).clientX,
+      y = (evt.touches ? evt.touches[0] : evt).clientY,
+      sens = options.scrollSensitivity,
+      speed = options.scrollSpeed,
+      winScroller = getWindowScrollingElement();
+  var scrollThisInstance = false,
+      scrollCustomFn; // New scroll root, set scrollEl
+
+  if (scrollRootEl !== rootEl) {
+    scrollRootEl = rootEl;
+    clearAutoScrolls();
+    scrollEl = options.scroll;
+    scrollCustomFn = options.scrollFn;
+
+    if (scrollEl === true) {
+      scrollEl = getParentAutoScrollElement(rootEl, true);
+    }
+  }
+
+  var layersOut = 0;
+  var currentParent = scrollEl;
+
+  do {
+    var el = currentParent,
+        rect = getRect(el),
+        top = rect.top,
+        bottom = rect.bottom,
+        left = rect.left,
+        right = rect.right,
+        width = rect.width,
+        height = rect.height,
+        canScrollX = void 0,
+        canScrollY = void 0,
+        scrollWidth = el.scrollWidth,
+        scrollHeight = el.scrollHeight,
+        elCSS = css(el),
+        scrollPosX = el.scrollLeft,
+        scrollPosY = el.scrollTop;
+
+    if (el === winScroller) {
+      canScrollX = width < scrollWidth && (elCSS.overflowX === 'auto' || elCSS.overflowX === 'scroll' || elCSS.overflowX === 'visible');
+      canScrollY = height < scrollHeight && (elCSS.overflowY === 'auto' || elCSS.overflowY === 'scroll' || elCSS.overflowY === 'visible');
+    } else {
+      canScrollX = width < scrollWidth && (elCSS.overflowX === 'auto' || elCSS.overflowX === 'scroll');
+      canScrollY = height < scrollHeight && (elCSS.overflowY === 'auto' || elCSS.overflowY === 'scroll');
+    }
+
+    var vx = canScrollX && (Math.abs(right - x) <= sens && scrollPosX + width < scrollWidth) - (Math.abs(left - x) <= sens && !!scrollPosX);
+    var vy = canScrollY && (Math.abs(bottom - y) <= sens && scrollPosY + height < scrollHeight) - (Math.abs(top - y) <= sens && !!scrollPosY);
+
+    if (!autoScrolls[layersOut]) {
+      for (var i = 0; i <= layersOut; i++) {
+        if (!autoScrolls[i]) {
+          autoScrolls[i] = {};
+        }
+      }
+    }
+
+    if (autoScrolls[layersOut].vx != vx || autoScrolls[layersOut].vy != vy || autoScrolls[layersOut].el !== el) {
+      autoScrolls[layersOut].el = el;
+      autoScrolls[layersOut].vx = vx;
+      autoScrolls[layersOut].vy = vy;
+      clearInterval(autoScrolls[layersOut].pid);
+
+      if (vx != 0 || vy != 0) {
+        scrollThisInstance = true;
+        /* jshint loopfunc:true */
+
+        autoScrolls[layersOut].pid = setInterval(function () {
+          // emulate drag over during autoscroll (fallback), emulating native DnD behaviour
+          if (isFallback && this.layer === 0) {
+            Sortable.active._onTouchMove(touchEvt$1); // To move ghost if it is positioned absolutely
+
+          }
+
+          var scrollOffsetY = autoScrolls[this.layer].vy ? autoScrolls[this.layer].vy * speed : 0;
+          var scrollOffsetX = autoScrolls[this.layer].vx ? autoScrolls[this.layer].vx * speed : 0;
+
+          if (typeof scrollCustomFn === 'function') {
+            if (scrollCustomFn.call(Sortable.dragged.parentNode[expando], scrollOffsetX, scrollOffsetY, evt, touchEvt$1, autoScrolls[this.layer].el) !== 'continue') {
+              return;
+            }
+          }
+
+          scrollBy(autoScrolls[this.layer].el, scrollOffsetX, scrollOffsetY);
+        }.bind({
+          layer: layersOut
+        }), 24);
+      }
+    }
+
+    layersOut++;
+  } while (options.bubbleScroll && currentParent !== winScroller && (currentParent = getParentAutoScrollElement(currentParent, false)));
+
+  scrolling = scrollThisInstance; // in case another function catches scrolling as false in between when it is not
+}, 30);
+
+var drop = function drop(_ref) {
+  var originalEvent = _ref.originalEvent,
+      putSortable = _ref.putSortable,
+      dragEl = _ref.dragEl,
+      activeSortable = _ref.activeSortable,
+      dispatchSortableEvent = _ref.dispatchSortableEvent,
+      hideGhostForTarget = _ref.hideGhostForTarget,
+      unhideGhostForTarget = _ref.unhideGhostForTarget;
+  if (!originalEvent) return;
+  var toSortable = putSortable || activeSortable;
+  hideGhostForTarget();
+  var touch = originalEvent.changedTouches && originalEvent.changedTouches.length ? originalEvent.changedTouches[0] : originalEvent;
+  var target = document.elementFromPoint(touch.clientX, touch.clientY);
+  unhideGhostForTarget();
+
+  if (toSortable && !toSortable.el.contains(target)) {
+    dispatchSortableEvent('spill');
+    this.onSpill({
+      dragEl: dragEl,
+      putSortable: putSortable
+    });
+  }
+};
+
+function Revert() {}
+
+Revert.prototype = {
+  startIndex: null,
+  dragStart: function dragStart(_ref2) {
+    var oldDraggableIndex = _ref2.oldDraggableIndex;
+    this.startIndex = oldDraggableIndex;
+  },
+  onSpill: function onSpill(_ref3) {
+    var dragEl = _ref3.dragEl,
+        putSortable = _ref3.putSortable;
+    this.sortable.captureAnimationState();
+
+    if (putSortable) {
+      putSortable.captureAnimationState();
+    }
+
+    var nextSibling = getChild(this.sortable.el, this.startIndex, this.options);
+
+    if (nextSibling) {
+      this.sortable.el.insertBefore(dragEl, nextSibling);
+    } else {
+      this.sortable.el.appendChild(dragEl);
+    }
+
+    this.sortable.animateAll();
+
+    if (putSortable) {
+      putSortable.animateAll();
+    }
+  },
+  drop: drop
+};
+
+_extends(Revert, {
+  pluginName: 'revertOnSpill'
+});
+
+function Remove() {}
+
+Remove.prototype = {
+  onSpill: function onSpill(_ref4) {
+    var dragEl = _ref4.dragEl,
+        putSortable = _ref4.putSortable;
+    var parentSortable = putSortable || this.sortable;
+    parentSortable.captureAnimationState();
+    dragEl.parentNode && dragEl.parentNode.removeChild(dragEl);
+    parentSortable.animateAll();
+  },
+  drop: drop
+};
+
+_extends(Remove, {
+  pluginName: 'removeOnSpill'
+});
+
+var lastSwapEl;
+
+function SwapPlugin() {
+  function Swap() {
+    this.defaults = {
+      swapClass: 'sortable-swap-highlight'
+    };
+  }
+
+  Swap.prototype = {
+    dragStart: function dragStart(_ref) {
+      var dragEl = _ref.dragEl;
+      lastSwapEl = dragEl;
+    },
+    dragOverValid: function dragOverValid(_ref2) {
+      var completed = _ref2.completed,
+          target = _ref2.target,
+          onMove = _ref2.onMove,
+          activeSortable = _ref2.activeSortable,
+          changed = _ref2.changed,
+          cancel = _ref2.cancel;
+      if (!activeSortable.options.swap) return;
+      var el = this.sortable.el,
+          options = this.options;
+
+      if (target && target !== el) {
+        var prevSwapEl = lastSwapEl;
+
+        if (onMove(target) !== false) {
+          toggleClass(target, options.swapClass, true);
+          lastSwapEl = target;
+        } else {
+          lastSwapEl = null;
+        }
+
+        if (prevSwapEl && prevSwapEl !== lastSwapEl) {
+          toggleClass(prevSwapEl, options.swapClass, false);
+        }
+      }
+
+      changed();
+      completed(true);
+      cancel();
+    },
+    drop: function drop(_ref3) {
+      var activeSortable = _ref3.activeSortable,
+          putSortable = _ref3.putSortable,
+          dragEl = _ref3.dragEl;
+      var toSortable = putSortable || this.sortable;
+      var options = this.options;
+      lastSwapEl && toggleClass(lastSwapEl, options.swapClass, false);
+
+      if (lastSwapEl && (options.swap || putSortable && putSortable.options.swap)) {
+        if (dragEl !== lastSwapEl) {
+          toSortable.captureAnimationState();
+          if (toSortable !== activeSortable) activeSortable.captureAnimationState();
+          swapNodes(dragEl, lastSwapEl);
+          toSortable.animateAll();
+          if (toSortable !== activeSortable) activeSortable.animateAll();
+        }
+      }
+    },
+    nulling: function nulling() {
+      lastSwapEl = null;
+    }
+  };
+  return _extends(Swap, {
+    pluginName: 'swap',
+    eventProperties: function eventProperties() {
+      return {
+        swapItem: lastSwapEl
+      };
+    }
+  });
+}
+
+function swapNodes(n1, n2) {
+  var p1 = n1.parentNode,
+      p2 = n2.parentNode,
+      i1,
+      i2;
+  if (!p1 || !p2 || p1.isEqualNode(n2) || p2.isEqualNode(n1)) return;
+  i1 = index(n1);
+  i2 = index(n2);
+
+  if (p1.isEqualNode(p2) && i1 < i2) {
+    i2++;
+  }
+
+  p1.insertBefore(n2, p1.children[i1]);
+  p2.insertBefore(n1, p2.children[i2]);
+}
+
+var multiDragElements = [],
+    multiDragClones = [],
+    lastMultiDragSelect,
+    // for selection with modifier key down (SHIFT)
+multiDragSortable,
+    initialFolding = false,
+    // Initial multi-drag fold when drag started
+folding = false,
+    // Folding any other time
+dragStarted = false,
+    dragEl$1,
+    clonesFromRect,
+    clonesHidden;
+
+function MultiDragPlugin() {
+  function MultiDrag(sortable) {
+    // Bind all private methods
+    for (var fn in this) {
+      if (fn.charAt(0) === '_' && typeof this[fn] === 'function') {
+        this[fn] = this[fn].bind(this);
+      }
+    }
+
+    if (sortable.options.supportPointer) {
+      on(document, 'pointerup', this._deselectMultiDrag);
+    } else {
+      on(document, 'mouseup', this._deselectMultiDrag);
+      on(document, 'touchend', this._deselectMultiDrag);
+    }
+
+    on(document, 'keydown', this._checkKeyDown);
+    on(document, 'keyup', this._checkKeyUp);
+    this.defaults = {
+      selectedClass: 'sortable-selected',
+      multiDragKey: null,
+      setData: function setData(dataTransfer, dragEl) {
+        var data = '';
+
+        if (multiDragElements.length && multiDragSortable === sortable) {
+          multiDragElements.forEach(function (multiDragElement, i) {
+            data += (!i ? '' : ', ') + multiDragElement.textContent;
+          });
+        } else {
+          data = dragEl.textContent;
+        }
+
+        dataTransfer.setData('Text', data);
+      }
+    };
+  }
+
+  MultiDrag.prototype = {
+    multiDragKeyDown: false,
+    isMultiDrag: false,
+    delayStartGlobal: function delayStartGlobal(_ref) {
+      var dragged = _ref.dragEl;
+      dragEl$1 = dragged;
+    },
+    delayEnded: function delayEnded() {
+      this.isMultiDrag = ~multiDragElements.indexOf(dragEl$1);
+    },
+    setupClone: function setupClone(_ref2) {
+      var sortable = _ref2.sortable,
+          cancel = _ref2.cancel;
+      if (!this.isMultiDrag) return;
+
+      for (var i = 0; i < multiDragElements.length; i++) {
+        multiDragClones.push(clone(multiDragElements[i]));
+        multiDragClones[i].sortableIndex = multiDragElements[i].sortableIndex;
+        multiDragClones[i].draggable = false;
+        multiDragClones[i].style['will-change'] = '';
+        toggleClass(multiDragClones[i], this.options.selectedClass, false);
+        multiDragElements[i] === dragEl$1 && toggleClass(multiDragClones[i], this.options.chosenClass, false);
+      }
+
+      sortable._hideClone();
+
+      cancel();
+    },
+    clone: function clone(_ref3) {
+      var sortable = _ref3.sortable,
+          rootEl = _ref3.rootEl,
+          dispatchSortableEvent = _ref3.dispatchSortableEvent,
+          cancel = _ref3.cancel;
+      if (!this.isMultiDrag) return;
+
+      if (!this.options.removeCloneOnHide) {
+        if (multiDragElements.length && multiDragSortable === sortable) {
+          insertMultiDragClones(true, rootEl);
+          dispatchSortableEvent('clone');
+          cancel();
+        }
+      }
+    },
+    showClone: function showClone(_ref4) {
+      var cloneNowShown = _ref4.cloneNowShown,
+          rootEl = _ref4.rootEl,
+          cancel = _ref4.cancel;
+      if (!this.isMultiDrag) return;
+      insertMultiDragClones(false, rootEl);
+      multiDragClones.forEach(function (clone) {
+        css(clone, 'display', '');
+      });
+      cloneNowShown();
+      clonesHidden = false;
+      cancel();
+    },
+    hideClone: function hideClone(_ref5) {
+      var _this = this;
+
+      var sortable = _ref5.sortable,
+          cloneNowHidden = _ref5.cloneNowHidden,
+          cancel = _ref5.cancel;
+      if (!this.isMultiDrag) return;
+      multiDragClones.forEach(function (clone) {
+        css(clone, 'display', 'none');
+
+        if (_this.options.removeCloneOnHide && clone.parentNode) {
+          clone.parentNode.removeChild(clone);
+        }
+      });
+      cloneNowHidden();
+      clonesHidden = true;
+      cancel();
+    },
+    dragStartGlobal: function dragStartGlobal(_ref6) {
+      var sortable = _ref6.sortable;
+
+      if (!this.isMultiDrag && multiDragSortable) {
+        multiDragSortable.multiDrag._deselectMultiDrag();
+      }
+
+      multiDragElements.forEach(function (multiDragElement) {
+        multiDragElement.sortableIndex = index(multiDragElement);
+      }); // Sort multi-drag elements
+
+      multiDragElements = multiDragElements.sort(function (a, b) {
+        return a.sortableIndex - b.sortableIndex;
+      });
+      dragStarted = true;
+    },
+    dragStarted: function dragStarted(_ref7) {
+      var _this2 = this;
+
+      var sortable = _ref7.sortable;
+      if (!this.isMultiDrag) return;
+
+      if (this.options.sort) {
+        // Capture rects,
+        // hide multi drag elements (by positioning them absolute),
+        // set multi drag elements rects to dragRect,
+        // show multi drag elements,
+        // animate to rects,
+        // unset rects & remove from DOM
+        sortable.captureAnimationState();
+
+        if (this.options.animation) {
+          multiDragElements.forEach(function (multiDragElement) {
+            if (multiDragElement === dragEl$1) return;
+            css(multiDragElement, 'position', 'absolute');
+          });
+          var dragRect = getRect(dragEl$1, false, true, true);
+          multiDragElements.forEach(function (multiDragElement) {
+            if (multiDragElement === dragEl$1) return;
+            setRect(multiDragElement, dragRect);
+          });
+          folding = true;
+          initialFolding = true;
+        }
+      }
+
+      sortable.animateAll(function () {
+        folding = false;
+        initialFolding = false;
+
+        if (_this2.options.animation) {
+          multiDragElements.forEach(function (multiDragElement) {
+            unsetRect(multiDragElement);
+          });
+        } // Remove all auxiliary multidrag items from el, if sorting enabled
+
+
+        if (_this2.options.sort) {
+          removeMultiDragElements();
+        }
+      });
+    },
+    dragOver: function dragOver(_ref8) {
+      var target = _ref8.target,
+          completed = _ref8.completed,
+          cancel = _ref8.cancel;
+
+      if (folding && ~multiDragElements.indexOf(target)) {
+        completed(false);
+        cancel();
+      }
+    },
+    revert: function revert(_ref9) {
+      var fromSortable = _ref9.fromSortable,
+          rootEl = _ref9.rootEl,
+          sortable = _ref9.sortable,
+          dragRect = _ref9.dragRect;
+
+      if (multiDragElements.length > 1) {
+        // Setup unfold animation
+        multiDragElements.forEach(function (multiDragElement) {
+          sortable.addAnimationState({
+            target: multiDragElement,
+            rect: folding ? getRect(multiDragElement) : dragRect
+          });
+          unsetRect(multiDragElement);
+          multiDragElement.fromRect = dragRect;
+          fromSortable.removeAnimationState(multiDragElement);
+        });
+        folding = false;
+        insertMultiDragElements(!this.options.removeCloneOnHide, rootEl);
+      }
+    },
+    dragOverCompleted: function dragOverCompleted(_ref10) {
+      var sortable = _ref10.sortable,
+          isOwner = _ref10.isOwner,
+          insertion = _ref10.insertion,
+          activeSortable = _ref10.activeSortable,
+          parentEl = _ref10.parentEl,
+          putSortable = _ref10.putSortable;
+      var options = this.options;
+
+      if (insertion) {
+        // Clones must be hidden before folding animation to capture dragRectAbsolute properly
+        if (isOwner) {
+          activeSortable._hideClone();
+        }
+
+        initialFolding = false; // If leaving sort:false root, or already folding - Fold to new location
+
+        if (options.animation && multiDragElements.length > 1 && (folding || !isOwner && !activeSortable.options.sort && !putSortable)) {
+          // Fold: Set all multi drag elements's rects to dragEl's rect when multi-drag elements are invisible
+          var dragRectAbsolute = getRect(dragEl$1, false, true, true);
+          multiDragElements.forEach(function (multiDragElement) {
+            if (multiDragElement === dragEl$1) return;
+            setRect(multiDragElement, dragRectAbsolute); // Move element(s) to end of parentEl so that it does not interfere with multi-drag clones insertion if they are inserted
+            // while folding, and so that we can capture them again because old sortable will no longer be fromSortable
+
+            parentEl.appendChild(multiDragElement);
+          });
+          folding = true;
+        } // Clones must be shown (and check to remove multi drags) after folding when interfering multiDragElements are moved out
+
+
+        if (!isOwner) {
+          // Only remove if not folding (folding will remove them anyways)
+          if (!folding) {
+            removeMultiDragElements();
+          }
+
+          if (multiDragElements.length > 1) {
+            var clonesHiddenBefore = clonesHidden;
+
+            activeSortable._showClone(sortable); // Unfold animation for clones if showing from hidden
+
+
+            if (activeSortable.options.animation && !clonesHidden && clonesHiddenBefore) {
+              multiDragClones.forEach(function (clone) {
+                activeSortable.addAnimationState({
+                  target: clone,
+                  rect: clonesFromRect
+                });
+                clone.fromRect = clonesFromRect;
+                clone.thisAnimationDuration = null;
+              });
+            }
+          } else {
+            activeSortable._showClone(sortable);
+          }
+        }
+      }
+    },
+    dragOverAnimationCapture: function dragOverAnimationCapture(_ref11) {
+      var dragRect = _ref11.dragRect,
+          isOwner = _ref11.isOwner,
+          activeSortable = _ref11.activeSortable;
+      multiDragElements.forEach(function (multiDragElement) {
+        multiDragElement.thisAnimationDuration = null;
+      });
+
+      if (activeSortable.options.animation && !isOwner && activeSortable.multiDrag.isMultiDrag) {
+        clonesFromRect = _extends({}, dragRect);
+        var dragMatrix = matrix(dragEl$1, true);
+        clonesFromRect.top -= dragMatrix.f;
+        clonesFromRect.left -= dragMatrix.e;
+      }
+    },
+    dragOverAnimationComplete: function dragOverAnimationComplete() {
+      if (folding) {
+        folding = false;
+        removeMultiDragElements();
+      }
+    },
+    drop: function drop(_ref12) {
+      var evt = _ref12.originalEvent,
+          rootEl = _ref12.rootEl,
+          parentEl = _ref12.parentEl,
+          sortable = _ref12.sortable,
+          dispatchSortableEvent = _ref12.dispatchSortableEvent,
+          oldIndex = _ref12.oldIndex,
+          putSortable = _ref12.putSortable;
+      var toSortable = putSortable || this.sortable;
+      if (!evt) return;
+      var options = this.options,
+          children = parentEl.children; // Multi-drag selection
+
+      if (!dragStarted) {
+        if (options.multiDragKey && !this.multiDragKeyDown) {
+          this._deselectMultiDrag();
+        }
+
+        toggleClass(dragEl$1, options.selectedClass, !~multiDragElements.indexOf(dragEl$1));
+
+        if (!~multiDragElements.indexOf(dragEl$1)) {
+          multiDragElements.push(dragEl$1);
+          dispatchEvent({
+            sortable: sortable,
+            rootEl: rootEl,
+            name: 'select',
+            targetEl: dragEl$1,
+            originalEvt: evt
+          }); // Modifier activated, select from last to dragEl
+
+          if (evt.shiftKey && lastMultiDragSelect && sortable.el.contains(lastMultiDragSelect)) {
+            var lastIndex = index(lastMultiDragSelect),
+                currentIndex = index(dragEl$1);
+
+            if (~lastIndex && ~currentIndex && lastIndex !== currentIndex) {
+              // Must include lastMultiDragSelect (select it), in case modified selection from no selection
+              // (but previous selection existed)
+              var n, i;
+
+              if (currentIndex > lastIndex) {
+                i = lastIndex;
+                n = currentIndex;
+              } else {
+                i = currentIndex;
+                n = lastIndex + 1;
+              }
+
+              for (; i < n; i++) {
+                if (~multiDragElements.indexOf(children[i])) continue;
+                toggleClass(children[i], options.selectedClass, true);
+                multiDragElements.push(children[i]);
+                dispatchEvent({
+                  sortable: sortable,
+                  rootEl: rootEl,
+                  name: 'select',
+                  targetEl: children[i],
+                  originalEvt: evt
+                });
+              }
+            }
+          } else {
+            lastMultiDragSelect = dragEl$1;
+          }
+
+          multiDragSortable = toSortable;
+        } else {
+          multiDragElements.splice(multiDragElements.indexOf(dragEl$1), 1);
+          lastMultiDragSelect = null;
+          dispatchEvent({
+            sortable: sortable,
+            rootEl: rootEl,
+            name: 'deselect',
+            targetEl: dragEl$1,
+            originalEvt: evt
+          });
+        }
+      } // Multi-drag drop
+
+
+      if (dragStarted && this.isMultiDrag) {
+        // Do not "unfold" after around dragEl if reverted
+        if ((parentEl[expando].options.sort || parentEl !== rootEl) && multiDragElements.length > 1) {
+          var dragRect = getRect(dragEl$1),
+              multiDragIndex = index(dragEl$1, ':not(.' + this.options.selectedClass + ')');
+          if (!initialFolding && options.animation) dragEl$1.thisAnimationDuration = null;
+          toSortable.captureAnimationState();
+
+          if (!initialFolding) {
+            if (options.animation) {
+              dragEl$1.fromRect = dragRect;
+              multiDragElements.forEach(function (multiDragElement) {
+                multiDragElement.thisAnimationDuration = null;
+
+                if (multiDragElement !== dragEl$1) {
+                  var rect = folding ? getRect(multiDragElement) : dragRect;
+                  multiDragElement.fromRect = rect; // Prepare unfold animation
+
+                  toSortable.addAnimationState({
+                    target: multiDragElement,
+                    rect: rect
+                  });
+                }
+              });
+            } // Multi drag elements are not necessarily removed from the DOM on drop, so to reinsert
+            // properly they must all be removed
+
+
+            removeMultiDragElements();
+            multiDragElements.forEach(function (multiDragElement) {
+              if (children[multiDragIndex]) {
+                parentEl.insertBefore(multiDragElement, children[multiDragIndex]);
+              } else {
+                parentEl.appendChild(multiDragElement);
+              }
+
+              multiDragIndex++;
+            }); // If initial folding is done, the elements may have changed position because they are now
+            // unfolding around dragEl, even though dragEl may not have his index changed, so update event
+            // must be fired here as Sortable will not.
+
+            if (oldIndex === index(dragEl$1)) {
+              var update = false;
+              multiDragElements.forEach(function (multiDragElement) {
+                if (multiDragElement.sortableIndex !== index(multiDragElement)) {
+                  update = true;
+                  return;
+                }
+              });
+
+              if (update) {
+                dispatchSortableEvent('update');
+              }
+            }
+          } // Must be done after capturing individual rects (scroll bar)
+
+
+          multiDragElements.forEach(function (multiDragElement) {
+            unsetRect(multiDragElement);
+          });
+          toSortable.animateAll();
+        }
+
+        multiDragSortable = toSortable;
+      } // Remove clones if necessary
+
+
+      if (rootEl === parentEl || putSortable && putSortable.lastPutMode !== 'clone') {
+        multiDragClones.forEach(function (clone) {
+          clone.parentNode && clone.parentNode.removeChild(clone);
+        });
+      }
+    },
+    nullingGlobal: function nullingGlobal() {
+      this.isMultiDrag = dragStarted = false;
+      multiDragClones.length = 0;
+    },
+    destroyGlobal: function destroyGlobal() {
+      this._deselectMultiDrag();
+
+      off(document, 'pointerup', this._deselectMultiDrag);
+      off(document, 'mouseup', this._deselectMultiDrag);
+      off(document, 'touchend', this._deselectMultiDrag);
+      off(document, 'keydown', this._checkKeyDown);
+      off(document, 'keyup', this._checkKeyUp);
+    },
+    _deselectMultiDrag: function _deselectMultiDrag(evt) {
+      if (typeof dragStarted !== "undefined" && dragStarted) return; // Only deselect if selection is in this sortable
+
+      if (multiDragSortable !== this.sortable) return; // Only deselect if target is not item in this sortable
+
+      if (evt && closest(evt.target, this.options.draggable, this.sortable.el, false)) return; // Only deselect if left click
+
+      if (evt && evt.button !== 0) return;
+
+      while (multiDragElements.length) {
+        var el = multiDragElements[0];
+        toggleClass(el, this.options.selectedClass, false);
+        multiDragElements.shift();
+        dispatchEvent({
+          sortable: this.sortable,
+          rootEl: this.sortable.el,
+          name: 'deselect',
+          targetEl: el,
+          originalEvt: evt
+        });
+      }
+    },
+    _checkKeyDown: function _checkKeyDown(evt) {
+      if (evt.key === this.options.multiDragKey) {
+        this.multiDragKeyDown = true;
+      }
+    },
+    _checkKeyUp: function _checkKeyUp(evt) {
+      if (evt.key === this.options.multiDragKey) {
+        this.multiDragKeyDown = false;
+      }
+    }
+  };
+  return _extends(MultiDrag, {
+    // Static methods & properties
+    pluginName: 'multiDrag',
+    utils: {
+      /**
+       * Selects the provided multi-drag item
+       * @param  {HTMLElement} el    The element to be selected
+       */
+      select: function select(el) {
+        var sortable = el.parentNode[expando];
+        if (!sortable || !sortable.options.multiDrag || ~multiDragElements.indexOf(el)) return;
+
+        if (multiDragSortable && multiDragSortable !== sortable) {
+          multiDragSortable.multiDrag._deselectMultiDrag();
+
+          multiDragSortable = sortable;
+        }
+
+        toggleClass(el, sortable.options.selectedClass, true);
+        multiDragElements.push(el);
+      },
+
+      /**
+       * Deselects the provided multi-drag item
+       * @param  {HTMLElement} el    The element to be deselected
+       */
+      deselect: function deselect(el) {
+        var sortable = el.parentNode[expando],
+            index = multiDragElements.indexOf(el);
+        if (!sortable || !sortable.options.multiDrag || !~index) return;
+        toggleClass(el, sortable.options.selectedClass, false);
+        multiDragElements.splice(index, 1);
+      }
+    },
+    eventProperties: function eventProperties() {
+      var _this3 = this;
+
+      var oldIndicies = [],
+          newIndicies = [];
+      multiDragElements.forEach(function (multiDragElement) {
+        oldIndicies.push({
+          multiDragElement: multiDragElement,
+          index: multiDragElement.sortableIndex
+        }); // multiDragElements will already be sorted if folding
+
+        var newIndex;
+
+        if (folding && multiDragElement !== dragEl$1) {
+          newIndex = -1;
+        } else if (folding) {
+          newIndex = index(multiDragElement, ':not(.' + _this3.options.selectedClass + ')');
+        } else {
+          newIndex = index(multiDragElement);
+        }
+
+        newIndicies.push({
+          multiDragElement: multiDragElement,
+          index: newIndex
+        });
+      });
+      return {
+        items: _toConsumableArray(multiDragElements),
+        clones: [].concat(multiDragClones),
+        oldIndicies: oldIndicies,
+        newIndicies: newIndicies
+      };
+    },
+    optionListeners: {
+      multiDragKey: function multiDragKey(key) {
+        key = key.toLowerCase();
+
+        if (key === 'ctrl') {
+          key = 'Control';
+        } else if (key.length > 1) {
+          key = key.charAt(0).toUpperCase() + key.substr(1);
+        }
+
+        return key;
+      }
+    }
+  });
+}
+
+function insertMultiDragElements(clonesInserted, rootEl) {
+  multiDragElements.forEach(function (multiDragElement, i) {
+    var target = rootEl.children[multiDragElement.sortableIndex + (clonesInserted ? Number(i) : 0)];
+
+    if (target) {
+      rootEl.insertBefore(multiDragElement, target);
+    } else {
+      rootEl.appendChild(multiDragElement);
+    }
+  });
+}
+/**
+ * Insert multi-drag clones
+ * @param  {[Boolean]} elementsInserted  Whether the multi-drag elements are inserted
+ * @param  {HTMLElement} rootEl
+ */
+
+
+function insertMultiDragClones(elementsInserted, rootEl) {
+  multiDragClones.forEach(function (clone, i) {
+    var target = rootEl.children[clone.sortableIndex + (elementsInserted ? Number(i) : 0)];
+
+    if (target) {
+      rootEl.insertBefore(clone, target);
+    } else {
+      rootEl.appendChild(clone);
+    }
+  });
+}
+
+function removeMultiDragElements() {
+  multiDragElements.forEach(function (multiDragElement) {
+    if (multiDragElement === dragEl$1) return;
+    multiDragElement.parentNode && multiDragElement.parentNode.removeChild(multiDragElement);
+  });
+}
+
+Sortable.mount(new AutoScrollPlugin());
+Sortable.mount(Remove, Revert);
+/* harmony default export */ __webpack_exports__["default"] = (Sortable);
+
+
+/***/ }),
+
 /***/ "./node_modules/symbol-observable/es/index.js":
 /*!****************************************************!*\
   !*** ./node_modules/symbol-observable/es/index.js ***!
@@ -17953,161 +17961,6 @@ function symbolObservablePonyfill(root) {
   return result;
 }
 ;
-
-/***/ }),
-
-/***/ "./node_modules/valid-url/index.js":
-/*!*****************************************!*\
-  !*** ./node_modules/valid-url/index.js ***!
-  \*****************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(module) {(function (module) {
-  'use strict';
-
-  module.exports.is_uri = is_iri;
-  module.exports.is_http_uri = is_http_iri;
-  module.exports.is_https_uri = is_https_iri;
-  module.exports.is_web_uri = is_web_iri; // Create aliases
-
-  module.exports.isUri = is_iri;
-  module.exports.isHttpUri = is_http_iri;
-  module.exports.isHttpsUri = is_https_iri;
-  module.exports.isWebUri = is_web_iri; // private function
-  // internal URI spitter method - direct from RFC 3986
-
-  var splitUri = function splitUri(uri) {
-    var splitted = uri.match(/(?:([^:\/?#]+):)?(?:\/\/([^\/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?/);
-    return splitted;
-  };
-
-  function is_iri(value) {
-    if (!value) {
-      return;
-    } // check for illegal characters
-
-
-    if (/[^a-z0-9\:\/\?\#\[\]\@\!\$\&\'\(\)\*\+\,\;\=\.\-\_\~\%]/i.test(value)) return; // check for hex escapes that aren't complete
-
-    if (/%[^0-9a-f]/i.test(value)) return;
-    if (/%[0-9a-f](:?[^0-9a-f]|$)/i.test(value)) return;
-    var splitted = [];
-    var scheme = '';
-    var authority = '';
-    var path = '';
-    var query = '';
-    var fragment = '';
-    var out = ''; // from RFC 3986
-
-    splitted = splitUri(value);
-    scheme = splitted[1];
-    authority = splitted[2];
-    path = splitted[3];
-    query = splitted[4];
-    fragment = splitted[5]; // scheme and path are required, though the path can be empty
-
-    if (!(scheme && scheme.length && path.length >= 0)) return; // if authority is present, the path must be empty or begin with a /
-
-    if (authority && authority.length) {
-      if (!(path.length === 0 || /^\//.test(path))) return;
-    } else {
-      // if authority is not present, the path must not start with //
-      if (/^\/\//.test(path)) return;
-    } // scheme must begin with a letter, then consist of letters, digits, +, ., or -
-
-
-    if (!/^[a-z][a-z0-9\+\-\.]*$/.test(scheme.toLowerCase())) return; // re-assemble the URL per section 5.3 in RFC 3986
-
-    out += scheme + ':';
-
-    if (authority && authority.length) {
-      out += '//' + authority;
-    }
-
-    out += path;
-
-    if (query && query.length) {
-      out += '?' + query;
-    }
-
-    if (fragment && fragment.length) {
-      out += '#' + fragment;
-    }
-
-    return out;
-  }
-
-  function is_http_iri(value, allowHttps) {
-    if (!is_iri(value)) {
-      return;
-    }
-
-    var splitted = [];
-    var scheme = '';
-    var authority = '';
-    var path = '';
-    var port = '';
-    var query = '';
-    var fragment = '';
-    var out = ''; // from RFC 3986
-
-    splitted = splitUri(value);
-    scheme = splitted[1];
-    authority = splitted[2];
-    path = splitted[3];
-    query = splitted[4];
-    fragment = splitted[5];
-    if (!scheme) return;
-
-    if (allowHttps) {
-      if (scheme.toLowerCase() != 'https') return;
-    } else {
-      if (scheme.toLowerCase() != 'http') return;
-    } // fully-qualified URIs must have an authority section that is
-    // a valid host
-
-
-    if (!authority) {
-      return;
-    } // enable port component
-
-
-    if (/:(\d+)$/.test(authority)) {
-      port = authority.match(/:(\d+)$/)[0];
-      authority = authority.replace(/:\d+$/, '');
-    }
-
-    out += scheme + ':';
-    out += '//' + authority;
-
-    if (port) {
-      out += port;
-    }
-
-    out += path;
-
-    if (query && query.length) {
-      out += '?' + query;
-    }
-
-    if (fragment && fragment.length) {
-      out += '#' + fragment;
-    }
-
-    return out;
-  }
-
-  function is_https_iri(value) {
-    return is_http_iri(value, true);
-  }
-
-  function is_web_iri(value) {
-    return is_http_iri(value) || is_https_iri(value);
-  }
-})(module);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/module.js */ "./node_modules/webpack/buildin/module.js")(module)))
 
 /***/ }),
 
@@ -18213,1528 +18066,3481 @@ module.exports = function (module) {
 
 /***/ }),
 
-/***/ "./plugin/index.js":
-/*!*************************!*\
-  !*** ./plugin/index.js ***!
-  \*************************/
-/*! no static exports found */
+/***/ "./src/Controller.ts":
+/*!***************************!*\
+  !*** ./src/Controller.ts ***!
+  \***************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var editors = [];
-var validators = [];
-module.exports = {
-  editor: function editor(constructor) {
-    console.log("register editor ".concat(constructor.name));
-    editors.push(constructor);
-  },
-  // format validator
-  validator: function validator(keyword, value, _validator) {
-    validators.push(["format", value, _validator]);
-  },
-  keywordValidator: function keywordValidator(datatype, property, validator) {
-    validators.push(["keyword", datatype, property, validator]);
-  },
-  getEditors: function getEditors() {
-    return editors;
-  },
-  getValidators: function getValidators() {
-    return validators;
-  }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Controller; });
+/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/createElement */ "./src/utils/createElement.ts");
+/* harmony import */ var _utils_addItem__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./utils/addItem */ "./src/utils/addItem.ts");
+/* harmony import */ var json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-schema-library/lib/addValidator */ "./node_modules/json-schema-library/lib/addValidator.js");
+/* harmony import */ var json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utils_createProxy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/createProxy */ "./src/utils/createProxy.ts");
+/* harmony import */ var _services_DataService__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./services/DataService */ "./src/services/DataService.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var _utils_i18n__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./utils/i18n */ "./src/utils/i18n.ts");
+/* harmony import */ var _services_InstanceService__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/InstanceService */ "./src/services/InstanceService.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_8__);
+/* harmony import */ var _services_LocationService__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./services/LocationService */ "./src/services/LocationService.ts");
+/* harmony import */ var _plugin__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./plugin */ "./src/plugin/index.ts");
+/* harmony import */ var _services_SchemaService__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./services/SchemaService */ "./src/services/SchemaService.ts");
+/* harmony import */ var _utils_selectEditor__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./utils/selectEditor */ "./src/utils/selectEditor.ts");
+/* harmony import */ var _services_State__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./services/State */ "./src/services/State.ts");
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./utils/UISchema */ "./src/utils/UISchema.ts");
+/* harmony import */ var _services_ValidationService__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./services/ValidationService */ "./src/services/ValidationService.ts");
+/* harmony import */ var _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./editors/oneofeditor */ "./src/editors/oneofeditor/index.ts");
+/* harmony import */ var _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./editors/arrayeditor */ "./src/editors/arrayeditor/index.ts");
+/* harmony import */ var _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./editors/objecteditor */ "./src/editors/objecteditor/index.ts");
+/* harmony import */ var _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./editors/valueeditor */ "./src/editors/valueeditor/index.ts");
+var __classPrivateFieldSet = (undefined && undefined.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
 };
-
-/***/ }),
-
-/***/ "./services/DataService.js":
-/*!*********************************!*\
-  !*** ./services/DataService.js ***!
-  \*********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var diffpatch = __webpack_require__(/*! ./utils/diffpatch */ "./services/utils/diffpatch.js");
-
-var copy = __webpack_require__(/*! ./utils/copy */ "./services/utils/copy.js");
-
-var isRootPointer = __webpack_require__(/*! ./utils/isRootPointer */ "./services/utils/isRootPointer.js");
-
-var dataReducer = __webpack_require__(/*! ./reducers/dataReducer */ "./services/reducers/dataReducer.js");
-
-var ActionCreators = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionCreators;
-
-var ActionTypes = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionTypes;
-
-var getParentPointer = __webpack_require__(/*! ./utils/getParentPointer */ "./services/utils/getParentPointer.js");
-
-var getTypeOf = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
-
-var getPatchesPerPointer = __webpack_require__(/*! ./utils/getPatchesPerPointer */ "./services/utils/getPatchesPerPointer.js");
-
-var State = __webpack_require__(/*! ./State */ "./services/State.js");
-
-var DEBUG = false;
-/**
- * @name DataService.EVENTS
- * @type {Object}
- * @property {String} BEFORE_UPDATE    - called before starting data update
- * @property {String} AFTER_UPDATE     - called after data udpate was performed
- */
-
-var EVENTS = {
-  BEFORE_UPDATE: "beforeUpdate",
-  AFTER_UPDATE: "afterUpdate",
-  FINAL_UPDATE: "finalUpdate"
+var __classPrivateFieldGet = (undefined && undefined.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
 };
+var _proxy;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_8___default.a.cores;
 /**
- * Read and modify form data and notify observers
+ * Main component to build editors. Each editor should receive the controller, which carries all required services
+ * for editor initialization
  *
- * @param {State} state     - current state/store of application
- * @param {Any} data        - current application data (form)
+ * # Usage
+ *
+ * Instantiate the controller
+ *
+ * ```js
+ * import Controller from "editron";
+ * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
+ * const editron = new Controller(jsonSchema);
+ * ```
+ *
+ * or, using all parameters
+ *
+ * ```js
+ *  import Controller from "editron";
+ *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
+ *  // data = { title: "Hello" } - or simply use {}
+ *  // options = { editors: [ complete list of custom editors ] }
+ *  const editron = new Controller(jsonSchema, data, options);
+ * ```
+ *
+ * and start rendering editors
+ *
+ * ```js
+ *  const editor = editron.createEditor("#", document.querySelector("#editor"));
+ *  // render from title only: editron.createEditor("#/title", document.querySelector("#title"));
+ * ```
+ *
+ * to fetch the generated data use
+ *
+ * ```js
+ *  const data = editron.getData();
+ * ```
  */
-
-var DataService =
-/*#__PURE__*/
-function () {
-  function DataService(state, data) {
-    var _this = this;
-
-    _classCallCheck(this, DataService);
-
-    if (!(state instanceof State)) {
-      throw new Error("Given state in DataService must be of instance 'State'");
-    }
-
-    this.observers = {};
-    this.emitter = mitt();
-    this.EVENTS = EVENTS;
-    this.id = "data";
-    this.state = state;
-    this.state.register(this.id, dataReducer);
-    var lastUpdate = {}; // improved version - supporting multiple patches
-
-    this.onStateChanged = function () {
-      var current = _this.state.get(_this.id);
-
-      var patches = getPatchesPerPointer(lastUpdate, current.data.present);
-
-      if (patches.length === 0) {
-        DEBUG && console.info("DataService abort update event -- nothing changed");
-        return;
-      }
-
-      DEBUG && console.log("Patch locations", patches.map(function (delta) {
-        return delta.pointer;
-      }));
-
-      for (var i = 0, l = patches.length; i < l; i += 1) {
-        var eventLocation = patches[i].pointer;
-
-        var parentData = _this.getDataByReference(eventLocation);
-
-        var parentDataType = getTypeOf(parentData);
-
-        _this.emit(EVENTS.AFTER_UPDATE, eventLocation, {
-          type: parentDataType,
-          patch: patches[i].patch
-        });
-
-        _this.bubbleObservers(eventLocation, {
-          type: parentDataType,
-          patch: patches[i].patch
-        });
-      }
-
-      _this.emitter.emit(EVENTS.FINAL_UPDATE, patches);
-
-      lastUpdate = current.data.present;
-    };
-
-    this.state.subscribe(this.id, this.onStateChanged);
-
-    if (data !== undefined) {
-      this.set("#", data);
-      this.resetUndoRedo();
-    }
-  }
-
-  _createClass(DataService, [{
-    key: "resetUndoRedo",
-    value: function resetUndoRedo() {
-      this.state.get(this.id).data.past.length = 0;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.state.unsubscribe(this.id, this.onStateChanged);
-      this.state.unregister(this.id);
-    }
+class Controller {
     /**
-     * Get a copy of current data from the requested _json-pointer_
-     * @param {JsonPointer} [pointer="#"]  - data to fetch. Defaults to _root_
-     * @returns {Any} data, associated with _pointer_
+     * Create a new editron instance, which will be used to create ui-forms for specific
+     * data-points via `controller.createEditor(pointer, dom);`
+     *
+     * @param [schema] - json schema describing required data/form template
+     * @param [data] - initial data for given json-schema
+     * @param [options] - configuration options
+     * @param [options.editors] - list of editron-editors/widgets to use. Order defines editor to use
+     *      (based on editorOf-method)
+     * @param [options.plugins] - list of editron-plugins to use
      */
-
-  }, {
-    key: "get",
-    value: function get() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-      var value = this.getDataByReference(pointer);
-      return copy(value);
-    }
-  }, {
-    key: "getDataByReference",
-    value: function getDataByReference() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-      // eslint-disable-next-line no-invalid-this
-      return gp.get(this.state.get(this.id).data.present, pointer);
-    }
-    /**
-     * Change data at the given _pointer_
-     * @param {JsonPointer}  pointer    - data location to modify
-     * @param {Any}  value              - new value at pointer
-     * @param {Boolean} [isSynched]
-     */
-
-  }, {
-    key: "set",
-    value: function set(pointer, value) {
-      var isSynched = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-
-      if (this.isValid(pointer) === false) {
-        throw new Error("Pointer ".concat(pointer, " does not exist in data"));
-      }
-
-      var currentValue = this.getDataByReference(pointer);
-
-      if (diffpatch.diff(currentValue, value) == null) {
-        DEBUG && console.info("DataService abort update -- value not changed");
-        return;
-      }
-
-      this.emit(EVENTS.BEFORE_UPDATE, pointer, {
-        action: ActionTypes.DATA_SET,
-        isSynched: isSynched
-      });
-      this.state.dispatch(ActionCreators.setData(pointer, value, currentValue, isSynched));
-
-      if (pointer === "#" && isSynched === false) {
-        // do not add root changes to undo
-        this.state.get(this.id).data.past.pop();
-      }
-    }
-    /**
-     * Delete data at the given _pointer_
-     * @param  {JsonPointer} pointer    - data location to delete
-     */
-
-  }, {
-    key: "delete",
-    value: function _delete(pointer) {
-      if (isRootPointer(pointer)) {
-        throw new Error("Can not remove root data via delete. Use set(\"#/\", {}) instead.");
-      }
-
-      var key = pointer.split("/").pop();
-      var parentPointer = getParentPointer(pointer);
-      var data = this.get(parentPointer);
-      gp["delete"](data, key);
-      this.set(parentPointer, data);
-    }
-  }, {
-    key: "undoCount",
-    value: function undoCount() {
-      return this.state.get(this.id).data.past.length;
-    }
-  }, {
-    key: "redoCount",
-    value: function redoCount() {
-      return this.state.get(this.id).data.future.length;
-    }
-  }, {
-    key: "undo",
-    value: function undo() {
-      this.emit(EVENTS.BEFORE_UPDATE, "#", {
-        action: ActionTypes.UNDO
-      });
-      this.state.dispatch(ActionCreators.undo());
-    }
-  }, {
-    key: "redo",
-    value: function redo() {
-      this.emit(EVENTS.BEFORE_UPDATE, "#", {
-        action: ActionTypes.REDO
-      });
-      this.state.dispatch(ActionCreators.redo());
-    }
-  }, {
-    key: "on",
-    value: function on(eventType, callback) {
-      if (eventType === undefined) {
-        throw new Error("Missing event type in DataService.on");
-      }
-
-      this.emitter.on(eventType, callback);
-      return callback;
-    }
-  }, {
-    key: "off",
-    value: function off() {
-      var _this$emitter;
-
-      (_this$emitter = this.emitter).off.apply(_this$emitter, arguments);
-    }
-  }, {
-    key: "emit",
-    value: function emit(eventType, pointer, data) {
-      this.emitter.emit(eventType, createEventObject(pointer, data));
-    }
-  }, {
-    key: "observe",
-    value: function observe(pointer, callback) {
-      var bubbleEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      callback.bubbleEvents = bubbleEvents;
-      this.observers[pointer] = this.observers[pointer] || [];
-      this.observers[pointer].push(callback);
-      return callback;
-    }
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(pointer, callback) {
-      if (this.observers[pointer] && this.observers[pointer].length > 0) {
-        this.observers[pointer] = this.observers[pointer].filter(function (cb) {
-          return cb !== callback;
+    constructor(schema = { type: "object" }, data = {}, options = {}) {
+        /** internal helper. Set to `true`, if editron has been destroyed */
+        this.destroyed = false;
+        /** active state of editor */
+        this.disabled = false;
+        /** list of active plugins for this instance */
+        this.plugins = [];
+        /** editron proxy instance */
+        _proxy.set(this, void 0);
+        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_14__["default"].extendSchema(schema);
+        this.options = {
+            editors: [
+                ..._plugin__WEBPACK_IMPORTED_MODULE_10__["default"].getEditors(),
+                _editors_oneofeditor__WEBPACK_IMPORTED_MODULE_16__["default"],
+                _editors_arrayeditor__WEBPACK_IMPORTED_MODULE_17__["default"],
+                _editors_objecteditor__WEBPACK_IMPORTED_MODULE_18__["default"],
+                _editors_valueeditor__WEBPACK_IMPORTED_MODULE_19__["default"]
+            ],
+            ...options,
+        };
+        this.editors = this.options.editors;
+        this.state = new _services_State__WEBPACK_IMPORTED_MODULE_13__["default"]();
+        this.core = new Core();
+        __classPrivateFieldSet(this, _proxy, Object(_utils_createProxy__WEBPACK_IMPORTED_MODULE_3__["default"])(this.options.proxy));
+        _plugin__WEBPACK_IMPORTED_MODULE_10__["default"].getValidators().forEach(([validationType, ...validator]) => {
+            try {
+                if (validationType === "format") {
+                    // @ts-ignore
+                    return this.addFormatValidator(...validator);
+                }
+                else if (validationType === "keyword") {
+                    // @ts-ignore
+                    return this.addKeywordValidator(...validator);
+                }
+                throw new Error(`Unknown validation type '${validationType}'`);
+            }
+            catch (e) {
+                console.log("Error:", e.message);
+            }
+            return false;
         });
-      }
-    }
-  }, {
-    key: "notify",
-    value: function notify(pointer, event) {
-      if (this.observers[pointer] == null || this.observers[pointer].length === 0) {
-        return;
-      }
-
-      var observers = this.observers[pointer];
-
-      for (var i = 0, l = observers.length; i < l; i += 1) {
-        if (observers[i].bubbleEvents === true || event.pointer === pointer) {
-          observers[i](event);
+        // merge given data with template data
+        const schemaService = new _services_SchemaService__WEBPACK_IMPORTED_MODULE_11__["default"](schema, data, this.core);
+        data = schemaService.addDefaultData(data, schema);
+        this.services = {
+            instances: new _services_InstanceService__WEBPACK_IMPORTED_MODULE_7__["default"](this),
+            location: new _services_LocationService__WEBPACK_IMPORTED_MODULE_9__["default"](),
+            data: new _services_DataService__WEBPACK_IMPORTED_MODULE_4__["default"](this.state, data),
+            schema: schemaService,
+            validation: new _services_ValidationService__WEBPACK_IMPORTED_MODULE_15__["default"](this.state, schema, this.core)
+        };
+        this.service("data").watch(event => {
+            switch (event.type) {
+                // update container will be called before any editor change-notification this gives us time,
+                // to manage update-pointer and destory events of known editors
+                case "data:update:container":
+                    this.services.instances.updateContainer(event.value.pointer, this, event.value.changes);
+                    break;
+                // sync latest data and start validation
+                case "data:update:after": {
+                    let { pointer } = event.value;
+                    this.service("schema").setData(this.service("data").get());
+                    // @feature selective-validation
+                    if (pointer.includes("/")) {
+                        // @attention validate parent-object or array, in order to support parent-validators.
+                        // any higher validators will still be ignore
+                        pointer = pointer.replace(/\/[^/]+$/, "");
+                    }
+                    setTimeout(() => {
+                        const data = this.service("data").getDataByReference();
+                        this.destroyed !== true && this.service("validation").validate(data, pointer);
+                    });
+                    break;
+                }
+            }
+        });
+        // enable i18n error-translations
+        this.service("validation").setErrorHandler(error => _utils_i18n__WEBPACK_IMPORTED_MODULE_6__["default"].translateError(this, error));
+        // run initial validation
+        this.validateAll();
+        // @lifecycle hook initialize on controller ready
+        if (Array.isArray(options.plugins)) {
+            this.plugins = options.plugins.map(plugin => plugin.initialize(this));
         }
-      }
     }
-  }, {
-    key: "bubbleObservers",
-    value: function bubbleObservers(pointer, data) {
-      var eventObject = createEventObject(pointer, data);
-      var frags = gp.split(pointer);
-
-      while (frags.length) {
-        this.notify(gp.join(frags, true), eventObject);
-        frags.length -= 1;
-      }
-
-      this.notify("#", eventObject);
+    service(serviceName) {
+        return this.services[serviceName];
     }
-  }, {
-    key: "isValid",
-    value: function isValid(pointer) {
-      return isRootPointer(pointer) || gp.get(this.getDataByReference(), pointer) !== undefined;
+    getPlugin(pluginId) {
+        return this.plugins.find(plugin => plugin.id === pluginId);
     }
-  }]);
-
-  return DataService;
-}();
-
-function createEventObject(pointer, data) {
-  var parentPointer = getParentPointer(pointer);
-  return _extends(data, {
-    pointer: pointer,
-    parentPointer: parentPointer
-  });
+    /**
+     * @param format - value of _format_
+     * @param validator  - validator function receiving (core, schema, value, pointer). Return `undefined`
+     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
+     *      als return a promise
+     */
+    addFormatValidator(format, validator) {
+        json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2___default.a.format(this.core, format, validator);
+    }
+    /**
+     * @param datatype - JSON-Schema datatype to register attribute, e.g. "string" or "object"
+     * @param keyword - custom keyword
+     * @param validator - validator function receiving (core, schema, value, pointer). Return `undefined`
+     *      for a valid _value_ and an object `{type: "error", message: "err-msg", data: { pointer }}` as error. May
+     *      als return a promise
+     */
+    addKeywordValidator(datatype, keyword, validator) {
+        json_schema_library_lib_addValidator__WEBPACK_IMPORTED_MODULE_2___default.a.keyword(this.core, datatype, keyword, validator);
+    }
+    /** reset undo history */
+    resetUndoRedo() {
+        this.service("data").resetUndoRedo();
+    }
+    /**
+     * enable or disable the editor input-interaction
+     * @param active if false, deactivates editor
+     */
+    setActive(active = true) {
+        const disabled = active === false;
+        if (this.disabled === disabled) {
+            return;
+        }
+        this.disabled = disabled;
+        this.service("instances").setActive(!this.disabled);
+    }
+    /** returns the editors active state */
+    isActive() {
+        return !this.disabled;
+    }
+    /**
+     * Helper to create dom elements via mithril syntax
+     * @param selector - a css selector describing the desired element
+     * @param attributes - a map of dom attribute:value of the element (reminder className = class)
+     * @returns the resulting dom-element (not attached)
+     */
+    createElement(selector, attributes) {
+        return Object(_utils_createElement__WEBPACK_IMPORTED_MODULE_0__["default"])(selector, attributes);
+    }
+    /**
+     * @throws
+     * The only entry point to create editors.
+     * Use in application and from editors to create (delegate) child editors
+     *
+     * @param pointer - data pointer to editor in current state
+     * @param element - parent element of create editor. Will be appended automatically
+     * @param [options] - individual editor options
+     * @returns created editor-instance or undefined;
+     */
+    createEditor(pointer, element, options) {
+        assertValidPointer(pointer);
+        if (element == null) {
+            throw new Error(`Missing ${pointer == null ? "pointer" : "element"} in createEditor`);
+        }
+        // merge schema["editron:ui"] object with options. options precede
+        const instanceOptions = {
+            pointer,
+            disabled: this.disabled,
+            ..._utils_UISchema__WEBPACK_IMPORTED_MODULE_14__["default"].copyOptions(pointer, this),
+            ...options
+        };
+        instanceOptions.attrs = {
+            "data-title": instanceOptions.title,
+            ...instanceOptions.attrs
+        };
+        // find a matching editor
+        const EditorConstructor = Object(_utils_selectEditor__WEBPACK_IMPORTED_MODULE_12__["default"])(this.editors, pointer, this, instanceOptions);
+        if (EditorConstructor === false) {
+            return undefined;
+        }
+        if (EditorConstructor === undefined) {
+            this.options.log && console.warn(`Could not resolve an editor for ${pointer}`, this.service("schema").get(pointer));
+            return undefined;
+        }
+        // iniitialize editor and notify instance manager
+        const editor = new EditorConstructor(pointer, this, instanceOptions);
+        const dom = editor.getElement();
+        element.appendChild(dom);
+        this.services.instances.add(editor);
+        editor.update({ type: "active", value: !instanceOptions.disabled });
+        // @lifecycle hook create widget
+        this.plugins.filter(plugin => plugin.onCreateEditor)
+            .forEach(plugin => plugin.onCreateEditor(pointer, editor, instanceOptions));
+        return editor;
+    }
+    /**
+     * Call this method, to destroy your editors, deregistering its instance on editron
+     * @param editor - editor instance to remove
+     */
+    destroyEditor(editor) {
+        var _a;
+        if (!editor) {
+            return;
+        }
+        // @lifecycle hook destroy widget
+        this.plugins.filter(plugin => plugin.onDestroyEditor)
+            .forEach(plugin => plugin.onDestroyEditor(editor.getPointer(), editor));
+        this.services.instances.remove(editor);
+        // controller inserted child and removes it here again
+        const $element = editor.getElement();
+        (_a = $element === null || $element === void 0 ? void 0 : $element.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild($element);
+        editor.destroy();
+    }
+    /**
+     * Request to insert a child item (within the data) at the given pointer. If multiple options are present, a
+     * dialogue is opened to let the user select the appropriate type of child (oneof).
+     * @param pointer - to array on which to insert the child
+     * @param index - index within array, where the child should be inserted (does not replace). Default: 0
+     */
+    addItemTo(pointer, index = 0) {
+        Object(_utils_addItem__WEBPACK_IMPORTED_MODULE_1__["default"])(this.service("data"), this.service("schema"), this.services.location, pointer, index);
+        this.services.location.goto(gson_pointer__WEBPACK_IMPORTED_MODULE_5___default.a.join(pointer, index, true));
+    }
+    /**
+     * @returns proxy instance
+     */
+    proxy() { return __classPrivateFieldGet(this, _proxy); }
+    /**
+     * Set the application data
+     * @param data - json data matching registered json-schema
+     */
+    setData(data) {
+        data = this.service("schema").addDefaultData(data);
+        this.service("data").set("#", data);
+    }
+    /**
+     * @param [pointer="#"] - location of data to fetch. Defaults to root (all) data
+     * @returns data at the given location
+     */
+    getData(pointer = "#") {
+        return this.service("data").get(pointer);
+    }
+    /**
+     * Change the new schema for the current data
+     * @param schema   - a valid json-schema
+     */
+    setSchema(schema) {
+        schema = _utils_UISchema__WEBPACK_IMPORTED_MODULE_14__["default"].extendSchema(schema);
+        this.service("validation").set(schema);
+        this.service("schema").setSchema(schema);
+    }
+    /**
+     * Starts validation of current data
+     */
+    validateAll() {
+        setTimeout(() => this.destroyed !== true && this.service("validation").validate(this.service("data").getDataByReference()));
+    }
+    /** Destroy the editor, its widgets and services */
+    destroy() {
+        this.destroyed = true;
+        Object.keys(this.services).forEach(id => this.services[id].destroy());
+    }
+}
+_proxy = new WeakMap();
+/** throws an error, when given pointer is not a valid jons-pointer */
+function assertValidPointer(pointer) {
+    if (pointer == null || pointer[0] !== "#") {
+        throw new Error(`Invalid json(schema)-pointer: ${pointer}`);
+    }
 }
 
-module.exports = DataService;
-module.exports.EVENTS = EVENTS;
 
 /***/ }),
 
-/***/ "./services/LocationService.js":
-/*!*************************************!*\
-  !*** ./services/LocationService.js ***!
-  \*************************************/
-/*! no static exports found */
+/***/ "./src/components/container/index.ts":
+/*!*******************************************!*\
+  !*** ./src/components/container/index.ts ***!
+  \*******************************************/
+/*! exports provided: CHILD_CONTAINER_SELECTOR, default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CHILD_CONTAINER_SELECTOR", function() { return CHILD_CONTAINER_SELECTOR; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _containerheader__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../containerheader */ "./src/components/containerheader/index.ts");
+/* harmony import */ var _containererrors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../containererrors */ "./src/components/containererrors/index.ts");
+/* harmony import */ var _containerdescription__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../containerdescription */ "./src/components/containerdescription/index.ts");
 
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
-var UIState = __webpack_require__(/*! ./uistate */ "./services/uistate/index.js");
 
-var getId = __webpack_require__(/*! ../utils/getID */ "./utils/getID.js");
 
-var DELAY = 25;
-var emitter = mitt();
+const CHILD_CONTAINER_SELECTOR = ".editron-container__children";
 /**
- * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
- *
- * The LocationService manages global pointer states and scroll position:
- *  - the "current pointer" tracks the currently focused editor and
- *  - the "page pointer" corresponds to the first property of "current pointer", which may be used for main page loading
- *
- * ### Motivation
- *
- * Jumping to specific editors via the navigation requires a targeting system. A page reload may occur for a called
- * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
- * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
- * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
- *
- * @type {Object}
+ * @view ContainerView
+ * A Container Component is used for any non-value like object or arrays. They hold other values. This group may expose
+ * a group-title and errors. Any childnodes must go to the container '.jed-container__children'.
  */
-
-var LocationService = {
-  PAGE_EVENT: "page",
-  TARGET_EVENT: "target",
-  // update page and target pointer
-  "goto": function goto(targetPointer) {
-    var path = gp.split(targetPointer);
-
-    if (path.length === 0 || path.length === 1 && path[0] === "") {
-      return;
+/* harmony default export */ __webpack_exports__["default"] = ({
+    getChildContainer($element) {
+        const $childContainer = $element.querySelector(CHILD_CONTAINER_SELECTOR);
+        if ($childContainer == null) {
+            throw new Error("Container-Component hast not yet been rendered");
+        }
+        return $childContainer;
+    },
+    view(vnode) {
+        const { hideTitle } = vnode.attrs;
+        return [
+            hideTitle === true ? null : mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containerheader__WEBPACK_IMPORTED_MODULE_1__["default"], vnode.attrs),
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containerdescription__WEBPACK_IMPORTED_MODULE_3__["default"], vnode.attrs),
+            vnode.children,
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(_containererrors__WEBPACK_IMPORTED_MODULE_2__["default"], vnode.attrs),
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(CHILD_CONTAINER_SELECTOR)
+        ];
     }
-
-    var nextPage = path[0];
-    var currentPage = UIState.getCurrentPage();
-
-    if (currentPage !== nextPage) {
-      UIState.setCurrentPage(gp.join(nextPage, true));
-    }
-
-    UIState.setCurrentPointer(gp.join(targetPointer, true));
-    this.focus();
-  },
-  // set target pointer
-  setCurrent: function setCurrent(pointer) {
-    if (pointer !== this.getCurrent()) {
-      UIState.setCurrentPointer(pointer);
-      emitter.emit("focus", pointer);
-    }
-  },
-  getCurrent: function getCurrent() {
-    return UIState.getCurrentPointer();
-  },
-  // focus target pointer
-  focus: function focus() {
-    clearTimeout(this.timeout);
-    var pointer = UIState.getCurrentPointer();
-    var id = getId(pointer);
-    var targetElement = document.getElementById(id); // console.log(`pointer ${pointer} - id ${id}`, targetElement);
-
-    if (targetElement == null) {
-      // console.log(`Location:focus - target ${pointer} (id ${id}) not found`);
-      return;
-    } // const targetPosition = targetElement.getBoundingClientRect().top
-
-
-    this.timeout = setTimeout(function () {
-      // try scrolling to header-row in container (low height) to have a more robust scroll target position
-      var scrollTarget = targetElement.querySelector(".editron-container > .editron-container__header");
-      scrollTarget = scrollTarget == null || scrollTarget.offsetParent === null ? targetElement : scrollTarget;
-      scrollTarget.scrollIntoView(); // @todo only fire focus event?
-
-      targetElement.dispatchEvent(new Event("focus"));
-      targetElement.focus && targetElement.focus();
-    }, DELAY);
-  },
-  blur: function blur(pointer) {
-    if (UIState.getCurrentPointer() !== pointer) {
-      return;
-    }
-
-    UIState.setCurrentPointer("");
-    emitter.emit("blur", pointer);
-  },
-  on: function on() {
-    return emitter.on.apply(emitter, arguments);
-  },
-  off: function off() {
-    return emitter.off.apply(emitter, arguments);
-  }
-};
-UIState.on(UIState.EVENTS.CURRENT_PAGE_EVENT, function (pointer) {
-  return emitter.emit(LocationService.PAGE_EVENT, pointer);
 });
-UIState.on(UIState.EVENTS.CURRENT_POINTER_EVENT, function (pointer) {
-  return emitter.emit(LocationService.TARGET_EVENT, pointer);
-});
-module.exports = LocationService;
+
 
 /***/ }),
 
-/***/ "./services/OverlayService.js":
-/*!************************************!*\
-  !*** ./services/OverlayService.js ***!
-  \************************************/
-/*! no static exports found */
+/***/ "./src/components/containerdescription/index.ts":
+/*!******************************************************!*\
+  !*** ./src/components/containerdescription/index.ts ***!
+  \******************************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/populated */ "./src/utils/populated.ts");
 
-/* eslint no-use-before-define: 0 */
-var m = __webpack_require__(/*! mithril */ "mithril");
 
-var Overlay = __webpack_require__(/*! ../components/overlay */ "./components/overlay/index.js");
-
-var createElement = __webpack_require__(/*! ../utils/createElement */ "./utils/createElement.js");
-
-var UIState = __webpack_require__(/*! ./uistate */ "./services/uistate/index.js");
-
-UIState.on(UIState.EVENTS.OVERLAY_EVENT, function () {
-  var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  return OverlayService.onChange(value.element, value.options);
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        return Object(_utils_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(vnode.attrs.description, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__description.mmf-meta", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(vnode.attrs.description)));
+    }
 });
+
+
+/***/ }),
+
+/***/ "./src/components/containererrors/index.ts":
+/*!*************************************************!*\
+  !*** ./src/components/containererrors/index.ts ***!
+  \*************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        if (Array.isArray(vnode.attrs.errors) === false || vnode.attrs.errors.length === 0) {
+            return null;
+        }
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul.editron-container__errors", vnode.attrs.errors.map(error => mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { "class": `is-${error.severity || "error"}` }, error.message)));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/containerheader/index.ts":
+/*!*************************************************!*\
+  !*** ./src/components/containerheader/index.ts ***!
+  \*************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _utils_populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../utils/populated */ "./src/utils/populated.ts");
+
+
+function getClass(hasAction, { title, icon, disabled }) {
+    let classname = `${title ? "withTitle" : "noTitle"}`;
+    classname += ` ${hasAction ? "withActions" : "noActions"}`;
+    classname += ` ${icon ? "withIcon" : "noIcon"}`;
+    classname += disabled ? " is-disabled" : "";
+    return classname;
+}
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = {
+            icon: "",
+            title: "",
+            disabled: false,
+            ...vnode.attrs
+        };
+        const hasAction = (attrs.onadd || attrs.ondelete || attrs.onmoveup || attrs.onmovedown || attrs.oncollapse) != null;
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__header", {
+            "class": getClass(hasAction, attrs)
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__title", Object(_utils_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(vnode.attrs.icon, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", attrs.icon)), (!attrs.hideTitle) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("h2", attrs.title)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__actions", attrs.onmoveup && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+            onclick: attrs.onmoveup
+        }, "arrow_upward"), attrs.onmovedown && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+            onclick: attrs.onmovedown
+        }, "arrow_downward"), attrs.onadd && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--add", {
+            onclick: () => attrs.onadd()
+        }, "add"), attrs.ondelete && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--delete", {
+            onclick: attrs.ondelete
+        }, "delete"), attrs.oncollapse && mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon.mmf-icon--collapse", {
+            onclick: attrs.oncollapse
+        }, attrs.collapsed ? "keyboard_arrow_right" : "keyboard_arrow_down")));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/index.ts":
+/*!*********************************!*\
+  !*** ./src/components/index.ts ***!
+  \*********************************/
+/*! exports provided: Container, ContainerDescription, ContainerErrors, ContainerHeader, Overlay, OverlaySelectTiles */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _container__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./container */ "./src/components/container/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Container", function() { return _container__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _containerdescription__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./containerdescription */ "./src/components/containerdescription/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ContainerDescription", function() { return _containerdescription__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+/* harmony import */ var _containererrors__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./containererrors */ "./src/components/containererrors/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ContainerErrors", function() { return _containererrors__WEBPACK_IMPORTED_MODULE_2__["default"]; });
+
+/* harmony import */ var _containerheader__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./containerheader */ "./src/components/containerheader/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "ContainerHeader", function() { return _containerheader__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _overlay__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./overlay */ "./src/components/overlay/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Overlay", function() { return _overlay__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _overlayselecttiles__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./overlayselecttiles */ "./src/components/overlayselecttiles/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "OverlaySelectTiles", function() { return _overlayselecttiles__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+
+
+
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/components/overlay/index.ts":
+/*!*****************************************!*\
+  !*** ./src/components/overlay/index.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/index */ "./node_modules/mithril-material-forms/index.ts");
+
+
+/**
+ * Content overlay
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()("section.ui-overlay__card", {
+            "class": vnode.attrs.fullscreen ? "ui-overlay__card--fullscreen" : null
+        }, vnode.attrs.header && mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__header", mithril__WEBPACK_IMPORTED_MODULE_0___default()("h1", vnode.attrs.header)), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__content", {
+            oncreate: (contentNode) => contentNode.dom.appendChild(vnode.attrs.container)
+        }), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".ui-card__footer", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onAbort }, vnode.attrs.titleAbort), vnode.attrs.showSave && mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], { onclick: vnode.attrs.onSave }, "Speichern")));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/overlayselecttiles/Tile.ts":
+/*!***************************************************!*\
+  !*** ./src/components/overlayselecttiles/Tile.ts ***!
+  \***************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box", {
+            "data-value": vnode.attrs.value,
+            "data-type": vnode.attrs.title.toLowerCase() // @uitest
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box__content", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box__title", [
+            vnode.attrs.icon ? mithril__WEBPACK_IMPORTED_MODULE_0___default()(".mmf-icon", vnode.attrs.icon) : "",
+            vnode.attrs.title
+        ]), mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-box__description", vnode.attrs.description)));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/components/overlayselecttiles/index.ts":
+/*!****************************************************!*\
+  !*** ./src/components/overlayselecttiles/index.ts ***!
+  \****************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Tile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tile */ "./src/components/overlayselecttiles/Tile.ts");
+
+
+const noop = (value) => { }; // eslint-disable-line
+function getDataValue(node) {
+    while (node.parentNode &&
+        node.getAttribute("data-value") == null &&
+        node.className.includes("editron-form-tiles") === false) {
+        node = node.parentNode;
+    }
+    return node.getAttribute("data-value");
+}
+/**
+ * Overlay content to pick options. Displayed as tiles
+ */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view(vnode) {
+        const attrs = {
+            value: 0,
+            options: [{ title: "Keine Optionen angegeben", value: -1 }],
+            onchange: noop,
+            ...vnode.attrs
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-form-tiles", {
+            onclick: (e) => {
+                const value = getDataValue(e.target);
+                if (value != null) {
+                    // @todo event-target being may be unexpected
+                    attrs.onchange(value);
+                }
+            }
+        }, attrs.options.map(tile => mithril__WEBPACK_IMPORTED_MODULE_0___default()(_Tile__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            active: attrs.value === tile.value,
+            title: tile.title,
+            icon: tile.icon,
+            description: mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(tile.description),
+            value: tile.value
+        })));
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/editors/AbstractEditor.ts":
+/*!***************************************!*\
+  !*** ./src/editors/AbstractEditor.ts ***!
+  \***************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractEditor; });
+function getTypeClass(schema) {
+    return schema.type === "array" || schema.type === "object" ? schema.type : "value";
+}
+/**
+ * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
+ * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
+ * the tedious and redundant controller/serivce/pointer bootstraping.
+ *
+ * Still required is
+ *
+ *      1. a custom `static editorOf(p, c, o)`-method, to register on a schema
+ *      2. an `update(event)`-method to respond to changes
+ *
+ * Convenience methods are
+ *
+ *      - `getData()` to fetch the associated data of the current _pointer_
+ *      - `setData(newValue)` to update the associated data of the current _pointer_
+ *      - `getSchema()` returning the json-schema of the current _pointer_
+ *      - `getErrors()` returning a list of current errors
+ *      - `getElement()` gives you the root dom-node for this editor (aka render target)
+ *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
+ *
+ * @param pointer - pointer referencing the current data and schema
+ * @param controller - editron controller instance
+ * @param options - resolved options object
+ */
+class AbstractEditor {
+    constructor(pointer, controller, options) {
+        this.pointer = pointer;
+        this.controller = controller;
+        this.options = options;
+        this.dom = this.controller
+            .createElement(`.editron-container.editron-container--${getTypeClass(this.getSchema())}`, options.attrs);
+    }
+    static editorOf(pointer, controller, options) {
+        throw new Error("Missing editorOf-method in custom editor");
+    }
+    update(event) {
+        throw new Error("Missing implementation of method 'update' in custom editor");
+    }
+    getData() {
+        return this.controller.service("data").get(this.pointer);
+    }
+    setData(data) {
+        return this.controller.service("data").set(this.pointer, data);
+    }
+    getErrors() {
+        return this.controller.service("validation").getErrorsAndWarnings(this.pointer);
+    }
+    getSchema() {
+        return this.controller.service("schema").get(this.pointer);
+    }
+    getPointer() {
+        return this.pointer;
+    }
+    getElement() {
+        return this.dom;
+    }
+    focus() {
+        this.controller.service("location").setCurrent(this.pointer);
+    }
+    blur() {
+        this.controller.service("location").blur(this.pointer);
+    }
+    destroy() {
+        throw new Error("Missing implementation of method 'destroy' in custom editor");
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/AbstractValueEditor.ts":
+/*!********************************************!*\
+  !*** ./src/editors/AbstractValueEditor.ts ***!
+  \********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return AbstractValueEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+const convert = {
+    boolean(value) {
+        if (value === "true") {
+            return true;
+        }
+        else if (value === "false") {
+            return false;
+        }
+        return value;
+    },
+    integer(value) {
+        const converted = parseInt(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    },
+    number(value) {
+        const converted = parseFloat(value);
+        if (isNaN(converted) === false) {
+            return converted;
+        }
+        return value;
+    }
+};
+/**
+ * Convenience class, which registers required events and base methods for value-editors (not object, array)
+ */
+class AbstractValueEditor {
+    /**
+     * options
+     *    - editorValueType:String - custom type of editor value (added as classname)
+     *    - editorElementProperties:Object - add custom properties to main DOM-element
+     *    - viewModel:Object - viewModel which extends base viewmodel
+     *
+     * @param pointer - json pointer to value
+     * @param controller - json editor controller
+     * @param options
+     */
+    constructor(pointer, controller, options) {
+        this.notifyNestedChanges = false;
+        this.controller = controller;
+        this.options = options;
+        this.pointer = pointer;
+        this.notifyNestedChanges = options.notifyNestedChanges || this.notifyNestedChanges;
+        const schema = controller.service("schema").get(pointer);
+        options = {
+            viewModel: null,
+            title: null,
+            description: null,
+            editorValueType: schema.enum ? "select" : schema.type,
+            editorElementProperties: null,
+            ...options
+        };
+        // create main DOM-element for view-generation
+        this.dom = controller.createElement(`.editron-value.editron-value--${options.editorValueType}`, { ...options.attrs });
+        // use this model to generate the view. may be customized with `options.viewModel`
+        this.viewModel = {
+            pointer,
+            title: options.title,
+            description: options.description,
+            value: controller.service("data").get(pointer),
+            instantUpdate: options.instantUpdate,
+            schema,
+            options,
+            errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            onfocus: () => controller.service("location").setCurrent(pointer),
+            onblur: () => controller.service("location").blur(pointer),
+            onchange: value => this.setValue(convert[schema.type] ? convert[schema.type](value) : value),
+            ...options.viewModel
+        };
+    }
+    static editorOf(pointer, controller) {
+        const schema = controller.service("schema").get(pointer);
+        return schema.type !== "object" && schema.type !== "array";
+    }
+    update(event) {
+        if (this.viewModel == null) {
+            console.log("%c abort update VALUE", "background: yellow;", event);
+            return;
+        }
+        switch (event.type) {
+            case "pointer": {
+                const pointer = event.value;
+                // this.dom.setAttribute("name", `editor-${pointer}`);
+                this.viewModel.pointer = pointer;
+                this.viewModel.onfocus = () => this.controller.service("location").setCurrent(pointer);
+                break;
+            }
+            case "data:update":
+                this.viewModel.value = this.controller.service("data").get(this.getPointer());
+                this.viewModel.disabled = !this.controller.isActive();
+                break;
+            case "validation:errors":
+                this.viewModel.errors = event.value;
+                break;
+            case "active":
+                this.viewModel.disabled = event.value === false;
+                if (this.viewModel.options) {
+                    this.viewModel.options.disabled = this.viewModel.disabled;
+                }
+                break;
+            default:
+                console.log("unknown event type", event);
+        }
+        this.render();
+    }
+    // do not trigger rendering here. data-observer will notify change event
+    setValue(value) {
+        this.controller.service("data").set(this.getPointer(), value);
+    }
+    // update view
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()("b", "Overwrite AbstractValueEditor.render() to generate view"));
+    }
+    getPointer() {
+        return this.pointer;
+    }
+    // return main dom element
+    getElement() {
+        return this.dom;
+    }
+    // destroy this editor
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        // destroy this editor only once
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
+        this.viewModel = null;
+        this.dom = null;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/ArrayItemView.ts":
+/*!**************************************************!*\
+  !*** ./src/editors/arrayeditor/ArrayItemView.ts ***!
+  \**************************************************/
+/*! exports provided: EditorTarget, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EditorTarget", function() { return EditorTarget; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/index */ "./node_modules/mithril-material-forms/index.ts");
+/* harmony import */ var _InsertButtonView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./InsertButtonView */ "./src/editors/arrayeditor/InsertButtonView.ts");
+
+
+
+const EditorTarget = ".editron-item";
+/* harmony default export */ __webpack_exports__["default"] = ({
+    view({ attrs }) {
+        const { disabled = false } = attrs;
+        const canRemove = attrs.minItems < attrs.length;
+        const canAdd = attrs.maxItems > attrs.length;
+        const showIndex = attrs.showIndex === true;
+        return [
+            // ARRAY-CONTROLS
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__controls.editron-container__controls--child", {
+                "class": disabled ? "is-disabled" : "is-enabled"
+            }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "more_vert"), mithril__WEBPACK_IMPORTED_MODULE_0___default()("ul", !(attrs.move === false || attrs.index === 0) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onMove(attrs.index - 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_upward"), "move up")), !(attrs.move === false || attrs.index === attrs.length - 1) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onMove(attrs.index + 1) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "arrow_downward"), "move down")), attrs.clone && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onClone() }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "content_copy"), "duplicate")), (attrs.remove && attrs.onRemove && canRemove) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onRemove(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "delete"), "delete")), (attrs.add && attrs.onAdd && canAdd) && mithril__WEBPACK_IMPORTED_MODULE_0___default()("li", { onclick: () => !disabled && attrs.onAdd(attrs.index) }, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_1__["Button"], mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add"), "add")))),
+            // TARGET CONTAINER FOR EDITOR
+            mithril__WEBPACK_IMPORTED_MODULE_0___default()(EditorTarget, {
+                "data-index": `${attrs.index + 1} / ${attrs.length}`,
+                "class": [
+                    disabled ? "is-disabled" : "",
+                    canRemove ? "has-remove-enabled" : "has-remove-disabled",
+                    canAdd ? "has-add-enabled" : "has-add-disabled",
+                    showIndex ? "with-index" : ""
+                ].join(" ").trim()
+            }),
+            (attrs.insert && canAdd) && mithril__WEBPACK_IMPORTED_MODULE_0___default()(_InsertButtonView__WEBPACK_IMPORTED_MODULE_2__["default"], {
+                disabled,
+                onAdd: attrs.onAdd,
+                index: attrs.index
+            })
+        ];
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/ArrayItemWrapper.ts":
+/*!*****************************************************!*\
+  !*** ./src/editors/arrayeditor/ArrayItemWrapper.ts ***!
+  \*****************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ArrayItemEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _ArrayItemView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ArrayItemView */ "./src/editors/arrayeditor/ArrayItemView.ts");
+/* harmony import */ var _utils_array__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../utils/array */ "./src/utils/array.ts");
+
+
+
+
+class ArrayItemEditor {
+    constructor(pointer, controller, options) {
+        // eslint-disable-next-line max-len
+        this.$element = controller.createElement(".editron-container__child.editron-container__child--array-item", options.attrs);
+        this.controller = controller;
+        const onAdd = () => this.add();
+        const onRemove = () => this.remove();
+        this.viewModel = {
+            disabled: false,
+            onAdd,
+            onRemove,
+            onMove: index => this.move(index),
+            onClone: () => this.clone(),
+            ...options
+        };
+        this.render();
+        const $target = this.$element.querySelector(_ArrayItemView__WEBPACK_IMPORTED_MODULE_2__["EditorTarget"]);
+        this.editor = controller.createEditor(pointer, $target, {
+            ondelete: onRemove
+        });
+        this.updatePointer(pointer);
+    }
+    disable(isDisabled = false) {
+        if (this.viewModel.disabled !== isDisabled) {
+            this.viewModel.disabled = isDisabled;
+            this.render();
+        }
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.$element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_ArrayItemView__WEBPACK_IMPORTED_MODULE_2__["default"], this.viewModel));
+    }
+    add() {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].addItem(this.parentPointer, this.controller, this.viewModel.index + 1);
+    }
+    clone() {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].cloneItem(this.parentPointer, this.controller, this.viewModel.index);
+    }
+    remove() {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].removeItem(this.parentPointer, this.controller, this.viewModel.index);
+    }
+    move(to) {
+        _utils_array__WEBPACK_IMPORTED_MODULE_3__["default"].moveItem(this.parentPointer, this.controller, this.viewModel.index, to);
+    }
+    updatePointer(newPointer) {
+        this.parentPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(newPointer, "..", true);
+        this.viewModel.index = ArrayItemEditor.getIndex(newPointer);
+        this.viewModel.pointer = newPointer;
+        this.viewModel.length = this.controller.service("data").get(this.parentPointer).length;
+        this.render();
+    }
+    getElement() {
+        return this.$element;
+    }
+    getPointer() {
+        return this.viewModel.pointer;
+    }
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.viewModel = null;
+        this.controller.destroyEditor(this.editor);
+        this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
+    }
+    static getIndex(pointer) {
+        const parentPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(pointer, "..");
+        return parseInt(pointer.replace(`${parentPointer}/`, ""));
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/InsertButtonView.ts":
+/*!*****************************************************!*\
+  !*** ./src/editors/arrayeditor/InsertButtonView.ts ***!
+  \*****************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+
+const InsertButtonView = {
+    view(vnode) {
+        const { disabled, onAdd, index } = vnode.attrs;
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__separator.mmf-row", mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-container__button--add", {
+            "class": disabled && "is-disabled",
+            onclick: e => {
+                if (!disabled) {
+                    e.preventDefault();
+                    onAdd && onAdd(index);
+                }
+            }
+        }, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i.mmf-icon", "add_circle")));
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (InsertButtonView);
+
+
+/***/ }),
+
+/***/ "./src/editors/arrayeditor/index.ts":
+/*!******************************************!*\
+  !*** ./src/editors/arrayeditor/index.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ArrayEditor; });
+/* harmony import */ var _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ArrayItemWrapper */ "./src/editors/arrayeditor/ArrayItemWrapper.ts");
+/* harmony import */ var _services_utils_diffpatch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/utils/diffpatch */ "./src/services/utils/diffpatch.ts");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../AbstractEditor */ "./src/editors/AbstractEditor.ts");
+
+
+
+
+
+class ArrayEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default"] {
+    constructor(pointer, controller, options = {}) {
+        super(pointer, controller, options);
+        this.children = [];
+        this.dom.classList.add("withAddButton");
+        this.onAdd = (index = 0) => {
+            if (!this.viewModel.disabled) {
+                controller.addItemTo(this.pointer, index);
+            }
+        };
+        const schema = this.getSchema();
+        const data = this.getData();
+        this.viewModel = {
+            attrs: {},
+            disabled: false,
+            errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            length: data.length,
+            maxItems: schema.maxItems || Infinity,
+            minItems: schema.minItems || 0,
+            onadd: this.onAdd,
+            pointer,
+            ...options,
+            controls: {
+                add: false,
+                clone: true,
+                disabled: false,
+                remove: true,
+                move: true,
+                insert: true,
+                showIndex: options["array:index"] === true,
+                maxItems: schema.maxItems || Infinity,
+                minItems: schema.minItems || 0,
+                ...options.controls
+            }
+        };
+        this.render();
+        this.$items = this.dom.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
+        this.rebuildChildren();
+        this.updateControls();
+    }
+    static editorOf(pointer, controller) {
+        const schema = controller.service("schema").get(pointer);
+        return schema.type === "array";
+    }
+    update(event) {
+        if (this.viewModel == null) {
+            // @ts-ignore
+            console.log("%c abort update ARRAY", "background: yellow;", event);
+            return;
+        }
+        switch (event.type) {
+            case "data:update":
+                this.applyPatches(event.value.patch);
+                this.updateControls();
+                break;
+            case "validation:errors":
+                this.viewModel.errors = event.value;
+                break;
+            case "pointer":
+                this.viewModel.pointer = event.value;
+                this.children.forEach((child, index) => child.updatePointer(`${event.value}/${index}`));
+                break;
+            case "active": {
+                const disabled = event.value === false;
+                this.viewModel.disabled = disabled;
+                this.viewModel.controls.disabled = disabled;
+                this.children.forEach(child => child.disable(disabled));
+                break;
+            }
+        }
+        this.render();
+    }
+    applyPatches(patch) {
+        const { pointer, controller, viewModel, children, $items } = this;
+        // fetch a copy of the original list
+        const originalChildren = Array.from(children);
+        // and patch the current list
+        _services_utils_diffpatch__WEBPACK_IMPORTED_MODULE_1__["default"].patch(children, patch);
+        // search for inserted children
+        children.forEach((child, index) => {
+            if (child instanceof _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__["default"] === false) {
+                const newChild = new _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__["default"](`${pointer}/${index}`, controller, viewModel.controls);
+                children[index] = newChild;
+            }
+        });
+        // search for removed children (item wrappers)
+        originalChildren.forEach(child => {
+            if (children.indexOf(child) === -1) {
+                child.destroy();
+            }
+        });
+        // update view: move and inserts nodes
+        const currentLocation = controller.service("location").getCurrent();
+        const changePointer = {};
+        for (let i = 0, l = children.length; i < l; i += 1) {
+            const previousPointer = children[i].getPointer();
+            const currentPointer = `${pointer}/${i}`;
+            // update current location
+            if (currentLocation.indexOf(previousPointer) === 0) {
+                const editorLocation = currentLocation.replace(previousPointer, currentPointer);
+                controller.service("location").setCurrent(editorLocation);
+            }
+            // update child views to match patched list
+            if (previousPointer !== currentPointer) {
+                changePointer[previousPointer] = currentPointer;
+            }
+            // this updates the array-item wrapper
+            children[i].updatePointer(currentPointer);
+            if ($items.children[i] === children[i].getElement()) {
+                // skip moving node, already in place
+                continue;
+            }
+            else if (i + 1 < $items.children.length) {
+                // move node to correct position
+                $items.insertBefore(children[i].getElement(), $items.children[i + 1]);
+            }
+            else {
+                // remaining nodes may be simply appended
+                $items.appendChild(children[i].getElement());
+            }
+        }
+    }
+    rebuildChildren() {
+        const { pointer, controller, viewModel, children, $items } = this;
+        const data = this.getData();
+        children.forEach((editor) => editor.destroy());
+        children.length = 0;
+        $items.innerHTML = "";
+        // recreate child editors
+        data.forEach((item, index) => {
+            const childEditor = new _ArrayItemWrapper__WEBPACK_IMPORTED_MODULE_0__["default"](`${pointer}/${index}`, controller, viewModel.controls);
+            $items.appendChild(childEditor.getElement());
+            children.push(childEditor);
+        });
+    }
+    updateControls() {
+        const { dom, viewModel, children } = this;
+        viewModel.length = children.length;
+        viewModel.onadd = viewModel.maxItems > children.length ? this.onAdd : undefined;
+        dom.classList.toggle("has-add-disabled", viewModel.maxItems <= children.length);
+        dom.classList.toggle("has-remove-disabled", viewModel.minItems >= children.length);
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_2___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
+    }
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.children.forEach((editor) => editor.destroy());
+        this.viewModel = null;
+        mithril__WEBPACK_IMPORTED_MODULE_2___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_2___default()("i"));
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/objecteditor/index.ts":
+/*!*******************************************!*\
+  !*** ./src/editors/objecteditor/index.ts ***!
+  \*******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ObjectEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.ts");
+/* harmony import */ var _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/OverlayService */ "./src/services/OverlayService.ts");
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../AbstractEditor */ "./src/editors/AbstractEditor.ts");
+
+
+
+
+
+function showJSON(controller, data, title) {
+    const element = controller.createElement(".overlay__item.overlay__item--json");
+    _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__["default"].open(element, { ok: true, save: false });
+    // render textarea after it is injected into dom, to correctly update textarea size
+    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_1__["default"], { title, value: JSON.stringify(data, null, 4) }));
+}
+class ObjectEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_4__["default"] {
+    constructor(pointer, controller, options = {}) {
+        super(pointer, controller, options);
+        this.childEditors = [];
+        this.viewModel = {
+            pointer,
+            errors: [],
+            ...options,
+            attrs: options.attrs || {}
+        };
+        if (options.collapsed != null) {
+            this.viewModel.oncollapse = () => {
+                this.viewModel.collapsed = !this.viewModel.collapsed;
+                this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
+                this.render(); // redraw container, to update header collapse-icon
+            };
+            this.dom.classList.add("collapsible");
+            this.dom.classList.toggle("hidden", this.viewModel.collapsed === true);
+        }
+        if (options.addDelete) {
+            this.viewModel.ondelete = this.deleteObject.bind(this);
+        }
+        this.render();
+        this.$children = this.dom.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_3__["CHILD_CONTAINER_SELECTOR"]);
+        this.update({ type: "data:update", value: null });
+    }
+    static editorOf(pointer, controller) {
+        const schema = controller.service("schema").get(pointer);
+        return schema.type === "object";
+    }
+    update(event) {
+        if (this.viewModel == null) {
+            console.log("%c abort update OBJECT", "background: yellow;", event);
+            return;
+        }
+        switch (event.type) {
+            case "data:update": {
+                const { pointer, controller, childEditors, $children } = this;
+                const data = this.getData();
+                childEditors.forEach(editor => controller.destroyEditor(editor));
+                childEditors.length = 0;
+                $children.innerHTML = "";
+                if (data == null) {
+                    break;
+                }
+                // rebuild children
+                Object.keys(data)
+                    .forEach(property => childEditors.push(controller.createEditor(`${pointer}/${property}`, $children)));
+                break;
+            }
+            // if we receive errors here, a property may be missing (which should go to schema.getTemplate)
+            // or additional, but prohibited properties exist. For the latter, add an option to show and/or
+            // delete the property
+            case "validation:errors": {
+                this.viewModel.errors = event.value.map(error => {
+                    if (error.code !== "no-additional-properties-error") {
+                        return error;
+                    }
+                    const message = error.message;
+                    const property = error.data.property;
+                    return {
+                        severity: error.type || "error",
+                        message: mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-error.editron-error--object-property", mithril__WEBPACK_IMPORTED_MODULE_0___default()("span", mithril__WEBPACK_IMPORTED_MODULE_0___default.a.trust(message)), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.showProperty(property) }, "visibility"), mithril__WEBPACK_IMPORTED_MODULE_0___default()("a.mmf-icon", { onclick: () => this.deleteProperty(property) }, "clear"))
+                    };
+                });
+                break;
+            }
+            case "pointer":
+                this.viewModel.pointer = event.value;
+                break;
+            case "active":
+                /** de/activate this editors user-interaction */
+                this.viewModel.disabled = !event.value;
+                break;
+        }
+        this.render();
+    }
+    /** deletes this object from data */
+    deleteObject() {
+        this.controller.service("data").delete(this.pointer);
+    }
+    /** deletes a property from this object */
+    deleteProperty(property) {
+        this.controller.service("data").delete(`${this.pointer}/${property}`);
+    }
+    /** displays the properties json-value */
+    showProperty(property) {
+        const propertyData = this.controller.service("data").get(`${this.pointer}/${property}`);
+        showJSON(this.controller, propertyData, property);
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_3__["default"], this.viewModel));
+    }
+    /** destroy editor, view and event-listeners */
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
+        this.childEditors.forEach(ed => this.controller.destroyEditor(ed));
+        this.childEditors.length = 0;
+        this.$children.innerHTML = "";
+        this.viewModel = null;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/oneofeditor/index.ts":
+/*!******************************************!*\
+  !*** ./src/editors/oneofeditor/index.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return OneOfEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/select */ "./node_modules/mithril-material-forms/components/select/index.ts");
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var _AbstractEditor__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../AbstractEditor */ "./src/editors/AbstractEditor.ts");
+
+
+
+
+class OneOfEditor extends _AbstractEditor__WEBPACK_IMPORTED_MODULE_3__["default"] {
+    constructor(pointer, controller, options) {
+        super(pointer, controller, options);
+        this.notifyNestedChanges = true;
+        this.dom.classList.add("editron-container--oneof");
+        const childSchema = this.getSchema();
+        // @special case. Our options lie in `schema.oneOfSchema`
+        const schema = childSchema.oneOfSchema;
+        // ensure requried titles are set
+        schema.oneOf.forEach((oneOfSchema, index) => (oneOfSchema.title = oneOfSchema.title || `${index}.`));
+        this.schema = schema;
+        this.childSchema = childSchema;
+        this.viewModel = {
+            pointer,
+            options: schema.oneOf.map((oneOf, index) => ({ title: oneOf.title, value: index })),
+            onchange: (oneOfIndex) => this.changeChild(schema.oneOf[oneOfIndex]),
+            value: this.getIndexOf(childSchema),
+            title: schema.title,
+            description: schema.description
+        };
+        this.render();
+        this.$childContainer = this.dom.querySelector(_components_container__WEBPACK_IMPORTED_MODULE_2__["CHILD_CONTAINER_SELECTOR"]);
+        this.rebuild();
+        this.render();
+    }
+    static editorOf(pointer, controller, options) {
+        const schema = controller.service("schema").get(pointer);
+        return schema.oneOfSchema && !schema.items && !options.renderOneOf;
+    }
+    changeChild(schema) {
+        this.controller.destroyEditor(this.childEditor);
+        const data = this.controller.service("schema").getTemplate(schema);
+        this.controller.service("data").set(this.pointer, data);
+    }
+    getIndexOf(currentSchema) {
+        for (let i = 0, l = this.schema.oneOf.length; i < l; i += 1) {
+            if (this.schema.oneOf[i].title === currentSchema.title) {
+                return i;
+            }
+        }
+        return 0;
+    }
+    update(event) {
+        switch (event.type) {
+            case "data:update": {
+                const currentSchema = this.getSchema();
+                delete currentSchema.oneOfSchema; // is recreated each time
+                if (currentSchema.title === this.childSchema.title) {
+                    return;
+                }
+                this.viewModel.value = this.getIndexOf(currentSchema);
+                this.childSchema = currentSchema;
+                this.rebuild();
+                break;
+            }
+            case "pointer":
+                this.viewModel.pointer = event.value;
+                break;
+            case "active":
+                this.viewModel.disabled = event.value === false;
+                break;
+        }
+        this.render();
+    }
+    rebuild() {
+        this.controller.destroyEditor(this.childEditor);
+        this.$childContainer.innerHTML = "";
+        this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
+            // @attention this is very important or else we create an infinite loop through selectEditor
+            renderOneOf: true
+        });
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_container__WEBPACK_IMPORTED_MODULE_2__["default"], this.viewModel, mithril__WEBPACK_IMPORTED_MODULE_0___default()(".editron-value", mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_select__WEBPACK_IMPORTED_MODULE_1__["default"], this.viewModel))));
+    }
+    destroy() {
+        if (this.viewModel == null) {
+            return;
+        }
+        this.viewModel = null;
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, "i");
+        this.controller.destroyEditor(this.childEditor);
+        this.controller.service("data").removeObserver(this.pointer, this.update);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/editors/valueeditor/View.ts":
+/*!*****************************************!*\
+  !*** ./src/editors/valueeditor/View.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! mithril-material-forms/components/checkboxform */ "./node_modules/mithril-material-forms/components/checkboxform/index.ts");
+/* harmony import */ var mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/components/selectform */ "./node_modules/mithril-material-forms/components/selectform/index.ts");
+/* harmony import */ var mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! mithril-material-forms/components/textareaform */ "./node_modules/mithril-material-forms/components/textareaform/index.ts");
+/* harmony import */ var mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! mithril-material-forms/components/inputform */ "./node_modules/mithril-material-forms/components/inputform/index.ts");
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../utils/UISchema */ "./src/utils/UISchema.ts");
+
+
+
+
+
+
+const TYPES = {
+    string: "text",
+    integer: "number",
+    number: "number"
+};
+function getInputType(schema) {
+    return TYPES[schema.type] || "text";
+}
+const Component = {
+    view(vnode) {
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer } = vnode.attrs;
+        if (schema.enum && schema.enum.length > 0) {
+            const selectFormModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                disabled: options.disabled,
+                errors,
+                options: _utils_UISchema__WEBPACK_IMPORTED_MODULE_5__["default"].enumOptions(schema),
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_selectform__WEBPACK_IMPORTED_MODULE_2__["default"], selectFormModel, vnode.children);
+        }
+        if (schema.type === "boolean") {
+            const checkBoxModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                disabled: options.disabled,
+                errors,
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_checkboxform__WEBPACK_IMPORTED_MODULE_1__["default"], checkBoxModel, vnode.children);
+        }
+        if (schema.type === "string" && schema.format === "html") {
+            const textareaModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                placeholder: options.placeholder,
+                disabled: options.disabled,
+                errors,
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], textareaModel, vnode.children);
+        }
+        if (schema.type === "string" && schema.format === "textarea") {
+            const textareaModel = {
+                id: pointer,
+                title: options.title,
+                description: options.description,
+                placeholder: options.placeholder,
+                disabled: options.disabled,
+                errors,
+                rows: options["textarea:rows"] || 1,
+                value,
+                onchange,
+                onblur,
+                onfocus
+            };
+            return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_textareaform__WEBPACK_IMPORTED_MODULE_3__["default"], textareaModel, vnode.children);
+        }
+        const inputModel = {
+            id: pointer,
+            title: options.title,
+            description: options.description,
+            placeholder: options.placeholder,
+            disabled: options.disabled,
+            errors,
+            type: getInputType(schema),
+            instantUpdate: options.instantUpdate,
+            value,
+            onchange,
+            onblur,
+            onfocus
+        };
+        return mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_components_inputform__WEBPACK_IMPORTED_MODULE_4__["default"], inputModel, vnode.children);
+    }
+};
+/* harmony default export */ __webpack_exports__["default"] = (Component);
+
+
+/***/ }),
+
+/***/ "./src/editors/valueeditor/index.ts":
+/*!******************************************!*\
+  !*** ./src/editors/valueeditor/index.ts ***!
+  \******************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ValueEditor; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _View__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./View */ "./src/editors/valueeditor/View.ts");
+/* harmony import */ var _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../AbstractValueEditor */ "./src/editors/AbstractValueEditor.ts");
+
+
+
+class ValueEditor extends _AbstractValueEditor__WEBPACK_IMPORTED_MODULE_2__["default"] {
+    static editorOf(pointer, controller) {
+        const schema = controller.service("schema").get(pointer);
+        return schema.type !== "object" && schema.type !== "array";
+    }
+    constructor(pointer, controller, options = {}) {
+        super(pointer, controller, options);
+        this.render();
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_View__WEBPACK_IMPORTED_MODULE_1__["default"], this.viewModel));
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/delegationplugin/index.ts":
+/*!**********************************************!*\
+  !*** ./src/plugin/delegationplugin/index.ts ***!
+  \**********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DelegationPlugin; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../editors/AbstractEditor */ "./src/editors/AbstractEditor.ts");
+/* harmony import */ var mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! mithril-material-forms/index */ "./node_modules/mithril-material-forms/index.ts");
+
+
+
+class AbstractDelegationEditor extends _editors_AbstractEditor__WEBPACK_IMPORTED_MODULE_1__["default"] {
+    static editorOf(pointer, controller, options) {
+        return options.delegate != null && options.isDelegated !== true;
+    }
+    constructor(pointer, controller, options) {
+        options.isDelegated = true;
+        super(pointer, controller, options);
+        this.render();
+    }
+    update(event) {
+        console.log("update delegation pliugin", event);
+    }
+    delegate(pointer) {
+        throw new Error("notify has not been implemented in 'DelegationEditor'");
+    }
+    render() {
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.dom, mithril__WEBPACK_IMPORTED_MODULE_0___default()(`.editron-delegate.editron-delegate--${this.getSchema().type}`, mithril__WEBPACK_IMPORTED_MODULE_0___default()(mithril_material_forms_index__WEBPACK_IMPORTED_MODULE_2__["Button"], { onclick: () => this.delegate(this.pointer) }, "edit")));
+    }
+}
+class DelegationPlugin {
+    constructor(options) {
+        this.id = "delegation-plugin";
+        this.onDelegation = options.onDelegation;
+        this.dom = document.createElement("div");
+    }
+    initialize(controller) {
+        this.controller = controller;
+        class DelegationEditor extends AbstractDelegationEditor {
+        }
+        DelegationEditor.prototype.delegate = this.delegate.bind(this);
+        this.controller.editors.unshift(DelegationEditor);
+        return this;
+    }
+    delegate(pointer) {
+        if (this.current) {
+            this.current.destroy();
+        }
+        this.current = this.controller.createEditor(pointer, this.dom, { isDelegated: true });
+        this.onDelegation({
+            controller: this.controller,
+            pointer,
+            editor: this.current
+        });
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/index.ts":
+/*!*****************************!*\
+  !*** ./src/plugin/index.ts ***!
+  \*****************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const editors = [];
+const validators = [];
+/* harmony default export */ __webpack_exports__["default"] = ({
+    /** register an editor (widget) to use in editron-controller */
+    editor(constructor) {
+        console.log(`register editor ${constructor.name}`);
+        editors.push(constructor);
+    },
+    /**
+     * add a custom json-schema format-validator for a specific format value
+     * @param _ - unused...
+     * @param value - value of property format for this validator (must be unique formatType)
+     * @param validator - (format) validation function
+     */
+    validator(_, value, validator) {
+        validators.push(["format", value, validator]);
+    },
+    /**
+     * add a custom keyword-validator for a new keyword
+     * @param datatype - datatype, to register keyword
+     * @param keywordName - name of the keyword (like oneOf, format, etc)
+     * @param validator - (keyword) validation function
+     */
+    keywordValidator(datatype, keywordName, validator) {
+        validators.push(["keyword", datatype, keywordName, validator]);
+    },
+    /** returns all registered plugin-editors */
+    getEditors() {
+        return editors;
+    },
+    /** returns all validation function */
+    getValidators() {
+        return validators;
+    }
+});
+
+
+/***/ }),
+
+/***/ "./src/plugin/remotedataplugin/index.ts":
+/*!**********************************************!*\
+  !*** ./src/plugin/remotedataplugin/index.ts ***!
+  \**********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return RemoteDataPlugin; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1__);
+
+
+class RemoteDataPlugin {
+    constructor(options) {
+        this.id = "remote-data-plugin";
+        // this.dom = document.createElement("div");
+    }
+    initialize(controller) {
+        this.controller = controller;
+        return this;
+    }
+    async setData(pointer, remote) {
+        const { controller } = this;
+        const currentData = controller.service("data").getDataByReference();
+        const source = Object.keys(remote.set);
+        const sourcePointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, remote.source);
+        let sourceData = controller.service("data").get(sourcePointer);
+        if (sourceData == null || sourceData === "") {
+            return;
+        }
+        if (typeof sourceData !== "object") {
+            sourceData = { [sourcePointer.split("/").pop()]: sourceData };
+        }
+        const remoteUrl = json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_1___default()(remote.url, sourceData);
+        const json = await controller.proxy().get("json", ({ source: remoteUrl }));
+        source.forEach(key => {
+            const targetPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, remote.set[key]);
+            const currentValue = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(currentData, targetPointer);
+            if (remote.overwrite !== true && !(currentValue === "" || currentValue == null)) {
+                return;
+            }
+            const targetValue = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(json, key);
+            // console.log("set", targetPointer, targetValue, "//", key, remote.set);
+            controller.service("data").set(targetPointer, targetValue);
+        });
+    }
+    onCreateEditor(pointer, editor, options) {
+        if (options && options.remoteData) {
+            const { controller } = this;
+            const remote = options.remoteData;
+            // const source = Object.keys(remote.set);
+            const sourcePointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, remote.source);
+            // const sourceData = controller.service("data").get(sourcePointer);
+            // const remoteUrl = render(remote.url, sourceData);
+            controller.service("data").observe(sourcePointer, async () => {
+                this.setData(pointer, remote);
+            }, true);
+            this.setData(pointer, remote);
+            editor.__remoteDataPlugin = {
+                options: remote,
+            };
+        }
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__remoteDataPlugin) {
+            editor.__remoteDataPlugin = undefined;
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/selectionplugin/index.ts":
+/*!*********************************************!*\
+  !*** ./src/plugin/selectionplugin/index.ts ***!
+  \*********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SelectionPlugin; });
+class SelectionPlugin {
+    constructor(options) {
+        this.id = "selection-plugin";
+        // this.onDelegation = options.onDelegation;
+        this.dom = document.createElement("div");
+        this.onSelect = options.onSelect;
+        this.onDeselect = options.onDeselect;
+    }
+    initialize(controller) {
+        this.controller = controller;
+        document.body.addEventListener("click", () => this.deselect());
+        return this;
+    }
+    deselect() {
+        if (this.currentSelection) {
+            const editor = this.currentSelection;
+            editor.getElement().classList.remove("selected");
+            this.onDeselect({ pointer: editor.getPointer(), editor, options: editor.__selectionPlugin.options });
+            this.currentSelection = null;
+        }
+    }
+    select(event, editor) {
+        event.stopPropagation();
+        if (this.currentSelection === editor) {
+            return;
+        }
+        this.deselect();
+        this.currentSelection = editor;
+        this.currentSelection.getElement().classList.add("selected");
+        // console.log("add class to ", this.currentSelection.getElement());
+        this.onSelect({ pointer: editor.getPointer(), editor, options: editor.__selectionPlugin.options });
+    }
+    onCreateEditor(pointer, editor, options) {
+        if (options && options.selectable) {
+            // console.log("add selection", pointer, options);
+            editor.__selectionPlugin = {
+                options,
+                select: event => this.select(event, editor)
+            };
+            editor.getElement().addEventListener("click", editor.__selectionPlugin.select);
+        }
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__selectionPlugin) {
+            editor.getElement().removeEventListener("click", editor.__selectionPlugin.select);
+            editor.__selectionPlugin = undefined;
+            if (this.currentSelection === editor) {
+                this.currentSelection = null;
+            }
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/sortableplugin/index.ts":
+/*!********************************************!*\
+  !*** ./src/plugin/sortableplugin/index.ts ***!
+  \********************************************/
+/*! exports provided: onAddSortable, onEndSortable, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onAddSortable", function() { return onAddSortable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "onEndSortable", function() { return onEndSortable; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SortablePlugin; });
+/* harmony import */ var _components_container__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../components/container */ "./src/components/container/index.ts");
+/* harmony import */ var sortablejs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! sortablejs */ "./node_modules/sortablejs/modular/sortable.esm.js");
+/* harmony import */ var _utils_array__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../utils/array */ "./src/utils/array.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_3__);
+
+
+
+
+function onAddSortable(pointer, controller, event) {
+    console.log("on add");
+    const { from, newIndex, item } = event;
+    const schema = controller.service("schema").get(pointer);
+    // always remove node - we create it from data
+    item.parentNode.removeChild(item);
+    if (from.dataset.parent == null) {
+        console.log("Add -- create new child from data-property");
+        let data;
+        try {
+            data = JSON.parse(item.dataset.content);
+            // for convinience, add missing data
+            data = controller.service("schema").core.getTemplate([data], schema)[0];
+        }
+        catch (e) {
+            console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
+            return;
+        }
+        const toList = controller.service("data").get(pointer);
+        toList.splice(newIndex, 0, data);
+        controller.service("data").set(pointer, toList);
+    }
+}
+function onEndSortable(pointer, controller, event) {
+    // const element = event.item;  // dragged HTMLElement
+    const { to, from, oldIndex, newIndex } = event;
+    if (to === from && oldIndex === newIndex) {
+        console.log("drag had no effect");
+        return;
+    }
+    const toPointer = to.dataset.parent;
+    const fromPointer = from.dataset.parent;
+    // if container or pointer (different editors) are the same, its a move within a list
+    if (to === from || (toPointer != null && toPointer === fromPointer)) {
+        _utils_array__WEBPACK_IMPORTED_MODULE_2__["default"].moveItem(pointer, controller, oldIndex, newIndex);
+        return;
+    }
+    if (to !== from) {
+        if (toPointer == null) {
+            console.log("undefined `toPointer` on", to);
+            return;
+        }
+        if (fromPointer == null) {
+            console.log("undefined `fromPointer` on", from);
+            return;
+        }
+        const toList = controller.service("data").get(toPointer);
+        const fromList = controller.service("data").get(fromPointer);
+        toList.splice(newIndex, 0, fromList[oldIndex]);
+        fromList.splice(oldIndex, 1);
+        // join data to make one change request (for undo)
+        const rootData = controller.service("data").get();
+        gson_pointer__WEBPACK_IMPORTED_MODULE_3___default.a.set(rootData, fromPointer, fromList);
+        gson_pointer__WEBPACK_IMPORTED_MODULE_3___default.a.set(rootData, toPointer, toList);
+        controller.service("data").set("#", rootData);
+        // controller.service("data").set(fromPointer, fromList);
+        // controller.service("data").set(toPointer, toList);
+    }
+}
+class SortablePlugin {
+    constructor(options) {
+        this.id = "sortable-plugin";
+        // this.onDelegation = options.onDelegation;
+        this.dom = document.createElement("div");
+        // this.onSelect = options.onSelect;
+        // this.onDeselect = options.onDeselect;
+    }
+    initialize(controller) {
+        this.controller = controller;
+        // document.body.addEventListener("click", () => this.deselect());
+        return this;
+    }
+    onCreateEditor(pointer, editor, options) {
+        var _a;
+        if ((options === null || options === void 0 ? void 0 : options.sortable) == null) {
+            return;
+        }
+        const schema = this.controller.service("schema").get(pointer);
+        if ((schema === null || schema === void 0 ? void 0 : schema.type) !== "array") {
+            return;
+        }
+        const { controller } = this;
+        const $children = editor.getElement().querySelector(_components_container__WEBPACK_IMPORTED_MODULE_0__["CHILD_CONTAINER_SELECTOR"]);
+        if ($children == null) {
+            console.log(`failed retrieving sortable children container '${_components_container__WEBPACK_IMPORTED_MODULE_0__["CHILD_CONTAINER_SELECTOR"]}' -- abort`);
+            return;
+        }
+        $children.dataset.parent = pointer;
+        let hasMoved;
+        const sortable = new sortablejs__WEBPACK_IMPORTED_MODULE_1__["default"]($children, {
+            group: (_a = options.sortable.group) !== null && _a !== void 0 ? _a : pointer,
+            // handle: ".editron-handle",
+            handle: ".editron-item",
+            onChoose: () => {
+                // console.log("choose");
+            },
+            onStart: () => {
+                hasMoved = true;
+            },
+            onUnchoose: (event) => {
+                const { to, from, oldIndex, newIndex } = event;
+                if (hasMoved === false && to === from && newIndex == null) {
+                    // console.log(event);
+                    // selectionService.toggle(`${this.pointer}/${oldIndex}`);
+                    console.log("update location", `${pointer}/${oldIndex}`);
+                    controller.service("location").setCurrent(`${pointer}/${oldIndex}`);
+                }
+                hasMoved = false;
+            },
+            onAdd(event) {
+                onAddSortable(pointer, controller, event);
+            },
+            onEnd(event) {
+                onEndSortable(pointer, controller, event);
+                // console.log(
+                //     "target list", to, "\n",
+                //     "previous list", from, "\n",
+                //     "element's old index within old parent", event.oldIndex, "\n",
+                //     "element's new index within new parent", event.newIndex, "\n",
+                //     "element's old index within old parent, only counting draggable elements", event.oldDraggableIndex, "\n",
+                //     "element's new index within new parent, only counting draggable elements", event.newDraggableIndex, "\n",
+                //     "the clone element", event.clone, "\n",
+                //     "when item is in another sortable: `clone` if cloning, `true` if moving", event.pullMode
+                // );
+            }
+        });
+        editor.__sortablePlugin = { sortable };
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__sortablePlugin) {
+            editor.__sortablePlugin.sortable.destroy();
+            editor.__sortablePlugin = undefined;
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/plugin/syncplugin/index.ts":
+/*!****************************************!*\
+  !*** ./src/plugin/syncplugin/index.ts ***!
+  \****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SyncPlugin; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+
+class SyncPlugin {
+    constructor(options) {
+        this.id = "remote-data-plugin";
+        // this.dom = document.createElement("div");
+    }
+    initialize(controller) {
+        this.controller = controller;
+        return this;
+    }
+    onCreateEditor(pointer, editor, options) {
+        const { sync } = options !== null && options !== void 0 ? options : {};
+        if (sync == null) {
+            return;
+        }
+        const { controller } = this;
+        const from = Object.keys(sync.fromTo);
+        const fromPointer = from.map(key => gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, key));
+        const currentData = {};
+        fromPointer.forEach(pointer => (currentData[pointer] = controller.service("data").get(pointer)));
+        const toPointer = from.map(key => gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, sync.fromTo[key]));
+        fromPointer.forEach((sourcePointer, index) => {
+            controller.service("data").observe(sourcePointer, () => {
+                const targetValue = controller.service("data").get(toPointer[index]);
+                const currentValue = currentData[sourcePointer];
+                currentData[sourcePointer] = controller.service("data").get(sourcePointer);
+                if (!(targetValue == null || targetValue == "") && targetValue !== currentValue) {
+                    return;
+                }
+                controller.service("data").set(toPointer[index], currentData[sourcePointer]);
+            }, true);
+        });
+        editor.__syncPlugin = {
+            options: sync
+        };
+    }
+    onDestroyEditor(pointer, editor) {
+        if (editor.__syncPlugin) {
+            editor.__syncPlugin = undefined;
+        }
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/services/DataService.ts":
+/*!*************************************!*\
+  !*** ./src/services/DataService.ts ***!
+  \*************************************/
+/*! exports provided: isAddChange, isDeleteChange, isMoveChange, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isAddChange", function() { return isAddChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isDeleteChange", function() { return isDeleteChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isMoveChange", function() { return isMoveChange; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return DataService; });
+/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/copy */ "./src/services/utils/copy.ts");
+/* harmony import */ var _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducers/dataReducer */ "./src/services/reducers/dataReducer.ts");
+/* harmony import */ var _utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./utils/diffpatch */ "./src/services/utils/diffpatch.ts");
+/* harmony import */ var _utils_getParentPointer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./utils/getParentPointer */ "./src/services/utils/getParentPointer.ts");
+/* harmony import */ var _utils_createDiff__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/createDiff */ "./src/services/utils/createDiff.ts");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_6__);
+/* harmony import */ var _utils_isRootPointer__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./utils/isRootPointer */ "./src/services/utils/isRootPointer.ts");
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
+/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
+/* harmony import */ var _utils_UISchema__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../utils/UISchema */ "./src/utils/UISchema.ts");
+
+
+
+
+
+
+
+
+
+
+
+const DEBUG = false;
+const isAddChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "add";
+const isDeleteChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "delete";
+const isMoveChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "move";
+/** converts a patch to a list of simple changes for add, delete and move operations */
+function getArrayChangeList(patchResult, originalData) {
+    const changeList = [];
+    const eventLocation = patchResult.pointer;
+    let originalArray = gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get(originalData, eventLocation);
+    if (Array.isArray(originalArray) === false) {
+        return changeList;
+    }
+    originalArray = originalArray.map((_, index) => `${eventLocation}/${index}`);
+    const changedArray = _utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__["default"].patch(Array.from(originalArray), patchResult.patch);
+    // retrieve deleted items
+    for (let i = 0, l = originalArray.length; i < l; i += 1) {
+        if (changedArray.includes(originalArray[i]) === false) {
+            const change = { type: "delete", old: originalArray[i] };
+            changeList.push(change);
+        }
+    }
+    // identify added and movement items
+    for (let i = 0, l = changedArray.length; i < l; i += 1) {
+        let change;
+        const ptrOrData = changedArray[i];
+        const ptrChanged = ptrOrData !== `${eventLocation}/${i}`;
+        if (ptrChanged === false) {
+            continue;
+        }
+        if (Object(_utils_UISchema__WEBPACK_IMPORTED_MODULE_10__["isPointer"])(ptrOrData)) {
+            change = { type: "move", old: ptrOrData, next: `${eventLocation}/${i}` };
+        }
+        else {
+            change = { type: "add", next: `${eventLocation}/${i}`, data: ptrOrData };
+        }
+        changeList.push(change);
+    }
+    return changeList;
+}
+function getObjectChangeList(patchResult) {
+    const changeList = [];
+    const { pointer } = patchResult;
+    const properties = Object.keys(patchResult.patch);
+    for (let i = 0, l = properties.length; i < l; i += 1) {
+        const property = properties[i];
+        const change = patchResult.patch[property];
+        if (change.length === 1) {
+            changeList.push({ type: "add", next: `${pointer}/${property}` });
+        }
+        else if (change[2] === 0) {
+            changeList.push({ type: "delete", old: `${pointer}/${property}` });
+        }
+        else if (change[2] === 3) {
+            console.log("object property movement", patchResult);
+            throw new Error(`Property movement currently unsupported (${JSON.stringify(change)})`);
+        }
+        // changed value
+        // else if (change.length === 2) { console.log("change", `${patch.pointer}/${property}`); }
+    }
+    return changeList;
+}
+class DataService {
+    /**
+     * Read and modify form data and notify observers
+     * @param state - current state/store of application
+     * @param data - current application data (form)
+     */
+    constructor(state, data) {
+        /** state store-id of service */
+        this.id = "data";
+        /** current observers on json-pointer changes */
+        this.observers = {};
+        /** internal value to track previous data */
+        this.lastUpdate = {};
+        /** list of active watchers on update-lifecycle events */
+        this.watcher = [];
+        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_8__["default"])) {
+            throw new Error("Given state in DataService must be of instance 'State'");
+        }
+        this.state = state;
+        this.state.register(this.id, _reducers_dataReducer__WEBPACK_IMPORTED_MODULE_1__["default"]);
+        this.onStateChanged = this.onStateChanged.bind(this);
+        this.state.subscribe(this.id, this.onStateChanged);
+        if (data !== undefined) {
+            this.set("#", data);
+            this.resetUndoRedo();
+        }
+    }
+    // improved version - supporting multiple patches
+    onStateChanged() {
+        const current = this.state.get(this.id);
+        const patches = Object(_utils_createDiff__WEBPACK_IMPORTED_MODULE_4__["default"])(this.lastUpdate, current.data.present);
+        if (patches.length === 0) {
+            return;
+        }
+        for (let i = 0, l = patches.length; i < l; i += 1) {
+            const eventLocation = patches[i].pointer;
+            const parentData = this.getDataByReference(eventLocation);
+            const parentDataType = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_5___default()(parentData);
+            // build simple patch-information and notify about changes in pointer for move-instance support
+            // this is a major performance improvement for array-item movements
+            if (parentDataType === "array") {
+                const changes = getArrayChangeList(patches[i], this.lastUpdate);
+                this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes } });
+            }
+            else if (parentDataType === "object") {
+                const changes = getObjectChangeList(patches[i]);
+                this.notifyWatcher({ type: "data:update:container", value: { pointer: eventLocation, changes } });
+            }
+            const payload = { pointer: eventLocation, patch: patches[i].patch };
+            this.notifyWatcher({ type: "data:update:after", value: payload });
+            this.bubbleObservers(eventLocation, { type: "data:update", value: payload });
+        }
+        this.notifyWatcher({ type: "data:update:done", value: patches });
+        this.lastUpdate = current.data.present;
+    }
+    /** clear undo/redo stack */
+    resetUndoRedo() {
+        this.state.get(this.id).data.past.length = 0;
+    }
+    /**
+     * Get a copy of current data from the requested `pointer`
+     * @param [pointer] - data to fetch. Defaults to _root_
+     * @returns data, associated with `pointer`
+     */
+    get(pointer = "#") {
+        const value = this.getDataByReference(pointer);
+        return Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(value);
+    }
+    /** returns a reference to data from the requested `pointer` (cheaper)
+     * @param [pointer="#"] - data to fetch. Defaults to _root_
+     * @returns data, associated with `pointer`
+     */
+    getDataByReference(pointer = "#") {
+        var _a;
+        // eslint-disable-next-line no-invalid-this
+        return gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get((_a = this.state.get(this.id)) === null || _a === void 0 ? void 0 : _a.data.present, pointer);
+    }
+    /**
+     * Change data at the given `pointer`
+     * @param pointer - data location to modify
+     * @param value - new value at pointer
+     * @param [isSynched]
+     */
+    set(pointer, value, isSynched = false) {
+        if (this.isValid(pointer) === false) {
+            throw new Error(`Pointer ${pointer} does not exist in data`);
+        }
+        const currentValue = this.getDataByReference(pointer);
+        if (_utils_diffpatch__WEBPACK_IMPORTED_MODULE_2__["default"].diff(currentValue, value) == null) {
+            DEBUG && console.info("DataService abort update -- value not changed");
+            return;
+        }
+        this.notifyWatcher({ type: "data:update:before", value: { pointer, action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].DATA_SET } });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].setData(pointer, value, currentValue, isSynched));
+        if (pointer === "#" && isSynched === false) {
+            // do not add root changes to undo
+            this.state.get(this.id).data.past.pop();
+        }
+    }
+    /**
+     * Delete data at the given `pointer`
+     * @param pointer - data location to delete
+     */
+    delete(pointer) {
+        if (Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer)) {
+            throw new Error("Can not remove root data via delete. Use set(\"#/\", {}) instead.");
+        }
+        const key = pointer.split("/").pop();
+        const parentPointer = Object(_utils_getParentPointer__WEBPACK_IMPORTED_MODULE_3__["default"])(pointer);
+        const data = this.get(parentPointer);
+        gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.delete(data, key);
+        this.set(parentPointer, data);
+    }
+    /** get valid undo count */
+    undoCount() {
+        return this.state.get(this.id).data.past.length;
+    }
+    /** get valid redo count */
+    redoCount() {
+        return this.state.get(this.id).data.future.length;
+    }
+    /** undo last change */
+    undo() {
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].UNDO } });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].undo());
+    }
+    /** redo last undo */
+    redo() {
+        this.notifyWatcher({ type: "data:update:before", value: { pointer: "#", action: _reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionTypes"].REDO } });
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_9__["ActionCreators"].redo());
+    }
+    notifyWatcher(event) {
+        this.watcher.forEach(watcher => watcher(event));
+    }
+    /** watch DataService lifecycle events */
+    watch(callback) {
+        if (this.watcher.includes(callback) === false) {
+            this.watcher.push(callback);
+        }
+        return callback;
+    }
+    removeWatcher(callback) {
+        this.watcher = this.watcher.filter(watcher => watcher !== callback);
+    }
+    /**
+     * observes changes in data at the specified json-pointer
+     * @param pointer - json-pointer to watch
+     * @param callback - called on a change
+     * @param bubbleEvents - set to true to receive notifications changes in children of pointer
+     * @returns callback
+     */
+    observe(pointer, callback, bubbleEvents = false) {
+        callback.bubbleEvents = bubbleEvents;
+        this.observers[pointer] = this.observers[pointer] || [];
+        this.observers[pointer].push(callback);
+        return callback;
+    }
+    /** stop an observer from watching changes on pointer */
+    removeObserver(pointer, callback) {
+        if (this.observers[pointer] && this.observers[pointer].length > 0) {
+            this.observers[pointer] = this.observers[pointer].filter(cb => cb !== callback);
+        }
+        return this;
+    }
+    /** send an event to all json-pointer observers */
+    notify(pointer, event) {
+        if (this.observers[pointer] == null || this.observers[pointer].length === 0) {
+            return;
+        }
+        const observers = this.observers[pointer];
+        for (let i = 0, l = observers.length; i < l; i += 1) {
+            if (observers[i].bubbleEvents === true || event.value.pointer === pointer) {
+                observers[i](event);
+            }
+        }
+    }
+    bubbleObservers(pointer, event) {
+        const frags = gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.split(pointer);
+        while (frags.length) {
+            this.notify(gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.join(frags, true), event);
+            frags.length -= 1;
+        }
+        this.notify("#", event);
+    }
+    /** Test the pointer for existing data */
+    isValid(pointer) {
+        return Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_7__["default"])(pointer) || gson_pointer__WEBPACK_IMPORTED_MODULE_6___default.a.get(this.getDataByReference(), pointer) !== undefined;
+    }
+    /** destroy service */
+    destroy() {
+        this.state.unsubscribe(this.id, this.onStateChanged);
+        this.state.unregister(this.id);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/services/InstanceService.ts":
+/*!*****************************************!*\
+  !*** ./src/services/InstanceService.ts ***!
+  \*****************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return InstanceService; });
+/* harmony import */ var _DataService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DataService */ "./src/services/DataService.ts");
+
+/**
+ * manages editor instance events -
+ * tracks and notifies instances over their lifetime on changes
+ */
+class InstanceService {
+    constructor(controller) {
+        /** active editor instances */
+        this.instances = [];
+        this.controller = controller;
+    }
+    add(editor) {
+        const pointer = editor.getPointer();
+        editor.getElement().setAttribute("data-point", pointer);
+        editor.update = editor.update.bind(editor);
+        editor.pointer = pointer;
+        this.controller.service("data").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.controller.service("validation").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.instances.push(editor);
+    }
+    findFrom(parentPointer) {
+        return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer));
+    }
+    remove(editor) {
+        this.controller.service("data").removeObserver(editor.pointer, editor.update);
+        this.controller.service("validation").removeObserver(editor.pointer, editor.update);
+        this.instances = this.instances.filter(ed => ed !== editor);
+    }
+    /**
+     *  move or delete properties/items before upcoming editor updates
+     *  - changes pointers and observers and
+     *  - notifies editors
+     */
+    updateContainer(pointer, controller, changes) {
+        const changePointers = [];
+        for (let i = 0, l = changes.length; i < l; i += 1) {
+            const change = changes[i];
+            // we have to collect editors up front or patch-sequences get mangled
+            // between update and not yet udpated editor
+            if (Object(_DataService__WEBPACK_IMPORTED_MODULE_0__["isMoveChange"])(change)) {
+                changePointers.push({
+                    ...change,
+                    editors: this.findFrom(change.old)
+                });
+                // destroy editor instances
+            }
+            else if (Object(_DataService__WEBPACK_IMPORTED_MODULE_0__["isDeleteChange"])(change)) {
+                this.findFrom(change.old).forEach(ed => controller.destroyEditor(ed));
+            }
+        }
+        // change pointer of instances
+        changePointers.forEach(change => {
+            const { old: prevPtr, next: nextPtr, editors } = change;
+            editors.forEach((instance) => {
+                const newPointer = instance.getPointer().replace(prevPtr, nextPtr);
+                this.controller.service("data")
+                    .removeObserver(instance.pointer, instance.update)
+                    .observe(newPointer, instance.update, instance.notifyNestedChanges);
+                this.controller.service("validation")
+                    .removeObserver(instance.pointer, instance.update)
+                    .observe(newPointer, instance.update, instance.notifyNestedChanges);
+                instance.pointer = newPointer;
+                instance.update({ type: "pointer", value: newPointer });
+                instance.pointer = newPointer;
+                instance.getElement().setAttribute("data-point", newPointer);
+            });
+        });
+    }
+    /** change all editors active-state */
+    setActive(active) {
+        this.instances.forEach(ed => ed.update({ type: "active", value: active }));
+    }
+    destroy() {
+        this.instances.forEach(instance => instance.destroy());
+        this.instances.length = 0;
+    }
+    /**
+     * @debug
+     * @returns currently active editor/widget instances sorted by pointer
+     */
+    getInstancesPerPointer() {
+        const map = {};
+        this.instances.forEach(editor => {
+            const pointer = editor.getPointer();
+            map[pointer] = map[pointer] || [];
+            if (map[pointer].includes(editor) === false) {
+                map[pointer].push(editor);
+            }
+            else {
+                console.log("multiple instances on", editor.getPointer(), editor);
+            }
+        });
+        return map;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/services/LocationService.ts":
+/*!*****************************************!*\
+  !*** ./src/services/LocationService.ts ***!
+  \*****************************************/
+/*! exports provided: defaultOptions, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultOptions", function() { return defaultOptions; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LocationService; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
+
+
+const DELAY = 25;
+function getViewportHeight() {
+    return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+}
+const defaultOptions = {
+    rootElement: document.body,
+    scrollTopOffset: 0,
+    pagePattern: "(^#?/[^/]+)"
+};
+class LocationService {
+    /**
+     * Register to page changes, target-pointer changes or to (re)scroll to the current pointer in view.
+     *
+     * The LocationService manages global pointer states and scroll position:
+     *  - the "current pointer" tracks the currently focused editor and
+     *  - the "page pointer" corresponds to the first property of "current pointer", which may be used for main page loading
+     *
+     * ### Motivation
+     *
+     * Jumping to specific editors via the navigation requires a targeting system. A page reload may occur for a called
+     * anchor, and thus is scrolled into view async. In other cases the current view may be completely rebuilt which
+     * resets the scroll position to top. A stored pointer (current) may be used to retrieve the scroll position.
+     * named anchors fail when hash routes are present. Thus anchors are processed via javascript.
+     */
+    constructor(options = {}) {
+        this.PAGE_EVENT = "page";
+        this.TARGET_EVENT = "target";
+        this.watcher = [];
+        this.options = { ...defaultOptions, ...options };
+        this.setCurrent("");
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_1__["EventType"].CURRENT_PAGE, pointer => this.notifyWatcher({ type: "location:page", value: pointer }));
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_1__["EventType"].CURRENT_POINTER, pointer => this.notifyWatcher({ type: "location:target", value: pointer }));
+    }
+    // update page and target pointer
+    goto(targetPointer, rootElement = this.options.rootElement) {
+        const matches = targetPointer.match(new RegExp(this.options.pagePattern));
+        if (!matches) {
+            return;
+        }
+        const nextPage = matches.pop();
+        const currentPage = _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPage();
+        if (currentPage !== nextPage) {
+            _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPage(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(nextPage, true));
+        }
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPointer(gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(targetPointer, true));
+        this.focus(rootElement);
+    }
+    /** set target pointer */
+    setCurrent(pointer) {
+        if (pointer !== this.getCurrent()) {
+            _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPointer(pointer);
+            this.notifyWatcher({ type: "focus", value: pointer });
+        }
+    }
+    getCurrent() {
+        return _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPointer();
+    }
+    /** focus target pointer */
+    focus(rootElement = this.options.rootElement) {
+        clearTimeout(this.timeout);
+        const pointer = _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPointer();
+        const targetElement = rootElement.querySelector(`[data-point="${pointer}"]`);
+        if (targetElement == null) {
+            console.log(`Location:focus - target ${pointer} not found`);
+            return;
+        }
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+        this.timeout = setTimeout(() => {
+            const { scrollTopOffset } = this.options;
+            const bound = targetElement.getBoundingClientRect();
+            const viewportHeight = getViewportHeight();
+            if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
+                // @note: this works only if editron is within a scrollable page
+                window.scrollTo(0, bound.top + scrollTopOffset);
+            }
+            else {
+                console.log("skip scrolling - already in viewport", viewportHeight, bound.top);
+            }
+            targetElement.dispatchEvent(new Event("focus"));
+            // @todo only fire focus event?
+            // targetElement.focus && targetElement.focus();
+            this.timeout = null;
+        }, DELAY);
+    }
+    blur(pointer) {
+        if (_uistate__WEBPACK_IMPORTED_MODULE_1__["default"].getCurrentPointer() !== pointer) {
+            return;
+        }
+        _uistate__WEBPACK_IMPORTED_MODULE_1__["default"].setCurrentPointer("");
+        this.notifyWatcher({ type: "blur", value: pointer });
+    }
+    watch(watcher) {
+        if (this.watcher.includes(watcher) === false) {
+            this.watcher.push(watcher);
+        }
+        return this;
+    }
+    notifyWatcher(event) {
+        this.watcher.forEach(w => w(event));
+        return this;
+    }
+    removeWatcher(watcher) {
+        this.watcher = this.watcher.filter(w => w !== watcher);
+        return this;
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/services/OverlayService.ts":
+/*!****************************************!*\
+  !*** ./src/services/OverlayService.ts ***!
+  \****************************************/
+/*! exports provided: defaultOptions, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defaultOptions", function() { return defaultOptions; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _components_overlay__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/overlay */ "./src/components/overlay/index.ts");
+/* harmony import */ var _utils_createElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/createElement */ "./src/utils/createElement.ts");
+/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
+/* eslint no-use-before-define: 0 */
+
+
+
+
+_uistate__WEBPACK_IMPORTED_MODULE_3__["default"].on(_uistate__WEBPACK_IMPORTED_MODULE_3__["EventType"].OVERLAY, value => OverlayService.onChange(value === null || value === void 0 ? void 0 : value.element, value === null || value === void 0 ? void 0 : value.options));
+const defaultOptions = {
+    ok: false,
+    save: true,
+    fullscreen: false,
+    onAbort: Function.prototype,
+    onSave: Function.prototype
+};
 /**
  * Opens an overlay with a DOM-Node as contents
- * @type {Object}
  */
-
-var OverlayService = {
-  /**
-   * Opens the overlay, showing the given `container` as conten
-   *
-   * Options
-   *  {Boolean} ok            - display `ok`, instead of `abort`
-   *  {Boolean} fullscreen    - fullscreen size of overlay, regardless of content
-   *  {Function} onAbort      - called when Overlay is closed via ok/abort
-   *  {Function} onSave       - called when Overlay is closed via save
-   *
-   * @param  {HTMLElement} container
-   * @param  {Obejct} options
-   */
-  open: function open(container, options) {
-    UIState.setOverlay({
-      element: container,
-      options: _extends({
-        ok: false,
-        save: true,
-        fullscreen: false,
-        onAbort: Function.prototype,
-        onSave: Function.prototype
-      }, options)
-    });
-  },
-  close: function close() {
-    UIState.setOverlay(); // must destroy component for reuse
-
-    m.render(this.getElement(), m("i"));
-  },
-  onChange: function onChange(container, options) {
-    var _this = this;
-
-    if (container == null) {
-      var _$el = this.getElement();
-
-      _$el.parentNode && _$el.parentNode.removeChild(_$el);
-      return;
-    }
-
-    var $el = this.getElement();
-    container.classList.add("overlay__item");
-    m.render($el, m(Overlay, {
-      container: container,
-      fullscreen: options.fullscreen,
-      showSave: options.save,
-      titleAbort: options.ok ? "OK" : "Abbrechen",
-      onSave: function onSave() {
-        options.onSave();
-
-        _this.close();
-      },
-      onAbort: function onAbort() {
-        return _this.close();
-      },
-      // calls onremove -> onAbort
-      onremove: function onremove() {
-        return options.onAbort();
-      }
-    }));
-    document.body.appendChild($el);
-  },
-  getElement: function getElement() {
-    var _this2 = this;
-
-    if (this.$element == null) {
-      this.$element = createElement(".ui-overlay");
-      this.$element.addEventListener("click", function (e) {
-        // close popup if clicked on "background"
-        if (e.target === _this2.$element) {
-          _this2.close();
+const OverlayService = {
+    /** Opens the overlay, showing the given `container` as content */
+    open(container, options) {
+        // @ts-ignore
+        _uistate__WEBPACK_IMPORTED_MODULE_3__["default"].setOverlay({
+            element: container,
+            options: { ...defaultOptions, ...options }
+        });
+    },
+    close() {
+        _uistate__WEBPACK_IMPORTED_MODULE_3__["default"].setOverlay();
+        // must destroy component for reuse
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(this.getElement(), mithril__WEBPACK_IMPORTED_MODULE_0___default()("i"));
+    },
+    onChange(container, options) {
+        if (container == null) {
+            const $el = this.getElement();
+            $el.parentNode && $el.parentNode.removeChild($el);
+            return;
         }
-      });
+        const $el = this.getElement();
+        container.classList.add("overlay__item");
+        mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render($el, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_overlay__WEBPACK_IMPORTED_MODULE_1__["default"], {
+            container,
+            fullscreen: options.fullscreen,
+            showSave: options.save,
+            titleAbort: options.ok ? "OK" : "Abbrechen",
+            onSave: () => {
+                options.onSave();
+                this.close();
+            },
+            onAbort: () => this.close(),
+            onremove: () => options.onAbort()
+        }));
+        document.body.appendChild($el);
+    },
+    getElement() {
+        if (this.$element == null) {
+            this.$element = Object(_utils_createElement__WEBPACK_IMPORTED_MODULE_2__["default"])(".ui-overlay");
+            this.$element.addEventListener("click", (e) => {
+                // close popup if clicked on "background"
+                if (e.target === this.$element) {
+                    this.close();
+                }
+            });
+        }
+        return this.$element;
     }
-
-    return this.$element;
-  }
 };
-module.exports = OverlayService;
+/* harmony default export */ __webpack_exports__["default"] = (OverlayService);
+
 
 /***/ }),
 
-/***/ "./services/SchemaService.js":
-/*!***********************************!*\
-  !*** ./services/SchemaService.js ***!
-  \***********************************/
-/*! no static exports found */
+/***/ "./src/services/SchemaService.ts":
+/*!***************************************!*\
+  !*** ./src/services/SchemaService.ts ***!
+  \***************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
-
-var copy = __webpack_require__(/*! ./utils/copy */ "./services/utils/copy.js");
-
-var jsl = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
-
-var _getChildSchemaSelection = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").getChildSchemaSelection;
-/**
- * Manages json-schema interactions and adds caching of reoccuring json-schema requests
- *
- * @param {Object} schema       - json-schema
- * @param {Object} [data={}]    - data corresponding to json-schema
- * @param {Core} [core={}]      - instance of json-schema-library Core
- */
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return SchemaService; });
+/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/copy */ "./src/services/utils/copy.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_1__);
 
 
-var SchemaService =
-/*#__PURE__*/
-function () {
-  function SchemaService() {
-    var schema = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var core = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Core();
 
-    _classCallCheck(this, SchemaService);
-
-    this.core = core;
-    this.setSchema(schema);
-    this.setData(data);
-  }
-  /**
-   * Update data by any missing (default) values specified in the json-schema
-   * @param {Object} [data=currentData]   - update given data or use the internal stored data (via `setData(data)`)
-   * @param {Object} [schema]             - specific json schema, or the internal store schema (via `setSchema(root)`)
-   * @return {Any} json data with valid default data values
-   */
-
-
-  _createClass(SchemaService, [{
-    key: "addDefaultData",
-    value: function addDefaultData() {
-      var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.data;
-      var schema = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.schema;
-      return this.core.getTemplate(data, schema);
+const { getChildSchemaSelection } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a;
+const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.cores;
+class SchemaService {
+    /**
+     * Manages json-schema interactions and adds caching of reoccuring json-schema requests
+     * @param schema - json-schema
+     * @param [data] - data corresponding to json-schema
+     * @param [core] - instance of json-schema-library Core
+     */
+    constructor(schema = { type: "object" }, data = {}, core = new Core()) {
+        /** cache for resolved json-pointer */
+        this.cache = {};
+        this.core = core;
+        this.setSchema(schema);
+        this.setData(data);
+    }
+    /**
+     * Update data by any missing (default) values specified in the json-schema
+     * @param [data=currentData]   - update given data or use the internal stored data (via `setData(data)`)
+     * @param [schema]             - specific json schema, or the internal store schema (via `setSchema(root)`)
+     * @return json data with valid default data values
+     */
+    addDefaultData(data = this.data, schema = this.schema) {
+        return this.core.getTemplate(data, schema);
     }
     /**
      * Create the template data object based on the json-schema, which fullfills the schemas structure as much as
      * possible
-     * @param  {Object} schema
-     * @return {Any} data corresponding to json-schema
+     * @return data corresponding to json-schema
      */
-
-  }, {
-    key: "getTemplate",
-    value: function getTemplate(schema) {
-      return this.core.getTemplate(undefined, schema);
+    getTemplate(schema) {
+        return this.core.getTemplate(undefined, schema);
     }
     /**
-     * @param  {JsonPointer} pointer
-     * @param  {String|Number} property
-     * @return {Array} list of valid items to insert at the given position
+     * @return list of valid items to insert at the given position
      */
-
-  }, {
-    key: "getChildSchemaSelection",
-    value: function getChildSchemaSelection(pointer, property) {
-      var parentSchema = this.get(pointer);
-      return _getChildSchemaSelection(this.core, property, parentSchema);
+    getChildSchemaSelection(pointer, property) {
+        const parentSchema = this.get(pointer);
+        return getChildSchemaSelection(this.core, property, parentSchema);
     }
     /**
      * Sets the root data. This is optional and used within internal functions to support optional _data_-parameters.
      * On every change in data, call this method with that latest state `schemaService.setData(latestData)`;
-     *
-     * @param {Any} data    - latest root data corresponding to stored json-schema
+     * @param data - latest root data corresponding to stored json-schema
      */
-
-  }, {
-    key: "setData",
-    value: function setData(data) {
-      this.data = this.addDefaultData(data);
-      this.resetCache();
+    setData(data) {
+        this.data = this.addDefaultData(data);
+        this.resetCache();
     }
-    /**
-     * Set or change the application schema
-     * @param {Object} schema
-     */
-
-  }, {
-    key: "setSchema",
-    value: function setSchema(schema) {
-      this.core.setSchema(schema);
-      this.schema = this.core.getSchema();
-      this.resetCache();
+    /** Set or change the application schema */
+    setSchema(schema) {
+        this.core.setSchema(schema);
+        this.schema = this.core.getSchema();
+        this.resetCache();
     }
-  }, {
-    key: "resetCache",
-    value: function resetCache() {
-      this.cache = {};
+    resetCache() {
+        this.cache = {};
     }
     /**
      * Return the json-schema for the requested pointer. Resolved the pointer on the stored schema by the accompanied
      * json-data, which is required to resolve optional json-schema values.
      *
-     * @param  {JsonPointer} pointer    - pointer in data
-     * @param  {Any} [data]             - root data, corresponding to json-schema. This is optional, when the root-data
-     *                                       is up-to-date (via setData)
-     * @return {Object} json-schema for the requested pointer
+     * @param pointer - pointer in data
+     * @param [data] - root data, corresponding to json-schema.
+     *     This is optional, when the root-data is up-to-date (via setData)
+     * @return json-schema for the requested pointer
      */
-
-  }, {
-    key: "get",
-    value: function get(pointer, data) {
-      if (data) {
-        var result = jsl.getSchema(this.core, pointer, data, this.schema);
-        return copy(result);
-      }
-
-      if (this.cache[pointer] === undefined) {
-        var _result = jsl.getSchema(this.core, pointer, this.data, this.schema);
-
-        if (_result.variableSchema === true) {
-          // @special case: do not cache dynamic schema object (oneOf)
-          return _result;
+    get(pointer, data) {
+        if (data) {
+            const result = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.getSchema(this.core, pointer, data, this.schema);
+            return Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(result);
         }
-
-        this.cache[pointer] = copy(_result);
-      }
-
-      return this.cache[pointer];
+        if (this.cache[pointer] === undefined) {
+            const result = json_schema_library__WEBPACK_IMPORTED_MODULE_1___default.a.getSchema(this.core, pointer, this.data, this.schema);
+            if (result.variableSchema === true) {
+                // @special case: do not cache dynamic schema object (oneOf)
+                return result;
+            }
+            this.cache[pointer] = Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(result);
+        }
+        return this.cache[pointer];
     }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.setData(null);
-      this.setSchema(null);
+    destroy() {
+        this.setData(null);
+        this.setSchema(null);
     }
-  }]);
+}
 
-  return SchemaService;
-}();
-
-module.exports = SchemaService;
 
 /***/ }),
 
-/***/ "./services/SessionService.js":
-/*!************************************!*\
-  !*** ./services/SessionService.js ***!
-  \************************************/
-/*! no static exports found */
+/***/ "./src/services/SessionService.ts":
+/*!****************************************!*\
+  !*** ./src/services/SessionService.ts ***!
+  \****************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-/**
- * Simple session service to store and retrieve user-specific data
- * @type {Object}
- */
-module.exports = {
-  get: function get(key, defaultValue) {
-    if (window.localStorage == null) {
-      return defaultValue;
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/** Simple session service to store and retrieve user-specific data */
+/* harmony default export */ __webpack_exports__["default"] = ({
+    get(key, defaultValue) {
+        if (window.localStorage == null) {
+            return defaultValue;
+        }
+        if (localStorage.getItem(key) == null) {
+            this.set(key, defaultValue);
+        }
+        try {
+            return JSON.parse(localStorage.getItem(key));
+        }
+        catch (error) {
+            return defaultValue;
+        }
+    },
+    set(key, value) {
+        if (window.localStorage) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+    },
+    toggle(key) {
+        const value = !this.get(key, false);
+        this.set(key, value);
+        return value;
     }
+});
 
-    if (localStorage.getItem(key) == null) {
-      this.set(key, defaultValue);
-    }
-
-    try {
-      return JSON.parse(localStorage.getItem(key));
-    } catch (error) {
-      return defaultValue;
-    }
-  },
-  set: function set(key, value) {
-    if (window.localStorage) {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-  },
-  toggle: function toggle(key) {
-    var value = !this.get(key, false);
-    this.set(key, value);
-    return value;
-  }
-};
 
 /***/ }),
 
-/***/ "./services/State.js":
-/*!***************************!*\
-  !*** ./services/State.js ***!
-  \***************************/
-/*! no static exports found */
+/***/ "./src/services/State.ts":
+/*!*******************************!*\
+  !*** ./src/services/State.ts ***!
+  \*******************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return State; });
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var FLAG_CHANGED = "hasChanged";
-
-var State =
-/*#__PURE__*/
-function () {
-  function State() {
-    var _this = this;
-
-    _classCallCheck(this, State);
-
-    this.FLAG_CHANGED = FLAG_CHANGED;
-    this.reducers = {
-      action: function action(state, _action) {
-        return _action;
-      }
-    };
-    this.emitter = mitt();
-    this.store = redux.createStore(function () {}); // eslint-disable-line @typescript-eslint/no-empty-function
-
-    this.store.subscribe(function () {
-      return _this.onChange(_this.store.getState());
-    });
-  }
-
-  _createClass(State, [{
-    key: "onChange",
-    value: function onChange(currentState) {
-      var _this2 = this;
-
-      Object.keys(currentState).forEach(function (id) {
-        var subState = currentState[id];
-
-        if (subState[FLAG_CHANGED] != null && subState[FLAG_CHANGED] !== false) {
-          _this2.emitter.emit(id, subState);
+const FLAG_CHANGED = "hasChanged";
+class State {
+    constructor() {
+        this.FLAG_CHANGED = FLAG_CHANGED;
+        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_1__["createNanoEvents"])();
+        this.FLAG_CHANGED = FLAG_CHANGED;
+        this.reducers = {
+            action: (state, action) => action
+        };
+        this.store = Object(redux__WEBPACK_IMPORTED_MODULE_0__["createStore"])(() => { }); // eslint-disable-line @typescript-eslint/no-empty-function
+        this.store.subscribe(() => this.onChange(this.store.getState()));
+    }
+    onChange(currentState) {
+        Object
+            .keys(currentState)
+            .forEach(id => {
+            const subState = currentState[id];
+            if (subState[FLAG_CHANGED] != null && subState[FLAG_CHANGED] !== false) {
+                this.emitter.emit(id, subState);
+            }
+        });
+    }
+    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting
+    register(id, reducer) {
+        if (this.reducers[id]) {
+            throw new Error(`A reducer with id ${id} is already registered`);
         }
-      });
-    } // eslint-disable-next-line
-    // http://stackoverflow.com/questions/32968016/how-to-dynamically-load-reducers-for-code-splitting-in-a-redux-application
-
-  }, {
-    key: "register",
-    value: function register(id, reducer) {
-      if (this.reducers[id]) {
-        throw new Error("A reducer with id ".concat(id, " is already registered"));
-      }
-
-      this.reducers[id] = reducer;
-      this.store.replaceReducer(redux.combineReducers(this.reducers));
+        this.reducers[id] = reducer;
+        this.store.replaceReducer(Object(redux__WEBPACK_IMPORTED_MODULE_0__["combineReducers"])(this.reducers));
     }
-  }, {
-    key: "unregister",
-    value: function unregister(id) {
-      // @todo either remove reducers and data or make them reusable (per application id)
-      // delete this.reducers[id];
-      // this.store.replaceReducer(redux.combineReducers(this.reducers));
-      var currentState = this.store.getState();
-      delete currentState[id];
+    unregister(id) {
+        // @todo either remove reducers and data or make them reusable (per application id)
+        // delete this.reducers[id];
+        // this.store.replaceReducer(redux.combineReducers(this.reducers));
+        const currentState = this.store.getState();
+        delete currentState[id];
     }
-  }, {
-    key: "get",
-    value: function get(id) {
-      var currentState = this.store.getState();
-      return id == null ? currentState : currentState[id];
+    get(id) {
+        const currentState = this.store.getState();
+        return id == null ? currentState : currentState[id];
     }
-  }, {
-    key: "dispatch",
-    value: function dispatch() {
-      var _this$store;
-
-      return (_this$store = this.store).dispatch.apply(_this$store, arguments);
+    dispatch(...args) {
+        return this.store.dispatch(...args);
     }
     /**
      * Subscribe to change (all) events
      * @param  {[type]}   id       [description]
      * @param  {Function} callback [description]
      */
-
-  }, {
-    key: "subscribe",
-    value: function subscribe(id, callback) {
-      if (typeof id !== "string" || typeof callback !== "function") {
-        throw new Error("Invalid arguments for state.subscribe ".concat(arguments));
-      }
-
-      var state = this.store.getState();
-
-      if (state[id] && state[id][FLAG_CHANGED] != null) {
+    subscribe(id, callback) {
+        var _a;
+        if (typeof id !== "string" || typeof callback !== "function") {
+            // eslint-disable-next-line prefer-rest-params
+            throw new Error(`Invalid arguments for state.subscribe ${arguments}`);
+        }
+        const state = this.store.getState();
+        if (((_a = state[id]) === null || _a === void 0 ? void 0 : _a[FLAG_CHANGED]) == null) {
+            throw new Error(`Could not subscribe to state ${id}. Property ${FLAG_CHANGED} not available`);
+        }
         this.emitter.on(id, callback);
-      } else {
-        throw new Error("Could not subscribe to state ".concat(id, ". Property ").concat(FLAG_CHANGED, " not available"));
-      }
     }
-  }, {
-    key: "unsubscribe",
-    value: function unsubscribe(id, callback) {
-      if (typeof id !== "string" || typeof callback !== "function") {
-        throw new Error("Invalid arguments for state.unsubscribe ".concat(arguments));
-      }
-
-      this.emitter.off(id, callback);
+    unsubscribe(id, callback) {
+        var _a;
+        if (typeof id !== "string" || typeof callback !== "function") {
+            // eslint-disable-next-line prefer-rest-params
+            throw new Error(`Invalid arguments for state.unsubscribe ${arguments}`);
+        }
+        this.emitter.events[id] = (_a = this.emitter.events[id]) === null || _a === void 0 ? void 0 : _a.filter(func => func !== callback);
     }
-  }]);
+}
 
-  return State;
-}();
-
-State.FLAG_CHANGED = FLAG_CHANGED;
-module.exports = State;
 
 /***/ }),
 
-/***/ "./services/ValidationService.js":
-/*!***************************************!*\
-  !*** ./services/ValidationService.js ***!
-  \***************************************/
-/*! no static exports found */
+/***/ "./src/services/ValidationService.ts":
+/*!*******************************************!*\
+  !*** ./src/services/ValidationService.ts ***!
+  \*******************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ValidationService; });
+/* harmony import */ var _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./src/services/utils/BubblingCollectionObservable.ts");
+/* harmony import */ var _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./reducers/errorReducer */ "./src/services/reducers/errorReducer.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./State */ "./src/services/State.ts");
+/* harmony import */ var _utils_Validation__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./utils/Validation */ "./src/services/utils/Validation.ts");
+/* harmony import */ var _reducers_actions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./reducers/actions */ "./src/services/reducers/actions.ts");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
 
-var Core = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js").cores.JsonEditor;
 
-var State = __webpack_require__(/*! ./State */ "./services/State.js");
 
-var ActionCreators = __webpack_require__(/*! ./reducers/actions */ "./services/reducers/actions.js").ActionCreators;
-
-var errorReducer = __webpack_require__(/*! ./reducers/errorReducer */ "./services/reducers/errorReducer.js");
-
-var Validation = __webpack_require__(/*! ./utils/Validation */ "./services/utils/Validation.js");
-
-var BubblingCollectionObservable = __webpack_require__(/*! ./utils/BubblingCollectionObservable */ "./services/utils/BubblingCollectionObservable.js");
-
-var EVENTS = {
-  BEFORE_VALIDATION: "beforeValidation",
-  AFTER_VALIDATION: "afterValidation",
-  ON_ERROR: "onError"
-};
-/**
- * @class  ValidationService
- */
-
-var ValidationService =
-/*#__PURE__*/
-function () {
-  function ValidationService(state) {
-    var schema = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var core = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Core();
-
-    _classCallCheck(this, ValidationService);
-
-    if (!(state instanceof State)) {
-      throw new Error("Given state in ValidationService must be of instance 'State'");
+const { JsonEditor: Core } = json_schema_library__WEBPACK_IMPORTED_MODULE_2___default.a.cores;
+class ValidationService {
+    constructor(state, schema = { type: "object" }, core = new Core()) {
+        /** state store-id of service */
+        this.id = "errors";
+        this.observer = new _utils_BubblingCollectionObservable__WEBPACK_IMPORTED_MODULE_0__["default"]();
+        if (!(state instanceof _State__WEBPACK_IMPORTED_MODULE_3__["default"])) {
+            throw new Error("Given state in ValidationService must be of instance 'State'");
+        }
+        this.core = core;
+        this.set(schema);
+        this.state = state;
+        this.state.register(this.id, _reducers_errorReducer__WEBPACK_IMPORTED_MODULE_1__["default"]);
+        this.setErrorHandler(error => error);
     }
-
-    this.core = core;
-    this.set(schema);
-    this.observer = new BubblingCollectionObservable();
-    this.emitter = mitt();
-    this.id = "errors";
-    this.state = state;
-    this.state.register(this.id, errorReducer);
-    this.setErrorHandler(function (error) {
-      return error;
-    });
-    this.EVENTS = EVENTS;
-  }
-
-  _createClass(ValidationService, [{
-    key: "setErrorHandler",
-    value: function setErrorHandler(callback) {
-      this.errorHandler = callback;
+    /** sets a custom error handler to map errors */
+    setErrorHandler(callback) {
+        this.errorHandler = callback;
     }
     /**
      * Starts the validation, executing callback handlers and emitters on the go
-     *
-     * @param  {Any} data               - data to validate
-     * @param  {JsonPointer} [pointer]  - optional location. Per default all data is validated
-     * @return {Promise} promise, resolving with list of errors when all async validations are performed
+     * @param data               - data to validate
+     * @param [pointer]  - optional location. Per default all data is validated
+     * @return promise, resolving with list of errors when all async validations are performed
      */
-
-  }, {
-    key: "validate",
-    value: function validate(data) {
-      var _this = this;
-
-      var pointer = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "#";
-
-      if (this.currentValidation) {
-        this.currentValidation.cancel();
-      }
-
-      this.emit(EVENTS.BEFORE_VALIDATION); // @feature selective-validation
-
-      this.observer.clearEvents(pointer); // reset stored list of events
-
-      var remainingErrors = [];
-
-      if (pointer !== "#") {
-        // the following filtering is a duplicate from BubblingCollectionObservable.clearEvents
-        remainingErrors = this.state.get(this.id).filter(function (e) {
-          return e.data.pointer == null || e.data.pointer.startsWith(pointer) === false;
+    validate(data, pointer = "#") {
+        if (this.currentValidation) {
+            this.currentValidation.cancel();
+        }
+        // @feature selective-validation
+        this.observer.clearEvents(pointer);
+        // reset stored list of events
+        let remainingErrors = [];
+        if (pointer !== "#") {
+            // the following filtering is a duplicate from BubblingCollectionObservable.clearEvents
+            remainingErrors = this.state.get(this.id)
+                .filter(e => e.data.pointer == null || e.data.pointer.startsWith(pointer) === false);
+        }
+        this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(remainingErrors));
+        this.currentValidation = new _utils_Validation__WEBPACK_IMPORTED_MODULE_4__["default"](data, pointer, this.errorHandler);
+        return this.currentValidation.start(this.core, (newError, currentErrors) => {
+            // @feature selective-validation
+            const completeListOfErrors = remainingErrors.concat(currentErrors);
+            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(completeListOfErrors));
+            this.observer.notify(newError.data.pointer, newError);
+        }, validationErrors => {
+            // @feature selective-validation
+            const completeListOfErrors = remainingErrors.concat(validationErrors);
+            this.state.dispatch(_reducers_actions__WEBPACK_IMPORTED_MODULE_5__["ActionCreators"].setErrors(completeListOfErrors));
+            this.currentValidation = null;
         });
-      }
-
-      this.state.dispatch(ActionCreators.setErrors(remainingErrors));
-      this.currentValidation = new Validation(data, pointer, this.errorHandler);
-      return this.currentValidation.start(this.core, function (newError, currentErrors) {
-        // @feature selective-validation
-        var completeListOfErrors = remainingErrors.concat(currentErrors);
-
-        _this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
-
-        _this.observer.notify(newError.data.pointer, newError);
-
-        _this.emit(EVENTS.ON_ERROR, newError);
-      }, function (validationErrors) {
-        // @feature selective-validation
-        var completeListOfErrors = remainingErrors.concat(validationErrors);
-
-        _this.state.dispatch(ActionCreators.setErrors(completeListOfErrors));
-
-        _this.emit(EVENTS.AFTER_VALIDATION, completeListOfErrors);
-
-        _this.currentValidation = null;
-      });
     }
-  }, {
-    key: "set",
-    value: function set(schema) {
-      this.core.setSchema(schema);
-      this.schema = this.core.getSchema();
+    /** set or change the json-schema for data validation */
+    set(schema) {
+        this.core.setSchema(schema);
+        this.schema = this.core.getSchema();
     }
-  }, {
-    key: "get",
-    value: function get() {
-      return this.schema;
+    /** returns the current json-schema */
+    get() {
+        return this.schema;
     }
-  }, {
-    key: "on",
-    value: function on(eventType, callback) {
-      if (eventType === undefined) {
-        throw new Error("Missing event type in ValidationService.on");
-      }
+    observe(pointer, observer, bubbledEvents = false) {
+        this.observer.observe(pointer, observer, bubbledEvents);
+        return observer;
+    }
+    removeObserver(pointer, observer) {
+        this.observer.removeObserver(pointer, observer);
+        return this;
+    }
+    notify(pointer, event) {
+        this.observer.notify(pointer, event);
+    }
+    /** returns all validation errors and warnings */
+    getErrorsAndWarnings(pointer, withChildErrors = false) {
+        const errors = this.state.get(this.id) || [];
+        if (pointer == null) {
+            return errors;
+        }
+        // filter by pointer
+        const selectError = new RegExp(`^${pointer}${withChildErrors ? "" : "$"}`);
+        return errors.filter(error => selectError.test(error.data.pointer));
+    }
+    /** returns all validation errors only */
+    getErrors(pointer, withChildErrors = false) {
+        return this.getErrorsAndWarnings(pointer, withChildErrors).filter(error => error.severity !== "warning");
+    }
+    /** returns all validation warnings only */
+    getWarnings(pointer, withChildWarnings = false) {
+        return this.getErrorsAndWarnings(pointer, withChildWarnings).filter(error => error.severity === "warning");
+    }
+    destroy() {
+        this.set(null);
+        this.observer = null;
+        this.state.unregister(this.id);
+        // this.state.unregister(this.id, errorReducer);
+    }
+}
 
-      this.emitter.on(eventType, callback);
-      return callback;
-    }
-  }, {
-    key: "off",
-    value: function off() {
-      var _this$emitter;
-
-      this.emitter && (_this$emitter = this.emitter).off.apply(_this$emitter, arguments);
-    }
-  }, {
-    key: "emit",
-    value: function emit(eventType) {
-      var event = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.emitter.emit(eventType, event);
-    }
-  }, {
-    key: "observe",
-    value: function observe(pointer, callback) {
-      var bubbledEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      this.observer.observe(pointer, callback, bubbledEvents);
-      return callback;
-    }
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(pointer, callback) {
-      this.observer.removeObserver(pointer, callback);
-    }
-  }, {
-    key: "notify",
-    value: function notify(pointer) {
-      var event = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      this.observer.notify(pointer, event);
-    }
-  }, {
-    key: "getErrorsAndWarnings",
-    value: function getErrorsAndWarnings() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
-      var withChildErrors = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      var errors = this.state.get(this.id) || [];
-
-      if (pointer == null) {
-        return errors;
-      } // filter by pointer
-
-
-      var selectError = new RegExp("^".concat(pointer).concat(withChildErrors ? "" : "$"));
-      return errors.filter(function (error) {
-        return selectError.test(error.data.pointer);
-      });
-    }
-  }, {
-    key: "getErrors",
-    value: function getErrors() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
-      var withChildErrors = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      return this.getErrorsAndWarnings(pointer, withChildErrors).filter(function (error) {
-        return error.severity !== "warning";
-      });
-    }
-  }, {
-    key: "getWarnings",
-    value: function getWarnings() {
-      var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
-      var withChildWarnings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      return this.getErrorsAndWarnings(pointer, withChildWarnings).filter(function (error) {
-        return error.severity === "warning";
-      });
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.set(null);
-      this.emitter = null;
-      this.observer = null;
-      this.state.unregister(this.id, errorReducer);
-    }
-  }]);
-
-  return ValidationService;
-}();
-
-module.exports = ValidationService;
-module.exports.EVENTS = EVENTS;
 
 /***/ }),
 
-/***/ "./services/index.js":
-/*!***************************!*\
-  !*** ./services/index.js ***!
-  \***************************/
-/*! no static exports found */
+/***/ "./src/services/index.ts":
+/*!*******************************!*\
+  !*** ./src/services/index.ts ***!
+  \*******************************/
+/*! exports provided: LocationService, OverlayService, SessionService, UIState */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = {
-  LocationService: __webpack_require__(/*! ./LocationService */ "./services/LocationService.js"),
-  OverlayService: __webpack_require__(/*! ./OverlayService */ "./services/OverlayService.js"),
-  SessionService: __webpack_require__(/*! ./SessionService */ "./services/SessionService.js"),
-  UIState: __webpack_require__(/*! ./uistate */ "./services/uistate/index.js")
-};
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _LocationService__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LocationService */ "./src/services/LocationService.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "LocationService", function() { return _LocationService__WEBPACK_IMPORTED_MODULE_0__["default"]; });
 
-/***/ }),
+/* harmony import */ var _OverlayService__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./OverlayService */ "./src/services/OverlayService.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "OverlayService", function() { return _OverlayService__WEBPACK_IMPORTED_MODULE_1__["default"]; });
 
-/***/ "./services/reducers/actions.js":
-/*!**************************************!*\
-  !*** ./services/reducers/actions.js ***!
-  \**************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/* harmony import */ var _SessionService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SessionService */ "./src/services/SessionService.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "SessionService", function() { return _SessionService__WEBPACK_IMPORTED_MODULE_2__["default"]; });
 
-/* eslint object-property-newline: 0 */
-var UndoActionCreators = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionCreators;
+/* harmony import */ var _uistate__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uistate */ "./src/services/uistate/index.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "UIState", function() { return _uistate__WEBPACK_IMPORTED_MODULE_3__["default"]; });
 
-var UndoActionTypes = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js").ActionTypes;
 
-var ActionTypes = {
-  // data
-  DATA_SET: "DATA_SET",
-  UNDO: UndoActionTypes.UNDO,
-  REDO: UndoActionTypes.REDO,
-  // validation
-  ERRORS_SET: "ERRORS_SET"
-};
-var ActionCreators = {
-  setData: function setData(pointer, newValue, prevValue) {
-    var isSynched = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    return {
-      type: ActionTypes.DATA_SET,
-      pointer: pointer,
-      value: newValue,
-      prevValue: prevValue,
-      isSynched: isSynched
-    };
-  },
-  undo: function undo() {
-    return UndoActionCreators.undo();
-  },
-  redo: function redo() {
-    return UndoActionCreators.redo();
-  },
-  setErrors: function setErrors() {
-    var errors = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-    return {
-      type: ActionTypes.ERRORS_SET,
-      errors: errors
-    };
-  }
-};
-module.exports = {
-  ActionTypes: ActionTypes,
-  ActionCreators: ActionCreators
-};
+
+
+
+
 
 /***/ }),
 
-/***/ "./services/reducers/dataReducer.js":
+/***/ "./src/services/reducers/actions.ts":
 /*!******************************************!*\
-  !*** ./services/reducers/dataReducer.js ***!
+  !*** ./src/services/reducers/actions.ts ***!
   \******************************************/
-/*! no static exports found */
+/*! exports provided: ActionTypes, ActionCreators */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var undoable = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js")["default"];
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionTypes", function() { return ActionTypes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionCreators", function() { return ActionCreators; });
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js");
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(redux_undo__WEBPACK_IMPORTED_MODULE_0__);
+/* eslint object-property-newline: 0 */
+
+const ActionTypes = {
+    // data
+    DATA_SET: "DATA_SET",
+    UNDO: redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionTypes"].UNDO,
+    REDO: redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionTypes"].REDO,
+    // validation
+    ERRORS_SET: "ERRORS_SET"
+};
+const ActionCreators = {
+    setData(pointer, newValue, prevValue, isSynched = false) {
+        return { type: ActionTypes.DATA_SET, pointer, value: newValue, prevValue, isSynched };
+    },
+    undo() {
+        return redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].undo();
+    },
+    redo() {
+        return redux_undo__WEBPACK_IMPORTED_MODULE_0__["ActionCreators"].redo();
+    },
+    setErrors(errors = []) {
+        return { type: ActionTypes.ERRORS_SET, errors };
+    }
+};
+
+
+/***/ }),
+
+/***/ "./src/services/reducers/dataReducer.ts":
+/*!**********************************************!*\
+  !*** ./src/services/reducers/dataReducer.ts ***!
+  \**********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _utils_copy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/copy */ "./src/services/utils/copy.ts");
+/* harmony import */ var _utils_ensureItemIDs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/ensureItemIDs */ "./src/services/utils/ensureItemIDs.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _utils_isRootPointer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../utils/isRootPointer */ "./src/services/utils/isRootPointer.ts");
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./actions */ "./src/services/reducers/actions.ts");
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! redux-undo */ "./node_modules/redux-undo/lib/index.js");
+/* harmony import */ var redux_undo__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(redux_undo__WEBPACK_IMPORTED_MODULE_6__);
 /* eslint no-case-declarations: 0 */
 
 
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
 
-var copy = __webpack_require__(/*! ../utils/copy */ "./services/utils/copy.js");
 
-var isRootPointer = __webpack_require__(/*! ../utils/isRootPointer */ "./services/utils/isRootPointer.js");
 
-var ActionTypes = __webpack_require__(/*! ./actions */ "./services/reducers/actions.js").ActionTypes;
 
-var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
 
-var ensureItemIDs = __webpack_require__(/*! ../utils/ensureItemIDs */ "./services/utils/ensureItemIDs.js");
-
-var actions = [ActionTypes.DATA_SET, ActionTypes.UNDO, ActionTypes.REDO];
-var defaultState = {
-  hasChanged: false,
-  action: null,
-  data: null
+const actions = [_actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].DATA_SET, _actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].UNDO, _actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].REDO];
+const defaultState = {
+    hasChanged: false,
+    action: null,
+    data: null
 };
-
-function dataReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case ActionTypes.DATA_SET:
-      if (isRootPointer(action.pointer)) {
-        return ensureItemIDs(copy(action.value));
-      }
-
-      var newState = copy(state);
-      gp.set(newState, action.pointer, copy(action.value));
-      return ensureItemIDs(newState);
-
-    default:
-      return state;
-  }
+function dataReducer(state = defaultState, action) {
+    switch (action.type) {
+        case _actions__WEBPACK_IMPORTED_MODULE_5__["ActionTypes"].DATA_SET:
+            if (Object(_utils_isRootPointer__WEBPACK_IMPORTED_MODULE_3__["default"])(action.pointer)) {
+                return Object(_utils_ensureItemIDs__WEBPACK_IMPORTED_MODULE_1__["default"])(Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(action.value));
+            }
+            const newState = Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(state);
+            gson_pointer__WEBPACK_IMPORTED_MODULE_2___default.a.set(newState, action.pointer, Object(_utils_copy__WEBPACK_IMPORTED_MODULE_0__["default"])(action.value));
+            return Object(_utils_ensureItemIDs__WEBPACK_IMPORTED_MODULE_1__["default"])(newState);
+        default:
+            return state;
+    }
 }
-
-var config = {
-  debug: false,
-  filter: function filter(action) {
-    return actions.includes(action.type);
-  }
+const config = {
+    debug: false,
+    filter: (action) => actions.includes(action.type)
 };
-module.exports = redux.combineReducers({
-  hasChanged: function hasChanged(state, action) {
-    return actions.includes(action.type);
-  },
-  data: undoable(dataReducer, config)
+/* harmony default export */ __webpack_exports__["default"] = (Object(redux__WEBPACK_IMPORTED_MODULE_4__["combineReducers"])({
+    hasChanged: (state, action) => actions.includes(action.type),
+    data: redux_undo__WEBPACK_IMPORTED_MODULE_6___default()(dataReducer, config)
+}));
+
+
+/***/ }),
+
+/***/ "./src/services/reducers/errorReducer.ts":
+/*!***********************************************!*\
+  !*** ./src/services/reducers/errorReducer.ts ***!
+  \***********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./actions */ "./src/services/reducers/actions.ts");
+
+/* harmony default export */ __webpack_exports__["default"] = ((state = [], action) => {
+    return action.type === _actions__WEBPACK_IMPORTED_MODULE_0__["ActionTypes"].ERRORS_SET ? action.errors : state;
 });
 
+
 /***/ }),
 
-/***/ "./services/reducers/errorReducer.js":
-/*!*******************************************!*\
-  !*** ./services/reducers/errorReducer.js ***!
-  \*******************************************/
-/*! no static exports found */
+/***/ "./src/services/uistate/actions.ts":
+/*!*****************************************!*\
+  !*** ./src/services/uistate/actions.ts ***!
+  \*****************************************/
+/*! exports provided: ActionTypes, ActionCreators */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var ActionTypes = __webpack_require__(/*! ./actions */ "./services/reducers/actions.js").ActionTypes;
-
-module.exports = function () {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-  return action.type === ActionTypes.ERRORS_SET ? action.errors : state;
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionTypes", function() { return ActionTypes; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ActionCreators", function() { return ActionCreators; });
+const ActionTypes = {
+    UI_PAGE_SET: "UI_PAGE_SET",
+    UI_OVERLAY_SET: "UI_OVERLAY_SET",
+    UI_CURRENT_SET: "UI_CURRENT_SET"
 };
+const ActionCreators = {
+    setCurrentPage(pointer = "#") {
+        return {
+            type: ActionTypes.UI_PAGE_SET,
+            value: pointer
+        };
+    },
+    setCurrentPointer(pointer = "#") {
+        return {
+            type: ActionTypes.UI_CURRENT_SET,
+            value: pointer
+        };
+    },
+    setOverlay(content = false) {
+        return {
+            type: ActionTypes.UI_OVERLAY_SET,
+            value: content
+        };
+    }
+};
+
 
 /***/ }),
 
-/***/ "./services/uistate/actions.js":
-/*!*************************************!*\
-  !*** ./services/uistate/actions.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-var ActionTypes = {
-  UI_PAGE_SET: "UI_PAGE_SET",
-  UI_OVERLAY_SET: "UI_OVERLAY_SET",
-  UI_CURRENT_SET: "UI_CURRENT_SET"
-};
-var ActionCreators = {
-  setCurrentPage: function setCurrentPage() {
-    var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-    return {
-      type: ActionTypes.UI_PAGE_SET,
-      value: pointer
-    };
-  },
-  setCurrentPointer: function setCurrentPointer() {
-    var pointer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "#";
-    return {
-      type: ActionTypes.UI_CURRENT_SET,
-      value: pointer
-    };
-  },
-  setOverlay: function setOverlay() {
-    var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-    return {
-      type: ActionTypes.UI_OVERLAY_SET,
-      value: content
-    };
-  }
-};
-module.exports = {
-  ActionTypes: ActionTypes,
-  ActionCreators: ActionCreators
-};
-
-/***/ }),
-
-/***/ "./services/uistate/index.js":
-/*!***********************************!*\
-  !*** ./services/uistate/index.js ***!
-  \***********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var mitt = __webpack_require__(/*! mitt */ "./node_modules/mitt/dist/mitt.js");
-
-var State = __webpack_require__(/*! ../State */ "./services/State.js");
-
-var ActionCreators = __webpack_require__(/*! ./actions */ "./services/uistate/actions.js").ActionCreators;
-
-var uiReducer = __webpack_require__(/*! ./uiReducer */ "./services/uistate/uiReducer.js");
-
-var EVENTS = {
-  OVERLAY_EVENT: "overlay",
-  CURRENT_POINTER_EVENT: "current",
-  CURRENT_PAGE_EVENT: "page"
-};
-
-var UIState =
-/*#__PURE__*/
-function () {
-  function UIState() {
-    _classCallCheck(this, UIState);
-
-    this.id = "ui";
-    this.state = new State();
-    this.emitter = mitt();
-    this.state.register(this.id, uiReducer); // @todo: subscribe to state-changes and diff current state?
-  }
-
-  _createClass(UIState, [{
-    key: "get",
-    value: function get(property) {
-      return this.state.get(this.id).ui[property];
-    }
-  }, {
-    key: "getCurrentPointer",
-    value: function getCurrentPointer() {
-      return this.get("currentPointer");
-    }
-  }, {
-    key: "getCurrentPage",
-    value: function getCurrentPage() {
-      return this.get("currentPage");
-    }
-  }, {
-    key: "setOverlay",
-    value: function setOverlay() {
-      var content = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      var currentContent = this.get("overlay");
-
-      if (currentContent !== content) {
-        this.state.dispatch(ActionCreators.setOverlay(content));
-        this.emitter.emit(EVENTS.OVERLAY_EVENT, this.get("overlay"));
-      }
-    }
-  }, {
-    key: "on",
-    value: function on() {
-      var _this$emitter;
-
-      (_this$emitter = this.emitter).on.apply(_this$emitter, arguments);
-    }
-  }, {
-    key: "off",
-    value: function off() {
-      var _this$emitter2;
-
-      (_this$emitter2 = this.emitter).off.apply(_this$emitter2, arguments);
-    }
-  }, {
-    key: "setCurrentPage",
-    value: function setCurrentPage(pointer) {
-      var currentPage = this.get("currentPage");
-
-      if (currentPage !== pointer) {
-        this.state.dispatch(ActionCreators.setCurrentPage(pointer));
-        this.emitter.emit(EVENTS.CURRENT_PAGE_EVENT, this.get("currentPage"));
-      }
-    }
-  }, {
-    key: "setCurrentPointer",
-    value: function setCurrentPointer(pointer) {
-      var currentPointer = this.get("currentPointer");
-
-      if (currentPointer !== pointer) {
-        this.state.dispatch(ActionCreators.setCurrentPointer(pointer));
-        this.emitter.emit(EVENTS.CURRENT_POINTER_EVENT, this.get("currentPointer"));
-      }
-    }
-  }]);
-
-  return UIState;
-}();
-
-var Singleton = new UIState();
-Singleton.UIStateContructor = UIState;
-Singleton.EVENTS = EVENTS;
-module.exports = Singleton;
-
-/***/ }),
-
-/***/ "./services/uistate/uiReducer.js":
+/***/ "./src/services/uistate/index.ts":
 /*!***************************************!*\
-  !*** ./services/uistate/uiReducer.js ***!
+  !*** ./src/services/uistate/index.ts ***!
   \***************************************/
-/*! no static exports found */
+/*! exports provided: EventType, default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventType", function() { return EventType; });
+/* harmony import */ var nanoevents__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nanoevents */ "./node_modules/nanoevents/index.js");
+/* harmony import */ var _State__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../State */ "./src/services/State.ts");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./actions */ "./src/services/uistate/actions.ts");
+/* harmony import */ var _uiReducer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./uiReducer */ "./src/services/uistate/uiReducer.ts");
 
-var redux = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
 
-var ActionTypes = __webpack_require__(/*! ./actions */ "./services/uistate/actions.js").ActionTypes;
 
-var defaultState = {
-  hasChanged: false,
-  currentPage: "#",
-  currentPointer: "#",
-  overlay: false
-};
 
-function uiReducer() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : defaultState;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case ActionTypes.UI_PAGE_SET:
-      state = _extends({}, state);
-      state.currentPage = action.value;
-      return state;
-
-    case ActionTypes.UI_CURRENT_SET:
-      state = _extends({}, state);
-      state.currentPointer = action.value;
-      return state;
-
-    case ActionTypes.UI_OVERLAY_SET:
-      state = _extends({}, state);
-      state.overlay = action.value;
-      return state;
-
-    default:
-      return state;
-  }
+var EventType;
+(function (EventType) {
+    EventType["OVERLAY"] = "overlay";
+    EventType["CURRENT_POINTER"] = "current";
+    EventType["CURRENT_PAGE"] = "page";
+})(EventType || (EventType = {}));
+class UIState {
+    constructor() {
+        this.id = "ui";
+        this.emitter = Object(nanoevents__WEBPACK_IMPORTED_MODULE_0__["createNanoEvents"])();
+        this.id = "ui";
+        this.state = new _State__WEBPACK_IMPORTED_MODULE_1__["default"]();
+        this.state.register(this.id, _uiReducer__WEBPACK_IMPORTED_MODULE_3__["default"]);
+        // @todo: subscribe to state-changes and diff current state?
+    }
+    get(property) {
+        return this.state.get(this.id).ui[property];
+    }
+    getCurrentPointer() {
+        return this.get("currentPointer");
+    }
+    getCurrentPage() {
+        return this.get("currentPage");
+    }
+    setOverlay(content = false) {
+        const currentContent = this.get("overlay");
+        if (currentContent !== content) {
+            this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setOverlay(content));
+            this.emitter.emit(EventType.OVERLAY, this.get("overlay"));
+        }
+    }
+    /** add an event listener to update events */
+    on(eventType, callback) {
+        return this.emitter.on(eventType, callback);
+    }
+    /** remove an event listener from update events */
+    off(eventType, callback) {
+        if (Array.isArray(this.emitter.events[eventType])) {
+            // @ts-ignore
+            this.emitter.events[eventType] = this.emitter.events[eventType].filter(func => func !== callback);
+        }
+    }
+    setCurrentPage(pointer) {
+        const currentPage = this.get("currentPage");
+        if (currentPage !== pointer) {
+            this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setCurrentPage(pointer));
+            this.emitter.emit(EventType.CURRENT_PAGE, this.get("currentPage"));
+        }
+    }
+    setCurrentPointer(pointer) {
+        const currentPointer = this.get("currentPointer");
+        if (currentPointer !== pointer) {
+            this.state.dispatch(_actions__WEBPACK_IMPORTED_MODULE_2__["ActionCreators"].setCurrentPointer(pointer));
+            this.emitter.emit(EventType.CURRENT_POINTER, this.get("currentPointer"));
+        }
+    }
 }
+const Singleton = new UIState();
+Singleton.UIStateContructor = UIState;
+/* harmony default export */ __webpack_exports__["default"] = (Singleton);
 
-function hasChanged() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-  // eslint-disable-line @typescript-eslint/no-unused-vars
-  return ActionTypes[action.type] == null ? false : action.type;
-}
-
-module.exports = redux.combineReducers({
-  hasChanged: hasChanged,
-  ui: uiReducer
-});
 
 /***/ }),
 
-/***/ "./services/utils/BubblingCollectionObservable.js":
-/*!********************************************************!*\
-  !*** ./services/utils/BubblingCollectionObservable.js ***!
-  \********************************************************/
-/*! no static exports found */
+/***/ "./src/services/uistate/uiReducer.ts":
+/*!*******************************************!*\
+  !*** ./src/services/uistate/uiReducer.ts ***!
+  \*******************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var redux__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! redux */ "./node_modules/redux/es/index.js");
+/* harmony import */ var _actions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./actions */ "./src/services/uistate/actions.ts");
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+const defaultState = {
+    hasChanged: false,
+    currentPage: "#",
+    currentPointer: "#",
+    overlay: false
+};
+function uiReducer(state = defaultState, action) {
+    switch (action.type) {
+        case _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"].UI_PAGE_SET:
+            state = Object.assign({}, state);
+            state.currentPage = action.value;
+            return state;
+        case _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"].UI_CURRENT_SET:
+            state = Object.assign({}, state);
+            state.currentPointer = action.value;
+            return state;
+        case _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"].UI_OVERLAY_SET:
+            state = Object.assign({}, state);
+            state.overlay = action.value;
+            return state;
+        default:
+            return state;
+    }
+}
+function hasChanged(state = false, action) {
+    return _actions__WEBPACK_IMPORTED_MODULE_1__["ActionTypes"][action.type] == null ? false : action.type;
+}
+/* harmony default export */ __webpack_exports__["default"] = (Object(redux__WEBPACK_IMPORTED_MODULE_0__["combineReducers"])({
+    hasChanged,
+    ui: uiReducer
+}));
 
+
+/***/ }),
+
+/***/ "./src/services/utils/BubblingCollectionObservable.ts":
+/*!************************************************************!*\
+  !*** ./src/services/utils/BubblingCollectionObservable.ts ***!
+  \************************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
 /* eslint arrow-parens: 0 */
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+
 /**
  * > Internal helper, mainly used in [ValidationService](#validationservice) to support the weird notification behaviour
  * of error-events.
@@ -19808,61 +21614,42 @@ var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/in
  *
  *
  */
-
-
-var BubblingCollectionObservable =
-/*#__PURE__*/
-function () {
-  function BubblingCollectionObservable() {
-    _classCallCheck(this, BubblingCollectionObservable);
-
-    this.observers = {};
-    this.eventCollection = {};
-    this.bubbleCollection = {};
-  }
-  /**
-   * Observe events on the _pointer_ (`#/observe/location`). May also observe
-   * events of _child-pointers_ (`#/observe/location/child/item`) with the
-   * option `receiveChildEvents` set to `true`
-   *
-   * @param  {JsonPointer} pointer        - location to observe
-   * @param  {Function} cb                - observer
-   * @param  {Boolean}  [receiveChildEvents=false]
-   * @return {Function} callback cb
-   */
-
-
-  _createClass(BubblingCollectionObservable, [{
-    key: "observe",
-    value: function observe(pointer, cb) {
-      var receiveChildEvents = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
-      this.observers[pointer] = this.observers[pointer] || [];
-
-      if (this.observers[pointer].includes(cb) === false) {
-        cb.receiveChildEvents = receiveChildEvents;
-        this.observers[pointer].push(cb);
-      }
-
-      return cb;
+class BubblingCollectionObservable {
+    constructor() {
+        this.observers = {};
+        this.eventCollection = {};
+        this.bubbleCollection = {};
+    }
+    /**
+     * Observe events on the _pointer_ (`#/observe/location`). May also observe
+     * events of _child-pointers_ (`#/observe/location/child/item`) with the
+     * option `receiveChildEvents` set to `true`
+     *
+     * @param pointer - location to observe
+     * @param observer - observer
+     * @param [receiveChildEvents=false]
+     */
+    observe(pointer, observer, receiveChildEvents = false) {
+        this.observers[pointer] = this.observers[pointer] || [];
+        if (this.observers[pointer].includes(observer) === false) {
+            observer.receiveChildEvents = receiveChildEvents;
+            this.observers[pointer].push(observer);
+        }
+        return observer;
     }
     /**
      * Remove an observer
      * @param  {JsonPointer} pointer
-     * @param  {Function} cb
+     * @param  {Function} observer
      */
-
-  }, {
-    key: "removeObserver",
-    value: function removeObserver(pointer, cb) {
-      if (this.observers[pointer] == null) {
-        return;
-      }
-
-      var index = this.observers[pointer].indexOf(cb);
-
-      if (index !== -1) {
-        this.observers[pointer].splice(index, 1);
-      }
+    removeObserver(pointer, observer) {
+        if (this.observers[pointer] == null) {
+            return;
+        }
+        const index = this.observers[pointer].indexOf(observer);
+        if (index !== -1) {
+            this.observers[pointer].splice(index, 1);
+        }
     }
     /**
      * @todo this might become obsolete by clearEvents
@@ -19871,25 +21658,17 @@ function () {
      * empty events. Any previously called observers will be called again with
      * an empty event-list `[]`.
      */
-
-  }, {
-    key: "reset",
-    value: function reset() {
-      var _this = this;
-
-      // notify observers of reset by sending an empty list of events
-      var map = {};
-      Object.keys(this.eventCollection).concat(Object.keys(this.bubbleCollection)) // .filter(pointer => pointer.includes(sourcePointer))
-      .forEach(function (p) {
-        map[p] = true;
-      });
-      this.eventCollection = {};
-      this.bubbleCollection = {};
-      Object.keys(map).forEach(function (pointer) {
-        return _this._notify(pointer, pointer, []);
-      });
-      this.eventCollection = {};
-      this.bubbleCollection = {};
+    reset() {
+        // notify observers of reset by sending an empty list of events
+        const map = {};
+        Object.keys(this.eventCollection).concat(Object.keys(this.bubbleCollection))
+            // .filter(pointer => pointer.includes(sourcePointer))
+            .forEach(p => { map[p] = true; });
+        this.eventCollection = {};
+        this.bubbleCollection = {};
+        Object.keys(map).forEach(pointer => this._notify(pointer, pointer, []));
+        this.eventCollection = {};
+        this.bubbleCollection = {};
     }
     /**
      * Clears all events at a given pointer and notifies all listeners with
@@ -19898,1286 +21677,1126 @@ function () {
      * @param  {JsonPointer} pointer
      * @param  {boolean} [clearChildren=true]    if false, children of `pointer` will not be reset
      */
-
-  }, {
-    key: "clearEvents",
-    value: function clearEvents(pointer) {
-      var _this2 = this;
-
-      var clearChildren = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      var changed = false;
-
-      if (clearChildren) {
-        Object.keys(this.eventCollection).forEach(function (target) {
-          if (!(target.startsWith(pointer) && target !== pointer)) {
-            return;
-          }
-
-          if (_this2.eventCollection[target].length > 0) {
+    clearEvents(pointer, clearChildren = true) {
+        let changed = false;
+        if (clearChildren) {
+            Object.keys(this.eventCollection).forEach(target => {
+                if (!(target.startsWith(pointer) && target !== pointer)) {
+                    return;
+                }
+                if (this.eventCollection[target].length > 0) {
+                    changed = true;
+                    this.eventCollection[target].length = 0;
+                    this.bubbleCollection[target] = {}; // reset bubble collection
+                    this._notify(target, target, this.eventCollection[target]);
+                }
+            });
+        }
+        const collection = this.eventCollection[pointer];
+        if ((Array.isArray(collection) && collection.length > 0)) {
             changed = true;
-            _this2.eventCollection[target].length = 0;
-            _this2.bubbleCollection[target] = {}; // reset bubble collection
-
-            _this2._notify(target, target, _this2.eventCollection[target]);
-          }
-        });
-      }
-
-      var collection = this.eventCollection[pointer];
-
-      if (Array.isArray(collection) && collection.length > 0) {
-        changed = true;
-        collection.length = 0;
-        this.bubbleCollection[pointer] = {}; // reset bubble collection
-      }
-
-      if (changed) {
-        // clear target and notify parents
-        this._notifyAll(pointer, collection);
-      }
+            collection.length = 0;
+            this.bubbleCollection[pointer] = {}; // reset bubble collection
+        }
+        if (changed) {
+            // clear target and notify parents
+            this._notifyAll(pointer, collection);
+        }
     }
     /**
      * Notifies all listeners of `pointer` (bubble notification)
      *
-     * @param  {JsonPointer} pointer
-     * @param  {Array} eventCollection    - array of events at target `pointer`
+     * @param pointer
+     * @param eventCollection    - array of events at target `pointer`
      */
-
-  }, {
-    key: "_notifyAll",
-    value: function _notifyAll(pointer, eventCollection) {
-      var frags = gp.split(pointer);
-
-      while (frags.length > 0) {
-        var p = gp.join(frags, true);
-
-        this._notify(p, pointer, eventCollection);
-
-        frags.pop();
-      }
-
-      this._notify("#", pointer, eventCollection);
+    _notifyAll(pointer, eventCollection) {
+        const frags = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.split(pointer);
+        while (frags.length > 0) {
+            const p = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(frags, true);
+            this._notify(p, pointer, eventCollection);
+            frags.pop();
+        }
+        this._notify("#", pointer, eventCollection);
     }
     /**
      * Notify observers at _pointer_. Note that the received event is a
      * aggregated event-list []. For a first call the received event will look
      * like `[{ event }]` and the next event will be `[{ event }, { newEvent }]`,
      * etc, until `reset()` ist called by the observable.
-     *
-     * @param  {JsonPointer} pointer
-     * @param  {Any} event
      */
-
-  }, {
-    key: "notify",
-    value: function notify(pointer, event) {
-      this.eventCollection[pointer] = this.eventCollection[pointer] || [];
-      this.eventCollection[pointer].push(event);
-
-      this._notifyAll(pointer, this.eventCollection[pointer]);
+    notify(pointer, event) {
+        this.eventCollection[pointer] = this.eventCollection[pointer] || [];
+        this.eventCollection[pointer].push(event);
+        this._notifyAll(pointer, this.eventCollection[pointer]);
     }
-  }, {
-    key: "_notify",
-    value: function _notify(observerPointer, sourcePointer, event) {
-      var _this3 = this;
-
-      if (this.observers[observerPointer] == null) {
-        return;
-      }
-
-      this.observers[observerPointer].forEach(function (cb) {
-        if (cb.receiveChildEvents === false && observerPointer === sourcePointer) {
-          cb(event);
-          return;
+    _notify(observerPointer, sourcePointer, errors = []) {
+        if (this.observers[observerPointer] == null) {
+            return;
         }
-
-        if (cb.receiveChildEvents === false && observerPointer !== sourcePointer) {
-          return;
-        }
-
-        _this3.bubbleCollection[observerPointer] = _this3.bubbleCollection[observerPointer] || {};
-        var map = _this3.bubbleCollection[observerPointer];
-        map[sourcePointer] = event;
-        var events = Object.keys(map).reduce(function (res, next) {
-          return res.concat(map[next]);
-        }, []);
-        cb(events);
-      });
+        this.observers[observerPointer].forEach(observer => {
+            if (observer.receiveChildEvents === false && observerPointer === sourcePointer) {
+                observer({ type: "validation:errors", value: errors });
+                return;
+            }
+            if (observer.receiveChildEvents === false && observerPointer !== sourcePointer) {
+                return;
+            }
+            this.bubbleCollection[observerPointer] = this.bubbleCollection[observerPointer] || {};
+            const map = this.bubbleCollection[observerPointer];
+            map[sourcePointer] = errors;
+            const combinedErrors = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
+            observer({ type: "validation:errors", value: combinedErrors });
+        });
     }
-  }]);
+}
+/* harmony default export */ __webpack_exports__["default"] = (BubblingCollectionObservable);
 
-  return BubblingCollectionObservable;
-}();
-
-module.exports = BubblingCollectionObservable;
 
 /***/ }),
 
-/***/ "./services/utils/Validation.js":
-/*!**************************************!*\
-  !*** ./services/utils/Validation.js ***!
-  \**************************************/
-/*! no static exports found */
+/***/ "./src/services/utils/Validation.ts":
+/*!******************************************!*\
+  !*** ./src/services/utils/Validation.ts ***!
+  \******************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Validation; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
+/* harmony import */ var json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1__);
 
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var validateAsync = __webpack_require__(/*! json-schema-library/lib/validateAsync */ "./node_modules/json-schema-library/lib/validateAsync.js");
 /**
- * @class  Validation
- *
- * @param {Object|Array} data       - application json data
- * @param {Object} schema           - json-schema describing data
- * @param {Function} [errorHandler] - optional callback to modify errors
+ * @param data - application json data
+ * @param schema - json-schema describing data
+ * @param [errorHandler] - optional callback to modify errors
  */
-
-
-var Validation =
-/*#__PURE__*/
-function () {
-  function Validation(data, pointer, errorHandler) {
-    _classCallCheck(this, Validation);
-
-    this.errors = [];
-    this.data = data;
-    this.pointer = pointer;
-    this.canceled = false;
-    this.errorHandler = errorHandler;
-  }
-
-  _createClass(Validation, [{
-    key: "start",
-    value: function start(core, onErrorCb, onDoneCb) {
-      var _this = this;
-
-      this.cbDone = onDoneCb;
-      this.cbError = onErrorCb; // @feature selective-validation
-
-      var pointer = this.pointer;
-      var data = this.data;
-      var schema = core.getSchema();
-
-      if (pointer !== "#") {
-        schema = core.getSchema(pointer, data);
-        data = gp.get(data, pointer);
-      } // console.log("validate", pointer, data, JSON.stringify(schema, null, 2));
-      // validateAsync(core, value, { schema = core.rootSchema, pointer = "#", onError })
-
-
-      return validateAsync(core, data, {
-        schema: schema,
-        pointer: pointer,
-        onError: this.onError.bind(this)
-      }).then(function (errors) {
-        _this.onDone(errors);
-
-        return errors;
-      })["catch"](function (error) {
-        return _this.onFail(error);
-      });
+class Validation {
+    constructor(data, pointer, errorHandler) {
+        /** if validation has been canceled and thus, is obsolete */
+        this.canceled = false;
+        this.errors = [];
+        this.data = data;
+        this.pointer = pointer;
+        this.errorHandler = errorHandler;
     }
-  }, {
-    key: "onError",
-    value: function onError(validationError) {
-      if (this.canceled) {
-        return;
-      }
-
-      validationError = this.errorHandler(validationError);
-      this.errors.push(validationError);
-      this.cbError(validationError, this.errors);
+    /**
+     * start validation of data
+     * @param core - json-schema-library core, containing json-schema
+     * @param onErrorCb - called for error notification while validation is running
+     * @param onDoneCb - called on a finished validation with a list of validation errors
+     */
+    start(core, onErrorCb, onDoneCb) {
+        this.cbDone = onDoneCb;
+        this.cbError = onErrorCb;
+        // @feature selective-validation
+        const pointer = this.pointer;
+        let data = this.data;
+        let schema = core.getSchema();
+        if (pointer !== "#") {
+            schema = core.getSchema(pointer, data);
+            data = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.get(data, pointer);
+        }
+        return json_schema_library_lib_validateAsync__WEBPACK_IMPORTED_MODULE_1___default()(core, data, { schema, pointer, onError: this.onError.bind(this) })
+            .then(errors => {
+            this.onDone(errors);
+            return errors;
+        })
+            .catch(error => {
+            this.onFail(error);
+            return [];
+        });
     }
-  }, {
-    key: "onDone",
-    value: function onDone(validationErrors) {
-      if (this.canceled) {
-        return;
-      }
-
-      if (this.errors.length !== validationErrors.length) {
-        console.error("Inconsistent validation errors. Not all errors were emitted by validateAsync()");
-      }
-
-      this.cbDone(this.errors);
+    onError(validationError) {
+        if (this.canceled) {
+            return;
+        }
+        validationError = this.errorHandler(validationError);
+        this.errors.push(validationError);
+        this.cbError(validationError, this.errors);
     }
-  }, {
-    key: "onFail",
-    value: function onFail(error) {
-      if (this.canceled) {
-        return;
-      }
-
-      console.error("Validation failed", error);
-      this.cbDone(this.errors);
+    onDone(validationErrors) {
+        if (this.canceled) {
+            return;
+        }
+        if (this.errors.length !== validationErrors.length) {
+            console.error("Inconsistent validation errors. Not all errors were emitted by validateAsync()");
+        }
+        this.cbDone(this.errors);
     }
-  }, {
-    key: "cancel",
-    value: function cancel() {
-      this.canceled = true;
+    onFail(error) {
+        if (this.canceled) {
+            return;
+        }
+        console.error("Validation failed", error);
+        this.cbDone(this.errors);
     }
-  }]);
-
-  return Validation;
-}();
-
-module.exports = Validation;
-
-/***/ }),
-
-/***/ "./services/utils/copy.js":
-/*!********************************!*\
-  !*** ./services/utils/copy.js ***!
-  \********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-module.exports = function copy(data) {
-  if (data === undefined || Array.isArray(data) === false && _typeof(data) !== "object") {
-    return data;
-  }
-
-  return JSON.parse(JSON.stringify(data));
-};
-
-/***/ }),
-
-/***/ "./services/utils/diffpatch.js":
-/*!*************************************!*\
-  !*** ./services/utils/diffpatch.js ***!
-  \*************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var DiffPatcher = __webpack_require__(/*! jsondiffpatch */ "./node_modules/jsondiffpatch/dist/jsondiffpatch.umd.js").DiffPatcher;
-
-var diffMatchPatch = __webpack_require__(/*! diff_match_patch */ "./node_modules/diff_match_patch/lib/diff_match_patch.js");
-
-var options = {
-  // used to match objects when diffing arrays, by default only === operator is used
-  // this function is used only to when objects are not equal by ref
-  objectHash: function objectHash(obj) {
-    return obj._id;
-  },
-  arrays: {
-    // default true, detect items moved inside the array (otherwise they will be registered as remove+add)
-    detectMove: true,
-    // default false, the value of items moved is not included in deltas
-    includeValueOnMove: false
-  }
-};
-
-try {
-  // required in browser environments
-  window["diff_match_patch"] = diffMatchPatch;
-} catch (e) {// loaded by default in nodejs
+    /** cancel validation - preventing notification of running validation results */
+    cancel() {
+        this.canceled = true;
+    }
 }
 
-var diffpatch = new DiffPatcher(options); // jsondiffpatch.create(options);
-
-diffpatch.options = options;
-module.exports = diffpatch;
 
 /***/ }),
 
-/***/ "./services/utils/ensureItemIDs.js":
-/*!*****************************************!*\
-  !*** ./services/utils/ensureItemIDs.js ***!
-  \*****************************************/
-/*! no static exports found */
+/***/ "./src/services/utils/copy.ts":
+/*!************************************!*\
+  !*** ./src/services/utils/copy.ts ***!
+  \************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var getTypeOf = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
-
-var ID_PROPERTY = "_id";
-
-function generateId(index) {
-  return "".concat(index).concat(Math.random()).concat(Date.now());
-}
-
-function addMissingItemIDs(list) {
-  list.forEach(function (item, index) {
-    if (item[ID_PROPERTY] == null) {
-      var type = getTypeOf(item);
-
-      if (type === "object" || type === "array") {
-        item[ID_PROPERTY] = ensureItemIDs.config.generateId(index);
-      }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return copy; });
+function copy(data) {
+    if (data === undefined || (Array.isArray(data) === false && typeof data !== "object")) {
+        return data;
     }
-  });
+    return JSON.parse(JSON.stringify(data));
 }
 
-function ensureItemIDs(data) {
-  var dataType = getTypeOf(data);
-
-  if (dataType === "array") {
-    ensureItemIDs.config.addMissingItemIDs(data);
-    data.forEach(function (item) {
-      return ensureItemIDs(item);
-    });
-  } else if (dataType === "object") {
-    Object.keys(data).forEach(function (key) {
-      return ensureItemIDs(data[key]);
-    });
-  }
-
-  return data;
-}
-
-ensureItemIDs.config = {
-  ID_PROPERTY: ID_PROPERTY,
-  addMissingItemIDs: addMissingItemIDs,
-  generateId: generateId
-};
-module.exports = ensureItemIDs;
 
 /***/ }),
 
-/***/ "./services/utils/getParentPointer.js":
-/*!********************************************!*\
-  !*** ./services/utils/getParentPointer.js ***!
-  \********************************************/
-/*! no static exports found */
+/***/ "./src/services/utils/createDiff.ts":
+/*!******************************************!*\
+  !*** ./src/services/utils/createDiff.ts ***!
+  \******************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createDiff; });
+/* harmony import */ var _diffpatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./diffpatch */ "./src/services/utils/diffpatch.ts");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _getParentPointer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./getParentPointer */ "./src/services/utils/getParentPointer.ts");
 
-module.exports = function (pointer) {
-  var list = gp.split(pointer);
-  list.pop();
-  return gp.join(list, pointer[0] === "#");
-};
 
-/***/ }),
 
-/***/ "./services/utils/getPatchesPerPointer.js":
-/*!************************************************!*\
-  !*** ./services/utils/getPatchesPerPointer.js ***!
-  \************************************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-var diffpatch = __webpack_require__(/*! ./diffpatch */ "./services/utils/diffpatch.js");
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
+/** sort by longest pointer first (from tree leaves to root node) */
 function sortByPointer(a, b) {
-  if (a.pointer < b.pointer) {
-    return -1;
-  } else if (a.pointer > b.pointer) {
-    return 1;
-  }
-
-  return 0;
+    if (a.pointer < b.pointer) {
+        return -1;
+    }
+    else if (a.pointer > b.pointer) {
+        return 1;
+    }
+    return 0;
+}
+function isChange(value) {
+    return Array.isArray(value);
+}
+/** converts the diff tree result to a flat list of patches */
+function deltaToChangeList(pointer, diff, result = []) {
+    // run through each property and search for a patch
+    const properties = Object.keys(diff);
+    const isArrayItem = diff["_t"] === "a";
+    properties.forEach(property => {
+        // skip array flag
+        if (property === "_t") {
+            return;
+        }
+        const change = diff[property];
+        if (!isChange(change)) {
+            // step into path and search for patches
+            // @note this could also be a removed array-item ("_<index>": value)
+            // findPatches(`${pointer}/${property.replace(/^_/, "")}`, value, result);
+            deltaToChangeList(`${pointer}/${property}`, change, result);
+            return;
+        }
+        // add the patch to list
+        const propertyAdded = diff[property].length === 1;
+        const propertyRemoved = diff[property][2] === 0;
+        const entry = {
+            pointer: `${pointer}/${property}`,
+            change,
+            isArrayItem,
+            changedProperty: !isArrayItem && (propertyAdded || propertyRemoved)
+        };
+        result.push(entry);
+    });
+    return result;
+}
+/**
+ * creates a diff between given data-versions and returns a list of changes.
+ * Changes on object-properties (add, remove, rename) or array-items (add,
+ * remove, move) are grouped by their parent object or array.
+ */
+function createDiff(previousValue, newValue) {
+    const diff = _diffpatch__WEBPACK_IMPORTED_MODULE_0__["default"].diff(previousValue, newValue);
+    if (diff == null) {
+        return [];
+    }
+    const map = {};
+    const changes = deltaToChangeList("#", diff);
+    // merge all item patches by their parent-pointer
+    changes.forEach(entry => {
+        const { pointer, change, isArrayItem, changedProperty } = entry;
+        if (isArrayItem) {
+            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(pointer, "..");
+            const key = pointer.replace(`${parent}/`, "");
+            map[parent] = map[parent] || { _t: "a" };
+            map[parent][key] = change;
+            return;
+        }
+        if (changedProperty) {
+            const parent = gson_pointer__WEBPACK_IMPORTED_MODULE_1___default.a.join(pointer, "..");
+            const key = pointer.replace(`${parent}/`, "");
+            map[parent] = map[parent] || {};
+            map[parent][key] = change;
+            return;
+        }
+        map[entry.pointer] = change;
+    });
+    return Object.keys(map)
+        .map(pointer => ({ pointer, parentPointer: Object(_getParentPointer__WEBPACK_IMPORTED_MODULE_2__["default"])(pointer), patch: map[pointer] }))
+        .sort(sortByPointer);
 }
 
-function findPatches(pointer, diff) {
-  var result = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-  // for a diff: { a: { '0': [ 'modifiedString' ], _t: 'a', _0: [ 'string', 0, 0 ] } }
-  // return diff[a] as patch and ".../a" as pointer
-  Object.keys(diff).forEach(function (key) {
-    if (key === "_t") {
-      return;
-    }
-
-    if (Array.isArray(diff[key])) {
-      var entry = {
-        pointer: "".concat(pointer, "/").concat(key),
-        patch: diff[key]
-      };
-      var propertyAdded = diff[key].length === 1;
-      var propertyRemoved = diff[key][2] === 0;
-
-      if (diff._t === "a") {
-        entry.isArrayItem = true;
-      } else if (propertyAdded || propertyRemoved) {
-        entry.changedKey = true;
-      }
-
-      result.push(entry);
-    } else {
-      findPatches("".concat(pointer, "/").concat(key), diff[key], result);
-    }
-  });
-  return result;
-}
-/*
-    Between two objects, returns the json-pointer of the edit
-
-    - for now, returns common pointer of multiple changes (if any)
-    - returns parent pointer for any array-items or object-properties that are added or removed. this ensures a
-        container, array or object, receives a notification of changed children.
-*/
-
-
-module.exports = function getPatchesPerPointer(previousValue, newValue) {
-  var diff = diffpatch.diff(previousValue, newValue);
-
-  if (diff == null) {
-    return [];
-  }
-
-  var patches = findPatches("#", diff); // merge all item patches by their parent-pointer
-
-  var map = {}; // @todo this should be directly resolved in 'findPatches'
-
-  patches.forEach(function (entry) {
-    if (entry.isArrayItem) {
-      var parent = gp.join(entry.pointer, "..");
-      var key = entry.pointer.replace("".concat(parent, "/"), "");
-      map[parent] = map[parent] || {
-        _t: "a"
-      };
-      map[parent][key] = entry.patch;
-    } else if (entry.changedKey) {
-      var _parent = gp.join(entry.pointer, "..");
-
-      var _key = entry.pointer.replace("".concat(_parent, "/"), "");
-
-      map[_parent] = map[_parent] || {};
-      map[_parent][_key] = entry.patch;
-    } else {
-      map[entry.pointer] = entry.patch;
-    }
-  });
-  return Object.keys(map).map(function (pointer) {
-    return {
-      pointer: pointer,
-      patch: map[pointer]
-    };
-  }).sort(sortByPointer);
-};
 
 /***/ }),
 
-/***/ "./services/utils/isRootPointer.js":
+/***/ "./src/services/utils/diffpatch.ts":
 /*!*****************************************!*\
-  !*** ./services/utils/isRootPointer.js ***!
+  !*** ./src/services/utils/diffpatch.ts ***!
   \*****************************************/
-/*! no static exports found */
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! gson-pointer/lib/isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var jsondiffpatch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! jsondiffpatch */ "./node_modules/jsondiffpatch/dist/jsondiffpatch.umd.js");
+/* harmony import */ var jsondiffpatch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jsondiffpatch__WEBPACK_IMPORTED_MODULE_0__);
+
+const options = {
+    // used to match objects when diffing arrays, by default only === operator is used
+    // this function is used only to when objects are not equal by ref
+    objectHash: obj => obj._id,
+    arrays: {
+        // default true, detect items moved inside the array (otherwise they will be registered as remove+add)
+        detectMove: true,
+        // default false, the value of items moved is not included in deltas
+        includeValueOnMove: false
+    }
+};
+const diffpatch = new jsondiffpatch__WEBPACK_IMPORTED_MODULE_0__["DiffPatcher"](options); // jsondiffpatch.create(options);
+// @ts-ignore
+diffpatch.options = options;
+/* harmony default export */ __webpack_exports__["default"] = (diffpatch);
+
 
 /***/ }),
 
-/***/ "./utils/UISchema.js":
-/*!***************************!*\
-  !*** ./utils/UISchema.js ***!
-  \***************************/
-/*! no static exports found */
+/***/ "./src/services/utils/ensureItemIDs.ts":
+/*!*********************************************!*\
+  !*** ./src/services/utils/ensureItemIDs.ts ***!
+  \*********************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! json-schema-library/lib/getTypeOf */ "./node_modules/json-schema-library/lib/getTypeOf.js");
+/* harmony import */ var json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0__);
 
-var _require = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js"),
-    eachSchema = _require.eachSchema;
-
-var gp = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
-
-var UI_PROPERTY = "editron:ui";
-
-var populated = __webpack_require__(/*! ./populated */ "./utils/populated.js");
-
-function isPointer(string) {
-  return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
-} // returns a list of {title, pointer} from root-node to pointer, excluding root node
-
-
-function getBreadcrumps(pointer, controller) {
-  var breadcrumps = [];
-
-  while (pointer !== "#") {
-    breadcrumps.unshift({
-      title: getOption(pointer, controller, "title"),
-      pointer: pointer
+const ID_PROPERTY = "_id";
+function generateId(index) {
+    return `${index}${Math.random()}${Date.now()}`;
+}
+function addMissingItemIDs(list) {
+    list.forEach((item, index) => {
+        if (item[ID_PROPERTY] == null) {
+            const type = json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default()(item);
+            if (type === "object" || type === "array") {
+                item[ID_PROPERTY] = ensureItemIDs.config.generateId(index);
+            }
+        }
     });
-    pointer = gp.join(pointer, "..");
-  }
+}
+function ensureItemIDs(data) {
+    if (Array.isArray(data)) {
+        ensureItemIDs.config.addMissingItemIDs(data);
+        data.forEach(item => ensureItemIDs(item));
+    }
+    else if (json_schema_library_lib_getTypeOf__WEBPACK_IMPORTED_MODULE_0___default()(data) === "object") {
+        Object.keys(data).forEach((key) => ensureItemIDs(data[key]));
+    }
+    return data;
+}
+ensureItemIDs.config = {
+    ID_PROPERTY,
+    addMissingItemIDs,
+    generateId
+};
+/* harmony default export */ __webpack_exports__["default"] = (ensureItemIDs);
 
-  return breadcrumps;
+
+/***/ }),
+
+/***/ "./src/services/utils/getParentPointer.ts":
+/*!************************************************!*\
+  !*** ./src/services/utils/getParentPointer.ts ***!
+  \************************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return getParentPointer; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+
+function getParentPointer(pointer) {
+    return gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, "..");
 }
 
+
+/***/ }),
+
+/***/ "./src/services/utils/isRootPointer.ts":
+/*!*********************************************!*\
+  !*** ./src/services/utils/isRootPointer.ts ***!
+  \*********************************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer/lib/isRoot */ "./node_modules/gson-pointer/lib/isRoot.js");
+/* harmony import */ var gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = (gson_pointer_lib_isRoot__WEBPACK_IMPORTED_MODULE_0___default.a);
+
+
+/***/ }),
+
+/***/ "./src/utils/UISchema.ts":
+/*!*******************************!*\
+  !*** ./src/utils/UISchema.ts ***!
+  \*******************************/
+/*! exports provided: EDITRON_OPTION_PROPERTY, isPointer, default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EDITRON_OPTION_PROPERTY", function() { return EDITRON_OPTION_PROPERTY; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "isPointer", function() { return isPointer; });
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! gson-pointer */ "./node_modules/gson-pointer/index.js");
+/* harmony import */ var gson_pointer__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(gson_pointer__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _populated__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! json-schema-library */ "./node_modules/json-schema-library/index.js");
+/* harmony import */ var json_schema_library__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(json_schema_library__WEBPACK_IMPORTED_MODULE_2__);
+
+
+
+const { eachSchema } = json_schema_library__WEBPACK_IMPORTED_MODULE_2___default.a;
+const UI_PROPERTY = "editron:ui";
+/** property on a schema-definition, containing editron-options */
+const EDITRON_OPTION_PROPERTY = "editron:ui";
+function isPointer(string) {
+    return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
+}
+// returns a list of {title, pointer} from root-node to pointer, excluding root node
+function getBreadcrumps(pointer, controller) {
+    const breadcrumps = [];
+    while (pointer !== "#") {
+        breadcrumps.unshift({
+            title: getOption(pointer, controller, "title"),
+            pointer
+        });
+        pointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, "..");
+    }
+    return breadcrumps;
+}
 function enumOptions(schema) {
-  var options;
-
-  if (schema[UI_PROPERTY]["enum"]) {
-    options = schema["enum"].map(function (value, index) {
-      return {
-        title: schema[UI_PROPERTY]["enum"][index] || schema["enum"][index],
-        value: schema["enum"][index]
-      };
-    });
-  } else if (schema.options && schema.options.enum_titles) {
-    // @legacy support jdorn/json-editor
-    options = schema["enum"].map(function (value, index) {
-      return {
-        title: schema.options.enum_titles[index] || schema["enum"][index],
-        value: schema["enum"][index]
-      };
-    });
-  } else {
-    options = schema["enum"];
-  }
-
-  return options;
+    let options;
+    if (schema[UI_PROPERTY].enum) {
+        options = schema.enum.map((value, index) => ({
+            title: schema[UI_PROPERTY].enum[index] || schema.enum[index],
+            value: schema.enum[index]
+        }));
+    }
+    else if (schema.options && schema.options.enum_titles) {
+        // @legacy support jdorn/json-editor
+        options = schema.enum.map((value, index) => ({
+            title: schema.options.enum_titles[index] || schema.enum[index],
+            value: schema.enum[index]
+        }));
+    }
+    else {
+        options = schema.enum;
+    }
+    return options;
 }
 /**
  * Resolves the given pointer absolute or relative in data
- *
- * @param  {String} pointer             - current base pointer for relative targets
- * @param  {Controller} controller
- * @param  {String} pointerToResolve    - relative or absolute pointer (must start with `/` or `../`)
- * @return {Mixed} target value of at #/pointer/pointerToResolve or false
+ * @param pointer - current base pointer for relative targets
+ * @param controller
+ * @param pointerToResolve - relative or absolute pointer (must start with `/` or `../`)
+ * @return target value of at #/pointer/pointerToResolve or false
  */
-
-
 function resolveReference(pointer, controller, pointerToResolve) {
-  if (populated(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
-    return null;
-  }
-
-  var targetPointer = pointerToResolve;
-
-  if (targetPointer[0] !== "#") {
-    targetPointer = gp.join(pointer, targetPointer);
-  }
-
-  var result = controller.data().get(targetPointer);
-  return populated(result, result, null);
+    if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
+        return null;
+    }
+    let targetPointer = pointerToResolve;
+    if (targetPointer[0] !== "#") {
+        targetPointer = gson_pointer__WEBPACK_IMPORTED_MODULE_0___default.a.join(pointer, targetPointer);
+    }
+    const result = controller.service("data").get(targetPointer);
+    return Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(result, result, null);
 }
 /**
  * Returns the resolved copy of an options object. This method is used by the controller to help setup the
  * main options object of an editor instance. It is simplified, in that it currently does  not resolve any reference
  * on the current data
- *
- * @param {String} pointer
- * @param {Controller} controller
- * @return {Object} a resolved copy of the editron:ui settings
+ * @return a resolved copy of the editron:ui settings
  */
-
-
 function copyOptions(pointer, controller) {
-  var schema = controller.schema().get(pointer);
-
-  var settings = _extends({
-    hidden: false,
-    description: schema.description
-  }, schema.options, schema[UI_PROPERTY]); // @legacy options
-
-
-  settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
-
-  Object.keys(settings).forEach(function (option) {
-    settings[option] = resolveOption(pointer, controller, settings[option]);
-  });
-  return settings;
+    const schema = controller.service("schema").get(pointer);
+    const settings = {
+        hidden: false,
+        description: schema.description,
+        ...schema.options,
+        ...schema[UI_PROPERTY]
+    };
+    settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
+    Object
+        .keys(settings)
+        .forEach(option => {
+        settings[option] = resolveOption(pointer, controller, settings[option]);
+    });
+    return settings;
 }
 /**
  * Ensures each schema contains a valid schema[UI_PROPERTY] object
- * @param  {Object} rootSchema
- * @return {Object} extended clone of json-schema
+ * @param rootSchema
+ * @return extended clone of json-schema
  */
-
-
 function extendSchema(rootSchema) {
-  rootSchema = JSON.parse(JSON.stringify(rootSchema));
-  eachSchema(rootSchema, function (childSchema) {
-    childSchema[UI_PROPERTY] = childSchema[UI_PROPERTY] || {};
-    childSchema[UI_PROPERTY] = _extends({
-      hidden: false,
-      title: childSchema.title || "",
-      description: childSchema.description || ""
-    }, childSchema.options, childSchema[UI_PROPERTY]); // @legacy options
-  });
-  return rootSchema;
+    rootSchema = JSON.parse(JSON.stringify(rootSchema));
+    eachSchema(rootSchema, childSchema => {
+        if (childSchema.$ref && childSchema[UI_PROPERTY] == null) {
+            // do not add default options for references - json-schema-library
+            // merges on root elements only (which is acceptable)
+            return;
+        }
+        childSchema[UI_PROPERTY] = {
+            hidden: false,
+            title: childSchema.title || "",
+            description: childSchema.description || "",
+            ...childSchema.options,
+            ...childSchema[UI_PROPERTY]
+        };
+    });
+    return rootSchema;
 }
 /**
  * Resolves a list of pointers, where the first found value is returned. Supports simple strings as fallback.
  *  e.g. `["/data/local/title", "/data/local/subtitle", "Title"]`
  *
- * @param  {String} pointer     [description]
- * @param  {Controller} controller  [description]
- * @param  {String|Array} optionValue [description]
- * @return {Mixed} the option value
+ * @return the option value
  */
-
-
 function resolveOption(pointer, controller, optionValue) {
-  if (Array.isArray(optionValue)) {
-    for (var i = 0; i < optionValue.length; i += 1) {
-      var option = optionValue[i];
-
-      if (isPointer(option)) {
-        var value = resolveReference(pointer, controller, option);
-
-        if (populated(value)) {
-          return value;
+    if (Array.isArray(optionValue)) {
+        for (let i = 0; i < optionValue.length; i += 1) {
+            const option = optionValue[i];
+            if (isPointer(option)) {
+                const value = resolveReference(pointer, controller, option);
+                if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(value)) {
+                    return value;
+                }
+            }
+            else if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(option)) {
+                return option;
+            }
         }
-      } else if (populated(option)) {
-        return option;
-      }
     }
-  }
-
-  return optionValue;
+    return optionValue;
 }
 /**
  * Returns the first defined option set in schema. Supports relative and absolute pointers in data
  *
- * @param  {String} pointer
- * @param  {Controller} controller
- * @param  {...[String]} options    - a list of option properties. The first non-empty option will be returned
- * @return {Mixed} the first non-empty option
+ * @param pointer
+ * @param controller
+ * @param options - a list of option properties. The first non-empty option will be returned
+ * @return the first non-empty option
  */
-
-
-function getOption(pointer, controller) {
-  var schema = controller.schema().get(pointer);
-  var editronOptions = schema[UI_PROPERTY] || {};
-
-  for (var _len = arguments.length, options = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-    options[_key - 2] = arguments[_key];
-  }
-
-  if (options.length === 0) {
-    throw new Error("Expected at least one options property to be given in getOption");
-  }
-
-  for (var i = 0; i < options.length; i += 1) {
-    var option = editronOptions[options[i]];
-    var resolver = isPointer(option) ? resolveReference : resolveOption;
-    var value = resolver(pointer, controller, option);
-
-    if (populated(value)) {
-      return value;
-    } else if (populated(schema[options[i]])) {
-      return schema[options[i]];
+function getOption(pointer, controller, ...options) {
+    if (options.length === 0) {
+        throw new Error("Expected at least one options property to be given in getOption");
     }
-  }
-
-  return null;
+    const schema = controller.service("schema").get(pointer);
+    const editronOptions = schema[UI_PROPERTY] || {};
+    for (let i = 0; i < options.length; i += 1) {
+        const option = editronOptions[options[i]];
+        const resolver = isPointer(option) ? resolveReference : resolveOption;
+        const value = resolver(pointer, controller, option);
+        if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(value)) {
+            return value;
+        }
+        else if (Object(_populated__WEBPACK_IMPORTED_MODULE_1__["default"])(schema[options[i]])) {
+            return schema[options[i]];
+        }
+    }
+    return null;
 }
-
 function getTitle(pointer, controller) {
-  var schema = controller.schema().get(pointer);
-  var title = getOption(pointer, controller, "title") || "";
-  return schema.minLength ? "".concat(title.replace(/\s*\*\s*$/, ""), " *") : title;
+    const schema = controller.service("schema").get(pointer);
+    const title = getOption(pointer, controller, "title") || "";
+    return schema.minLength ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
-
 function getDefaultOption(schema, option) {
-  return schema[UI_PROPERTY] ? schema[UI_PROPERTY][option] || "" : "";
+    return schema[UI_PROPERTY] ? (schema[UI_PROPERTY][option] || "") : "";
 }
+/* harmony default export */ __webpack_exports__["default"] = ({
+    UI_PROPERTY,
+    getOption,
+    copyOptions,
+    extendSchema,
+    getBreadcrumps,
+    getTitle,
+    enumOptions,
+    getDefaultOption
+});
 
-module.exports = {
-  UI_PROPERTY: UI_PROPERTY,
-  getOption: getOption,
-  copyOptions: copyOptions,
-  extendSchema: extendSchema,
-  getBreadcrumps: getBreadcrumps,
-  getTitle: getTitle,
-  enumOptions: enumOptions,
-  getDefaultOption: getDefaultOption
-};
 
 /***/ }),
 
-/***/ "./utils/addItem.js":
-/*!**************************!*\
-  !*** ./utils/addItem.js ***!
-  \**************************/
-/*! no static exports found */
+/***/ "./src/utils/addItem.ts":
+/*!******************************!*\
+  !*** ./src/utils/addItem.ts ***!
+  \******************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var m = __webpack_require__(/*! mithril */ "mithril");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _createElement__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./createElement */ "./src/utils/createElement.ts");
+/* harmony import */ var _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/OverlayService */ "./src/services/OverlayService.ts");
+/* harmony import */ var _components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/overlayselecttiles */ "./src/components/overlayselecttiles/index.ts");
+/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
 
-var createElement = __webpack_require__(/*! ./createElement */ "./utils/createElement.js");
 
-var LocationService = __webpack_require__(/*! ../services/LocationService */ "./services/LocationService.js");
 
-var OverlayService = __webpack_require__(/*! ../services/OverlayService */ "./services/OverlayService.js");
 
-var SelectTileComponent = __webpack_require__(/*! ../components/overlayselecttiles */ "./components/overlayselecttiles/index.js");
 
-var UISchema = __webpack_require__(/*! ./UISchema */ "./utils/UISchema.js");
 /**
  * Request to insert an array child item at the given pointer. If multiple options are present, a dialogue is opened to
  * let the user select the appropriate type of child (oneof).
- *
- * @param {Object} dataService
- * @param {Object} schemaService
- * @param {String} pointer  - to array on which to insert the child
- * @param {Number} index    - index within array, where the child should be inserted (does not replace). Default: 0
+ * @param dataService
+ * @param schemaService
+ * @param pointer - to array on which to insert the child
+ * @param index - index within array, where the child should be inserted (does not replace). Default: 0
  */
-
-
-module.exports = function addItem(dataService, schemaService, pointer) {
-  var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-  var list = dataService.get(pointer);
-  var schema = schemaService.get(pointer);
-
-  if (schema.type !== "array") {
-    throw new Error("Can not add item to a non-array (".concat(pointer, ")"));
-  }
-
-  var selectOptions = schemaService.getChildSchemaSelection(pointer, index); // single option, immediately create template data and add item to list
-
-  if (selectOptions.length === 1) {
-    addSelection(0, schemaService, dataService);
-    return;
-  } // multiple options, ask user
-
-
-  var element = createElement(".overlay__item");
-  var selection = selectOptions.map(function (item, oneOfIndex) {
-    return {
-      icon: UISchema.getDefaultOption(item, "icon"),
-      title: UISchema.getDefaultOption(item, "title"),
-      description: UISchema.getDefaultOption(item, "description"),
-      value: oneOfIndex
-    };
-  }); // create user-selection
-
-  m.render(element, m(SelectTileComponent, {
-    description: "Modulauswahl - Bitte wählen",
-    value: "0",
-    options: selection,
-    onchange: function onchange(value) {
-      var selectedIndex = parseInt(value, 10);
-      addSelection(selectedIndex, schemaService, dataService);
-      OverlayService.close();
-      LocationService["goto"]("".concat(pointer, "/").concat(index));
+function addItem(dataService, schemaService, locationService, pointer, index = 0) {
+    const list = dataService.get(pointer);
+    const schema = schemaService.get(pointer);
+    if (schema.type !== "array") {
+        throw new Error(`Can not add item to a non-array (${pointer})`);
     }
-  })); // add data of selection
-
-  function addSelection(selectedIndex) {
-    var itemSchema = selectOptions[selectedIndex];
-    var itemData = schemaService.getTemplate(itemSchema);
-    list.splice(index, 0, itemData);
-    dataService.set(pointer, list);
-  } // and ask question
-
-
-  OverlayService.open(element, {
-    save: false
-  });
-};
-
-/***/ }),
-
-/***/ "./utils/array.js":
-/*!************************!*\
-  !*** ./utils/array.js ***!
-  \************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports) {
-
-module.exports = {
-  addItem: function addItem(pointer, controller, index) {
-    controller.addItemTo(pointer, index);
-  },
-  removeItem: function removeItem(pointer, controller, index) {
-    var nextList = controller.data().get(pointer);
-    nextList.splice(index, 1);
-    controller.data().set(pointer, nextList);
-  },
-  moveItem: function moveItem(pointer, controller, index, destinationIndex) {
-    if (destinationIndex < 0) {
-      return;
+    const selectOptions = schemaService.getChildSchemaSelection(pointer, index);
+    // single option, immediately create template data and add item to list
+    if (selectOptions.length === 1) {
+        addSelection(0, schemaService, dataService);
+        return;
     }
-
-    var list = controller.data().get(pointer);
-
-    if (list[index] == null || list[destinationIndex] == null) {
-      return;
+    // multiple options, ask user
+    const element = Object(_createElement__WEBPACK_IMPORTED_MODULE_1__["default"])(".overlay__item");
+    const selection = selectOptions.map((item, oneOfIndex) => ({
+        icon: _UISchema__WEBPACK_IMPORTED_MODULE_4__["default"].getDefaultOption(item, "icon"),
+        title: _UISchema__WEBPACK_IMPORTED_MODULE_4__["default"].getDefaultOption(item, "title"),
+        description: _UISchema__WEBPACK_IMPORTED_MODULE_4__["default"].getDefaultOption(item, "description"),
+        value: oneOfIndex
+    }));
+    // create user-selection
+    mithril__WEBPACK_IMPORTED_MODULE_0___default.a.render(element, mithril__WEBPACK_IMPORTED_MODULE_0___default()(_components_overlayselecttiles__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        // description: "Modulauswahl - Bitte wählen",
+        value: 0,
+        options: selection,
+        onchange: (value) => {
+            const selectedIndex = parseInt(value, 10);
+            addSelection(selectedIndex, schemaService, dataService);
+            _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__["default"].close();
+            locationService.goto(`${pointer}/${index}`);
+        }
+    }));
+    // add data of selection
+    function addSelection(selectedIndex, schemaService, dataService) {
+        const itemSchema = selectOptions[selectedIndex];
+        const itemData = schemaService.getTemplate(itemSchema);
+        list.splice(index, 0, itemData);
+        dataService.set(pointer, list);
     }
+    // and ask question
+    _services_OverlayService__WEBPACK_IMPORTED_MODULE_2__["default"].open(element, { save: false });
+}
+/* harmony default export */ __webpack_exports__["default"] = (addItem);
 
-    list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
-    controller.data().set(pointer, list);
-  },
-  moveElement: function moveElement(list, index, destinationIndex) {
-    list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
-  }
-};
 
 /***/ }),
 
-/***/ "./utils/createElement.js":
-/*!********************************!*\
-  !*** ./utils/createElement.js ***!
-  \********************************/
-/*! no static exports found */
+/***/ "./src/utils/array.ts":
+/*!****************************!*\
+  !*** ./src/utils/array.ts ***!
+  \****************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-var m = __webpack_require__(/*! mithril */ "mithril");
-
-module.exports = function createElement(selector, attributes) {
-  var vnode = m(selector, attributes);
-  var element = document.createElement(vnode.tag);
-  Object.keys(vnode.attrs).forEach(function (key) {
-    if (key === "className") {
-      vnode.attrs[key].split(" ").forEach(function (className) {
-        return element.classList.add(className);
-      });
-    } else if (vnode.attrs[key] != null) {
-      element.setAttribute(key, vnode.attrs[key]);
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+    addItem(pointer, controller, index) {
+        controller.addItemTo(pointer, index);
+    },
+    removeItem(pointer, controller, index) {
+        const nextList = controller.service("data").get(pointer);
+        nextList.splice(index, 1);
+        controller.service("data").set(pointer, nextList);
+    },
+    cloneItem(pointer, controller, index) {
+        const nextList = controller.service("data").get(pointer);
+        const item = nextList[index];
+        nextList.splice(index, 0, JSON.parse(JSON.stringify(item)));
+        controller.service("data").set(pointer, nextList);
+    },
+    moveItem(pointer, controller, index, destinationIndex) {
+        if (destinationIndex < 0) {
+            return;
+        }
+        const list = controller.service("data").get(pointer);
+        if (list[index] == null || list[destinationIndex] == null) {
+            return;
+        }
+        list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
+        controller.service("data").set(pointer, list);
+    },
+    moveElement(list, index, destinationIndex) {
+        list.splice(destinationIndex, 0, list.splice(index, 1)[0]);
     }
-  });
-  return element;
-};
+});
+
 
 /***/ }),
 
-/***/ "./utils/createProxy.js":
-/*!******************************!*\
-  !*** ./utils/createProxy.js ***!
-  \******************************/
-/*! no static exports found */
+/***/ "./src/utils/createElement.ts":
+/*!************************************!*\
+  !*** ./src/utils/createElement.ts ***!
+  \************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createElement; });
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mithril */ "mithril");
+/* harmony import */ var mithril__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mithril__WEBPACK_IMPORTED_MODULE_0__);
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function createElement(selector, attributes) {
+    const vnode = mithril__WEBPACK_IMPORTED_MODULE_0___default()(selector, attributes);
+    const element = document.createElement(vnode.tag);
+    Object.keys(vnode.attrs).forEach((key) => {
+        if (key === "className") {
+            vnode.attrs[key].split(" ").forEach((className) => element.classList.add(className));
+        }
+        else if (vnode.attrs[key] != null) {
+            element.setAttribute(key, vnode.attrs[key]);
+        }
+    });
+    return element;
+}
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var _require = __webpack_require__(/*! @technik-sde/foxy */ "./node_modules/@technik-sde/foxy/dist/foxy.js"),
-    Foxy = _require.Foxy,
-    handler = _require.handler;
-
-var defaultOptions = {
-  handlers: [handler.unsplash, handler.image, handler.video]
-};
-
-module.exports = function createProxy() {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-  if (options.constructor.name === "Foxy") {
-    return options;
-  }
-
-  var o = _objectSpread({}, defaultOptions, {}, options);
-
-  if (Array.isArray(o.handlers)) {
-    return new Foxy(o);
-  }
-
-  throw new Error("Failed initializing proxy from: ".concat(JSON.stringify(options)));
-};
 
 /***/ }),
 
-/***/ "./utils/getID.js":
-/*!************************!*\
-  !*** ./utils/getID.js ***!
-  \************************/
-/*! no static exports found */
+/***/ "./src/utils/createProxy.ts":
+/*!**********************************!*\
+  !*** ./src/utils/createProxy.ts ***!
+  \**********************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-/**
- * Converts a json-pointer to a valid dom-id (url selection)
- * https://stackoverflow.com/questions/70579/what-are-valid-values-for-the-id-attribute-in-html
- *
- * @param  {String} pointer
- * @return {String} unique id
- */
-module.exports = function getID(pointer) {
-  return "".concat(pointer.replace(/(^[#/]*|\/+$)/, "")).replace(/\/+/g, ".");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return createProxy; });
+/* harmony import */ var _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @technik-sde/foxy */ "./node_modules/@technik-sde/foxy/dist/foxy.js");
+/* harmony import */ var _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__);
+
+const defaultOptions = {
+    handlers: [
+        _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["handler"].unsplash,
+        _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["handler"].image,
+        _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["handler"].video
+    ]
 };
+function createProxy(options = {}) {
+    if (options.constructor.name === "Foxy") {
+        return options;
+    }
+    const o = { ...defaultOptions, ...options };
+    if (Array.isArray(o.handlers)) {
+        return new _technik_sde_foxy__WEBPACK_IMPORTED_MODULE_0__["Foxy"](o);
+    }
+    throw new Error(`Failed initializing proxy from: ${JSON.stringify(options)}`);
+}
+
 
 /***/ }),
 
-/***/ "./utils/i18n.js":
-/*!***********************!*\
-  !*** ./utils/i18n.js ***!
-  \***********************/
-/*! no static exports found */
+/***/ "./src/utils/i18n.ts":
+/*!***************************!*\
+  !*** ./src/utils/i18n.ts ***!
+  \***************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
-
-var render = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! json-schema-library/lib/utils/render */ "./node_modules/json-schema-library/lib/utils/render.js");
+/* harmony import */ var json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0__);
 
 translate.strings = {};
 translateError.strings = {};
-
 function translate(key, data) {
-  if (typeof translate.strings[key] === "string") {
-    return render(translate.strings[key], data);
-  } else if (typeof translate.strings[key] === "function") {
-    return translate.strings[key](data);
-  }
-
-  return key;
-}
-
-function translateError(controller, error) {
-  if (typeof translateError.strings[error.code] === "string") {
-    error.message = render(translateError.strings[error.code], error.data);
-  } else if (typeof translateError.strings[error.code] === "function") {
-    error.message = translateError.strings[error.code](controller, error);
-  }
-
-  return error;
-}
-
-function addLanguage(lang, keys) {
-  var _keys = keys == null && Object.prototype.toString.call(lang) === "[object Object]" ? lang : keys;
-
-  _extends(translateError.strings, _keys.errors);
-
-  _extends(translate.strings, _keys.strings);
-}
-
-var i18n = {
-  translate: translate,
-  translateError: translateError,
-  addLanguage: addLanguage
-};
-module.exports = i18n;
-
-/***/ }),
-
-/***/ "./utils/index.js":
-/*!************************!*\
-  !*** ./utils/index.js ***!
-  \************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = {
-  addItem: __webpack_require__(/*! ./addItem */ "./utils/addItem.js"),
-  array: __webpack_require__(/*! ./array */ "./utils/array.js"),
-  createElement: __webpack_require__(/*! ./createElement */ "./utils/createElement.js"),
-  getID: __webpack_require__(/*! ./getID */ "./utils/getID.js"),
-  i18n: __webpack_require__(/*! ./i18n */ "./utils/i18n.js"),
-  isNodeContext: __webpack_require__(/*! ./isNodeContext */ "./utils/isNodeContext.js"),
-  populated: __webpack_require__(/*! ./populated */ "./utils/populated.js"),
-  selection: __webpack_require__(/*! ./selection */ "./utils/selection.js"),
-  selectEditor: __webpack_require__(/*! ./selectEditor */ "./utils/selectEditor.js"),
-  UISchem: __webpack_require__(/*! ./UISchema */ "./utils/UISchema.js")
-};
-
-/***/ }),
-
-/***/ "./utils/isNodeContext.js":
-/*!********************************!*\
-  !*** ./utils/isNodeContext.js ***!
-  \********************************/
-/*! no static exports found */
-/*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process) {function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-/* global process */
-module.exports = function isNodeContext() {
-  if ((typeof process === "undefined" ? "undefined" : _typeof(process)) === "object") {
-    if (_typeof(process.versions) === "object") {
-      if (typeof process.versions.node !== "undefined") {
-        return true;
-      }
+    if (typeof translate.strings[key] === "string") {
+        return json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0___default()(translate.strings[key], data);
     }
-  }
-
-  return false;
+    else if (typeof translate.strings[key] === "function") {
+        return translate.strings[key](data);
+    }
+    return key;
+}
+function translateError(controller, error) {
+    if (typeof translateError.strings[error.code] === "string") {
+        error.message = json_schema_library_lib_utils_render__WEBPACK_IMPORTED_MODULE_0___default()(translateError.strings[error.code], error.data);
+    }
+    else if (typeof translateError.strings[error.code] === "function") {
+        error.message = translateError.strings[error.code](controller, error);
+    }
+    return error;
+}
+function addLanguage(lang, keys) {
+    const _keys = (keys == null && Object.prototype.toString.call(lang) === "[object Object]") ? lang : keys;
+    Object.assign(translateError.strings, _keys.errors);
+    Object.assign(translate.strings, _keys.strings);
+}
+const i18n = {
+    translate,
+    translateError,
+    addLanguage
 };
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
+/* harmony default export */ __webpack_exports__["default"] = (i18n);
+
 
 /***/ }),
 
-/***/ "./utils/populated.js":
+/***/ "./src/utils/index.ts":
 /*!****************************!*\
-  !*** ./utils/populated.js ***!
+  !*** ./src/utils/index.ts ***!
   \****************************/
-/*! no static exports found */
+/*! exports provided: addItem, array, createElement, i18n, isNodeContext, populated, selection, selectEditor, UISchem */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-// returns true if the value is valid, that is: it has content
-module.exports = function populated(value, returnIf) {
-  var returnElse = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
-  var isPopulated = true;
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _addItem__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./addItem */ "./src/utils/addItem.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "addItem", function() { return _addItem__WEBPACK_IMPORTED_MODULE_0__["default"]; });
 
-  if (value == null || value === "" || value === "#") {
-    isPopulated = false;
-  } else if (typeof value === "string") {
-    isPopulated = value.replace(/<[^>]+>/g, "").replace(/[^A-Za-z0-9]/g, "").length > 0;
-  } else if (Array.isArray(value)) {
-    isPopulated = value.length > 0;
-  } else if (Object.prototype.toString.call(value) === "[object Object]") {
-    isPopulated = Object.keys(value).length > 0;
-  }
+/* harmony import */ var _array__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./array */ "./src/utils/array.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "array", function() { return _array__WEBPACK_IMPORTED_MODULE_1__["default"]; });
 
-  if (returnIf === undefined && returnElse === "") {
-    return isPopulated;
-  }
+/* harmony import */ var _createElement__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./createElement */ "./src/utils/createElement.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return _createElement__WEBPACK_IMPORTED_MODULE_2__["default"]; });
 
-  return isPopulated ? returnIf : returnElse;
-};
+/* harmony import */ var _i18n__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./i18n */ "./src/utils/i18n.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "i18n", function() { return _i18n__WEBPACK_IMPORTED_MODULE_3__["default"]; });
+
+/* harmony import */ var _isNodeContext__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./isNodeContext */ "./src/utils/isNodeContext.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "isNodeContext", function() { return _isNodeContext__WEBPACK_IMPORTED_MODULE_4__["default"]; });
+
+/* harmony import */ var _populated__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./populated */ "./src/utils/populated.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "populated", function() { return _populated__WEBPACK_IMPORTED_MODULE_5__["default"]; });
+
+/* harmony import */ var _selection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./selection */ "./src/utils/selection.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selection", function() { return _selection__WEBPACK_IMPORTED_MODULE_6__["default"]; });
+
+/* harmony import */ var _selectEditor__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./selectEditor */ "./src/utils/selectEditor.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "selectEditor", function() { return _selectEditor__WEBPACK_IMPORTED_MODULE_7__["default"]; });
+
+/* harmony import */ var _UISchema__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./UISchema */ "./src/utils/UISchema.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "UISchem", function() { return _UISchema__WEBPACK_IMPORTED_MODULE_8__["default"]; });
+
+
+
+
+
+
+
+
+
+
+
 
 /***/ }),
 
-/***/ "./utils/selectEditor.js":
-/*!*******************************!*\
-  !*** ./utils/selectEditor.js ***!
-  \*******************************/
-/*! no static exports found */
+/***/ "./src/utils/isNodeContext.ts":
+/*!************************************!*\
+  !*** ./src/utils/isNodeContext.ts ***!
+  \************************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(process) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return isNodeContext; });
+/* global process */
+function isNodeContext() {
+    if (typeof process === "object") {
+        if (typeof process.versions === "object") {
+            if (typeof process.versions.node !== "undefined") {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/process/browser.js */ "./node_modules/process/browser.js")))
+
+/***/ }),
+
+/***/ "./src/utils/populated.ts":
+/*!********************************!*\
+  !*** ./src/utils/populated.ts ***!
+  \********************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return populated; });
+// returns true if the value is valid, that is: it has content
+function populated(value, returnIf, returnElse) {
+    let isPopulated = true;
+    if (value == null || value === "" || value === "#") {
+        isPopulated = false;
+    }
+    else if (typeof value === "string") {
+        isPopulated = value.replace(/<[^>]+>/g, "").replace(/[^A-Za-z0-9]/g, "").length > 0;
+    }
+    else if (Array.isArray(value)) {
+        isPopulated = value.length > 0;
+    }
+    else if (Object.prototype.toString.call(value) === "[object Object]") {
+        isPopulated = Object.keys(value).length > 0;
+    }
+    if (returnIf === undefined && returnElse === undefined) {
+        return isPopulated;
+    }
+    return isPopulated ? returnIf : returnElse;
+}
+
+
+/***/ }),
+
+/***/ "./src/utils/selectEditor.ts":
+/*!***********************************!*\
+  !*** ./src/utils/selectEditor.ts ***!
+  \***********************************/
+/*! exports provided: default */
+/*! all exports used */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
 /**
  * Selects an editor based on the given schema
  *
- * @param  {Array} editorViews  - List of editors with a static function 'editorOf'
- * @param  {String} pointer     - current pointer in data
- * @param  {Controller} controller
- * @param  {Object} options     - the complete and resolved (UISchema) options object (editron:ui + additions)
- * @return {Boolean|Constructor} The constructor of the chosen editor od false if no editor could be resolved
+ * @param editorViews - List of editors with a static function 'editorOf'
+ * @param pointer - current pointer in data
+ * @param controller
+ * @param options - the complete and resolved (UISchema) options object (editron:ui + additions)
+ * @return The constructor of the chosen editor od false if no editor could be resolved
  *  or is denied
  */
-function select(editorViews, pointer, controller, options) {
-  // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
-  if (/_id$/.test(pointer)) {
-    return false; // abort if it is an internal value
-  }
-
-  var schema = controller.schema().get(pointer);
-
-  if (schema.type === "error") {
-    // data-pointer could not be found in schema
-    // @todo find a better solution for additional data: maybe an 'additional data'-editor
-    return false;
-  } // @ui-option hidden
-
-
-  if (options.hidden === true) {
-    return false;
-  }
-
-  for (var i = 0, l = editorViews.length; i < l; i += 1) {
-    if (editorViews[i].editorOf(pointer, controller, options)) {
-      return editorViews[i];
+function select(editors, pointer, controller, options) {
+    // @todo export this to a configurable function (this is distributed across modules: json-schema-library)
+    if (/_id$/.test(pointer)) {
+        return false; // abort if it is an internal value
     }
-  }
-
-  return undefined;
+    const schema = controller.service("schema").get(pointer);
+    if (schema.type === "error") {
+        // data-pointer could not be found in schema
+        // @todo find a better solution for additional data: maybe an 'additional data'-editor
+        return false;
+    }
+    // @ui-option hidden
+    if (options.hidden === true) {
+        return false;
+    }
+    for (let i = 0, l = editors.length; i < l; i += 1) {
+        if (editors[i].editorOf(pointer, controller, options)) {
+            return editors[i];
+        }
+    }
+    return undefined;
 }
+/* harmony default export */ __webpack_exports__["default"] = (select);
 
-module.exports = select;
 
 /***/ }),
 
-/***/ "./utils/selection.js":
-/*!****************************!*\
-  !*** ./utils/selection.js ***!
-  \****************************/
-/*! no static exports found */
+/***/ "./src/utils/selection.ts":
+/*!********************************!*\
+  !*** ./src/utils/selection.ts ***!
+  \********************************/
+/*! exports provided: default */
 /*! all exports used */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-var getID = __webpack_require__(/*! ./getID */ "./utils/getID.js");
-/**
- * Return true, if the given element may blur in the requested direction
- * @param  {HTMLElement} element
- * @param  {"up"|"down"|"left"|"right"} direction
- * @return {Boolean} may blur
- */
-
-
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const isBlurable = (element) => (typeof element.mayBlur === "function");
+/** returns true if one may trigger blur on the element via cursor movement **/
 function mayBlur(element, direction) {
-  var dir = direction === "down" || direction === "right" ? 1 : -1;
-
-  if (element.mayBlur) {
-    return element.mayBlur(direction);
-  }
-
-  if (element.tagName === "INPUT" && element.type === "number") {
-    // there is no selection-indicator for numbers, so we cannot determine
-    // if the motion is within the input-field. Must use input.type=text
-    // for this to work
-    return false;
-  }
-
-  if (element.tagName === "INPUT" && element.type === "checkbox") {
+    const dir = (direction === "down" || direction === "right") ? 1 : -1;
+    if (isBlurable(element)) {
+        return element.mayBlur(direction);
+    }
+    if (element.tagName === "INPUT" && element.type === "number") {
+        // there is no selection-indicator for numbers, so we cannot determine
+        // if the motion is within the input-field. Must use input.type=text
+        // for this to work
+        return false;
+    }
+    if (element.tagName === "INPUT" && element.type === "checkbox") {
+        return true;
+    }
+    if (element.tagName === "SELECT") {
+        return false;
+    }
+    if (element.tagName === "INPUT") {
+        const input = element;
+        if (direction === "up" || direction === "down") {
+            return true;
+        }
+        if (direction === "left" && input.selectionStart === 0) {
+            return true;
+        }
+        if (direction === "right" && input.value.length === input.selectionEnd) {
+            return true;
+        }
+        return false;
+    }
+    if (element.tagName === "TEXTAREA") {
+        const input = element;
+        if (element.value === "") {
+            return true;
+        }
+        else if (dir === -1 && input.selectionStart === 0) {
+            return true;
+        }
+        else if (dir === 1 && input.value.length === input.selectionEnd) {
+            return true;
+        }
+        return false;
+    }
     return true;
-  }
-
-  if (element.tagName === "SELECT") {
-    return false;
-  }
-
-  if (element.tagName === "INPUT") {
-    if (direction === "up" || direction === "down") {
-      return true;
-    }
-
-    if (direction === "left" && element.selectionStart === 0) {
-      return true;
-    }
-
-    if (direction === "right" && element.value.length === element.selectionEnd) {
-      return true;
-    }
-
-    return false;
-  }
-
-  if (element.tagName === "TEXTAREA") {
-    if (element.value === "") {
-      return true;
-    } else if (dir === -1 && element.selectionStart === 0) {
-      return true;
-    } else if (dir === 1 && element.value.length === element.selectionEnd) {
-      return true;
-    }
-
-    return false;
-  }
-
-  return true;
 }
-/**
- * Return the current active element or false
- * @param  {Controller} controller
- * @param  {HTMLElement} parent
- * @return {HTMLElement|false}
- */
-
-
-function getActiveInput(controller) {
-  var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-  var currentPointer = controller.location().getCurrent();
-  var currentId = "#".concat(getID(currentPointer));
-
-  if (currentId === "#") {
-    console.log("abort empty selection", currentPointer, "active element", document.activeElement);
-    return false;
-  }
-
-  var activeInput = parent.querySelector(currentId);
-
-  if (activeInput == null) {
-    return false;
-  }
-
-  if (activeInput !== document.activeElement) {
-    console.log("selection: active input is not the same as current editor", activeInput, document.activeElement);
-  }
-
-  return activeInput;
+/** returns the current active (editron) input element or false */
+function getActiveInput(controller, parent = document.body) {
+    const currentPointer = controller.service("location").getCurrent();
+    if (currentPointer === "#") {
+        console.log("abort empty selection", currentPointer, "active element", document.activeElement);
+        return false;
+    }
+    const activeInput = parent.querySelector(`[data-id='${currentPointer}'] label input`);
+    if (activeInput == null) {
+        return false;
+    }
+    if (activeInput !== document.activeElement) {
+        console.log("selection: active input is not the same as current editor", activeInput, document.activeElement);
+    }
+    return activeInput;
 }
-
+/** returns a list of available editron input-elements (including textaras, select) */
 function getAvailableInputs(parent) {
-  return _toConsumableArray(parent.querySelectorAll("input,textarea,select"));
+    return Array.from(parent.querySelectorAll("input,textarea,select"));
 }
-/**
- * Return the next input-element or false
- * @param  {Controller} controller
- * @param  {"up"|"down"|"left"|"right"} direction
- * @param  {HTMLElement} options.parent
- * @return {HTMLElement|false}
- */
-
-
-function getNextInput(controller) {
-  var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "down";
-
-  var _ref = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {},
-      _ref$parent = _ref.parent,
-      parent = _ref$parent === void 0 ? document : _ref$parent;
-
-  var activeElement = getActiveInput(controller, parent);
-  var allElements = getAvailableInputs(parent);
-  var dir = direction === "down" || direction === "right" ? 1 : -1;
-  var currentIndex = allElements.indexOf(activeElement);
-
-  if (currentIndex === -1) {
+/** returns the next input element in direction or false if it is last/first */
+function getNextInput(controller, direction = "down", { parent = document.body } = {}) {
+    const activeElement = getActiveInput(controller, parent);
+    if (activeElement === false) {
+        return false;
+    }
+    const allElements = getAvailableInputs(parent);
+    const dir = (direction === "down" || direction === "right") ? 1 : -1;
+    const currentIndex = allElements.indexOf(activeElement);
+    if (currentIndex === -1) {
+        return false;
+    }
+    const nextElement = allElements[currentIndex + dir];
+    if (nextElement && nextElement.focus) {
+        return nextElement;
+    }
     return false;
-  }
-
-  var nextElement = allElements[currentIndex + dir];
-
-  if (nextElement && nextElement.focus) {
-    return nextElement;
-  }
-
-  return false;
 }
 /**
  * move the focus from current element to next visible input-element
  * inputs being (textarea, input and select with an id-attribute containing a json-pointer-id)
- *
- * @param  {Controller}  controller
- * @param  {"up"|"down"|"left"|"right"} direction
- * @param  {Object} options
- * @param  {Boolean} options.force    ignores movement restrictions (e.g. navigation in textarea)
- * @param  {HTMLElement} options.parent    scan only in given parentNode
- * @returns {Boolean} true - if there was a new target was found or the move prevented
+ * @returns true - if there was a new target was found or the move prevented
  */
-
-
-function focusNextInput(controller) {
-  var direction = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "down";
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var _options$force = options.force,
-      force = _options$force === void 0 ? false : _options$force,
-      _options$parent = options.parent,
-      parent = _options$parent === void 0 ? document : _options$parent;
-  var activeElement = getActiveInput(controller, parent);
-
-  if (force === false && mayBlur(activeElement, direction) === false) {
-    // console.log("prevent blur of", activeElement);
-    return true;
-  }
-
-  var nextElement = getNextInput(controller, direction, options);
-
-  if (nextElement) {
-    nextElement.focus();
-    return true;
-  }
-
-  return false;
+function focusNextInput(controller, direction = "down", options = {}) {
+    const { force = false, parent = document.body } = options;
+    const activeElement = getActiveInput(controller, parent);
+    if (activeElement === false) {
+        return false;
+    }
+    if (force === false && mayBlur(activeElement, direction) === false) {
+        // console.log("prevent blur of", activeElement);
+        return true;
+    }
+    const nextElement = getNextInput(controller, direction, options);
+    if (nextElement) {
+        nextElement.focus();
+        return true;
+    }
+    return false;
 }
+/* harmony default export */ __webpack_exports__["default"] = ({
+    focusNextInput,
+    getNextInput,
+    getAvailableInputs,
+    getActiveInput,
+    mayBlur
+});
 
-module.exports = {
-  focusNextInput: focusNextInput,
-  getNextInput: getNextInput,
-  getAvailableInputs: getAvailableInputs,
-  getActiveInput: getActiveInput,
-  mayBlur: mayBlur
-};
 
 /***/ }),
 

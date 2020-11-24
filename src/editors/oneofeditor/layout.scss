@@ -1,0 +1,14 @@
+/* center oneOf selection in form */
+.ed-value--oneof .mmf-form.mmf-form--select {
+    text-align: center;
+
+    label {
+        display: inline-flex;
+        align-items: center;
+        flex-direction: row;
+
+        .mmf-label {
+            padding-bottom: 0;
+        }
+    }
+}

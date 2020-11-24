@@ -111,7 +111,7 @@ There are three basic concepts that you should be familiar, when working with a 
 <div class="editor"></div>
 
 <script type="text/javascript">
-    const { Controller } = window.editron;
+    const Controller = window.editron;
     const controller = new Controller(window.jsonSchema);
     controller.createEditor("#", document.querySelector(".editor"));
 
@@ -294,6 +294,7 @@ attrs               | Object        | attributes object, passed to the editors h
 icon                | String        | if supported, define the type of [material icon](https://material.io/tools/icons/?style=baseline)
 hidden              | Boolean       | hide the value from the user-interface
 enum                | String[]      | ui titles for an enum-selection
+placeholder         | String        | placeholder, if editor uses an input-element
 
 
 Example:
@@ -324,6 +325,14 @@ controls.add        | Boolean=false | additional add item button
 controls.remove     | Boolean=true  | remove button on each item
 controls.move       | Boolean=true  | up and down move cursors
 controls.insert     | Boolean=true  | insert button between elements
+
+
+Object-Editor options:
+
+property            | type          | description
+:-------------------|:--------------|:--------------------------------------------------------------------------
+collapsed           | Boolean?      | If defined, adds a collapsible-icon. If true, will hide properties per default. Besides a `hidden` class, will add a class `collapsible` to the object-container
+addDelete           | Boolean?      | Adds an delete option for this object (added automatically on array-items)
 
 
 **Add additional editors**
@@ -669,6 +678,7 @@ is an implementation detail, but is required for a performant user-experience. I
 (i.e. drag & drop), the main view must rerender all UI-forms, which will become sluggish on large documents. Thus
 `updatePointer` is required to reuse existing HTML nodes for a performant rendering. The `AbstractEditor` will change
 all default listeners to the new pointer, but any custom usage of the pointer (and _id_) must be treated manually.
+Note: since version 8, updating pointers of child-editors (using controller.createEditor) is no longer required.
 
 **further details**
 
@@ -752,7 +762,7 @@ class, but you must follow the some basic rules, that are further described in [
 1. error event
 2. update pointer and event listeners
 3. creating dom element and class convention
-4. exposing helpers toElement, getPointer
+4. exposing helpers getElement, getPointer
 5. Using test-template
 -->
 
@@ -787,6 +797,17 @@ class, but you must follow the some basic rules, that are further described in [
 
 
 ## Breaking Changes
+
+`07/2020` with `v8` editron is written using typescript. Due to module-syntax, some exports have changed, mainly:
+
+- The EVENTS-object in services is now exported separately and not on its object `import { EVENTS } from "./DataService` 
+- The `main`-module now exports all helpers separately and the controller is exported as default.
+- All components are exported individually, having no default in `src/components/index.ts`
+- dependency _mitt_ has been replaced by _nanoevents_
+- test-runner _ava_ has been replaced by _mocha_
+
+Additionally all source files have been moved to `src`-folder, which must be adjusted in the imports
+
 
 `11/2019` with `v7` editron has been updated to mithril@2, json-schema-library@4, mithril-material-forms@3. and all editors have new required method `setActive(boolean)` to enable or disabled editor input-interaction. Please refer to each library version for Breaking Changes. In short:
 

@@ -21,7 +21,7 @@ button.mmf-button {
   border-radius: 2px;
   color: #00c853;
   background-color: inherit;
-  transition: background-color 0.2s linear; }
+  transition: background-color 0.1s linear; }
   button.mmf-button::-moz-focus-inner, button.mmf-button::-moz-focus-inner {
     border: 0;
     padding: 0; }
@@ -36,6 +36,14 @@ button.mmf-button {
       background-color: inherit;
       color: rgba(0, 200, 83, 0.38);
       cursor: default; }
+  button.mmf-button .mmf-icon {
+    width: 0;
+    height: 0;
+    position: relative;
+    top: 0.2em;
+    line-height: 0;
+    padding-right: 1.5em;
+    font-size: 1.5em; }
 
 button.mmf-button--raised {
   z-index: 10;
@@ -102,7 +110,7 @@ div.mmf-select__wrapper {
     right: 0;
     bottom: 0;
     color: #000;
-    transition: color 0.2s linear;
+    transition: color 0.1s linear;
     pointer-events: none; }
   div.mmf-select__wrapper:not(.is-disabled):hover:after, div.mmf-select__wrapper:not(.is-disabled).has-focus:after {
     color: #81c784; }
@@ -128,7 +136,7 @@ select.mmf-select {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.2s linear;
+  transition: border-color 0.1s linear;
   font-size: inherit;
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -165,9 +173,14 @@ select.mmf-select option {
   font-size: inherit;
   color: #000; }
 
-.mmf-form--select label {
-  padding-left: 16px;
+.mmf-form--select .mmf-label {
   line-height: 29px; }
+
+.mmf-form--select .order--label-first .mmf-label {
+  padding-right: 16px; }
+
+.mmf-form--select .order--label-last .mmf-label {
+  padding-left: 16px; }
 
 .mmf-form__error--warning {
   color: #F39C12; }
@@ -187,7 +200,7 @@ input.mmf-input {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.2s linear; }
+  transition: border-color 0.1s linear; }
   input.mmf-input:not([disabled]):focus {
     border-color: #00c853; }
   input.mmf-input:not([disabled]):hover {
@@ -221,7 +234,7 @@ input.mmf-checkbox {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.2s linear;
+  transition: border-color 0.1s linear;
   position: relative;
   display: inline-block;
   font-size: 1.25em;
@@ -267,14 +280,19 @@ input.mmf-checkbox {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    transition: color 0.2s linear; }
+    transition: color 0.1s linear; }
   input.mmf-checkbox:not([disabled]):focus:after, input.mmf-checkbox:not([disabled]):hover:after {
     color: #00c853; }
   input.mmf-checkbox[disabled]:after {
     cursor: default; }
 
-.mmf-form--checkbox label {
-  color: inherit;
+.mmf-form--checkbox .mmf-label {
+  color: inherit; }
+
+.mmf-form--checkbox .order--label-first .mmf-label {
+  padding-right: 16px; }
+
+.mmf-form--checkbox .order--label-last .mmf-label {
   padding-left: 16px; }
 
 /**
@@ -289,12 +307,12 @@ input.mmf-checkbox {
 .mmf-form--input input {
   padding: 1.1em 0 0 0; }
 
-.mmf-form--input label.mmf-label {
+.mmf-form--input .mmf-label {
   width: 100%;
   position: absolute;
   top: 0;
   display: inline-block;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
   color: #000;
   opacity: 0.54;
   font-size: 0.8em;
@@ -302,7 +320,7 @@ input.mmf-checkbox {
   text-overflow: ellipsis;
   overflow: hidden; }
 
-.mmf-form--input.hasFocus label.mmf-label {
+.mmf-form--input.hasFocus .mmf-label {
   color: #81c784;
   opacity: 0.87; }
 
@@ -310,17 +328,17 @@ input.mmf-checkbox {
 .mmf-form--input.has-error input {
   border-color: #d50000; }
 
-.mmf-form--input.has-error.hasFocus label.mmf-label {
+.mmf-form--input.has-error.hasFocus .mmf-label {
   color: #d50000; }
 
 .mmf-form--input.has-warning select,
 .mmf-form--input.has-warning input {
   border-color: #F39C12; }
 
-.mmf-form--input.has-warning.hasFocus label.mmf-label {
+.mmf-form--input.has-warning.hasFocus .mmf-label {
   color: #F39C12; }
 
-.mmf-form--input.isEmpty.hasNoFocus label.mmf-label {
+.mmf-form--input.isEmpty.hasNoFocus .mmf-label {
   transform: translateY(1.1em);
   font-size: 1em; }
 
@@ -344,7 +362,7 @@ textarea.mmf-textarea {
   transform: translateZ(0);
   outline: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.2s linear;
+  transition: border-color 0.1s linear;
   width: 100%;
   margin: 1.1em 0 0 0;
   resize: vertical; }
@@ -365,12 +383,12 @@ textarea.mmf-textarea {
 .mmf-form--textarea textarea {
   margin: 1.1em 0 0 0; }
 
-.mmf-form--textarea label.mmf-label {
+.mmf-form--textarea .mmf-label {
   width: 100%;
   position: absolute;
   top: 0;
   display: inline-block;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
   color: #000;
   opacity: 0.54;
   font-size: 0.8em;
@@ -378,7 +396,7 @@ textarea.mmf-textarea {
   text-overflow: ellipsis;
   overflow: hidden; }
 
-.mmf-form--textarea.hasFocus label.mmf-label {
+.mmf-form--textarea.hasFocus .mmf-label {
   color: #81c784;
   opacity: 0.87; }
 
@@ -386,17 +404,17 @@ textarea.mmf-textarea {
 .mmf-form--textarea.has-error input {
   border-color: #d50000; }
 
-.mmf-form--textarea.has-error.hasFocus label.mmf-label {
+.mmf-form--textarea.has-error.hasFocus .mmf-label {
   color: #d50000; }
 
 .mmf-form--textarea.has-warning select,
 .mmf-form--textarea.has-warning input {
   border-color: #F39C12; }
 
-.mmf-form--textarea.has-warning.hasFocus label.mmf-label {
+.mmf-form--textarea.has-warning.hasFocus .mmf-label {
   color: #F39C12; }
 
-.mmf-form--textarea.isEmpty.hasNoFocus label.mmf-label {
+.mmf-form--textarea.isEmpty.hasNoFocus .mmf-label {
   transform: translateY(1.1em);
   font-size: 1em; }
 
@@ -430,7 +448,7 @@ textarea.mmf-textarea {
  */
 .mmf-form {
   position: relative; }
-  .mmf-form label {
+  .mmf-form .mmf-label {
     color: #000;
     opacity: 0.54; }
   .mmf-form.mmf-form--disabled .mmf-meta,
@@ -447,7 +465,8 @@ textarea.mmf-textarea {
 ul.mmf-form__errors {
   font-size: 0.8em;
   list-style: none;
-  color: #d50000; }
+  color: #d50000;
+  padding-left: 0; }
   ul.mmf-form__errors li {
     margin-top: 4px; }
 
@@ -490,7 +509,7 @@ ul.mmf-form__errors {
   background-color: #fff;
   border-bottom-left-radius: 2px;
   border-bottom-right-radius: 2px; }
-  .editron-value label {
+  .editron-value .mmf-label {
     color: #000;
     opacity: 0.54; }
   .editron-value.mmf-form--disabled .mmf-meta,
@@ -510,11 +529,9 @@ ul.mmf-form__errors {
   user-select: none;
   text-align: center; }
   .editron-container__child .editron-container__button--add .mmf-icon {
-    color: rgba(255, 255, 255, 0.87);
-    text-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+    color: rgba(255, 255, 255, 0.87); }
   .editron-container__child .editron-container__button--add:not(.is-disabled):hover .mmf-icon {
-    color: #fff;
-    text-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22); }
+    color: #fff; }
   .editron-container__child .editron-container__button--add.is-disabled:hover {
     cursor: default; }
     .editron-container__child .editron-container__button--add.is-disabled:hover .mmf-icon {
@@ -545,6 +562,9 @@ ul.mmf-form__errors {
   text-align: center;
   color: rgba(255, 255, 255, 0.38);
   font-size: 0.8em; }
+
+.editron-container--object.hidden .editron-container__children {
+  display: none; }
 
 .editron-container__header {
   display: flex; }
@@ -605,11 +625,30 @@ ul.mmf-form__errors {
 .editron-container__controls--child {
   position: absolute;
   top: 0;
-  right: -32px;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  max-height: 64px; }
+  right: 0;
+  transform: translateX(100%);
+  z-index: 999; }
+  .editron-container__controls--child ul {
+    margin: 0;
+    padding: 0;
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 1.5em;
+    list-style: none; }
+    .editron-container__controls--child ul li button {
+      width: 100%;
+      margin: 0;
+      white-space: nowrap;
+      text-align: left; }
+      .editron-container__controls--child ul li button:hover {
+        cursor: pointer; }
+  .editron-container__controls--child.is-enabled:hover {
+    background: #fff; }
+  .editron-container__controls--child.is-enabled:hover ul {
+    display: block;
+    z-index: 20;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
 
 .editron-container__header {
   color: inherit;
@@ -634,15 +673,6 @@ ul.mmf-form__errors {
 
 .editron-container {
   color: inherit; }
-
-.editron-container__controls--child i.mmf-icon {
-  color: rgba(255, 255, 255, 0.54);
-  font-size: 18px;
-  line-height: 1.5em;
-  width: 24px;
-  height: 24px; }
-  .editron-container__controls--child i.mmf-icon:hover {
-    color: rgba(255, 255, 255, 0.87); }
 
 .ui-overlay {
   z-index: 1002;
@@ -805,7 +835,7 @@ ul.mmf-form__errors {
 
 .mmf-card .editron-container__button--add {
   position: relative; }
-  .mmf-card .editron-container__button--add label {
+  .mmf-card .editron-container__button--add .mmf-label {
     color: #000;
     opacity: 0.54; }
   .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-meta,

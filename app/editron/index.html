@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+
+    <head>
+        <title>editron - local setup</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <!-- <link href="https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron.css" rel="stylesheet" type="text/css" /> -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mithril/2.0.4/mithril.min.js"></script>
+
+        <!-- dist -->
+        <!-- <link href="../../dist/editron.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="../../dist/editron-modules.js"></script>
+        <script type="text/javascript" src="../../dist/editron.js"></script> -->
+
+
+        <style type="text/css">
+            body {
+                /*background: #607D8B;*/
+                background: RGBA(242,242,243,1.00);
+                font-family: "Roboto";
+            }
+
+            .header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                padding: 12px 24px;
+                line-height: 24px;
+                box-sizing: border-box;
+                z-index: 103;
+                background-color: inherit;
+                opacity: 0.8;
+            }
+
+            .header h1 {
+                margin: 0;
+                text-align: right;
+            }
+
+            .page {
+                position: relative;
+                color: #333;
+                padding: 0 8px;
+                max-width: 960px;
+                margin-left: 244px;
+                margin-top: 48px;
+
+                display: flex;
+            }
+
+            .minimap {
+                margin-right: 48px;
+                position: fixed;
+                top: 48px;
+                left: 0;
+                width: 244px;
+                box-sizing: border-box;
+                background-color: #34344D;
+                bottom: 0;
+                color: #71737F;
+            }
+
+            .editor {
+                flex-grow: 1;
+                margin-right: 48px; /* icons */
+            }
+
+            .sidebar {
+                min-width: 160px;
+            }
+            /* temp */
+            .editor ul { padding: 0; }
+        </style>
+    </head>
+
+    <body>
+        <div class="header">
+            <h1>editron development</h1>
+        </div>
+
+        <div class="page">
+            <div class="minimap"></div>
+            <div class="editor"></div>
+            <div class="sidepanel"></div>
+        </div>
+
+        <!-- served -->
+        <script type="text/javascript" src="editron.js"></script>
+    </body>
+
+</html>

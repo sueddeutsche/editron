@@ -1,0 +1,43 @@
+.ed-header {
+    display: flex;
+    align-items: center;
+
+    h2 {
+        margin: 0;
+    }
+
+    &.no-title.no-actions {
+        display: none;
+    }
+
+    &.no-title {
+        .ed-header__title {
+            display: none;
+        }
+    }
+
+    &.no-actions {
+        .ed-actions {
+            display: none;
+        }
+    }
+
+    &.with-icon .ed-header__title h2 {
+        padding-left: 0;
+    }
+
+    &.with-actions {
+        padding-right: 0;
+    }
+
+    .ed-header__title {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        min-height: $mmf-block * 0.75;
+
+        .mmf-icon {
+            width: 1.5em;
+        }
+    }
+}

@@ -1,0 +1,22 @@
+.ed-overlay {
+    background: rgba(30, 30, 30, 0.5);
+    bottom: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 102;
+
+    .ed-overlay__card {
+        align-self: center;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        width: auto;
+    }
+}
+

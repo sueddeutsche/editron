@@ -1,0 +1,12 @@
+@import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/elevation";
+
+.ed-actions {
+
+    ul {
+        @include elevation(2);
+        min-width: 3 * $mmf-block;
+        padding: $mmf-unit;
+        border-radius: 4px;
+    }
+}

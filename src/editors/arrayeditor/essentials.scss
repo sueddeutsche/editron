@@ -1,0 +1,44 @@
+@import "mithril-material-forms/lib/typography";
+@import "mithril-material-forms/lib/colors";
+@import "mithril-material-forms/lib/units";
+
+
+.ed-item.with-index {
+    // padding-left: $mmf-block;
+    &:before {
+        content: attr(data-index);
+        display: inline-block;
+        position: absolute;
+        left: -$mmf-block;
+        width: $mmf-block;
+        line-height: 2;
+        text-align: center;
+    }
+}
+
+.ed-child:first-child > .ed-separator {
+    display: none;
+}
+
+.ed-array.is-collapsed {
+    & > .ed-separator,
+    & > .ed-children {
+        display: none;
+    }
+}
+
+.ed-separator {
+    min-height: $mmf-unit;
+    background-color: var(--ed-bg-color, transparent);
+    display: flex;
+    justify-content: center;
+
+    button.the-default {
+        font-size: $mmf-text-size--meta;
+        border: 0;
+        span {
+            display: none;
+        }
+    }
+}
+

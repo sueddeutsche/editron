@@ -10,13 +10,13 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mithril/2.0.4/mithril.min.js"></script>
 
         <!-- dist -->
-        <!-- <link href="../../dist/editron.css" rel="stylesheet" type="text/css" />
+        <link href="../../dist/editron.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="../../dist/editron-modules.js"></script>
-        <script type="text/javascript" src="../../dist/editron.js"></script> -->
+        <script type="text/javascript" src="../../dist/editron.js"></script>
 
         <!-- served -->
-        <link href="editron.css" rel="stylesheet" type="text/css" />
-        <script type="text/javascript" src="editron.js"></script>
+        <!-- <link href="editron.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="editron.js"></script> -->
 
         <style type="text/css">
             body {
@@ -41,7 +41,7 @@
         </div>
 
         <script type="text/javascript">
-            const { Controller } = editron;
+            const Controller = window.editron.default;
             const controller = new Controller({
                 type: "object",
                 required: ["title"],
@@ -87,7 +87,7 @@
             }, { list: ["1", "2", "3"] });
             controller.createEditor("#", document.querySelector(".editor"));
             controller.setActive(true);
-            controller.data().observe("#", (pointer, value) => {
+            controller.service("data").observe("#", (pointer, value) => {
                 console.log("changed", controller.getData());
             }, true);
         </script>

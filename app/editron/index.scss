@@ -1,0 +1,12 @@
+@import "../../src/styles/icon";
+@import "../../src/styles/layout";
+
+// @import "../../src/styles/theme-default";
+@import "mithril-material-forms/dist/layout";
+@import "mithril-material-forms/dist/typography";
+@import "mithril-material-forms/dist/theme-solid-as-default";
+@import "mithril-material-forms/dist/theme-material";
+
+.editor {
+    --ed-color--bg: #000;
+}

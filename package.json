@@ -1,9 +1,10 @@
 {
   "name": "editron",
-  "version": "7.6.1",
+  "version": "8.0.0",
   "description": "Editron - json-editor",
-  "main": "editron.js",
-  "types": "editron.d.ts",
+  "main": "dist/editron.js",
+  "types": "dist/editron.d.ts",
+  "module": "distmodule/editron.js",
   "homepage": "https://github.com/sueddeutsche/editron",
   "bugs": "https://github.com/sueddeutsche/editron/issues",
   "repository": {
@@ -13,15 +14,20 @@
   "scripts": {
     "analyze": "NODE_ENV=production webpack --json | webpack-bundle-size-analyzer",
     "build": "rm -rf build; webpack && webpack --config webpack.build.js",
-    "dist": "rm -rf dist; NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
+    "dist": "rm -rf dist; yarn dist:es5 && yarn dist:module",
+    "dist:es5": "NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
+    "dist:module": "tsc --outDir distmodule",
     "docs": "npx documentation build -o docs/api -f html editron.js --config documentation.yml",
     "docs:serve": "npx documentation serve -f html editron.js --watch --config documentation.yml",
-    "lint": "eslint services plugin utils test Controller.js editron.js",
+    "lint": "eslint src",
     "prepublishOnly": "npm run release",
-    "release": "npm run build; npm run dist",
-    "serve": "webpack-dev-server --config webpack.serve.js",
-    "test": "ava",
-    "watch": "watch 'npm run dist' editors components sass services utils"
+    "release": "yarn dist",
+    "start": "webpack-dev-server --config webpack.serve.js",
+    "start:array": "APP=array webpack-dev-server --config webpack.serve.js",
+    "start:object": "APP=object webpack-dev-server --config webpack.serve.js",
+    "test": "webpack --config webpack.mocha.js --display errors-only",
+    "test:watch": "webpack --watch --config webpack.mocha.js --display minimal",
+    "watch": "watch 'yarn dist' editors components sass services utils"
   },
   "pre-push": [
     "test"
@@ -37,33 +43,46 @@
   "author": "Sascha Goldhofer <noreply@saschagoldhofer.de> (https://github.com/sagold/)",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
-    "@babel/plugin-transform-object-assign": "^7.2.0",
-    "@babel/preset-env": "^7.7.1",
-    "ava": "^2.4.0",
-    "babel-loader": "^8.0.0",
+    "@babel/core": "7.11.1",
+    "@babel/plugin-proposal-object-rest-spread": "7.11.0",
+    "@babel/plugin-transform-object-assign": "7.10.4",
+    "@babel/preset-env": "7.11.0",
+    "@types/mithril": "2.0.3",
+    "@types/mocha": "8.0.0",
+    "@types/sortablejs": "1.10.5",
+    "@typescript-eslint/eslint-plugin": "3.9.1",
+    "@typescript-eslint/parser": "3.9.1",
+    "babel-loader": "8.1.0",
     "chalk": "^3.0.0",
     "css-loader": "^3.2.0",
-    "eslint": "^6.6.0",
+    "eslint": "^7.7.0",
+    "eslint-plugin-array-func": "^3.1.7",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-optimize-regex": "^1.2.0",
     "eslint-plugin-promise": "^4.2.1",
     "extract-loader": "^3.1.0",
     "file-loader": "^4.2.0",
     "html-loader": "^0.5.5",
+    "jsdom": "16.3.0",
+    "mocha": "8.0.1",
     "node-sass": "^4.12.0",
-    "pre-commit": "^1.2.2",
     "pre-push": "^0.1.1",
     "sass-loader": "^8.0.0",
     "sinon": "^7.5.0",
+    "source-map-support": "0.5.19",
     "style-loader": "^1.0.0",
-    "typescript": "^3.8.3",
+    "terser-webpack-plugin": "3.0.6",
+    "ts-loader": "8.0.0",
+    "ts-node": "8.10.2",
+    "typescript": "3.9.6",
     "uglifyjs-webpack-plugin": "^2.1.3",
     "url-loader": "^2.2.0",
     "watch": "1.x",
     "webpack": "^4.31.0",
     "webpack-bundle-size-analyzer": "^3.0.0",
     "webpack-cli": "^3.3.2",
-    "webpack-dev-server": "^3.4.1"
+    "webpack-dev-server": "^3.4.1",
+    "webpack-shell-plugin-next": "1.1.9"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
@@ -74,32 +93,15 @@
     "webpack": "4.x"
   },
   "dependencies": {
+    "@rematch/core": "1.4.0",
     "@technik-sde/foxy": "^1.0.0",
-    "@typescript-eslint/eslint-plugin": "^2.22.0",
-    "@typescript-eslint/parser": "^2.22.0",
-    "diff_match_patch": "^0.1.1",
-    "eslint-plugin-array-func": "^3.1.4",
-    "eslint-plugin-node": "^11.0.0",
-    "eslint-plugin-optimize-regex": "^1.1.7",
-    "gson-pointer": "^3.4.3",
-    "jsdom": "^16.1.0",
-    "json-schema-library": "^4.1.1",
+    "gson-pointer": "4.1.0",
+    "json-schema-library": "^4.1.4",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
-    "mithril-material-forms": "^3.2.2",
-    "mitt": "^1.2.0",
-    "ospec": "^4.0.1",
-    "redux": "^3.6.0",
-    "redux-undo": "^0.6.1",
+    "mithril-material-forms": "4.3.0",
+    "nanoevents": "5.1.8",
+    "sortablejs": "1.10.2",
     "with-observable": "^1.2.0"
-  },
-  "ava": {
-    "files": [
-      "test/**/*.test.js"
-    ],
-    "require": [
-      "./test/support/setupBrowserEnv.js"
-    ],
-    "verbose": true
   }
 }

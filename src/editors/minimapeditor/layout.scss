@@ -1,0 +1,41 @@
+@import "mithril-material-forms/lib/units";
+
+
+$minimap-icon-width: 2em !default;
+
+
+.ed-minimap {
+    .mmf-icon {
+        flex-shrink: 0;
+        width: $minimap-icon-width;
+        user-select: none;
+        text-align: center;
+    }
+}
+
+
+.ed-minimap__child {
+    overflow: hidden;
+
+    &.no-icon .ed-minimap__header {
+        padding-left: $minimap-icon-width;
+    }
+
+    &.is-collapsed .ed-minimap__children {
+        display: none;
+    }
+}
+
+.ed-minimap__header {
+    display: flex;
+    align-items: center;
+    height: $mmf-block;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.ed-minimap__title {
+    width: 100%;
+}

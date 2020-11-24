@@ -1,0 +1,78 @@
+@import "../components/overlay/essentials";
+@import "../editors/objecteditor/essentials";
+@import "../editors/arrayeditor/essentials";
+
+@import "../components/actions/layout";
+@import "../components/header/layout";
+@import "../components/container/layout";
+@import "../components/description/layout";
+@import "../components/errors/layout";
+@import "../components/overlay/layout";
+@import "../components/overlayselecttiles/layout";
+@import "../editors/oneofeditor/layout";
+
+
+@import "mithril-material-forms/lib/units";
+
+
+$color-header--border: transparent !default;
+
+
+.group {
+    // for groups, set color to background
+    --ed-color--bg: rgb(242,242,243);
+}
+
+.group--bordered {
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+// simple colored background
+.group--colored {
+    background: #fff;
+}
+
+.group > * {
+    // all groups with bg require padding
+    padding: $mmf-unit;
+
+    &.with-actions > .ed-header__actions {
+        padding-right: $mmf-unit; // overwrite
+    }
+}
+
+// add equal spacings to all nodes, regardless of depth (leafs are values)
+[data-point]:not(:last-child) {
+    // each rendered node of the data-tree has a dom element with a [data-point] attribute as its root
+    padding-top: $mmf-unit;
+    padding-bottom: $mmf-unit;
+}
+
+// set header styles of second layer and deeper-nested ones
+[data-point] [data-point] {
+    // add a long header-line (when a header is defined) to nodes on second-layer (first-layer is root object)
+    & > .ed-header {
+        border-bottom: 1px solid var(--ed-color--bg, #{$color-header--border});
+        padding-bottom: $mmf-unit;
+        margin-bottom: $mmf-unit;
+    }
+    // deeper nested headers only receive a short line
+    [data-point] > .ed-header {
+        position: relative;
+        border-bottom: 0;
+        padding-bottom: $mmf-unit;
+        margin-bottom: $mmf-unit;
+        &:after {
+            content: "";
+            position: absolute;
+            display: block;
+            left: 0;
+            bottom: -2px;
+            height: 2px;
+            width: $mmf-block;
+            background-color: var(--ed-color--bg, #{$color-header--border});
+        }
+    }
+}

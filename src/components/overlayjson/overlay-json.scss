@@ -1,0 +1,9 @@
+@import "../../sass/export-once";
+
+
+@if export-once("editron/components/overlay-json") {
+
+    .overlay__item--json {
+        min-width: 50vw;
+    }
+}

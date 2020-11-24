@@ -1,0 +1,72 @@
+@import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/typography";
+@import "mithril-material-forms/lib/colors";
+@import "mithril-material-forms/lib/elevation";
+
+
+$overlay-select-tiles: 4 * $mmf-block;
+
+
+.ed-overlay-tiles {
+    max-width: 4 * $overlay-select-tiles;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.ed-form-box {
+    box-sizing: border-box;
+    cursor: pointer;
+
+    &:hover .ed-form-box__content {
+        // color: rgba($mmf-color--light, $mmf-opacity--primary);
+        background-color: rgba($mmf-color--secondary, $mmf-opacity--hint);
+        @include elevation4();
+    }
+}
+
+.ed-form-box__content {
+    border-radius: $mmf-radius;
+    @include elevation2();
+
+    box-sizing: border-box;
+    margin: $mmf-unit;
+    width: $overlay-select-tiles - 2 * $mmf-unit;
+    height: $overlay-select-tiles - 2 * $mmf-unit;
+
+    color: rgba($mmf-color--dark, $mmf-opacity--primary);
+    background-color: $mmf-color--contrast;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    transition: background-color 0.1s linear;
+}
+
+.ed-form-box__title {
+    @include font-bold();
+    text-align: center;
+    padding: $mmf-unit;
+
+    .mmf-icon {
+        width: auto;
+        height: auto;
+        line-height: inherit;
+        font-size: 0.8rem;
+        padding-right: $mmf-unit;
+    }
+}
+
+.ed-form-box__description {
+    @include font-regular();
+    font-size: $mmf-text-size--meta;
+    line-height: 1.2em;
+    text-align: center;
+    margin: $mmf-unit;
+    overflow-x: hidden;
+    overflow-y: auto;
+}

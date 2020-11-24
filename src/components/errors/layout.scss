@@ -1,0 +1,35 @@
+@import "mithril-material-forms/lib/colors";
+@import "mithril-material-forms/lib/units";
+@import "mithril-material-forms/lib/typography";
+
+
+.ed-errors {
+    padding: $mmf-unit 2 * $mmf-unit;
+    font-size: $mmf-text-size--meta;
+    color: $mmf-color--error;
+
+    .is-warning {
+        color: $mmf-color--warning;
+    }
+
+    .ed-error {
+        display: flex;
+        align-items: center;
+
+        span {
+            flex-grow: 1
+        }
+
+        a.mmf-icon {
+            flex-shrink: 1;
+            flex-grow: 0;
+            padding: 0;
+            padding-left: $mmf-unit;
+            text-decoration: none;
+            font-size: 2em;
+            line-height: 1em;
+            width: auto;
+            height: auto;
+        }
+    }
+}
