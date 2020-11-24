@@ -129,6 +129,11 @@ export default class ValidationService {
         return callback;
     }
 
+    unwatch(callback: Watcher) {
+        this.watcher = this.watcher.filter(w => w !== callback);
+        return callback;
+    }
+
     /** returns all validation errors and warnings */
     getErrorsAndWarnings(pointer?: JSONPointer, withChildErrors = false): Array<ValidationError> {
         const errors = this.store.get(ID);
