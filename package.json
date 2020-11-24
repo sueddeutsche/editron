@@ -21,13 +21,13 @@
     "docs:serve": "npx documentation serve -f html editron.js --watch --config documentation.yml",
     "lint": "eslint src",
     "prepublishOnly": "npm run release",
-    "release": "npm run build; npm run dist",
+    "release": "yarn dist",
     "start": "webpack-dev-server --config webpack.serve.js",
     "start:array": "APP=array webpack-dev-server --config webpack.serve.js",
     "start:object": "APP=object webpack-dev-server --config webpack.serve.js",
     "test": "webpack --config webpack.mocha.js --display errors-only",
     "test:watch": "webpack --watch --config webpack.mocha.js --display minimal",
-    "watch": "watch 'npm run dist' editors components sass services utils"
+    "watch": "watch 'yarn dist' editors components sass services utils"
   },
   "pre-push": [
     "test"
