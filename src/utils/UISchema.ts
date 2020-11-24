@@ -36,11 +36,12 @@ function getBreadcrumps(pointer: JSONPointer, controller: Controller): Array<str
 
 function enumOptions(schema: JSONSchema): Array<any> {
     let options;
-    if (schema[UI_PROPERTY].enum) {
+    if (schema?.[UI_PROPERTY]?.enum) {
         options = schema.enum.map((value, index) => ({
             title: schema[UI_PROPERTY].enum[index] || schema.enum[index],
             value: schema.enum[index]
         }));
+
     } else if (schema.options && schema.options.enum_titles) {
         // @legacy support jdorn/json-editor
         options = schema.enum.map((value, index) => ({
