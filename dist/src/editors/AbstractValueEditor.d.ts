@@ -12,6 +12,7 @@ export declare type ViewModel = {
     schema: JSONSchema;
     options: any;
     errors: Array<string | ValidationError>;
+    theme?: string;
     onfocus: () => void;
     onblur: () => void;
     onchange: (value: any) => void;
