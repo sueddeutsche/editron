@@ -14,7 +14,6 @@ import {
     TextareaForm,
     TextareaFormAttrs
 } from "mithril-material-forms";
-import { JSONSchema } from "../../types";
 import UISchema from "../../utils/UISchema";
 import { ViewModel } from "../AbstractValueEditor";
 
