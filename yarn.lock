@@ -5344,10 +5344,10 @@ mississippi@^3.0.0:
     stream-each "^1.1.0"
     through2 "^2.0.0"
 
-mithril-material-forms@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.npmjs.org/mithril-material-forms/-/mithril-material-forms-4.3.0.tgz#5bb6f11234c3c8a1da9ecff4436b896232601ae1"
-  integrity sha512-NdI1Q8bdT2Vm/3iCIUMfncu+YcGnRpyZlM5iDRbm2AwckT7LICzy6xbLZs51eKUc6kezYGzysMOoyX/yEYPGBw==
+mithril-material-forms@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/mithril-material-forms/-/mithril-material-forms-4.5.0.tgz#5d9d2be98b4548c9ccadb6d54941c723968a0039"
+  integrity sha512-wS4X5lOXH6gvMk5MMypTf6n2UzHE+FkNiSqNVX/SJxFYpTIFrwoGQ6fZfUGS5SGYzZN3r1UxePTQcI4xr/igYw==
   dependencies:
     autosize "^4.0.2"
     mithril "^2.0.4"

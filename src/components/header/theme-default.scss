@@ -20,7 +20,7 @@
     line-height: 1em;
     text-transform: uppercase;
     // padding-top: 0.1em; // visually center title text vertically (uppercase only)
-    opacity: $mmf-opacity--primary;
+    opacity: map-get($opacity, 0);
 
     .ed-header__title {
         h2 {
@@ -45,7 +45,7 @@
         i.mmf-icon,
         i.mmf-icon:hover {
             color: inherit;
-            opacity: $mmf-opacity--disabled;
+            opacity: map-get($opacity, 2);
             cursor: default;
         }
     }
