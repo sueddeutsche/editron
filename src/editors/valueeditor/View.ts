@@ -5,6 +5,8 @@ import {
     InputForm,
     InputFormAttrs,
     InputType,
+    RadioButtonsForm,
+    RadioButtonsFormAttrs,
     SwitchForm,
     SwitchFormAttrs,
     SelectForm,
@@ -12,10 +14,6 @@ import {
     TextareaForm,
     TextareaFormAttrs
 } from "mithril-material-forms";
-// import SwitchForm, { Attrs as SwitchAttrs } from "mithril-material-forms/components/switchform";
-// import SelectForm, { Attrs as SelectAttrs } from "mithril-material-forms/components/selectform";
-// import TextareaForm, { Attrs as TextareaAttrs } from "mithril-material-forms/components/textareaform";
-// import InputForm, { Attrs as InputAttrs, InputType } from "mithril-material-forms/components/inputform";
 import UISchema from "../../utils/UISchema";
 import { ViewModel } from "../AbstractValueEditor";
 
@@ -37,7 +35,23 @@ function getInputType(schema): InputType {
 const Component: m.Component<Attrs> = {
 
     view(vnode) {
-        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer } = vnode.attrs;
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer, theme } = vnode.attrs;
+
+        if (schema.enum && schema.enum.length > 0 && schema.format === "radio") {
+
+            const radioBtnsModel: RadioButtonsFormAttrs = {
+                value,
+                title: options.title,
+                errors,
+                description: options.description,
+                disabled: options.disabled,
+                theme: theme,
+                options: UISchema.enumOptions(schema), 
+                onchange
+            };
+
+            return m(RadioButtonsForm, radioBtnsModel);
+        }
 
         if (schema.enum && schema.enum.length > 0) {
 
