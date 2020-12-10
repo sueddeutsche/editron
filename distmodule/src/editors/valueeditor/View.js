@@ -11,7 +11,7 @@ function getInputType(schema) {
 }
 const Component = {
     view(vnode) {
-        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer, theme } = vnode.attrs;
+        const { schema, options = {}, onblur, onfocus, onchange, errors, value, pointer } = vnode.attrs;
         if (schema.enum && schema.enum.length > 0 && schema.format === "radio") {
             const radioBtnsModel = {
                 value,
@@ -19,7 +19,7 @@ const Component = {
                 errors,
                 description: options.description,
                 disabled: options.disabled,
-                theme: theme,
+                theme: options.theme,
                 options: UISchema.enumOptions(schema),
                 onchange
             };
