@@ -6,10 +6,10 @@
 .ed-errors {
     padding: $mmf-unit 2 * $mmf-unit;
     font-size: $mmf-text-size--meta;
-    color: $mmf-color--error;
+    color: map-get($color-danger, 2);
 
     .is-warning {
-        color: $mmf-color--warning;
+        color: map-get($color-danger, 3);
     }
 
     .ed-error {

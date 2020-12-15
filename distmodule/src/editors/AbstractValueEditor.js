@@ -49,7 +49,7 @@ export default class AbstractValueEditor {
             viewModel: null,
             title: null,
             description: null,
-            editorValueType: schema.enum ? "select" : schema.type,
+            editorValueType: schema.enum ? schema.format === "radio" ? schema.format : "select" : schema.type,
             editorElementProperties: null,
             ...options
         };
@@ -68,6 +68,7 @@ export default class AbstractValueEditor {
             schema,
             options,
             errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            theme: schema.theme,
             onfocus: () => controller.service("location").setCurrent(pointer),
             onblur: () => controller.service("location").blur(pointer),
             onchange: value => this.setValue(convert[schema.type] ? convert[schema.type](value) : value),

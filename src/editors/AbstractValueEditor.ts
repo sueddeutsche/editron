@@ -44,6 +44,7 @@ export type ViewModel = {
     schema: JSONSchema;
     options;
     errors: Array<string|ValidationError>;
+    theme?: string;
     onfocus: () => void;
     onblur: () => void;
     onchange: (value) => void;
@@ -89,7 +90,7 @@ export default class AbstractValueEditor implements Editor {
             viewModel: null,
             title: null,
             description: null,
-            editorValueType: schema.enum ? "select" : schema.type,
+            editorValueType: schema.enum ? schema.format === "radio" ? schema.format : "select" : schema.type,
             editorElementProperties: null,
             ...options
         };
@@ -114,6 +115,7 @@ export default class AbstractValueEditor implements Editor {
             schema,
             options,
             errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            theme: schema.theme,
             onfocus: () => controller.service("location").setCurrent(pointer),
             onblur: () => controller.service("location").blur(pointer),
             onchange: value => this.setValue(convert[schema.type] ? convert[schema.type](value) : value),

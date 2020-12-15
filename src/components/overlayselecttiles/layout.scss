@@ -21,8 +21,7 @@ $overlay-select-tiles: 4 * $mmf-block;
     cursor: pointer;
 
     &:hover .ed-form-box__content {
-        // color: rgba($mmf-color--light, $mmf-opacity--primary);
-        background-color: rgba($mmf-color--secondary, $mmf-opacity--hint);
+        background-color: rgba(map-get($color-material, 0), map-get($opacity, 2));
         @include elevation4();
     }
 }
@@ -36,8 +35,8 @@ $overlay-select-tiles: 4 * $mmf-block;
     width: $overlay-select-tiles - 2 * $mmf-unit;
     height: $overlay-select-tiles - 2 * $mmf-unit;
 
-    color: rgba($mmf-color--dark, $mmf-opacity--primary);
-    background-color: $mmf-color--contrast;
+    color: rgba(map-get($color-basic, 7), map-get($opacity, 0));
+    background-color: map-get($color-material, 2);
 
     display: flex;
     flex-direction: column;
