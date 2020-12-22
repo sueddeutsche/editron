@@ -10,6 +10,9 @@ const data = {
     list: [{ type: "inline" }, { type: "external" }], simple: ["Lorem Linksrum"]
 };
 const editron = new Controller(schema, data, {
+    locationService: {
+        scrollTopOffset: 50
+    },
     plugins: [
         new SortablePlugin(),
         new RemoteDataPlugin(),
