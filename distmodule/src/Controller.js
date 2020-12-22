@@ -108,7 +108,6 @@ export default class Controller {
         if (Array.isArray(this.options.editors)) {
             this.registerEditor(...this.options.editors);
         }
-        this.editors = this.options.editors;
         this.store = new Store();
         this.core = new Core();
         __classPrivateFieldSet(this, _proxy, createProxy(this.options.proxy));
