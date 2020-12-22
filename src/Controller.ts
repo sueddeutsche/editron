@@ -148,7 +148,6 @@ export default class Controller {
             this.registerEditor(...this.options.editors);
         }
 
-        this.editors = this.options.editors;
         this.store = new Store();
         this.core = new Core();
         this.#proxy = createProxy(this.options.proxy);
