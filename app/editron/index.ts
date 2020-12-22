@@ -14,6 +14,9 @@ const data = {
 };
 
 const editron = new Controller(schema, data, {
+    locationService: {
+        scrollTopOffset: 50
+    },
     plugins: [
         new SortablePlugin(),
         new RemoteDataPlugin(),

@@ -56,6 +56,34 @@ export const defaultOptions: Options = {
 };
 
 
+function isWindow(dom): dom is Window {
+    return dom === window;
+}
+
+function scrollIntoView(targetElement: HTMLElement, scrollTopOffset = 0): void {
+    const scrollContainer = getScrollParent(targetElement);
+    const bound = targetElement.getBoundingClientRect();
+
+    if (isWindow(scrollContainer)) {
+        const viewportHeight = getViewportHeight();
+        if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
+            window.scrollTo(0, bound.top + scrollTopOffset);
+        }
+        // else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
+        return;
+    }
+
+    // scroll target element to top of scroll container
+    const parentBound = scrollContainer.getBoundingClientRect();
+    // distance from parent-container -> element, aka scroll distance
+    const offsetInParent = bound.y - parentBound.y;
+    const scrollDistance = scrollContainer.scrollTop;
+    // we want to scroll element to top of parent-bound
+    const scrollPosition = scrollDistance + offsetInParent - scrollTopOffset;
+    scrollContainer.scrollTo(0, scrollPosition);
+}
+
+
 export default class LocationService {
 
     PAGE_EVENT = "page";
@@ -146,14 +174,8 @@ export default class LocationService {
         }
 
         this.timeout = setTimeout(() => {
-            const scrollContainer = getScrollParent(targetElement);
             const { scrollTopOffset } = this.options;
-            const bound = targetElement.getBoundingClientRect();
-            const viewportHeight = getViewportHeight();
-            if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
-                scrollContainer.scrollTo(0, bound.top + scrollTopOffset);
-            }
-            // else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
+            scrollIntoView(targetElement, scrollTopOffset);
             this.focusInputElement(pointer, rootElement);
             this.timeout = null;
         }, DELAY);
