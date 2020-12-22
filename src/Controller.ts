@@ -36,6 +36,8 @@ export type Options = {
     log?: boolean;
     /** list of editors to use, replaces plugin and default editors */
     editors?: Array<EditorPlugin>;
+    /** set to false, to exclude default base-editors (object, array, values). Defaults to true */
+    addDefaultEditors?: boolean;
     /** proxy configuration for data and image retrieval */
     proxy?: ProxyOptions|Foxy;
     /** list of plugins to use */
@@ -103,7 +105,9 @@ export default class Controller {
     /** active state of editor */
     disabled = false;
     /** list of editor-widgets to generate form for this instance */
-    editors: Array<EditorPlugin>;
+    editors: Array<EditorPlugin> = [];
+    /** set to true,  */
+    addDefaultEditors: boolean;
     /** final options used by this editron instance */
     options: Options;
     /** list of active plugins for this instance */
@@ -131,15 +135,18 @@ export default class Controller {
         schema = UISchema.extendSchema(schema);
 
         this.options = {
-            editors: [
-                ...plugin.getEditors(),
-                oneOfEditor,
-                arrayEditor,
-                objectEditor,
-                valueEditor
-            ],
+            editors: [],
+            addDefaultEditors: true,
             ...options
         };
+
+        if (this.options.addDefaultEditors) {
+            this.registerEditor(oneOfEditor, arrayEditor, objectEditor, valueEditor);
+        }
+        this.registerEditor(...plugin.getEditors());
+        if (Array.isArray(this.options.editors)) {
+            this.registerEditor(...this.options.editors);
+        }
 
         this.editors = this.options.editors;
         this.store = new Store();
@@ -294,6 +301,16 @@ export default class Controller {
      */
     createElement(selector: string, attributes?): HTMLElement { // eslint-disable-line class-methods-use-this
         return _createElement(selector, attributes);
+    }
+
+    /**
+     * Add additional editors to available editors for json-schema rendering.
+     * Note, that order is important. First editor to register, will be
+     * selected first. Registered editors will be added to start of list.
+     * @param editors one or many editors to add to start of editor-list
+     */
+    registerEditor(...editors: Array<EditorPlugin>) {
+        this.editors = [...editors, ...this.editors];
     }
 
     /**

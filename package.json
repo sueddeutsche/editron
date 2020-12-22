@@ -1,6 +1,6 @@
 {
   "name": "editron",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "description": "Editron - json-editor",
   "main": "dist/editron.js",
   "types": "dist/editron.d.ts",
@@ -99,7 +99,7 @@
     "json-schema-library": "^4.1.4",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
-    "mithril-material-forms": "^4.5.2",
+    "mithril-material-forms": "^4.6.0",
     "nanoevents": "5.1.8",
     "sortablejs": "1.10.2",
     "with-observable": "^1.2.0"

@@ -89,21 +89,25 @@ export default class Controller {
         this.destroyed = false;
         /** active state of editor */
         this.disabled = false;
+        /** list of editor-widgets to generate form for this instance */
+        this.editors = [];
         /** list of active plugins for this instance */
         this.plugins = [];
         /** editron proxy instance */
         _proxy.set(this, void 0);
         schema = UISchema.extendSchema(schema);
         this.options = {
-            editors: [
-                ...plugin.getEditors(),
-                oneOfEditor,
-                arrayEditor,
-                objectEditor,
-                valueEditor
-            ],
+            editors: [],
+            addDefaultEditors: true,
             ...options
         };
+        if (this.options.addDefaultEditors) {
+            this.registerEditor(oneOfEditor, arrayEditor, objectEditor, valueEditor);
+        }
+        this.registerEditor(...plugin.getEditors());
+        if (Array.isArray(this.options.editors)) {
+            this.registerEditor(...this.options.editors);
+        }
         this.editors = this.options.editors;
         this.store = new Store();
         this.core = new Core();
@@ -239,6 +243,15 @@ export default class Controller {
      */
     createElement(selector, attributes) {
         return _createElement(selector, attributes);
+    }
+    /**
+     * Add additional editors to available editors for json-schema rendering.
+     * Note, that order is important. First editor to register, will be
+     * selected first. Registered editors will be added to start of list.
+     * @param editors one or many editors to add to start of editor-list
+     */
+    registerEditor(...editors) {
+        this.editors = [...editors, ...this.editors];
     }
     /**
      * @throws

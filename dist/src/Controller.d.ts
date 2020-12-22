@@ -15,6 +15,8 @@ export declare type Options = {
     log?: boolean;
     /** list of editors to use, replaces plugin and default editors */
     editors?: Array<EditorPlugin>;
+    /** set to false, to exclude default base-editors (object, array, values). Defaults to true */
+    addDefaultEditors?: boolean;
     /** proxy configuration for data and image retrieval */
     proxy?: ProxyOptions | Foxy;
     /** list of plugins to use */
@@ -84,6 +86,8 @@ export default class Controller {
     disabled: boolean;
     /** list of editor-widgets to generate form for this instance */
     editors: Array<EditorPlugin>;
+    /** set to true,  */
+    addDefaultEditors: boolean;
     /** final options used by this editron instance */
     options: Options;
     /** list of active plugins for this instance */
@@ -138,6 +142,13 @@ export default class Controller {
      * @returns the resulting dom-element (not attached)
      */
     createElement(selector: string, attributes?: any): HTMLElement;
+    /**
+     * Add additional editors to available editors for json-schema rendering.
+     * Note, that order is important. First editor to register, will be
+     * selected first. Registered editors will be added to start of list.
+     * @param editors one or many editors to add to start of editor-list
+     */
+    registerEditor(...editors: Array<EditorPlugin>): void;
     /**
      * @throws
      * The only entry point to create editors.

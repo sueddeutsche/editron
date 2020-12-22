@@ -2,6 +2,7 @@ import gp from "gson-pointer";
 import { JSONPointer } from "../types";
 const DELAY = 25;
 import { getState, dispatch, watch as watchState } from "../store/global";
+import getScrollParent from "./utils/getScrollParent";
 
 
 function getViewportHeight() {
@@ -103,8 +104,6 @@ export default class LocationService {
             return;
         }
 
-        console.log("goto", targetPointer);
-
         const nextPage = matches.pop();
         const { currentPage } = getState().ui;
         if (currentPage !== nextPage) {
@@ -147,16 +146,14 @@ export default class LocationService {
         }
 
         this.timeout = setTimeout(() => {
+            const scrollContainer = getScrollParent(targetElement);
             const { scrollTopOffset } = this.options;
             const bound = targetElement.getBoundingClientRect();
             const viewportHeight = getViewportHeight();
             if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
-                // @note: this works only if editron is within a scrollable page
-                window.scrollTo(0, bound.top + scrollTopOffset);
-            } else {
-                console.log("skip scrolling - already in viewport", viewportHeight, bound.top);
+                scrollContainer.scrollTo(0, bound.top + scrollTopOffset);
             }
-
+            // else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
             this.focusInputElement(pointer, rootElement);
             this.timeout = null;
         }, DELAY);
