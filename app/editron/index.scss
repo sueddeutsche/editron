@@ -9,4 +9,10 @@
 
 .editor {
     --ed-color--bg: #000;
+
+    // convert this container to a scrollable container - testing scroll behaviour
+    overflow-y: auto;
+    height: 70vh;
+    margin-top: 48px;
 }
+
