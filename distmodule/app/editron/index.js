@@ -4,6 +4,7 @@ import SortablePlugin from "../../src/plugin/sortableplugin";
 import RemoteDataPlugin from "../../src/plugin/remotedataplugin";
 import MinimapEditor from "../../src/editors/minimapeditor";
 import schema from "./schema";
+import AutocompleteEditor from '../../src/editors/autocompleteeditor';
 import "./index.scss";
 import "./index.html";
 const data = {
@@ -26,6 +27,7 @@ const editron = new Controller(schema, data, {
     ]
 });
 editron.editors.unshift(MinimapEditor);
+editron.editors.unshift(AutocompleteEditor);
 editron.createEditor("#", document.querySelector(".editor"));
 editron.createEditor("#", document.querySelector(".minimap"), {
     minimap: {
