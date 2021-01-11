@@ -1,11 +1,14 @@
-import AbstractValueEditor from "../AbstractValueEditor";
-import { QueryListForm } from "mithril-material-forms";
+import { QueryListForm } from 'mithril-material-forms';
 import m from "mithril";
+import AbstractValueEditor from '../AbstractValueEditor';
 export default class AutocompleteEditor extends AbstractValueEditor {
     constructor(pointer, controller, options) {
         super(pointer, controller, options);
         const { suggestions } = options.autocomplete;
-        if (typeof (suggestions === null || suggestions === void 0 ? void 0 : suggestions.proxyMethod) === "string") {
+        if (Array.isArray(suggestions)) {
+            this.getSuggestions = suggestions;
+        }
+        else {
             this.getSuggestions = (value) => controller.proxy()
                 .get(suggestions.proxyMethod, { source: value })
                 .catch(e => {
@@ -13,9 +16,13 @@ export default class AutocompleteEditor extends AbstractValueEditor {
                 return [];
             });
         }
-        else if (Array.isArray(suggestions)) {
-            this.getSuggestions = suggestions;
-        }
+        this.autoCompleteViewModel = {
+            placeholder: options.placeholder,
+            disabled: options.disabled,
+            valueProp: options.autocomplete.valueProp,
+            suggestions: this.getSuggestions,
+            ...this.viewModel
+        };
         this.render();
     }
     static editorOf(pointer, controller) {
@@ -23,21 +30,20 @@ export default class AutocompleteEditor extends AbstractValueEditor {
         return schema.type === "string" && schema.format === "autocomplete";
     }
     render() {
-        console.log("this.options.valueProp", this.options, this.viewModel);
-        m.render(this.dom, m(QueryListForm, {
-            id: this.pointer,
-            title: this.options.title,
-            description: this.options.description,
-            placeholder: this.options.placeholder,
-            disabled: this.options.disabled,
-            theme: this.options.theme,
-            errors: this.viewModel.errors,
-            value: this.viewModel.value,
-            valueProp: this.options.autocomplete.valueProp,
-            onchange: this.viewModel.onchange,
-            onblur: this.viewModel.onblur,
-            onfocus: this.viewModel.onfocus,
-            suggestions: this.getSuggestions
-        }));
+        m.render(this.dom, m(QueryListForm, this.autoCompleteViewModel));
+    }
+    update(event) {
+        switch (event.type) {
+            case "data:update":
+                this.viewModel.value = this.controller.service("data").get(this.getPointer());
+                this.render();
+                break;
+        }
+    }
+    destroy() {
+        if (this.autoCompleteViewModel) {
+            m.render(this.dom, m.trust(""));
+            this.autoCompleteViewModel = null;
+        }
     }
 }

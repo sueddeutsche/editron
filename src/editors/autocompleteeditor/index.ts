@@ -1,8 +1,9 @@
-import AbstractValueEditor from "../AbstractValueEditor";
 import Controller from "../../Controller";
 import { JSONPointer } from "../../types";
-import { QueryListForm } from "mithril-material-forms";
+import { QueryListForm, QueryListFormAttrs } from 'mithril-material-forms';
 import m from "mithril";
+import { EditorUpdateEvent, Options as EditorOptions } from "../Editor";
+import AbstractValueEditor from '../AbstractValueEditor';
 
 
 export type SuggestionInput = {
@@ -11,10 +12,13 @@ export type SuggestionInput = {
     /** final exported value */
     value: string;
 }
+export type Options = EditorOptions & AutocompleteSchemaOptions;
 
-export type AutocompleteSchemaOptions = {
-    autocomplete?: {
-        suggestions?: Array<SuggestionInput> | { proxyMethod: string };
+type AutocompleteSchemaOptions = {
+    placeholder: string,
+    autocomplete: {
+        valueProp: string,
+        suggestions: Array<SuggestionInput> | { proxyMethod: string };
     }
 }
 
@@ -25,6 +29,7 @@ interface GetSuggestions {
 
 export default class AutocompleteEditor extends AbstractValueEditor {
     getSuggestions: Array<SuggestionInput> | GetSuggestions;
+    autoCompleteViewModel: QueryListFormAttrs;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.service("schema").get(pointer);
@@ -32,42 +37,52 @@ export default class AutocompleteEditor extends AbstractValueEditor {
         return schema.type === "string" && schema.format === "autocomplete";
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options) {
+    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
         super(pointer, controller, options);
 
         const { suggestions } = options.autocomplete;
 
-        if (typeof suggestions?.proxyMethod === "string") {
+        if (Array.isArray(suggestions)) {
+            this.getSuggestions = suggestions;
+        } else {
             this.getSuggestions = (value: string) => controller.proxy()
                 .get(suggestions.proxyMethod, { source: value })
                 .catch(e => {
                     console.warn(`Failed retrieving suggestions for ${value}: ${e.message}`);
                     return [];
                 });
-
-        } else if (Array.isArray(suggestions)) {
-            this.getSuggestions = suggestions;
         }
+
+        this.autoCompleteViewModel = {
+            placeholder: options.placeholder,
+            disabled: options.disabled,
+            valueProp: options.autocomplete.valueProp,
+            suggestions: this.getSuggestions,
+            ...this.viewModel
+        };
 
         this.render();
     }
 
     render() {
-        console.log("this.options.valueProp", this.options, this.viewModel);
-        m.render(this.dom, m(QueryListForm, {
-            id: this.pointer,
-            title: this.options.title,
-            description: this.options.description,
-            placeholder: this.options.placeholder,
-            disabled: this.options.disabled,
-            theme: this.options.theme,
-            errors: this.viewModel.errors,
-            value: this.viewModel.value,
-            valueProp: this.options.autocomplete.valueProp,
-            onchange: this.viewModel.onchange,
-            onblur: this.viewModel.onblur,
-            onfocus: this.viewModel.onfocus,
-            suggestions: this.getSuggestions
-        }));
+        m.render(this.dom, m(QueryListForm, this.autoCompleteViewModel));
+    }
+
+
+    update(event: EditorUpdateEvent) {
+        switch (event.type) {
+            case "data:update":
+                this.viewModel.value = this.controller.service("data").get(this.getPointer());
+                this.render();
+                break;
+
+        }
+    }
+
+    destroy() {
+        if (this.autoCompleteViewModel) {
+            m.render(this.dom, m.trust(""));
+            this.autoCompleteViewModel = null;
+        }
     }
 }
