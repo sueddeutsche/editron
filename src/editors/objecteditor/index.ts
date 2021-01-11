@@ -27,6 +27,8 @@ export type EditronSchemaOptions = {
         delete?: boolean;
         /** if set, will ad a collapse option with its initial collpased state set to given value */
         collapsed?: boolean;
+        /** show arrow icon to controll visibility */
+        collapseArrowIcon?:boolean;
         // collapseIcon?: string; // "keyboard_arrow_down"
         // collapsedIcon?: string; // "keyboard_arrow_right"
         headerContent?: string;
@@ -105,8 +107,8 @@ export default class ObjectEditor extends AbstractEditor {
             this.dom.classList.add("is-collapsible");
             this.dom.classList.toggle("is-collapsed", this.viewModel.collapsed === true);
 
-            const collapsedIcon = "visibility_off"; // "keyboard_arrow_right";
-            const collapseIcon = "visibility"; // "keyboard_arrow_down"
+            const collapsedIcon = options.object?.collapseArrowIcon ? "keyboard_arrow_right" : "visibility_off";
+            const collapseIcon = options.object?.collapseArrowIcon ? "keyboard_arrow_down" : "visibility";
 
             const action: Action = {
                 icon: this.viewModel.collapsed ? collapsedIcon : collapseIcon,
