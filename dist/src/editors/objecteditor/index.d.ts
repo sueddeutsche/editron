@@ -11,6 +11,8 @@ export declare type EditronSchemaOptions = {
         delete?: boolean;
         /** if set, will ad a collapse option with its initial collpased state set to given value */
         collapsed?: boolean;
+        /** show arrow icon to controll visibility */
+        collapseArrowIcon?: boolean;
         headerContent?: string;
     };
 };
