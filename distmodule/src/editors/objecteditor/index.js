@@ -12,7 +12,7 @@ function showJSON(controller, data, title) {
 }
 export default class ObjectEditor extends AbstractEditor {
     constructor(pointer, controller, options) {
-        var _a, _b;
+        var _a, _b, _c, _d;
         super(pointer, controller, options);
         this.childEditors = [];
         this.viewModel = {
@@ -37,8 +37,8 @@ export default class ObjectEditor extends AbstractEditor {
         if (((_b = options.object) === null || _b === void 0 ? void 0 : _b.collapsed) != null) {
             this.dom.classList.add("is-collapsible");
             this.dom.classList.toggle("is-collapsed", this.viewModel.collapsed === true);
-            const collapsedIcon = "visibility_off"; // "keyboard_arrow_right";
-            const collapseIcon = "visibility"; // "keyboard_arrow_down"
+            const collapsedIcon = ((_c = options.object) === null || _c === void 0 ? void 0 : _c.collapseIcon) || "visibility_off";
+            const collapseIcon = ((_d = options.object) === null || _d === void 0 ? void 0 : _d.collapsedIcon) || "visibility";
             const action = {
                 icon: this.viewModel.collapsed ? collapsedIcon : collapseIcon,
                 classNames: "ed-action--collapse",
