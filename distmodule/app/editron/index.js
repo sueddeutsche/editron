@@ -14,6 +14,10 @@ const editron = new Controller(schema, data, {
     locationService: {
         scrollTopOffset: 50
     },
+    editors: [
+        MinimapEditor,
+        AutocompleteEditor
+    ],
     plugins: [
         new SortablePlugin(),
         new RemoteDataPlugin(),
@@ -26,8 +30,6 @@ const editron = new Controller(schema, data, {
         })
     ]
 });
-editron.editors.unshift(MinimapEditor);
-editron.editors.unshift(AutocompleteEditor);
 editron.createEditor("#", document.querySelector(".editor"));
 editron.createEditor("#", document.querySelector(".minimap"), {
     minimap: {

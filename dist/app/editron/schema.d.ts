@@ -29,6 +29,7 @@ declare const _default: {
             format: string;
             "editron:ui": {
                 autocomplete: {
+                    valueProp: string;
                     suggestions: {
                         name: string;
                         code: string;

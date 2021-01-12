@@ -5439,7 +5439,7 @@ mississippi@^3.0.0:
     stream-each "^1.1.0"
     through2 "^2.0.0"
 
-mithril-material-forms@^4.6.0:
+mithril-material-forms@^4.7.0:
   version "4.7.0"
   resolved "https://registry.npmjs.org/mithril-material-forms/-/mithril-material-forms-4.7.0.tgz#1b9f5971f9ae875dbb0fd3338336538c3fc36e8b"
   integrity sha512-O65fQb/ZHrxkUgmoKxufLwmimnpTACOHZ4/oQDNXDupVNTMHldmwikHYzYkuGBu1AePpmBz+1znxqLHmpUVH0w==

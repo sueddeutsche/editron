@@ -35,7 +35,7 @@ export default class AutocompleteEditor extends AbstractValueEditor {
     update(event) {
         switch (event.type) {
             case "data:update":
-                this.viewModel.value = this.controller.service("data").get(this.getPointer());
+                this.autoCompleteViewModel.value = this.controller.service("data").get(this.getPointer());
                 this.render();
                 break;
         }

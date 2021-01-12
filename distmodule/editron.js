@@ -19,6 +19,7 @@
  */
 import Controller from "./src/Controller";
 export default Controller;
+export { Controller };
 import * as components_1 from "./src/components";
 export { components_1 as components };
 import * as utils_1 from "./src/utils";
