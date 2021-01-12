@@ -55,16 +55,24 @@ const config = {
                 include: [
                     path.resolve(__dirname, "app"),
                     path.resolve(__dirname, "lib"),
-                    /json-.*\//, /mithril-.*\//, /editron.*\//
+                    /json-.*\//, /editron.*\//
                 ],
+                exclude: /node_modules/,
                 options: {
-                    presets: [require.resolve("@babel/preset-env")],
-                    plugins: [
-                        require.resolve("@babel/plugin-transform-object-assign"),
-                        require.resolve("@babel/plugin-proposal-object-rest-spread")
+                    presets: [
+                        [
+                            "@babel/preset-env",
+                            {
+                                useBuiltIns: 'usage',
+                                corejs: 3
+                            }
+                        ]
                     ],
-                    babelrc: false,
-                    cacheDirectory: true
+                    plugins: [
+                        "@babel/plugin-transform-runtime",
+                        "@babel/plugin-transform-object-assign",
+                        "@babel/plugin-proposal-object-rest-spread"
+                    ]
                 }
             },
             {
