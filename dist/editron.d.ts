@@ -19,6 +19,7 @@
  */
 import Controller from "./src/Controller";
 export default Controller;
+export { Controller };
 export * as components from "./src/components";
 export * as utils from "./src/utils";
 export type { Editor, EditorPlugin, Options } from "./src/editors/Editor";
