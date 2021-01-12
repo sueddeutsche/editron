@@ -1,73 +1,52 @@
-button.mmf-button {
-  background: none repeat scroll 0 0 transparent;
-  border: medium none;
-  border-radius: 0;
-  border-spacing: 0;
-  outline: 0;
-  user-select: none;
-  cursor: pointer;
-  pointer-events: all;
-  outline: none !important;
+.mmf-button {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   user-select: none;
-  font-family: "Roboto";
-  font-weight: 400;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
   height: 36px;
-  margin: 6px;
-  padding: 0 16px;
-  font-weight: medium;
-  font-size: inherit;
-  line-height: 1em;
-  border-radius: 2px;
-  color: #00c853;
-  background-color: inherit;
-  transition: background-color 0.1s linear; }
-  button.mmf-button::-moz-focus-inner, button.mmf-button::-moz-focus-inner {
-    border: 0;
-    padding: 0; }
-  button.mmf-button:-moz-focusring {
-    color: transparent;
-    text-shadow: 0 0 0 #000; }
-  button.mmf-button.is-enabled:hover, button.mmf-button.is-enabled:focus {
-    background-color: #ECEFF1; }
-  button.mmf-button.is-disabled {
-    color: rgba(0, 200, 83, 0.38); }
-    button.mmf-button.is-disabled:focus, button.mmf-button.is-disabled:hover {
-      background-color: inherit;
-      color: rgba(0, 200, 83, 0.38);
-      cursor: default; }
-  button.mmf-button .mmf-icon {
-    width: 0;
-    height: 0;
-    position: relative;
-    top: 0.2em;
-    line-height: 0;
-    padding-right: 1.5em;
-    font-size: 1.5em; }
+  padding: 0 16px; }
 
-button.mmf-button--raised {
-  z-index: 10;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  color: #ECEFF1;
-  background-color: #00c853; }
-  button.mmf-button--raised.is-enabled:hover, button.mmf-button--raised.is-enabled:focus {
-    background-color: #00953e; }
-  button.mmf-button--raised.is-disabled, button.mmf-button--raised.is-disabled:hover, button.mmf-button--raised.is-disabled:focus {
-    color: rgba(236, 239, 241, 0.38);
-    background-color: rgba(0, 0, 0, 0.38);
-    cursor: default; }
-
-.mmf-icon {
+.mmf-button:not([disabled]) {
   cursor: pointer;
-  pointer-events: all;
-  outline: none !important;
+  pointer-events: all; }
+
+.mmf-button .mmf-icon ~ * {
+  padding-left: 8px; }
+
+.mmf-label {
+  display: block;
+  padding-bottom: 8px; }
+
+.mmf-checkbox {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   user-select: none;
-  /* copy of styles set by .material-icons */
-  font-family: 'Material Icons';
-  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  background-color: inherit;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  border: none;
+  font-size: inherit; }
+
+.mmf-checkbox:not([disabled]) {
+  cursor: pointer;
+  pointer-events: all; }
+
+.mmf-checkbox::-ms-expand {
+  display: none; }
+
+.mmf-checkbox:checked:after {
+  content: "check_box"; }
+
+.mmf-checkbox:after {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  user-select: none;
+  font-family: Material Icons;
+  font-weight: 400;
   font-style: normal;
-  font-size: 24px;
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -75,106 +54,168 @@ button.mmf-button--raised {
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
-  -webkit-font-feature-settings: 'liga';
+  -webkit-font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased;
-  color: inherit;
-  text-align: center;
-  width: 48px;
-  height: 48px;
-  line-height: 48px;
-  transition: color 0.1s linear; }
-  .mmf-icon:hover {
-    color: #00c853; }
+  content: "check_box_outline_blank";
+  transform: translateY(10%); }
 
-div.mmf-select__wrapper {
-  position: relative;
-  display: inline-block; }
-  div.mmf-select__wrapper:after {
-    content: "keyboard_arrow_down";
-    /* copy of styles set by .material-icons */
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
-    font-size: 24px;
-    line-height: 1;
-    letter-spacing: normal;
-    text-transform: none;
-    display: inline-block;
-    white-space: nowrap;
-    word-wrap: normal;
-    direction: ltr;
-    -webkit-font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-    position: absolute;
-    font-size: 1.25em;
-    right: 0;
-    bottom: 0;
-    color: #000;
-    transition: color 0.1s linear;
-    pointer-events: none; }
-  div.mmf-select__wrapper:not(.is-disabled):hover:after, div.mmf-select__wrapper:not(.is-disabled).has-focus:after {
-    color: #81c784; }
-  div.mmf-select__wrapper.is-disabled {
-    opacity: 0.38;
-    cursor: default; }
+.mmf-checkbox:after:not([disabled]) {
+  cursor: pointer;
+  pointer-events: all; }
 
-select.mmf-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  border-radius: 0;
-  border: medium none;
-  font-size: inherit;
-  color: rgba(0, 0, 0, 0.87);
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.54);
-  width: 100%;
-  font-size: inherit;
+.mmf-checkbox[disabled]:after {
+  cursor: default; }
+
+.mmf-form--checkbox label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center; }
+
+.mmf-form--checkbox .order--label-first .mmf-label {
+  padding-right: 8px; }
+
+.mmf-form--checkbox .order--label-last .mmf-label {
+  padding-left: 8px; }
+
+ul.mmf-form__errors {
+  list-style: none;
+  padding-left: 0;
+  margin: 0; }
+
+ul.mmf-form__errors li {
+  margin-top: 4px; }
+
+.mmf-input {
   box-sizing: border-box;
-  background: transparent;
+  width: 100%; }
+
+.mmf-form--input label {
+  display: flex;
+  flex-direction: column; }
+
+.mmf-list {
+  list-style: none;
+  padding: 0;
+  margin: 0; }
+
+.mmf-list__item {
+  padding: 8px 16px; }
+
+.mmf-list__item.is-selected, .mmf-list__item:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.12); }
+
+.mmf-popover {
+  background: inherit;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  position: absolute;
   transform: translateZ(0);
-  outline: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.1s linear;
-  font-size: inherit;
-  outline: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  padding-top: 4px;
-  padding-right: 28px;
-  background-color: inherit; }
-  select.mmf-select::-ms-expand {
-    display: none; }
-  select.mmf-select:-moz-focusring {
-    color: transparent;
-    text-shadow: 0 0 0 #000; }
-  select.mmf-select * {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    border-radius: 0;
-    border: medium none;
-    font-size: inherit; }
-    select.mmf-select *::-ms-expand {
-      display: none; }
-  select.mmf-select:not([disabled]):focus {
-    border-color: #00c853; }
-  select.mmf-select:not([disabled]):hover {
-    border-color: #00c853; }
-  select.mmf-select[disabled] {
-    color: #000;
-    opacity: 0.38; }
-  select.mmf-select:not([disabled]) {
-    cursor: pointer; }
-  select.mmf-select[disabled] {
-    opacity: 1; }
+  z-index: 1; }
 
-select.mmf-select option {
-  font-size: inherit;
-  color: #000; }
+.mmf-popover.is-hidden {
+  display: none; }
 
-.mmf-form--select .mmf-label {
-  line-height: 29px; }
+.mmf-form--query-list .mmf-popover {
+  background-color: #fff; }
+
+.mmf-radio-btn-container {
+  height: 36px;
+  display: contents; }
+
+.mmf-radio-btn {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  user-select: none;
+  border: 1px solid #29293a;
+  border-radius: 4px;
+  background: transparent;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 4px; }
+
+.mmf-radio-btn:not([disabled]) {
+  cursor: pointer;
+  pointer-events: all; }
+
+.mmf-radio-btn:not([disabled]):hover {
+  background-color: #c0c1c6; }
+
+.mmf-radio-btn.selected {
+  background-color: #e0e0e3; }
+
+.mmf-radio-btn.is-disabled {
+  border: 1px solid rgba(41, 41, 58, 0.3); }
+
+.mmf-form--radio-buttons .order--label-first .mmf-label {
+  display: flex;
+  flex-direction: column; }
+
+.mmf-form--radio-buttons .mmf-form__error {
+  margin-top: 4px;
+  padding-top: 8px; }
+
+.mmf-select__wrapper {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+  width: 100%; }
+
+.mmf-select__wrapper:after {
+  content: "keyboard_arrow_down";
+  font-family: Material Icons;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  align-items: center;
+  bottom: 0;
+  display: flex;
+  pointer-events: none;
+  position: absolute;
+  right: 4px;
+  top: 0; }
+
+.mmf-select__wrapper.is-disabled:after {
+  opacity: .3; }
+
+.mmf-select__wrapper.with-color select {
+  padding-left: 24px; }
+
+.mmf-select__wrapper.with-color .select-icon {
+  display: inline-block;
+  border-radius: 50%;
+  height: 8px;
+  width: 8px;
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 12;
+  border: transparent; }
+
+.mmf-select {
+  width: 100%;
+  box-sizing: border-box;
+  -moz-appearance: window;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: #000;
+  padding: 7px 28px 7px 8px; }
+
+.mmf-select:not([disabled]) {
+  cursor: pointer; }
+
+.mmf-form--select label {
+  display: flex;
+  flex-direction: row;
+  align-items: center; }
 
 .mmf-form--select .order--label-first .mmf-label {
   padding-right: 16px; }
@@ -182,427 +223,320 @@ select.mmf-select option {
 .mmf-form--select .order--label-last .mmf-label {
   padding-left: 16px; }
 
-.mmf-form__error--warning {
-  color: #F39C12; }
-
-.mmf-form__error--error {
-  color: #d50000; }
-
-input.mmf-input {
-  color: rgba(0, 0, 0, 0.87);
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.54);
-  width: 100%;
-  font-size: inherit;
-  box-sizing: border-box;
-  background: transparent;
-  transform: translateZ(0);
+.mmf-switch.the-material, .mmf-switch.the-solid {
   outline: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.1s linear; }
-  input.mmf-input:not([disabled]):focus {
-    border-color: #00c853; }
-  input.mmf-input:not([disabled]):hover {
-    border-color: #00c853; }
-  input.mmf-input[disabled] {
-    color: #000;
-    opacity: 0.38; }
+  -webkit-tap-highlight-color: #000; }
 
-input.mmf-checkbox {
-  margin: 0;
-  padding: 0;
+.mmf-switch {
+  background-color: inherit;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   border-radius: 0;
-  border: medium none;
-  font-size: inherit;
-  cursor: pointer;
-  pointer-events: all;
-  outline: none !important;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  user-select: none;
-  color: rgba(0, 0, 0, 0.87);
   border: none;
-  border-radius: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.54);
-  width: 100%;
   font-size: inherit;
-  box-sizing: border-box;
-  background: transparent;
-  transform: translateZ(0);
-  outline: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.1s linear;
-  position: relative;
-  display: inline-block;
-  font-size: 1.25em;
-  width: 1em;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 1em;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  width: 2em;
   height: 1em;
-  border-bottom: none;
-  transform: translateY(25%); }
-  input.mmf-checkbox::-ms-expand {
-    display: none; }
-  input.mmf-checkbox:not([disabled]):focus {
-    border-color: #00c853; }
-  input.mmf-checkbox:not([disabled]):hover {
-    border-color: #00c853; }
-  input.mmf-checkbox[disabled] {
-    color: #000;
-    opacity: 0.38; }
-  input.mmf-checkbox:checked:after {
-    content: "check_box"; }
-  input.mmf-checkbox:after {
-    cursor: pointer;
-    pointer-events: all;
-    outline: none !important;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    user-select: none;
-    /* copy of styles set by .material-icons */
-    font-family: 'Material Icons';
-    font-weight: normal;
-    font-style: normal;
-    font-size: 24px;
-    line-height: 1;
-    letter-spacing: normal;
-    text-transform: none;
-    display: inline-block;
-    white-space: nowrap;
-    word-wrap: normal;
-    direction: ltr;
-    -webkit-font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-    content: "check_box_outline_blank";
-    position: absolute;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: inherit;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: color 0.1s linear; }
-  input.mmf-checkbox:not([disabled]):focus:after, input.mmf-checkbox:not([disabled]):hover:after {
-    color: #00c853; }
-  input.mmf-checkbox[disabled]:after {
-    cursor: default; }
-
-.mmf-form--checkbox .mmf-label {
-  color: inherit; }
-
-.mmf-form--checkbox .order--label-first .mmf-label {
-  padding-right: 16px; }
-
-.mmf-form--checkbox .order--label-last .mmf-label {
-  padding-left: 16px; }
-
-/**
- * Default form styles, controlling label position by classnames. The Markup should look like
- *
- *  <my-form extends with-moving-label>
- *      <label>Moving Title</label>
- *      <input-type>
- *      ...
- * @param {string} input-type   - associated input selector
- */
-.mmf-form--input input {
-  padding: 1.1em 0 0 0; }
-
-.mmf-form--input .mmf-label {
-  width: 100%;
-  position: absolute;
-  top: 0;
-  display: inline-block;
-  transition: all 0.1s ease-in-out;
-  color: #000;
-  opacity: 0.54;
-  font-size: 0.8em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  position: relative;
   overflow: hidden; }
 
-.mmf-form--input.hasFocus .mmf-label {
-  color: #81c784;
-  opacity: 0.87; }
+.mmf-switch::-ms-expand {
+  display: none; }
 
-.mmf-form--input.has-error select,
-.mmf-form--input.has-error input {
-  border-color: #d50000; }
+.mmf-switch:after {
+  background-color: #fff;
+  border-radius: 1em;
+  position: relative;
+  content: "";
+  display: block;
+  height: 100%;
+  width: 50%;
+  left: 0;
+  margin: 0;
+  transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), width 0.3s ease, margin 0.3s ease; }
 
-.mmf-form--input.has-error.hasFocus .mmf-label {
-  color: #d50000; }
+.mmf-switch:checked {
+  background-color: #2ecc71; }
 
-.mmf-form--input.has-warning select,
-.mmf-form--input.has-warning input {
-  border-color: #F39C12; }
+.mmf-switch:checked:after {
+  left: 100%;
+  transform: translate(-100%); }
 
-.mmf-form--input.has-warning.hasFocus .mmf-label {
-  color: #F39C12; }
+.mmf-switch:focus:after {
+  z-index: 20;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
 
-.mmf-form--input.isEmpty.hasNoFocus .mmf-label {
-  transform: translateY(1.1em);
-  font-size: 1em; }
+.mmf-switch[disabled] {
+  opacity: .3; }
+
+.mmf-switch:not([disabled]) {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  user-select: none; }
+
+.mmf-switch:not([disabled]):not([disabled]) {
+  cursor: pointer;
+  pointer-events: all; }
+
+.mmf-switch:not([disabled]):hover {
+  cursor: pointer; }
+
+.mmf-switch:not([disabled]):active:after {
+  width: 60%; }
+
+.mmf-form--switch label {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center; }
+
+.mmf-form--switch .order--label-first .mmf-label {
+  padding-right: 8px; }
+
+.mmf-form--switch .order--label-last .mmf-label {
+  padding-left: 8px; }
+
+.mmf-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical; }
+
+.mmf-textarea:focus {
+  outline-style: none;
+  outline-width: 0; }
+
+.mmf-form--textarea label {
+  display: flex;
+  flex-direction: column; }
+
+.mmf-form--textarea textarea {
+  box-sizing: border-box; }
+
+.mmf-form .mmf-meta {
+  margin-top: 4px; }
+
+.mmf-form.is-enabled label:hover {
+  cursor: pointer; }
+
+.mmf-icon {
+  font-family: Material Icons;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased; }
+
+.mmf-button {
+  font-weight: 400;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1em; }
+
+.mmf-form__error--warning {
+  color: #f39c12; }
+
+.mmf-form__error--error {
+  color: #ff4c4c; }
+
+.mmf-input {
+  font-weight: 400;
+  color: inherit; }
+
+.mmf-input, .mmf-label {
+  font-size: inherit;
+  font-family: inherit; }
 
 .mmf-label {
   color: inherit;
+  user-select: none;
+  color: #000; }
+
+.mmf-select__wrapper:after {
+  font-size: 1.25em;
+  color: #000; }
+
+.mmf-select {
+  font-family: inherit;
+  font-size: inherit; }
+
+.mmf-select option {
   font-size: inherit;
-  display: inline-block; }
+  color: #000; }
 
-.mmf-form .mmf-label:hover {
-  cursor: pointer; }
-
-textarea.mmf-textarea {
-  color: rgba(0, 0, 0, 0.87);
-  border: none;
-  border-radius: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.54);
-  width: 100%;
+.mmf-textarea {
   font-size: inherit;
-  box-sizing: border-box;
-  background: transparent;
-  transform: translateZ(0);
-  outline: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  transition: border-color 0.1s linear;
-  width: 100%;
-  margin: 1.1em 0 0 0;
-  resize: vertical; }
-  textarea.mmf-textarea:not([disabled]):focus {
-    border-color: #00c853; }
-  textarea.mmf-textarea:not([disabled]):hover {
-    border-color: #00c853; }
-  textarea.mmf-textarea[disabled] {
-    color: #000;
-    opacity: 0.38; }
-  textarea.mmf-textarea:focus {
-    outline-style: none;
-    outline-width: 0; }
+  font-family: inherit; }
 
-.hasError textarea.mmf-textarea {
-  border-color: #d50000; }
+.mmf-form.hasError .mmf-textarea {
+  border-color: #ff4c4c; }
 
-.mmf-form--textarea textarea {
-  margin: 1.1em 0 0 0; }
+.the-ux.mmf-form--textarea textarea {
+  font-weight: 400;
+  color: inherit;
+  font-size: inherit;
+  line-height: 1.4em; }
 
-.mmf-form--textarea .mmf-label {
-  width: 100%;
-  position: absolute;
-  top: 0;
-  display: inline-block;
-  transition: all 0.1s ease-in-out;
-  color: #000;
-  opacity: 0.54;
-  font-size: 0.8em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden; }
-
-.mmf-form--textarea.hasFocus .mmf-label {
-  color: #81c784;
-  opacity: 0.87; }
-
-.mmf-form--textarea.has-error select,
-.mmf-form--textarea.has-error input {
-  border-color: #d50000; }
-
-.mmf-form--textarea.has-error.hasFocus .mmf-label {
-  color: #d50000; }
-
-.mmf-form--textarea.has-warning select,
-.mmf-form--textarea.has-warning input {
-  border-color: #F39C12; }
-
-.mmf-form--textarea.has-warning.hasFocus .mmf-label {
-  color: #F39C12; }
-
-.mmf-form--textarea.isEmpty.hasNoFocus .mmf-label {
-  transform: translateY(1.1em);
-  font-size: 1em; }
-
-.mmf-form--textarea textarea {
-  width: 100%;
-  resize: vertical;
-  box-sizing: border-box;
-  border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.54);
-  line-height: 1.4em;
-  background: transparent;
-  outline: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
-  .mmf-form--textarea textarea:focus {
-    border-color: #81c784; }
-
-.mmf-card {
-  z-index: 20;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-  width: 100%;
-  border-radius: 2px; }
-
-/**
- * Default form styles, controlling label position by classnames. The Markup should look like
- *
- *  <my-form extends with-moving-label>
- *      <label>Moving Title</label>
- *      <input-type>
- *      ...
- * @param {string} input-type   - associated input selector
- */
-.mmf-form {
-  position: relative; }
-  .mmf-form .mmf-label {
-    color: #000;
-    opacity: 0.54; }
-  .mmf-form.mmf-form--disabled .mmf-meta,
-  .mmf-form.mmf-form--disabled .mmf-form__errors,
-  .mmf-form.mmf-form--disabled label {
-    opacity: 0.38 !important; }
-    .mmf-form.mmf-form--disabled .mmf-meta:hover,
-    .mmf-form.mmf-form--disabled .mmf-form__errors:hover,
-    .mmf-form.mmf-form--disabled label:hover {
-      cursor: default; }
-  .mmf-form .mmf-meta {
-    margin-top: 4px; }
-
-ul.mmf-form__errors {
-  font-size: 0.8em;
-  list-style: none;
-  color: #d50000;
-  padding-left: 0; }
-  ul.mmf-form__errors li {
-    margin-top: 4px; }
+.mmf-form__errors {
+  font-size: .8em;
+  color: #ff4c4c; }
 
 .mmf-meta {
-  opacity: 0.54;
+  opacity: .54;
   font-style: italic;
-  font-size: 0.8em; }
+  font-size: .8em; }
 
-/**
- * Default form styles, controlling label position by classnames. The Markup should look like
- *
- *  <my-form extends with-moving-label>
- *      <label>Moving Title</label>
- *      <input-type>
- *      ...
- * @param {string} input-type   - associated input selector
- */
-/**
- * Default form styles, controlling label position by classnames. The Markup should look like
- *
- *  <my-form extends with-moving-label>
- *      <label>Moving Title</label>
- *      <input-type>
- *      ...
- * @param {string} input-type   - associated input selector
- */
-/**
- * Default form styles, controlling label position by classnames. The Markup should look like
- *
- *  <my-form extends with-moving-label>
- *      <label>Moving Title</label>
- *      <input-type>
- *      ...
- * @param {string} input-type   - associated input selector
- */
-.editron-value {
-  position: relative;
-  padding: 16px;
+.mmf-form.is-disabled .mmf-form__errors, .mmf-form.is-disabled .mmf-meta, .mmf-form.is-disabled span.mmf-label {
+  opacity: .3; }
+
+.ed-overlay {
+  background: rgba(30, 30, 30, 0.5);
+  bottom: 0;
   box-sizing: border-box;
-  background-color: #fff;
-  border-bottom-left-radius: 2px;
-  border-bottom-right-radius: 2px; }
-  .editron-value .mmf-label {
-    color: #000;
-    opacity: 0.54; }
-  .editron-value.mmf-form--disabled .mmf-meta,
-  .editron-value.mmf-form--disabled .mmf-form__errors,
-  .editron-value.mmf-form--disabled label {
-    opacity: 0.38 !important; }
-    .editron-value.mmf-form--disabled .mmf-meta:hover,
-    .editron-value.mmf-form--disabled .mmf-form__errors:hover,
-    .editron-value.mmf-form--disabled label:hover {
-      cursor: default; }
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 102; }
+  .ed-overlay .ed-overlay__card {
+    align-self: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: auto; }
 
-.editron-container__child .editron-container__button--add {
-  cursor: pointer;
-  pointer-events: all;
-  outline: none !important;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  user-select: none;
-  text-align: center; }
-  .editron-container__child .editron-container__button--add .mmf-icon {
-    color: rgba(255, 255, 255, 0.87); }
-  .editron-container__child .editron-container__button--add:not(.is-disabled):hover .mmf-icon {
-    color: #fff; }
-  .editron-container__child .editron-container__button--add.is-disabled:hover {
-    cursor: default; }
-    .editron-container__child .editron-container__button--add.is-disabled:hover .mmf-icon {
-      cursor: default; }
-
-.editron-container--array.has-add-disabled > .editron-container__header .mmf-icon--add {
+.ed-object.is-collapsed > .ed-children {
   display: none; }
 
-.editron-editor.has-remove-disabled > .editron-container > .editron-container__header .mmf-icon--delete {
-  visibility: hidden; }
-
-.editron-container__controls {
-  list-style: none; }
-  .editron-container__controls.is-disabled .mmf-icon {
-    color: rgba(255, 255, 255, 0.38); }
-    .editron-container__controls.is-disabled .mmf-icon:hover {
-      cursor: default;
-      color: rgba(255, 255, 255, 0.38); }
-
-.editron-item.with-index:before {
+.ed-item.with-index:before {
   content: attr(data-index);
   display: inline-block;
   position: absolute;
   left: -48px;
   width: 48px;
-  height: 48px;
-  line-height: 48px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.38);
-  font-size: 0.8em; }
+  line-height: 2;
+  text-align: center; }
 
-.editron-container--object.hidden .editron-container__children {
+.ed-child:first-child > .ed-separator {
   display: none; }
 
-.editron-container__header {
-  display: flex; }
-  .editron-container__header.noTitle.noActions {
-    display: none; }
-  .editron-container__header.noTitle .editron-container__title {
-    display: none; }
-  .editron-container__header.noActions .editron-container__actions {
-    display: none; }
-  .editron-container__header.withIcon .editron-container__title h2 {
-    padding-left: 0; }
-  .editron-container__header.withActions {
-    padding-right: 0; }
-  .editron-container__header .editron-container__title {
-    display: flex;
-    width: 100%; }
-    .editron-container__header .editron-container__title h2 {
+.ed-array.is-collapsed > .ed-separator,
+.ed-array.is-collapsed > .ed-children {
+  display: none; }
+
+.ed-separator {
+  min-height: 8px;
+  background-color: var(--ed-bg-color, transparent);
+  display: flex;
+  justify-content: center; }
+  .ed-separator button.the-default {
+    font-size: 0.8em;
+    border: 0; }
+    .ed-separator button.the-default span {
+      display: none; }
+
+.ed-child {
+  position: relative; }
+
+.ed-actions {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  user-select: none;
+  position: absolute;
+  right: 0;
+  transform: translateX(100%);
+  z-index: 101; }
+  .ed-actions:not([disabled]) {
+    cursor: pointer;
+    pointer-events: all; }
+  .ed-actions ul {
+    list-style: none;
+    display: none;
+    min-width: 144px;
+    background-color: var(--ed-bg-color, #fff); }
+    .ed-actions ul li button.mmf-button {
+      border: 0;
       margin: 0;
-      flex-grow: 2;
-      display: inline-block;
-      align-self: center;
-      padding: 16px; }
+      width: 100%; }
+  .ed-actions.is-enabled:hover ul {
+    display: block; }
+  .ed-actions > ul {
+    position: absolute;
+    top: 48px;
+    right: 36px;
+    margin: 0;
+    transform: translateY(-50%); }
 
-.editron-container__description {
-  padding: 16px; }
+.ed-header {
+  display: flex;
+  align-items: center; }
+  .ed-header h2 {
+    margin: 0; }
+  .ed-header.no-title.no-actions {
+    display: none; }
+  .ed-header.no-title .ed-header__title {
+    display: none; }
+  .ed-header.no-actions .ed-actions {
+    display: none; }
+  .ed-header.with-icon .ed-header__title h2 {
+    padding-left: 0; }
+  .ed-header.with-actions {
+    padding-right: 0; }
+  .ed-header .ed-header__title {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-height: 36px; }
+    .ed-header .ed-header__title .mmf-icon {
+      width: 1.5em; }
 
-.editron-container__errors {
+.ed-header {
+  display: flex;
+  align-items: center; }
+  .ed-header h2 {
+    margin: 0; }
+  .ed-header.no-title.no-actions {
+    display: none; }
+  .ed-header.no-title .ed-header__title {
+    display: none; }
+  .ed-header.no-actions .ed-actions {
+    display: none; }
+  .ed-header.with-icon .ed-header__title h2 {
+    padding-left: 0; }
+  .ed-header.with-actions {
+    padding-right: 0; }
+  .ed-header .ed-header__title {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    min-height: 36px; }
+    .ed-header .ed-header__title .mmf-icon {
+      width: 1.5em; }
+
+.ed-description {
+  padding-bottom: 16px; }
+
+.ed-errors {
   padding: 8px 16px;
   font-size: 0.8em;
-  color: #d50000; }
-  .editron-container__errors .is-warning {
-    color: #F39C12; }
-  .editron-container__errors .editron-error {
+  color: #d86868; }
+  .ed-errors .is-warning {
+    color: #f39c12; }
+  .ed-errors .ed-error {
     display: flex;
     align-items: center; }
-    .editron-container__errors .editron-error span {
+    .ed-errors .ed-error span {
       flex-grow: 1; }
-    .editron-container__errors .editron-error a.mmf-icon {
+    .ed-errors .ed-error a.mmf-icon {
       flex-shrink: 1;
       flex-grow: 0;
       padding: 0;
@@ -613,84 +547,42 @@ ul.mmf-form__errors {
       width: auto;
       height: auto; }
 
-.editron-container.withAddButton .mmf-card {
+.with-insert-button .mmf-card {
   margin-bottom: 0; }
 
-.editron-container__actions {
-  display: flex; }
-
-.editron-container__child {
+.ed-child {
   position: relative; }
 
-.editron-container__controls--child {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translateX(100%);
-  z-index: 999; }
-  .editron-container__controls--child ul {
-    margin: 0;
-    padding: 0;
-    display: none;
-    position: absolute;
-    top: 0;
-    right: 1.5em;
-    list-style: none; }
-    .editron-container__controls--child ul li button {
-      width: 100%;
-      margin: 0;
-      white-space: nowrap;
-      text-align: left; }
-      .editron-container__controls--child ul li button:hover {
-        cursor: pointer; }
-  .editron-container__controls--child.is-enabled:hover {
-    background: #fff; }
-  .editron-container__controls--child.is-enabled:hover ul {
-    display: block;
-    z-index: 20;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+.ed-description {
+  padding-bottom: 16px; }
 
-.editron-container__header {
-  color: inherit;
-  line-height: 1em;
-  text-transform: uppercase;
-  padding-top: 0.1em;
-  opacity: 0.87; }
-  .editron-container__header .editron-container__title h2 {
-    font-family: "Roboto";
-    font-weight: 400;
-    text-transform: inherit;
-    font-size: inherit;
-    line-height: inherit; }
-  .editron-container__header .editron-container__title i.mmf-icon:hover {
-    color: inherit;
-    cursor: default; }
-  .editron-container__header.is-disabled i.mmf-icon,
-  .editron-container__header.is-disabled i.mmf-icon:hover {
-    color: inherit;
-    opacity: 0.38;
-    cursor: default; }
+.ed-errors {
+  padding: 8px 16px;
+  font-size: 0.8em;
+  color: #d86868; }
+  .ed-errors .is-warning {
+    color: #f39c12; }
+  .ed-errors .ed-error {
+    display: flex;
+    align-items: center; }
+    .ed-errors .ed-error span {
+      flex-grow: 1; }
+    .ed-errors .ed-error a.mmf-icon {
+      flex-shrink: 1;
+      flex-grow: 0;
+      padding: 0;
+      padding-left: 8px;
+      text-decoration: none;
+      font-size: 2em;
+      line-height: 1em;
+      width: auto;
+      height: auto; }
 
-.editron-container {
-  color: inherit; }
-
-.ui-overlay {
+.ed-overlay {
   z-index: 1002;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  box-sizing: border-box;
-  padding: 48px 8px;
-  background: rgba(30, 30, 30, 0.5); }
+  padding: 48px 8px; }
 
-.ui-overlay {
-  display: flex;
-  flex-direction: row;
-  justify-content: center; }
-
-.ui-overlay__card {
+.ed-overlay__card {
   z-index: 20;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   width: 100%;
@@ -700,59 +592,52 @@ ul.mmf-form__errors {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   z-index: 240;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), 0 30px 25px rgba(0, 0, 0, 0.2);
-  display: flex;
-  flex-direction: column;
   margin: 0;
-  box-sizing: border-box;
-  width: auto;
-  align-self: center;
   max-width: 960px;
   min-height: 144px;
-  max-height: 96vh; }
-  .ui-overlay__card--fullscreen {
+  max-height: 96vh;
+  min-width: 192px; }
+  .ed-overlay__card--fullscreen {
     width: 96vw;
     height: 96vh; }
 
-.ui-overlay h1 {
-  font-family: "Roboto";
+.ed-overlay h1 {
   font-weight: 400;
   line-height: 1em;
   margin: 0; }
 
-.ui-overlay .ui-card__header {
-  padding: 24px; }
-
-.ui-overlay .ui-card__content {
-  position: relative;
+.ed-overlay .ed-card__header {
   padding: 24px;
-  flex-grow: 1;
-  overflow-y: auto;
-  overflow-x: hidden; }
+  padding-bottom: 0; }
 
-.ui-overlay .ui-card__footer {
+.ed-overlay .ed-card__content {
+  flex-grow: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative; }
+
+.ed-overlay .ed-card__footer {
   padding: 8px;
   text-align: right; }
 
-.overlay__item--json {
-  min-width: 50vw; }
-
-.editron-form-tiles {
+.ed-overlay-tiles {
   max-width: 768px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center; }
 
-.editron-form-box {
+.ed-form-box {
   box-sizing: border-box;
   cursor: pointer; }
-  .editron-form-box:hover .editron-form-box__content {
-    background-color: rgba(0, 200, 83, 0.38);
+  .ed-form-box:hover .ed-form-box__content {
+    background-color: rgba(0, 200, 82, 0.3);
     z-index: 40;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23); }
 
-.editron-form-box__content {
-  border-radius: 2px;
+.ed-form-box__content {
+  border-radius: 4px;
   z-index: 20;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
   box-sizing: border-box;
@@ -760,27 +645,25 @@ ul.mmf-form__errors {
   width: 176px;
   height: 176px;
   color: rgba(0, 0, 0, 0.87);
-  background-color: #ECEFF1;
+  background-color: #eceff1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: background-color 0.1s linear; }
 
-.editron-form-box__title {
-  font-family: "Roboto";
+.ed-form-box__title {
   font-weight: 700;
   text-align: center;
   padding: 8px; }
-  .editron-form-box__title .mmf-icon {
+  .ed-form-box__title .mmf-icon {
     width: auto;
     height: auto;
     line-height: inherit;
     font-size: 0.8rem;
     padding-right: 8px; }
 
-.editron-form-box__description {
-  font-family: "Roboto";
+.ed-form-box__description {
   font-weight: 400;
   font-size: 0.8em;
   line-height: 1.2em;
@@ -789,82 +672,52 @@ ul.mmf-form__errors {
   overflow-x: hidden;
   overflow-y: auto; }
 
-/**
- * Default form styles, controlling label position by classnames. The Markup should look like
- *
- *  <my-form extends with-moving-label>
- *      <label>Moving Title</label>
- *      <input-type>
- *      ...
- * @param {string} input-type   - associated input selector
- */
-.mmf-card {
-  color: #000;
-  margin-bottom: 48px;
-  background-color: #ECEFF1; }
-  .mmf-card .editron-container__header {
-    opacity: 0.87;
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px; }
-    .mmf-card .editron-container__header h2 {
-      color: #000; }
-  .mmf-card .editron-container__title .mmf-icon:hover {
-    color: #000;
-    cursor: default; }
+/* center oneOf selection in form */
+.ed-value--oneof .mmf-form.mmf-form--select {
+  text-align: center; }
+  .ed-value--oneof .mmf-form.mmf-form--select label {
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row; }
+    .ed-value--oneof .mmf-form.mmf-form--select label .mmf-label {
+      padding-bottom: 0; }
 
-.mmf-card > .editron-container__header .mmf-icon {
-  color: #000; }
-  .mmf-card > .editron-container__header .mmf-icon:hover {
-    color: black; }
+.group {
+  --ed-color--bg: rgb(242,242,243); }
 
-.mmf-card .editron-container .editron-container__header {
-  padding: 0; }
-  .mmf-card .editron-container .editron-container__header h2 {
-    font-family: "Roboto";
-    font-weight: 400;
-    text-transform: uppercase;
-    padding: 16px;
-    font-size: 0.8em;
-    box-sizing: border-box;
-    min-height: 48px;
-    opacity: 0.54; }
-  .mmf-card .editron-container .editron-container__header .mmf-icon {
-    color: #000; }
-    .mmf-card .editron-container .editron-container__header .mmf-icon:hover {
-      color: black; }
+.group--bordered {
+  border: 1px solid #aaa;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.1); }
 
-.mmf-card .editron-container__button--add {
-  position: relative; }
-  .mmf-card .editron-container__button--add .mmf-label {
-    color: #000;
-    opacity: 0.54; }
-  .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-meta,
-  .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-form__errors,
-  .mmf-card .editron-container__button--add.mmf-form--disabled label {
-    opacity: 0.38 !important; }
-    .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-meta:hover,
-    .mmf-card .editron-container__button--add.mmf-form--disabled .mmf-form__errors:hover,
-    .mmf-card .editron-container__button--add.mmf-form--disabled label:hover {
-      cursor: default; }
-  .mmf-card .editron-container__button--add .mmf-icon {
-    color: rgba(0, 0, 0, 0.54);
-    text-shadow: none; }
-  .mmf-card .editron-container__button--add:hover .mmf-icon {
-    color: rgba(0, 0, 0, 0.87);
-    text-shadow: none; }
+.group--colored {
+  background: #fff; }
 
-.mmf-card .editron-container__children .editron-container__children > .editron-container__child .editron-container__header {
-  box-shadow: inset 0 10px 20px rgba(0, 0, 0, 0.19), inset 0 6px 6px rgba(0, 0, 0, 0.23); }
+.group > * {
+  padding: 8px; }
+  .group > *.with-actions > .ed-header__actions {
+    padding-right: 8px; }
 
-.editron-container--oneof > .editron-value {
-  margin-bottom: 48px; }
+[data-point]:not(:last-child) {
+  padding-top: 8px;
+  padding-bottom: 8px; }
 
-.mmf-card .editron-container--oneof > .editron-value {
-  margin-bottom: 0; }
+[data-point] [data-point] > .ed-header {
+  border-bottom: 1px solid var(--ed-color--bg, transparent);
+  padding-bottom: 8px;
+  margin-bottom: 8px; }
 
-.ui-row > .editron-container__children {
-  display: flex;
-  flex-direction: row; }
-  .ui-row > .editron-container__children > div {
-    flex-grow: 1;
-    min-width: 96px; }
+[data-point] [data-point] [data-point] > .ed-header {
+  position: relative;
+  border-bottom: 0;
+  padding-bottom: 8px;
+  margin-bottom: 8px; }
+  [data-point] [data-point] [data-point] > .ed-header:after {
+    content: "";
+    position: absolute;
+    display: block;
+    left: 0;
+    bottom: -2px;
+    height: 2px;
+    width: 48px;
+    background-color: var(--ed-color--bg, transparent); }
