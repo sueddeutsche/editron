@@ -28,6 +28,7 @@ export default {
             format: "autocomplete",
             "editron:ui": {
                 autocomplete: {
+                    valueProp: "name",
                     suggestions: [
                         { name: 'Afghanistan', code: 'AF' },
                         { name: 'Åland Islands', code: 'AX' },
