@@ -7,4 +7,4 @@ export { default as isNodeContext } from "./isNodeContext";
 export { default as populated } from "./populated";
 export { default as selection } from "./selection";
 export { default as selectEditor } from "./selectEditor";
-export { default as UISchem } from "./UISchema";
+export { default as UISchema } from "./UISchema";
