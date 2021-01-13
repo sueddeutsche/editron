@@ -19,6 +19,7 @@
  */
 import Controller from "./src/Controller";
 export default Controller;
+export { Controller };
 import * as components_1 from "./src/components";
 export { components_1 as components };
 import * as utils_1 from "./src/utils";
@@ -30,6 +31,7 @@ export { default as ArrayEditor } from "./src/editors/arrayeditor";
 export { default as ObjectEditor } from "./src/editors/objecteditor";
 export { default as OneOfEditor } from "./src/editors/oneofeditor";
 export { default as ValueEditor } from "./src/editors/valueeditor";
+export { default as AutocompleteEditor } from "./src/editors/autocompleteeditor";
 // services
 export { default as DataService } from "./src/services/dataservice";
 export { default as LocationService } from "./src/services/LocationService";

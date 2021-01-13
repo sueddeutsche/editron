@@ -1,12 +1,15 @@
 {
   "name": "editron",
-  "version": "8.2.2",
+  "version": "8.3.0",
   "description": "Editron - json-editor",
   "main": "dist/editron.js",
   "types": "dist/editron.d.ts",
   "module": "distmodule/editron.js",
   "homepage": "https://github.com/sueddeutsche/editron",
   "bugs": "https://github.com/sueddeutsche/editron/issues",
+  "browserslist": [
+    "last 2 version"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/sueddeutsche/editron.git"
@@ -46,6 +49,7 @@
     "@babel/core": "7.11.1",
     "@babel/plugin-proposal-object-rest-spread": "7.11.0",
     "@babel/plugin-transform-object-assign": "7.10.4",
+    "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-env": "7.11.0",
     "@types/mithril": "2.0.3",
     "@types/mocha": "8.0.0",
@@ -95,11 +99,12 @@
   "dependencies": {
     "@rematch/core": "1.4.0",
     "@technik-sde/foxy": "^1.0.0",
+    "core-js": "^3.8.2",
     "gson-pointer": "4.1.0",
     "json-schema-library": "^4.1.4",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
-    "mithril-material-forms": "^4.6.0",
+    "mithril-material-forms": "^4.7.0",
     "nanoevents": "5.1.8",
     "sortablejs": "1.10.2",
     "with-observable": "^1.2.0"

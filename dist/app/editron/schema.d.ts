@@ -23,6 +23,20 @@ declare const _default: {
             format: string;
             default: boolean;
         };
+        autocomplete: {
+            title: string;
+            type: string;
+            format: string;
+            "editron:ui": {
+                autocomplete: {
+                    valueProp: string;
+                    suggestions: {
+                        name: string;
+                        code: string;
+                    }[];
+                };
+            };
+        };
         intro: {
             "editron:ui": {
                 attrs: {
