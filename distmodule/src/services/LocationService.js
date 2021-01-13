@@ -13,7 +13,7 @@ export const defaultOptions = {
 function isWindow(dom) {
     return dom === window;
 }
-function scrollIntoView(targetElement, scrollTopOffset = 0) {
+function scrollIntoView(targetElement, scrollTopOffset = 0, callback) {
     const scrollContainer = getScrollParent(targetElement);
     const bound = targetElement.getBoundingClientRect();
     if (isWindow(scrollContainer)) {
@@ -21,6 +21,8 @@ function scrollIntoView(targetElement, scrollTopOffset = 0) {
         if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
             window.scrollTo(0, bound.top + scrollTopOffset);
         }
+        if (callback)
+            callback();
         // else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
         return;
     }
@@ -31,6 +33,18 @@ function scrollIntoView(targetElement, scrollTopOffset = 0) {
     const scrollDistance = scrollContainer.scrollTop;
     // we want to scroll element to top of parent-bound
     const scrollPosition = scrollDistance + offsetInParent - scrollTopOffset;
+    if (callback) {
+        const scrollMax = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+        const onScroll = () => {
+            if (scrollContainer.scrollTop === scrollPosition
+                || (scrollPosition > scrollMax && scrollContainer.scrollTop === scrollMax)) {
+                scrollContainer.removeEventListener('scroll', onScroll);
+                callback();
+            }
+        };
+        scrollContainer.addEventListener('scroll', onScroll);
+        onScroll();
+    }
     scrollContainer.scrollTo(0, scrollPosition);
 }
 export default class LocationService {
@@ -109,7 +123,13 @@ export default class LocationService {
         }
         this.timeout = setTimeout(() => {
             const { scrollTopOffset } = this.options;
-            scrollIntoView(targetElement, scrollTopOffset);
+            if (this.options.scrollCallback) {
+                this.notifyWatcher({ type: "location:scroll-start", value: pointer });
+                scrollIntoView(targetElement, scrollTopOffset, () => this.notifyWatcher({ type: "location:scroll-finish", value: pointer }));
+            }
+            else {
+                scrollIntoView(targetElement, scrollTopOffset);
+            }
             this.focusInputElement(pointer, rootElement);
             this.timeout = null;
         }, DELAY);

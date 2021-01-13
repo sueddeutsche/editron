@@ -33,7 +33,17 @@ export type TargetEvent = {
     value: JSONPointer;
 }
 
-export type Event = FocusEvent|BlurEvent|PageEvent|TargetEvent;
+export type ScrollStartEvent = {
+    type: "location:scroll-start";
+    value: JSONPointer;
+}
+
+export type ScrollFinishEvent = {
+    type: "location:scroll-finish";
+    value: JSONPointer;
+}
+
+export type Event = FocusEvent|BlurEvent|PageEvent|TargetEvent|ScrollFinishEvent|ScrollStartEvent;
 
 export type Watcher = (event: Event) => void;
 
@@ -47,6 +57,8 @@ export type Options = {
     scrollTopOffset?: number;
     /** regular expression to identify page-target within a json-pointer */
     pagePattern?: string;
+    /** a scoll callback event is fired when the desired position is scrolled */
+    scrollCallback?: boolean;
 }
 
 export const defaultOptions: Options = {
@@ -60,7 +72,7 @@ function isWindow(dom): dom is Window {
     return dom === window;
 }
 
-function scrollIntoView(targetElement: HTMLElement, scrollTopOffset = 0): void {
+function scrollIntoView(targetElement: HTMLElement, scrollTopOffset = 0, callback?: () => void): void {
     const scrollContainer = getScrollParent(targetElement);
     const bound = targetElement.getBoundingClientRect();
 
@@ -69,6 +81,7 @@ function scrollIntoView(targetElement: HTMLElement, scrollTopOffset = 0): void {
         if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
             window.scrollTo(0, bound.top + scrollTopOffset);
         }
+        if (callback) callback();
         // else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
         return;
     }
@@ -80,6 +93,21 @@ function scrollIntoView(targetElement: HTMLElement, scrollTopOffset = 0): void {
     const scrollDistance = scrollContainer.scrollTop;
     // we want to scroll element to top of parent-bound
     const scrollPosition = scrollDistance + offsetInParent - scrollTopOffset;
+
+    if (callback) {
+        const scrollMax = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+        const onScroll = () => {
+            if (scrollContainer.scrollTop === scrollPosition 
+                || (scrollPosition > scrollMax && scrollContainer.scrollTop === scrollMax)
+            ){
+                scrollContainer.removeEventListener('scroll', onScroll);
+                callback();
+            }
+        };
+        scrollContainer.addEventListener('scroll', onScroll);
+        onScroll();
+    }
+
     scrollContainer.scrollTo(0, scrollPosition);
 }
 
@@ -175,7 +203,18 @@ export default class LocationService {
 
         this.timeout = setTimeout(() => {
             const { scrollTopOffset } = this.options;
-            scrollIntoView(targetElement, scrollTopOffset);
+
+            if (this.options.scrollCallback) {
+                this.notifyWatcher(<ScrollStartEvent>{ type: "location:scroll-start", value: pointer });
+                scrollIntoView(
+                    targetElement, 
+                    scrollTopOffset, 
+                    () => this.notifyWatcher(<ScrollFinishEvent>{ type: "location:scroll-finish", value: pointer })
+                );
+            } else {
+                scrollIntoView(targetElement, scrollTopOffset);
+            }
+
             this.focusInputElement(pointer, rootElement);
             this.timeout = null;
         }, DELAY);

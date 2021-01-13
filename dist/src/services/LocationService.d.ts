@@ -19,7 +19,15 @@ export declare type TargetEvent = {
     type: "location:target";
     value: JSONPointer;
 };
-export declare type Event = FocusEvent | BlurEvent | PageEvent | TargetEvent;
+export declare type ScrollStartEvent = {
+    type: "location:scroll-start";
+    value: JSONPointer;
+};
+export declare type ScrollFinishEvent = {
+    type: "location:scroll-finish";
+    value: JSONPointer;
+};
+export declare type Event = FocusEvent | BlurEvent | PageEvent | TargetEvent | ScrollFinishEvent | ScrollStartEvent;
 export declare type Watcher = (event: Event) => void;
 export declare type Options = {
     /** default root element, where any json-pointers (editron widgets) are
@@ -30,6 +38,8 @@ export declare type Options = {
     scrollTopOffset?: number;
     /** regular expression to identify page-target within a json-pointer */
     pagePattern?: string;
+    /** a scoll callback event is fired when the desired position is scrolled */
+    scrollCallback?: boolean;
 };
 export declare const defaultOptions: Options;
 export default class LocationService {
