@@ -100,11 +100,11 @@
     "@rematch/core": "1.4.0",
     "@technik-sde/foxy": "^1.0.0",
     "core-js": "^3.8.2",
-    "gson-pointer": "4.1.0",
+    "gson-pointer": "4.1.1",
     "json-schema-library": "^4.1.4",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
-    "mithril-material-forms": "^4.7.0",
+    "mithril-material-forms": "^4.8.0",
     "nanoevents": "5.1.8",
     "sortablejs": "1.10.2",
     "with-observable": "^1.2.0"
