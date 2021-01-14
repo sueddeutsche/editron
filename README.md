@@ -130,7 +130,7 @@ validation. Each `Controller`-instance will therefore expose three main services
 the `SchemaService`.
 
 
-#### DataService
+#### Data
 
 The `DataService` manages the input-data. It keeps a history of all updates (undo/redo) and notifies any observers for
 changes on the data or a JSON-Pointer. To get the `DataService`-instance, use
@@ -182,7 +182,7 @@ controller.service("data").undo();
 controller.service("data").redo();
 ```
 
-#### ValidationService
+#### Validation
 
 The `ValidationService` manages the validation process, stores and notifies of any input-errors within the data. To get
 the `ValidationService`-instance, use
@@ -250,7 +250,7 @@ controller.validateAll();
 instead of `controller.service("validation").validate(controller.service("data").get());`.
 
 
-#### SchemaService
+#### Schema
 
 The `SchemaService` is a simple wrapper for the json-schema, helping to retrieve a json-schema of a data JSON-Pointer.
 To get the `SchemaService`-instance, use
