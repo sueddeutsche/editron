@@ -46,7 +46,7 @@ const Component: m.Component<Attrs> = {
                 description: options.description,
                 disabled: options.disabled,
                 theme: options.theme,
-                options: UISchema.enumOptions(schema), 
+                options: UISchema.enumOptions(schema),
                 onchange
             };
 
@@ -110,6 +110,7 @@ const Component: m.Component<Attrs> = {
             return m(CheckboxForm, checkBoxModel, vnode.children);
         }
 
+
         if (schema.type === "string" && schema.format === "html") {
             const textareaModel: TextareaFormAttrs = {
                 id: pointer,
@@ -117,6 +118,7 @@ const Component: m.Component<Attrs> = {
                 description: options.description,
                 placeholder: options.placeholder,
                 disabled: options.disabled,
+                instantUpdate: options.instantUpdate == true,
                 theme: options.theme,
                 errors,
 
@@ -135,6 +137,7 @@ const Component: m.Component<Attrs> = {
                 description: options.description,
                 placeholder: options.placeholder,
                 disabled: options.disabled,
+                instantUpdate: options.instantUpdate == true,
                 theme: options.theme,
                 errors,
 
@@ -154,10 +157,10 @@ const Component: m.Component<Attrs> = {
             description: options.description,
             placeholder: options.placeholder,
             disabled: options.disabled,
+            instantUpdate: options.instantUpdate == true,
             theme: options.theme,
             errors,
 
-            instantUpdate: options.instantUpdate,
 
             type: getInputType(schema),
             value,

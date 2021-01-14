@@ -120,6 +120,10 @@ export default {
                     description: "textarea with some explain text",
                     type: "string",
                     format: "textarea",
+                    maxLength: 100,
+                    "editron:ui": {
+                        instantUpdate: true
+                    }
                 },
                 layout: {
                     title: "Layout",
