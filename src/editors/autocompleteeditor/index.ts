@@ -12,13 +12,20 @@ export type SuggestionInput = {
     /** final exported value */
     value: string;
 }
+
+
 export type Options = EditorOptions & AutocompleteSchemaOptions;
 
+
 type AutocompleteSchemaOptions = {
-    placeholder: string,
+    placeholder?: string;
     autocomplete: {
         valueProp: string,
         suggestions: Array<SuggestionInput> | { proxyMethod: string };
+        /** if true, will also add current value to list of suggestions. Defaults to false */
+        showCurrentInput?: boolean;
+        /** adds an additional description below the current input in suggestions */
+        currentInputDescription?: string;
     }
 }
 
@@ -40,7 +47,7 @@ export default class AutocompleteEditor extends AbstractValueEditor {
     constructor(pointer: JSONPointer, controller: Controller, options: Options) {
         super(pointer, controller, options);
 
-        const { suggestions } = options.autocomplete;
+        const { suggestions, showCurrentInput, currentInputDescription } = options.autocomplete;
 
         if (Array.isArray(suggestions)) {
             this.getSuggestions = suggestions;
@@ -56,6 +63,8 @@ export default class AutocompleteEditor extends AbstractValueEditor {
         this.autoCompleteViewModel = {
             placeholder: options.placeholder,
             disabled: options.disabled,
+            showCurrentInput,
+            currentInputDescription,
             valueProp: options.autocomplete.valueProp,
             suggestions: this.getSuggestions,
             ...this.viewModel

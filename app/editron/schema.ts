@@ -28,6 +28,8 @@ export default {
             format: "autocomplete",
             "editron:ui": {
                 autocomplete: {
+                    showCurrentInput: true,
+                    currentInputDescription: "confirm input",
                     valueProp: "name",
                     suggestions: [
                         { name: 'Afghanistan', code: 'AF' },
@@ -120,6 +122,10 @@ export default {
                     description: "textarea with some explain text",
                     type: "string",
                     format: "textarea",
+                    maxLength: 100,
+                    "editron:ui": {
+                        instantUpdate: true
+                    }
                 },
                 layout: {
                     title: "Layout",
