@@ -4,7 +4,7 @@ import AbstractValueEditor from '../AbstractValueEditor';
 export default class AutocompleteEditor extends AbstractValueEditor {
     constructor(pointer, controller, options) {
         super(pointer, controller, options);
-        const { suggestions } = options.autocomplete;
+        const { suggestions, showCurrentInput, currentInputDescription } = options.autocomplete;
         if (Array.isArray(suggestions)) {
             this.getSuggestions = suggestions;
         }
@@ -19,6 +19,8 @@ export default class AutocompleteEditor extends AbstractValueEditor {
         this.autoCompleteViewModel = {
             placeholder: options.placeholder,
             disabled: options.disabled,
+            showCurrentInput,
+            currentInputDescription,
             valueProp: options.autocomplete.valueProp,
             suggestions: this.getSuggestions,
             ...this.viewModel

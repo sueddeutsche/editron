@@ -11,12 +11,16 @@ export declare type SuggestionInput = {
 };
 export declare type Options = EditorOptions & AutocompleteSchemaOptions;
 declare type AutocompleteSchemaOptions = {
-    placeholder: string;
+    placeholder?: string;
     autocomplete: {
         valueProp: string;
         suggestions: Array<SuggestionInput> | {
             proxyMethod: string;
         };
+        /** if true, will also add current value to list of suggestions. Defaults to false */
+        showCurrentInput?: boolean;
+        /** adds an additional description below the current input in suggestions */
+        currentInputDescription?: string;
     };
 };
 interface GetSuggestions {

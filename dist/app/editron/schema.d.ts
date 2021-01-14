@@ -29,6 +29,8 @@ declare const _default: {
             format: string;
             "editron:ui": {
                 autocomplete: {
+                    showCurrentInput: boolean;
+                    currentInputDescription: string;
                     valueProp: string;
                     suggestions: {
                         name: string;
@@ -109,6 +111,10 @@ declare const _default: {
                     description: string;
                     type: string;
                     format: string;
+                    maxLength: number;
+                    "editron:ui": {
+                        instantUpdate: boolean;
+                    };
                 };
                 layout: {
                     title: string;
