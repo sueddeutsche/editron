@@ -28,6 +28,8 @@ export default {
             format: "autocomplete",
             "editron:ui": {
                 autocomplete: {
+                    showCurrentInput: true,
+                    currentInputDescription: "confirm input",
                     valueProp: "name",
                     suggestions: [
                         { name: 'Afghanistan', code: 'AF' },
