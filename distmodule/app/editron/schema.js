@@ -25,7 +25,9 @@ export default {
             title: "Example for an autocomplete",
             type: "string",
             format: "autocomplete",
+            minLength: 1,
             "editron:ui": {
+                instantUpdate: true,
                 autocomplete: {
                     showCurrentInput: true,
                     currentInputDescription: "confirm input",
