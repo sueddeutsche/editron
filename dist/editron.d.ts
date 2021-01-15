@@ -17,12 +17,12 @@
  * @property utils             - utility functions, to generate ids, translate strings and resolve editors
  * @property plugin            - basic plugin implementation for editor registration
  */
-import Controller from "./src/Controller";
+import Controller, { Options } from "./src/Controller";
 export default Controller;
-export { Controller };
+export { Controller, Options };
 export * as components from "./src/components";
 export * as utils from "./src/utils";
-export type { Editor, EditorPlugin, Options } from "./src/editors/Editor";
+export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/editors/Editor";
 export type { EditorUpdateEvent } from "./src/editors/Editor";
 export type { ValidationError, EditronConfigAttrs, FormatValidator, KeywordValidator, JSONSchema } from "./src/types";
 export type { Direction } from "./src/utils/selection";
