@@ -27,7 +27,9 @@ declare const _default: {
             title: string;
             type: string;
             format: string;
+            minLength: number;
             "editron:ui": {
+                instantUpdate: boolean;
                 autocomplete: {
                     showCurrentInput: boolean;
                     currentInputDescription: string;

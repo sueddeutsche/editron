@@ -16,14 +16,14 @@ export default class AutocompleteEditor extends AbstractValueEditor {
                 return [];
             });
         }
-        this.autoCompleteViewModel = {
+        this.viewModel = {
+            ...this.viewModel,
             placeholder: options.placeholder,
             disabled: options.disabled,
             showCurrentInput,
             currentInputDescription,
-            valueProp: options.autocomplete.valueProp,
             suggestions: this.getSuggestions,
-            ...this.viewModel
+            valueProp: options.autocomplete.valueProp
         };
         this.render();
     }
@@ -32,20 +32,6 @@ export default class AutocompleteEditor extends AbstractValueEditor {
         return schema.type === "string" && schema.format === "autocomplete";
     }
     render() {
-        m.render(this.dom, m(QueryListForm, this.autoCompleteViewModel));
-    }
-    update(event) {
-        switch (event.type) {
-            case "data:update":
-                this.autoCompleteViewModel.value = this.controller.service("data").get(this.getPointer());
-                this.render();
-                break;
-        }
-    }
-    destroy() {
-        if (this.autoCompleteViewModel) {
-            m.render(this.dom, m.trust(""));
-            this.autoCompleteViewModel = null;
-        }
+        m.render(this.dom, m(QueryListForm, this.viewModel));
     }
 }
