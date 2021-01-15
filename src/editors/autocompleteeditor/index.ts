@@ -2,8 +2,8 @@ import Controller from "../../Controller";
 import { JSONPointer } from "../../types";
 import { QueryListForm, QueryListFormAttrs } from 'mithril-material-forms';
 import m from "mithril";
-import { EditorUpdateEvent, Options as EditorOptions } from "../Editor";
-import AbstractValueEditor from '../AbstractValueEditor';
+import { Options as EditorOptions } from "../Editor";
+import AbstractValueEditor, { ViewModel } from '../AbstractValueEditor';
 
 
 export type SuggestionInput = {
@@ -36,7 +36,7 @@ interface GetSuggestions {
 
 export default class AutocompleteEditor extends AbstractValueEditor {
     getSuggestions: Array<SuggestionInput> | GetSuggestions;
-    autoCompleteViewModel: QueryListFormAttrs;
+    viewModel: QueryListFormAttrs & ViewModel;
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
         const schema = controller.service("schema").get(pointer);
@@ -60,38 +60,20 @@ export default class AutocompleteEditor extends AbstractValueEditor {
                 });
         }
 
-        this.autoCompleteViewModel = {
+        this.viewModel = {
+            ...this.viewModel,
             placeholder: options.placeholder,
             disabled: options.disabled,
             showCurrentInput,
             currentInputDescription,
-            valueProp: options.autocomplete.valueProp,
             suggestions: this.getSuggestions,
-            ...this.viewModel
+            valueProp: options.autocomplete.valueProp
         };
 
         this.render();
     }
 
     render() {
-        m.render(this.dom, m(QueryListForm, this.autoCompleteViewModel));
-    }
-
-
-    update(event: EditorUpdateEvent) {
-        switch (event.type) {
-            case "data:update":
-                this.autoCompleteViewModel.value = this.controller.service("data").get(this.getPointer());
-                this.render();
-                break;
-
-        }
-    }
-
-    destroy() {
-        if (this.autoCompleteViewModel) {
-            m.render(this.dom, m.trust(""));
-            this.autoCompleteViewModel = null;
-        }
+        m.render(this.dom, m(QueryListForm, this.viewModel));
     }
 }
