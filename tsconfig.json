@@ -6,7 +6,7 @@
         "downlevelIteration": true,
         "module": "ES2015",
         "moduleResolution": "node",
-        "outDir": "./dist/",
+        "outDir": "./dist",
         "resolveJsonModule": true,
         "target": "ES2019",
         "lib": [

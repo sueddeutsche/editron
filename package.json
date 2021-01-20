@@ -4,7 +4,7 @@
   "description": "Editron - json-editor",
   "main": "dist/editron.js",
   "types": "dist/editron.d.ts",
-  "module": "distmodule/editron.js",
+  "module": "dist/module/editron.js",
   "homepage": "https://github.com/sueddeutsche/editron",
   "bugs": "https://github.com/sueddeutsche/editron/issues",
   "browserslist": [
@@ -19,7 +19,7 @@
     "build": "rm -rf build; webpack && webpack --config webpack.build.js",
     "dist": "rm -rf dist; yarn dist:es5 && yarn dist:module",
     "dist:es5": "NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
-    "dist:module": "tsc --outDir distmodule",
+    "dist:module": "tsc --outDir dist/module",
     "docs": "typedoc editron.ts --out docs/api",
     "lint": "eslint src",
     "prepublishOnly": "npm run release",
