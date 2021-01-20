@@ -1,0 +1,1027 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>editron</title>
+	<meta name="description" content="Documentation for editron">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">editron</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>Project editron</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p>Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for user input and live validation. The editor can be used as a component in your web application.</p>
+				<p><img src="./docs/images/logo.png" alt="editron"></p>
+				<p align="center">
+					demo (coming soon) | <a href="#user-content-getting-started">getting started</a> | <a href="#user-content-custom-editor-widget">custom editor-widget</a> | API (coming soon)
+				</p>
+				<hr>
+				<!-- TOC start -->
+				<!-- TOC end -->
+				<hr>
+				<a href="#about" id="about" style="color: inherit; text-decoration: none;">
+					<h2>about</h2>
+				</a>
+				<p><strong>what does editron do?</strong></p>
+				<ul>
+					<li>editron is a JSON-Editor, which generates an user interface based on a JSON-Schema</li>
+					<li>editron will display the JSON-Schema&#39;s title, detailed descriptions, structure and live validation results in an HTML form</li>
+					<li>furthermore, it can display data in a custom and appropriate way to improve usability</li>
+				</ul>
+				<p><strong>why use a schema-based editor?</strong></p>
+				<ul>
+					<li>a JSON-Schema is quick to write, readable and easy to extend</li>
+					<li>because it represents all types of JSON data structures, it can be the single interface for all forms</li>
+					<li>being JSON and thus serializable it can be distributed over http, stored in a database and read by any programming language</li>
+					<li>JSON-Schema is a standard and has a range of <a href="https://json-schema.org/implementations.html#validators">validators for many common languages</a></li>
+				</ul>
+				<p><strong>why use editron</strong></p>
+				<ul>
+					<li>customizability<ul>
+							<li>via json-schema</li>
+							<li>selection of what to render and where (specific properties, trees or lists within the data)</li>
+						</ul>
+					</li>
+					<li>extensibility<ul>
+							<li>custom editor-widgets, framework agnostic</li>
+							<li>custom validation methods (sync and async)</li>
+						</ul>
+					</li>
+					<li>design<ul>
+							<li>performant</li>
+							<li>follows simple concepts in interpreting the JSON-Schema to build an HTML form</li>
+						</ul>
+					</li>
+					<li>features<ul>
+							<li>supports collaborative editing,</li>
+							<li>live inline validation</li>
+							<li>complete json-schema draft04 spec</li>
+							<li>support for multiple languages</li>
+							<li>tested and used in production</li>
+						</ul>
+					</li>
+				</ul>
+				<p><strong>limitations</strong></p>
+				<ul>
+					<li>requires programming skills for a custom editor-widget</li>
+					<li>currently no theming options: for layout adjustments either custom css or custom editor-widgets are required</li>
+					<li>not recommended for text-heavy applications like in docs or word</li>
+					<li>if you only need a login-form, this project might not be worth the <em>Kb</em></li>
+					<li>complex data-types result in complex user-interfaces. could be solved through specific editor-widgets</li>
+				</ul>
+				<!--
+### demos
+-  @todo setup github.io page
+-  @todo website demonstrating custom-editors, live schema modification and selection of schema examples
+-  example with default types like select
+-->
+				<hr>
+				<a href="#key-concepts" id="key-concepts" style="color: inherit; text-decoration: none;">
+					<h2>key concepts</h2>
+				</a>
+				<p>There are three basic concepts that you should be familiar, when working with a JSON-Schema based editor:</p>
+				<ol>
+					<li><strong><a href="https://json-schema.org/">JSON-Schema</a></strong> is a <a href="https://json-schema.org/understanding-json-schema/about.html">declarative format for describing the structure of data</a> and itself is stored as a JSON-file. A JSON-Schema may be used to describe the data you need and also describe the user-interface to create this data.</li>
+					<li><strong><a href="https://json-schema.org/latest/json-schema-validation.html">JSON-Schema validation</a></strong> extends the JSON-Schema with validation rules for the input values. These rules are used to further evaluate the corresponding data and respond with errors, if the given rules are not met.</li>
+					<li><strong><a href="https://tools.ietf.org/html/rfc6901">JSON-Pointer</a></strong> defines a string syntax for identifying a specific value within a JSON document and is <a href="https://json-schema.org/understanding-json-schema/structuring.html">supported by JSON-Schema</a>. Given a JSON document, it behaves similar to a <a href="https://lodash.com/docs/4.17.5#get">lodash path</a> (<code>a[0].b.c</code>), which follows JS-syntax, but instead uses <code>/</code> separators, e.g. (<code>a/0/b/c</code>). In the end, you describe a path into the JSON data to a specific point.</li>
+				</ol>
+				<hr>
+				<a href="#getting-started" id="getting-started" style="color: inherit; text-decoration: none;">
+					<h2>Getting started</h2>
+				</a>
+				<blockquote>
+					<p>You can copy the following example from <a href="./examples/getting-started.html">./examples/getting-started.html</a></p>
+				</blockquote>
+				<p><strong>1. Add the required dependencies to your application</strong></p>
+				<pre><code class="language-html"><span style="color: #008000">&lt;!-- editron required fonts and styles --&gt;</span>
+<span style="color: #800000">&lt;link</span><span style="color: #000000"> </span><span style="color: #FF0000">href</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;https://fonts.googleapis.com/icon?family=Material+Icons&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">rel</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;stylesheet&quot;</span><span style="color: #800000">&gt;</span>
+<span style="color: #800000">&lt;link</span><span style="color: #000000"> </span><span style="color: #FF0000">href</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron.css&quot;</span><span style="color: #000000"> </span><span style="color: #FF0000">rel</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;stylesheet&quot;</span><span style="color: #000000"> </span><span style="color: #800000">/&gt;</span>
+<span style="color: #008000">&lt;!-- editron required dependency --&gt;</span>
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://cdnjs.cloudflare.com/ajax/libs/mithril/1.1.3/mithril.min.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+<span style="color: #008000">&lt;!-- editron library and main controller, exposed to window.editron --&gt;</span>
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron-modules.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://cdn.jsdelivr.net/npm/editron@6.0.0/dist/editron.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+</code></pre>
+				<p><strong>Note</strong> ensure that <code>editron-modules.js</code> is loaded before <code>editron.js</code> and any other editors.</p>
+				<p><strong>2. Create or load a JSON-Schema</strong></p>
+				<pre><code class="language-html"><span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">type</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;text/javascript&quot;</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000FF">    </span><span style="color: #001080">window</span><span style="color: #000000FF">.</span><span style="color: #001080">jsonSchema</span><span style="color: #000000FF"> </span><span style="color: #000000">=</span><span style="color: #000000FF"> {</span>
+<span style="color: #000000FF">        </span><span style="color: #001080">type:</span><span style="color: #000000FF"> </span><span style="color: #A31515">&quot;object&quot;</span><span style="color: #000000FF">,</span>
+<span style="color: #000000FF">        </span><span style="color: #001080">required:</span><span style="color: #000000FF"> [</span><span style="color: #A31515">&quot;title&quot;</span><span style="color: #000000FF">],</span>
+<span style="color: #000000FF">        </span><span style="color: #001080">properties:</span><span style="color: #000000FF"> {</span>
+<span style="color: #000000FF">            </span><span style="color: #001080">title:</span><span style="color: #000000FF"> {</span>
+<span style="color: #000000FF">                </span><span style="color: #001080">title:</span><span style="color: #000000FF"> </span><span style="color: #A31515">&quot;simple-string&quot;</span><span style="color: #000000FF">, </span><span style="color: #008000">// any title property will be shown as label</span>
+<span style="color: #000000FF">                </span><span style="color: #001080">type:</span><span style="color: #000000FF"> </span><span style="color: #A31515">&quot;string&quot;</span><span style="color: #000000FF">,</span>
+<span style="color: #000000FF">                </span><span style="color: #001080">minLength:</span><span style="color: #000000FF"> </span><span style="color: #098658">1</span>
+<span style="color: #000000FF">            }</span>
+<span style="color: #000000FF">        }</span>
+<span style="color: #000000FF">    };</span>
+<span style="color: #800000">&lt;/script&gt;</span>
+</code></pre>
+				<p><strong>3. Initialize the Controller and create an editor</strong></p>
+				<pre><code class="language-html"><span style="color: #800000">&lt;div</span><span style="color: #000000"> </span><span style="color: #FF0000">class</span><span style="color: #000000">=</span><span style="color: #0000FF">&quot;editor&quot;</span><span style="color: #800000">&gt;&lt;/div&gt;</span>
+
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">type</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;text/javascript&quot;</span><span style="color: #800000">&gt;</span>
+<span style="color: #000000FF">    </span><span style="color: #0000FF">const</span><span style="color: #000000FF"> </span><span style="color: #0070C1">Controller</span><span style="color: #000000FF"> </span><span style="color: #000000">=</span><span style="color: #000000FF"> </span><span style="color: #001080">window</span><span style="color: #000000FF">.</span><span style="color: #001080">editron</span><span style="color: #000000FF">;</span>
+<span style="color: #000000FF">    </span><span style="color: #0000FF">const</span><span style="color: #000000FF"> </span><span style="color: #0070C1">controller</span><span style="color: #000000FF"> </span><span style="color: #000000">=</span><span style="color: #000000FF"> </span><span style="color: #0000FF">new</span><span style="color: #000000FF"> </span><span style="color: #267F99">Controller</span><span style="color: #000000FF">(</span><span style="color: #001080">window</span><span style="color: #000000FF">.</span><span style="color: #001080">jsonSchema</span><span style="color: #000000FF">);</span>
+<span style="color: #000000FF">    </span><span style="color: #001080">controller</span><span style="color: #000000FF">.</span><span style="color: #795E26">createEditor</span><span style="color: #000000FF">(</span><span style="color: #A31515">&quot;#&quot;</span><span style="color: #000000FF">, </span><span style="color: #001080">document</span><span style="color: #000000FF">.</span><span style="color: #795E26">querySelector</span><span style="color: #000000FF">(</span><span style="color: #A31515">&quot;.editor&quot;</span><span style="color: #000000FF">));</span>
+
+<span style="color: #000000FF">    </span><span style="color: #008000">// get the generated data with</span>
+<span style="color: #000000FF">    </span><span style="color: #0000FF">const</span><span style="color: #000000FF"> </span><span style="color: #0070C1">data</span><span style="color: #000000FF"> </span><span style="color: #000000">=</span><span style="color: #000000FF"> </span><span style="color: #001080">controller</span><span style="color: #000000FF">.</span><span style="color: #795E26">getData</span><span style="color: #000000FF">(); </span><span style="color: #008000">// { title: &quot;&quot; }</span>
+<span style="color: #000000FF">    </span><span style="color: #008000">// change data</span>
+<span style="color: #000000FF">    </span><span style="color: #001080">controller</span><span style="color: #000000FF">.</span><span style="color: #795E26">setData</span><span style="color: #000000FF">({ </span><span style="color: #001080">title:</span><span style="color: #000000FF"> </span><span style="color: #A31515">&quot;getting started&quot;</span><span style="color: #000000FF"> });</span>
+<span style="color: #800000">&lt;/script&gt;</span>
+</code></pre>
+				<a href="#working-with-the-controller" id="working-with-the-controller" style="color: inherit; text-decoration: none;">
+					<h3>Working with the Controller</h3>
+				</a>
+				<p>The <code>Controller</code> manages editors and editor-instances. Most of the time, you want to work with the actual data and
+					validation. Each <code>Controller</code>-instance will therefore expose three main services: <code>DataService</code>, <code>ValidationService</code> and
+				the <code>SchemaService</code>.</p>
+				<a href="#data" id="data" style="color: inherit; text-decoration: none;">
+					<h4>Data</h4>
+				</a>
+				<p>The <code>DataService</code> manages the input-data. It keeps a history of all updates (undo/redo) and notifies any observers for
+				changes on the data or a JSON-Pointer. To get the <code>DataService</code>-instance, use</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">dataService</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+				<p><strong>Access data</strong></p>
+				<pre><code class="language-javascript"><span style="color: #008000">// get data matching json-schema</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">data</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">get</span><span style="color: #000000">();</span>
+<span style="color: #008000">// get data from specific JSON-Pointer</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">title</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#/title&quot;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// set data</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">set</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#&quot;</span><span style="color: #000000">, { </span><span style="color: #001080">title:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;new title&quot;</span><span style="color: #000000"> });</span>
+<span style="color: #008000">// or change a specific property using JSON-Pointer</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">set</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#/title&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;new title&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+				<p><strong>Events</strong></p>
+				<p>You can listen to any change events or specific properties within the data</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// listen to any change</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;beforeUpdate&quot;</span><span style="color: #000000">, (</span><span style="color: #001080">pointer</span><span style="color: #000000">, </span><span style="color: #001080">action</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {});</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;afterUpdate&quot;</span><span style="color: #000000">, (</span><span style="color: #001080">pointer</span><span style="color: #000000">, </span><span style="color: #001080">action</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {});</span>
+
+<span style="color: #008000">// in order to watch specific properties, use the observable-interface</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">observe</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#/title&quot;</span><span style="color: #000000">, </span><span style="color: #001080">event</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">pointer</span><span style="color: #000000">, </span><span style="color: #0070C1">parentPointer</span><span style="color: #000000">, </span><span style="color: #0070C1">patch</span><span style="color: #000000"> } = </span><span style="color: #001080">event</span>
+<span style="color: #000000">});</span>
+<span style="color: #008000">// you can also watch changes of any childnodes by setting the bubble-option to `true`</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">observe</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#/title&quot;</span><span style="color: #000000">, </span><span style="color: #001080">event</span><span style="color: #000000"> </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {}, </span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+</code></pre>
+				<p><strong>Undo/Redo</strong></p>
+				<p>The <code>DataService</code>-instance also exposes undo/redo states</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// get steps</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">undoCount</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">undoCount</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">redoCount</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">redoCount</span><span style="color: #000000">();</span>
+<span style="color: #008000">// and performs undo actions</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">undo</span><span style="color: #000000">();</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;data&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">redo</span><span style="color: #000000">();</span>
+</code></pre>
+				<a href="#validation" id="validation" style="color: inherit; text-decoration: none;">
+					<h4>Validation</h4>
+				</a>
+				<p>The <code>ValidationService</code> manages the validation process, stores and notifies of any input-errors within the data. To get
+				the <code>ValidationService</code>-instance, use</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validator</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+				<p><strong>Access Errors</strong></p>
+				<p>Anytime you can get a list of current errors and/or warnings. But you should pay attention that, while validating any
+				aysnchronous validation may not be resolved at this time. See the next point <em>Events</em> for handling this situation.</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// most of the time, you will be interested in errors</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">errors</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">getErrors</span><span style="color: #000000">();</span>
+<span style="color: #008000">// but warnings are also supported `{ type: &#039;warning&#039; }`</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">warnings</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">getWarnings</span><span style="color: #000000">();</span>
+<span style="color: #008000">// or get both</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">problems</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">getErrorsAndWarnings</span><span style="color: #000000">();</span>
+</code></pre>
+				<p>All methods return an array of error-objects, like</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// example errorObject</span>
+<span style="color: #000000">code: </span><span style="color: #A31515">&quot;min-length-error&quot;</span>
+<span style="color: #000000">data: { minLength: </span><span style="color: #098658">1</span><span style="color: #000000">, length: </span><span style="color: #098658">0</span><span style="color: #000000">, pointer: </span><span style="color: #A31515">&quot;#/title&quot;</span><span style="color: #000000"> }</span>
+<span style="color: #000000">message: </span><span style="color: #A31515">&quot;Value `#/title` should have a minimum length of `1`, but got `0`.&quot;</span>
+<span style="color: #000000">name: </span><span style="color: #A31515">&quot;MinLengthError&quot;</span>
+<span style="color: #000000">type: </span><span style="color: #A31515">&quot;error&quot;</span>
+</code></pre>
+				<p><strong>Events</strong></p>
+				<p>You can watch any errors or errors on specific data JSON-Pointer. Following the interface for the <code>DataService</code></p>
+				<pre><code class="language-javascript"><span style="color: #008000">// watch any errors using the emitter</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;onError&quot;</span><span style="color: #000000">, (</span><span style="color: #001080">errorObject</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {});</span>
+<span style="color: #008000">// get notified on a new validation-run (clears all current errors)</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;beforeValidation&quot;</span><span style="color: #000000">, () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {});</span>
+<span style="color: #008000">// get notified when a validation has finished</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">on</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;afterValidation&quot;</span><span style="color: #000000">, (</span><span style="color: #001080">listOfErrors</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {});</span>
+
+<span style="color: #008000">// to watch specific properties for occurring errors, use the observable-interface</span>
+<span style="color: #001080">contoller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">observe</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#/title&quot;</span><span style="color: #000000">, (</span><span style="color: #001080">errorObject</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {});</span>
+<span style="color: #008000">// or watch all errors, occuring in childnodes, using the bubble-option set to `true`</span>
+<span style="color: #001080">contoller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;validation&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">observe</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#&quot;</span><span style="color: #000000">, (</span><span style="color: #001080">errorObject</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {}, </span><span style="color: #0000FF">true</span><span style="color: #000000">);</span>
+</code></pre>
+				<p><strong>Note</strong> that <em>onError</em> emits each error individually. To get the current list of errors,
+					gather all error-events and reset them at the <em>beforeValidation</em>-event. Any <code>observe</code>-events collect errors and will
+				notify each update. e.g. For two errors you receive three events <code>[]</code>, <code>[{ error }]</code>, <code>[{ error }, { error }]</code>.</p>
+				<p><strong>Validating data</strong></p>
+				<p>Data validation is triggered on each change by the <code>Controller</code>. In order to manually start validation, you can use the
+				convenience method</p>
+				<pre><code class="language-javascript"><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">validateAll</span><span style="color: #000000">();</span>
+</code></pre>
+				<p>instead of <code>controller.service(&quot;validation&quot;).validate(controller.service(&quot;data&quot;).get());</code>.</p>
+				<a href="#schema" id="schema" style="color: inherit; text-decoration: none;">
+					<h4>Schema</h4>
+				</a>
+				<p>The <code>SchemaService</code> is a simple wrapper for the json-schema, helping to retrieve a json-schema of a data JSON-Pointer.
+				To get the <code>SchemaService</code>-instance, use</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">schema</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;schema&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>In order to retrieve a json-schema, e.g. the property <code>title</code> from the <em>getting-started-example</em></p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">titleSchema</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;schema&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;#/title&quot;</span><span style="color: #000000">);</span>
+<span style="color: #008000">// { minLength: 1, title: &quot;simple-string&quot;, type: &quot;string&quot;, editron:ui: {...} }</span>
+</code></pre>
+				<p>The <code>SchemaService</code> exposes some helper-methods</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// generate data, confirming to the given json-schema</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">templateData</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;schema&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">getTemplate</span><span style="color: #000000">(</span><span style="color: #001080">jsonSchema</span><span style="color: #000000">);</span>
+<span style="color: #008000">// add any missing data, according to the json-schema</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">validInputData</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;schema&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">addDefaultData</span><span style="color: #000000">(</span><span style="color: #001080">inputData</span><span style="color: #000000">, </span><span style="color: #001080">jsonSchema</span><span style="color: #000000">);</span>
+</code></pre>
+				<a href="#configuration" id="configuration" style="color: inherit; text-decoration: none;">
+					<h3>Configuration</h3>
+				</a>
+				<a href="#editors" id="editors" style="color: inherit; text-decoration: none;">
+					<h4>editors</h4>
+				</a>
+				<p><strong>Customize base editors from json-schema</strong></p>
+				<p>From a given JSON-Schema, its properties <code>title</code> and <code>description</code> are used for labels and inline-information of the
+					input-element or group. For all further editron and editor-widget-settings an object <code>&quot;editron:ui&quot;</code> is supported, where
+				all editor and ui configurations may be placed. By the base editor-widgets, the following options are supported</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">property</th>
+							<th align="left">type</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">title</td>
+							<td align="left">String</td>
+							<td align="left">set or override the title</td>
+						</tr>
+						<tr>
+							<td align="left">description</td>
+							<td align="left">String</td>
+							<td align="left">set or override the description</td>
+						</tr>
+						<tr>
+							<td align="left">attrs</td>
+							<td align="left">Object</td>
+							<td align="left">attributes object, passed to the editors html-element</td>
+						</tr>
+						<tr>
+							<td align="left">icon</td>
+							<td align="left">String</td>
+							<td align="left">if supported, define the type of <a href="https://material.io/tools/icons/?style=baseline">material icon</a></td>
+						</tr>
+						<tr>
+							<td align="left">hidden</td>
+							<td align="left">Boolean</td>
+							<td align="left">hide the value from the user-interface</td>
+						</tr>
+						<tr>
+							<td align="left">enum</td>
+							<td align="left">String[]</td>
+							<td align="left">ui titles for an enum-selection</td>
+						</tr>
+						<tr>
+							<td align="left">placeholder</td>
+							<td align="left">String</td>
+							<td align="left">placeholder, if editor uses an input-element</td>
+						</tr>
+				</tbody></table>
+				<p>Example:</p>
+				<pre><code class="language-javascript"><span style="color: #000000">{</span>
+<span style="color: #000000">    type: </span><span style="color: #A31515">&quot;object&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">    </span><span style="color: #A31515">&quot;editron:ui&quot;</span><span style="color: #000000">: {</span>
+<span style="color: #000000">        </span><span style="color: #001080">attrs:</span><span style="color: #000000"> { </span><span style="color: #001080">class:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;mmf-card&quot;</span><span style="color: #000000"> }, </span><span style="color: #008000">// additional html attributes for the object-editor</span>
+<span style="color: #000000">        </span><span style="color: #001080">title:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;SEO-Settings&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">description:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">icon:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;panorama_horizontal&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">        </span><span style="color: #001080">hidden:</span><span style="color: #000000"> </span><span style="color: #0000FF">false</span><span style="color: #000000">, </span><span style="color: #008000">// hide this value</span>
+<span style="color: #000000">        </span><span style="color: #A31515">&quot;object:compact&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #0000FF">true</span><span style="color: #000000"> </span><span style="color: #008000">// (fake) custom setting for the *object*-editor`</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p>All (custom) editors may support additional configuration settings, which should be checked on their corresponding README.</p>
+				<p>Array-Editor options:</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">property</th>
+							<th align="left">type</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">&quot;array:index&quot;</td>
+							<td align="left">Boolean=false</td>
+							<td align="left">show list indices</td>
+						</tr>
+						<tr>
+							<td align="left">controls</td>
+							<td align="left">Object</td>
+							<td align="left">controls options, for list item manipulation</td>
+						</tr>
+						<tr>
+							<td align="left">controls.add</td>
+							<td align="left">Boolean=false</td>
+							<td align="left">additional add item button</td>
+						</tr>
+						<tr>
+							<td align="left">controls.remove</td>
+							<td align="left">Boolean=true</td>
+							<td align="left">remove button on each item</td>
+						</tr>
+						<tr>
+							<td align="left">controls.move</td>
+							<td align="left">Boolean=true</td>
+							<td align="left">up and down move cursors</td>
+						</tr>
+						<tr>
+							<td align="left">controls.insert</td>
+							<td align="left">Boolean=true</td>
+							<td align="left">insert button between elements</td>
+						</tr>
+				</tbody></table>
+				<p>Object-Editor options:</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">property</th>
+							<th align="left">type</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">collapsed</td>
+							<td align="left">Boolean?</td>
+							<td align="left">If defined, adds a collapsible-icon. If true, will hide properties per default. Besides a <code>hidden</code> class, will add a class <code>collapsible</code> to the object-container</td>
+						</tr>
+						<tr>
+							<td align="left">addDelete</td>
+							<td align="left">Boolean?</td>
+							<td align="left">Adds an delete option for this object (added automatically on array-items)</td>
+						</tr>
+				</tbody></table>
+				<p><strong>Add additional editors</strong></p>
+				<p>To add new or custom editors globally, use the plugin interface</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">plugin</span><span style="color: #000000">, </span><span style="color: #0070C1">Controller</span><span style="color: #000000"> } = </span><span style="color: #001080">editron</span><span style="color: #000000">;</span>
+<span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">editor</span><span style="color: #000000">(</span><span style="color: #001080">MyCustomEditor</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">controller</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Controller</span><span style="color: #000000">(</span><span style="color: #001080">jsonSchema</span><span style="color: #000000">, </span><span style="color: #001080">data</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>Adding editors to a single <code>Controller</code>-instance, use the options or add them directly. Using options, you add additional editors to the default editor list (prepended)</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">editors</span><span style="color: #000000">, </span><span style="color: #0070C1">plugin</span><span style="color: #000000">, </span><span style="color: #0070C1">Controller</span><span style="color: #000000"> } = </span><span style="color: #001080">editron</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">options</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">    </span><span style="color: #001080">editors:</span><span style="color: #000000"> [</span>
+<span style="color: #000000">        </span><span style="color: #001080">MyCustomEditor</span>
+<span style="color: #000000">    ]</span>
+<span style="color: #000000">};</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">controller</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Controller</span><span style="color: #000000">(</span><span style="color: #001080">jsonSchema</span><span style="color: #000000">, </span><span style="color: #001080">data</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>Or add your editor directly to the instance by</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">controller</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Controller</span><span style="color: #000000">(</span><span style="color: #001080">jsonSchema</span><span style="color: #000000">, </span><span style="color: #001080">data</span><span style="color: #000000">);</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">registerEditor</span><span style="color: #000000">(</span><span style="color: #001080">MyCustomEditor</span><span style="color: #000000">);</span>
+</code></pre>
+				<p><strong>Note</strong> The order of the editors-list is relevant. Any json-schema will be resolved in order, starting at the first
+					index, a matching editor-Constructor is searched. The first editor to return <em>true</em> (for <em>Class.editorOf</em>) will be
+					used to represent the given json-schema and instantiated. Thus more specific editors should be at the start of list,
+				where more generale editors, like <em>object</em> or <em>default values</em> should come last.</p>
+				<p>To completely reset the available list of editors, you can modify the <em>editors</em> property directly</p>
+				<pre><code class="language-javascript"><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #001080">editors</span><span style="color: #000000">.</span><span style="color: #001080">length</span><span style="color: #000000"> = </span><span style="color: #098658">0</span><span style="color: #000000">;</span>
+</code></pre>
+				<a href="#validators" id="validators" style="color: inherit; text-decoration: none;">
+					<h4>validators</h4>
+				</a>
+				<p>Validators are used to validate input-data for a JSON-Schema. e.g. a schema <code>{ type: &quot;string&quot;, minLength: 1 }</code>, tests
+					if the passed input is a string, another validator checks if the given <code>minLength</code>-rule passes. You can validate everything,
+				even remote ressources, which are validated asynchronous.</p>
+				<p>There can be two types of validators</p>
+				<ol>
+					<li>a special format validator, which is executed on a schema, like <code>{ type: &quot;string&quot;, format: &quot;my-custom-format&quot; }</code> or</li>
+					<li>any custom attribute, like <code>{ type: number, &quot;my-custom-validator&quot;: 42 }</code></li>
+				</ol>
+				<p>A validator is a function with the following signature</p>
+				<pre><code class="language-javascript"><span style="color: #008000">/**</span>
+<span style="color: #008000"> * </span><span style="color: #0000FF">@param</span><span style="color: #008000">  </span><span style="color: #267F99">{JSON-Schema-Core}</span><span style="color: #008000"> </span><span style="color: #001080">core</span>
+<span style="color: #008000"> * </span><span style="color: #0000FF">@param</span><span style="color: #008000">  </span><span style="color: #267F99">{Object}</span><span style="color: #008000"> </span><span style="color: #001080">schema</span><span style="color: #008000">  - the json schema triggering the validator</span>
+<span style="color: #008000"> * </span><span style="color: #0000FF">@param</span><span style="color: #008000">  </span><span style="color: #267F99">{Any}</span><span style="color: #008000"> </span><span style="color: #001080">value</span><span style="color: #008000">      - the given input data to validate</span>
+<span style="color: #008000"> * </span><span style="color: #0000FF">@param</span><span style="color: #008000">  </span><span style="color: #267F99">{String}</span><span style="color: #008000"> </span><span style="color: #001080">pointer</span><span style="color: #008000"> - JSON-Pointer of the given _value_</span>
+<span style="color: #008000"> * </span><span style="color: #0000FF">@return</span><span style="color: #008000"> </span><span style="color: #267F99">{undefined|Object|Promise}</span><span style="color: #008000"> undefined or an error-object</span>
+<span style="color: #008000"> *          `{type: &quot;error&quot;, message: &quot;err-msg&quot;, data: { pointer }}`</span>
+<span style="color: #008000"> */</span>
+<span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">validate</span><span style="color: #000000">(</span><span style="color: #001080">core</span><span style="color: #000000">, </span><span style="color: #001080">schema</span><span style="color: #000000">, </span><span style="color: #001080">value</span><span style="color: #000000">, </span><span style="color: #001080">pointer</span><span style="color: #000000">)</span>
+</code></pre>
+				<!-- @todo global vs instance registration -->
+				<p>You can reference the json-schema-library
+				<a href="https://github.com/sagold/json-schema-library/blob/master/lib/validation/format.js">format-validators</a> for more examples</p>
+				<p>Adding a <em>format</em>-validator</p>
+				<pre><code class="language-javascript"><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">addFormatValidator</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;my-custom-format&quot;</span><span style="color: #000000">, </span><span style="color: #001080">validator</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>Adding a <em>keyword</em>-validator</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// @param {datatype} JSON-Schema datatype, to register this attribute. Here: &quot;string&quot;</span>
+<span style="color: #008000">// @param {keyword} custom attribute to register validator. Here: &quot;my-custom-keyword&quot;</span>
+<span style="color: #008000">// @param {Function} validation function</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">addKeywordValidator</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;string&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;my-custom-keyword&quot;</span><span style="color: #000000">, </span><span style="color: #001080">validator</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>Or use the plugin interface</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">plugin</span><span style="color: #000000"> } = </span><span style="color: #001080">editron</span><span style="color: #000000">;</span>
+<span style="color: #008000">// format-validator</span>
+<span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">validator</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;format-value&quot;</span><span style="color: #000000">, </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">formatValidator</span><span style="color: #000000">() {});</span>
+<span style="color: #008000">// keyword validator</span>
+<span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">keywordValidator</span><span style="color: #000000">(</span><span style="color: #001080">datatype</span><span style="color: #000000">, </span><span style="color: #001080">propertyName</span><span style="color: #000000">, </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">propertyValidator</span><span style="color: #000000">() {});</span>
+</code></pre>
+				<p>For further details, see the <a href="https://github.com/sagold/json-schema-library#add-custom-validators">json-schema-library</a></p>
+				<a href="#language" id="language" style="color: inherit; text-decoration: none;">
+					<h4>language</h4>
+				</a>
+				<p>You can change all interface labels, messages and errors. For this, all strings are stored in a simple object, where
+				each property resolves to the given template string.</p>
+				<pre><code class="language-javascript">
+<span style="color: #008000">// either pass translations via options in constructor</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">Controller</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;editron&quot;</span><span style="color: #000000">;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">editron</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #267F99">Controller</span><span style="color: #000000">(</span><span style="color: #001080">schema</span><span style="color: #000000">, </span><span style="color: #001080">data</span><span style="color: #000000">, {</span>
+<span style="color: #000000">    </span><span style="color: #001080">i18n:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #001080">strings:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;editor:mediaimage:metadata&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Bildgröße: {{width}}x{{height}} [{{size}}]&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;editor:wysiwyg:edithtml:tooltip&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;HTML Quellcode bearbeiten&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;toolbar:errors:tooltip&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Schnellansicht aller Fehler&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;toolbar:undo:tooltip&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Undo. Letzte Änderung rückgängig machen&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;toolbar:redo:tooltip&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Redo. Letzte Änderung wiederherstellen&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;toolbar:description:tooltip&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Beschreibungstexte ein oder ausblenden&quot;</span>
+<span style="color: #000000">        },</span>
+<span style="color: #000000">        </span><span style="color: #001080">errors:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;format-url-error&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Die angegebene Wert `{{value}}` ist keine gültige url&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;maximum-error&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Die Zahl darf nicht größer als {{maximum}} sein.&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;max-length-error&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Die Eingabe ist zu lang: {{length}} von {{maxLength}} erlaubten Zeichen.&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;minimum-error&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Die Zahl muss größer oder gleich {{minimum}} sein&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;min-items-error&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Es müssen mindestens {{minLength}} Elemente vorhanden sein&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #A31515">&quot;min-length-error&quot;</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">controller</span><span style="color: #000000">, </span><span style="color: #001080">error</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">                </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #001080">data</span><span style="color: #000000">.</span><span style="color: #001080">minLength</span><span style="color: #000000"> === </span><span style="color: #098658">1</span><span style="color: #000000">) {</span>
+<span style="color: #000000">                    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;Es wird eine Eingabe benötigt&quot;</span><span style="color: #000000">;</span>
+<span style="color: #000000">                }</span>
+<span style="color: #000000">                </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;Der Text muss eine Mindestlänge von {{minLength}} haben (aktuell {{length}}).&quot;</span><span style="color: #000000">, </span><span style="color: #001080">error</span><span style="color: #000000">.</span><span style="color: #001080">data</span><span style="color: #000000">);</span>
+<span style="color: #000000">            }</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// and/or merge translations directly over the i18n helper</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">i18n</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;editron/utils/i18n&quot;</span><span style="color: #000000">;</span>
+<span style="color: #001080">i18n</span><span style="color: #000000">.</span><span style="color: #795E26">addLanguage</span><span style="color: #000000">({</span>
+<span style="color: #000000">    </span><span style="color: #001080">strings:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// ...</span>
+<span style="color: #000000">    },</span>
+<span style="color: #000000">    </span><span style="color: #001080">errors:</span><span style="color: #000000"> {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// ...</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">});</span>
+</code></pre>
+				<!--
+- theming
+    - ???
+-->
+				<a href="#further-examples" id="further-examples" style="color: inherit; text-decoration: none;">
+					<h2>Further examples</h2>
+				</a>
+				<p>Besides <a href="./examples/getting-started.html">getting-started</a>, the following examples can be found in the <a href="./examples">./examples</a> directory</p>
+				<ul>
+					<li>see how to create multiple editors from one instance in <a href="./examples/multiple-editors.html">examples/multiple-editors</a></li>
+					<li>see how to create multiple independent editron instances in <a href="./examples/multiple-controller.html">examples/multiple-controller</a></li>
+				</ul>
+				<a href="#custom-build" id="custom-build" style="color: inherit; text-decoration: none;">
+					<h3>custom build</h3>
+				</a>
+				<p>@todo</p>
+				<!--
+- npm i
+- webpack build
+- hello world
+- linking editors
+-->
+				<hr>
+				<a href="#custom-editor-widget" id="custom-editor-widget" style="color: inherit; text-decoration: none;">
+					<h2>custom editor (widget)</h2>
+				</a>
+				<a href="#why-should-i-create-an-editor" id="why-should-i-create-an-editor" style="color: inherit; text-decoration: none;">
+					<h3>why should i create an editor?</h3>
+				</a>
+				<blockquote>
+					<p>create a custom interface for a specific type of data/schema</p>
+				</blockquote>
+				<!-- where you need to improve usabilty for long forms, complex data or input values where visual help is really necessary (i.e. placing a point on a map) -->
+				<ul>
+					<li><strong>improve usability of input</strong>: ask for data in a better way. where default forms are not a good match (poimap)</li>
+					<li><strong>improve usability of form</strong> break flow, to hide details from main data</li>
+					<li><strong>preview data</strong> (feedback/usability): preview for given input data (e.g. image-url)</li>
+				</ul>
+				<a href="#what-can-i-do-with-custom-editor" id="what-can-i-do-with-custom-editor" style="color: inherit; text-decoration: none;">
+					<h3>what can i do with custom editor?</h3>
+				</a>
+				<blockquote>
+					<p>in general, you can do everything (interface is a dom-element, interaction is performed through data-events)</p>
+				</blockquote>
+				<ul>
+					<li>hook on a very specific json-schema property</li>
+					<li>completely render and grab user input (complete take over)</li>
+					<li>extend rendering on spot</li>
+					<li>delegate rendering of child editors to editron</li>
+				</ul>
+				<a href="#how-to-create-a-custom-editor-widget" id="how-to-create-a-custom-editor-widget" style="color: inherit; text-decoration: none;">
+					<h3>how to create a custom editor-widget</h3>
+				</a>
+				<p>To add a custom editor, you need to</p>
+				<ol>
+					<li><em>create a custom editor class</em>, according to the details below</li>
+					<li><em>add a static editorOf function</em> for identifying the required json-schema type and</li>
+					<li><em>add the editor class to an editron instance</em> or add it through the global plugin interface</li>
+					<li><em>ensure the JSON-Schema adds the correct format</em>, to trigger the custom editor-widget</li>
+				</ol>
+				<p><strong>Add your editor</strong></p>
+				<p>Custom editors can be added to the <code>Controller</code>-instance via the options property, modified directly or added global via
+				the plugin-helper <a href="#editors">@see configuration.editors</a>. In the end, all editors are stored within a simple <em>Array</em></p>
+				<pre><code class="language-javascript"><span style="color: #008000">// push the CustomEditor to the start of list to overrule any other search-results (matching editors)</span>
+<span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #001080">editors</span><span style="color: #000000">.</span><span style="color: #795E26">unshift</span><span style="color: #000000">(</span><span style="color: #001080">CustomEditor</span><span style="color: #000000">);</span>
+</code></pre>
+				<p><strong>Hook to a schema</strong></p>
+				<p><em>Editron</em> will run through this list, searching for a compatible editor-constructor for the specific schema-type. The
+					first editor, returning <code>true</code> for the <em>static</em> function <code>CustomEditor.editorOf</code> will be instantiated (
+					<a href="%22./utils/selectEditor.js%22">@see utils/selectEditor</a>). e.g. if no editor will match the json-schema
+				<code>type: &quot;object&quot;</code>, a default <em>object-editor</em> will be instantiated.</p>
+				<p>You can evaluate any json-schema property, options set in json-schema and the associated data:</p>
+				<pre><code class="language-javascript"><span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CustomEditor</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #008000">/**</span>
+<span style="color: #008000">     * Decide, if the given JSON-Schema should use this editor</span>
+<span style="color: #008000">     * </span><span style="color: #0000FF">@param</span><span style="color: #008000">  </span><span style="color: #267F99">{String}</span><span style="color: #008000"> </span><span style="color: #001080">pointer</span><span style="color: #008000">         - JSON-Pointer</span>
+<span style="color: #008000">     * </span><span style="color: #0000FF">@param</span><span style="color: #008000">  </span><span style="color: #267F99">{Controller}</span><span style="color: #008000"> </span><span style="color: #001080">controller</span><span style="color: #008000">  - Controller-instance</span>
+<span style="color: #008000">     * </span><span style="color: #0000FF">@param</span><span style="color: #008000">  </span><span style="color: #267F99">{Object}</span><span style="color: #008000"> </span><span style="color: #001080">options</span><span style="color: #008000">         - options-object as described above</span>
+<span style="color: #008000">     * </span><span style="color: #0000FF">@return</span><span style="color: #008000"> </span><span style="color: #267F99">{Boolean}</span><span style="color: #008000"> returns `true` if this class should be used for the pased JSON-Pointer</span>
+<span style="color: #008000">     */</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #795E26">editorOf</span><span style="color: #000000">(</span><span style="color: #001080">pointer</span><span style="color: #000000">, </span><span style="color: #001080">controller</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// per default, you will want to get the schema of the current JSON-pointer</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">schema</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;schema&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #001080">pointer</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #008000">// access data by</span>
+<span style="color: #000000">        </span><span style="color: #008000">// const data = controller.service(&quot;data&quot;).get(pointer);</span>
+<span style="color: #000000">        </span><span style="color: #008000">// and evaluate if this is the right editor for the schema</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">schema</span><span style="color: #000000">.</span><span style="color: #001080">type</span><span style="color: #000000"> === </span><span style="color: #A31515">&quot;object&quot;</span><span style="color: #000000"> &amp;&amp; </span><span style="color: #001080">schema</span><span style="color: #000000">.</span><span style="color: #001080">format</span><span style="color: #000000"> === </span><span style="color: #A31515">&quot;CustomEditor&quot;</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span><span style="color: #001080">pointer</span><span style="color: #000000">, </span><span style="color: #001080">controller</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">) {}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p><strong>The options object</strong></p>
+				<p>Based on the current JSON-Schema (short: <code>schema</code>), the options object always passes the following properties</p>
+				<table>
+					<thead>
+						<tr>
+							<th align="left">property</th>
+							<th align="left">schema-options</th>
+							<th align="left">description</th>
+						</tr>
+					</thead>
+					<tbody><tr>
+							<td align="left">description</td>
+							<td align="left">schema.description</td>
+							<td align="left">description of the input-field for the user</td>
+						</tr>
+						<tr>
+							<td align="left">hidden</td>
+							<td align="left">schema[&quot;editron:ui&quot;].hidden</td>
+							<td align="left">if the input-field should be hidden</td>
+						</tr>
+						<tr>
+							<td align="left">id</td>
+							<td align="left">-</td>
+							<td align="left">the current editor-id, which should be used in rendering the input-field</td>
+						</tr>
+						<tr>
+							<td align="left">pointer</td>
+							<td align="left">-</td>
+							<td align="left">current JSON-pointer</td>
+						</tr>
+						<tr>
+							<td align="left">title</td>
+							<td align="left">schema.title</td>
+							<td align="left">the title as given in <code>schema.title</code> or overruled by <code>schema[&quot;editron:ui&quot;].title</code></td>
+						</tr>
+				</tbody></table>
+				<p>The options object will be extended by all properties given in <code>schema.options</code> and <code>schema[&quot;editron:ui&quot;]</code>, where the
+					options in <code>editron:ui</code> will overwrite the properties defined in the default options-object. Additionally, any options
+					defined by code, e.g. by calling <code>controller.createEditor(pointer, domNode, { dynamic-options })</code>, will overwrite all
+				other options.</p>
+				<a href="#quickstart-and-hack-away-boilerplate" id="quickstart-and-hack-away-boilerplate" style="color: inherit; text-decoration: none;">
+					<h4>Quickstart and hack away (boilerplate)</h4>
+				</a>
+				<ul>
+					<li>@todo working example with editor testpage</li>
+				</ul>
+				<a href="#example-using-abstract-editor" id="example-using-abstract-editor" style="color: inherit; text-decoration: none;">
+					<h4>Example using abstract editor</h4>
+				</a>
+				<p>Using the optional base class <code>AbstractEditor</code>, most work for bootstraping is done by its base methods. This leaves the following required methods for a working editor</p>
+				<pre><code class="language-javascript"><span style="color: #008000">/**</span>
+<span style="color: #008000"> * A custom editron-editor-widget</span>
+<span style="color: #008000"> */</span>
+<span style="color: #0000FF">class</span><span style="color: #000000"> </span><span style="color: #267F99">CustomEditor</span><span style="color: #000000"> </span><span style="color: #0000FF">extends</span><span style="color: #000000"> </span><span style="color: #267F99">AbstractEditor</span><span style="color: #000000"> {</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// requried: register to specific json-schema</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">static</span><span style="color: #000000"> </span><span style="color: #795E26">editorOf</span><span style="color: #000000">(</span><span style="color: #001080">pointer</span><span style="color: #000000">, </span><span style="color: #001080">controller</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">schema</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">service</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;schema&quot;</span><span style="color: #000000">).</span><span style="color: #795E26">get</span><span style="color: #000000">(</span><span style="color: #001080">pointer</span><span style="color: #000000">);</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">schema</span><span style="color: #000000">.</span><span style="color: #001080">format</span><span style="color: #000000"> === </span><span style="color: #A31515">&quot;CustomEditor&quot;</span><span style="color: #000000"> &amp;&amp; </span><span style="color: #001080">schema</span><span style="color: #000000">.</span><span style="color: #001080">type</span><span style="color: #000000"> === </span><span style="color: #A31515">&quot;array&quot;</span><span style="color: #000000">;</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #0000FF">constructor</span><span style="color: #000000">(</span><span style="color: #001080">pointer</span><span style="color: #000000">, </span><span style="color: #001080">controller</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// perform required bootstrapping and exposed the DomNode on `this.dom`</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">super</span><span style="color: #000000">(</span><span style="color: #001080">pointer</span><span style="color: #000000">, </span><span style="color: #001080">controller</span><span style="color: #000000">, </span><span style="color: #001080">options</span><span style="color: #000000">);</span>
+
+<span style="color: #000000">        </span><span style="color: #008000">// recommended: build your view model for rendering</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">viewModel</span><span style="color: #000000"> = {</span>
+<span style="color: #000000">            </span><span style="color: #001080">pointer</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #001080">title:</span><span style="color: #000000"> </span><span style="color: #001080">options</span><span style="color: #000000">.</span><span style="color: #001080">title</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #001080">id:</span><span style="color: #000000"> </span><span style="color: #001080">options</span><span style="color: #000000">.</span><span style="color: #001080">id</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #001080">errors:</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">getErrors</span><span style="color: #000000">(),</span>
+<span style="color: #000000">            </span><span style="color: #001080">description:</span><span style="color: #000000"> </span><span style="color: #001080">options</span><span style="color: #000000">.</span><span style="color: #001080">description</span><span style="color: #000000">,</span>
+<span style="color: #000000">            </span><span style="color: #795E26">onfocus</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">focus</span><span style="color: #000000">(),</span>
+<span style="color: #000000">            </span><span style="color: #795E26">onblur</span><span style="color: #001080">:</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">blur</span><span style="color: #000000">(),</span>
+<span style="color: #000000">            </span><span style="color: #795E26">onchange</span><span style="color: #001080">:</span><span style="color: #000000"> (</span><span style="color: #001080">value</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">setData</span><span style="color: #000000">(</span><span style="color: #001080">value</span><span style="color: #000000">)</span>
+<span style="color: #000000">            </span><span style="color: #001080">tags</span><span style="color: #000000">: </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">getData</span><span style="color: #000000">()</span>
+<span style="color: #000000">        };</span>
+<span style="color: #000000">        </span><span style="color: #008000">// recommended: initially render editor view</span>
+<span style="color: #000000">        </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">render</span><span style="color: #000000">();</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// required: data has changed, update data and view</span>
+<span style="color: #000000">    </span><span style="color: #795E26">update</span><span style="color: #000000">(</span><span style="color: #001080">event</span><span style="color: #000000">) {</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">switch</span><span style="color: #000000">(</span><span style="color: #001080">event</span><span style="color: #000000">.</span><span style="color: #001080">type</span><span style="color: #000000">) {</span>
+<span style="color: #000000">            </span><span style="color: #AF00DB">case</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;data:update:after&quot;</span><span style="color: #000000">:</span>
+<span style="color: #000000">                </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">viewModel</span><span style="color: #000000">.</span><span style="color: #001080">tags</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">getData</span><span style="color: #000000">();</span>
+<span style="color: #000000">                </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">render</span><span style="color: #000000">();</span>
+<span style="color: #000000">                </span><span style="color: #AF00DB">break</span><span style="color: #000000">;</span>
+<span style="color: #000000">            </span><span style="color: #AF00DB">case</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;validation:done&quot;</span><span style="color: #000000">:</span>
+<span style="color: #000000">                </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">viewModel</span><span style="color: #000000">.</span><span style="color: #001080">errors</span><span style="color: #000000"> = </span><span style="color: #001080">errors</span><span style="color: #000000">;</span>
+<span style="color: #000000">                </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #795E26">render</span><span style="color: #000000">();</span>
+<span style="color: #000000">            </span><span style="color: #AF00DB">break</span><span style="color: #000000">;</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// required: remove any custom views, created data or listeners</span>
+<span style="color: #000000">    </span><span style="color: #795E26">destroy</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #AF00DB">if</span><span style="color: #000000"> (</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">viewModel</span><span style="color: #000000">) { </span><span style="color: #008000">// ensure this editor was not already destroyed</span>
+<span style="color: #000000">            </span><span style="color: #001080">m</span><span style="color: #000000">.</span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">dom</span><span style="color: #000000">, </span><span style="color: #001080">m</span><span style="color: #000000">.</span><span style="color: #795E26">trust</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;&quot;</span><span style="color: #000000">)); </span><span style="color: #008000">// reset the html, removing event-listeners</span>
+<span style="color: #000000">            </span><span style="color: #0000FF">super</span><span style="color: #000000">.</span><span style="color: #795E26">destroy</span><span style="color: #000000">();</span>
+<span style="color: #000000">            </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">viewModel</span><span style="color: #000000"> = </span><span style="color: #0000FF">null</span><span style="color: #000000">; </span><span style="color: #008000">// flag as destroyed</span>
+<span style="color: #000000">        }</span>
+<span style="color: #000000">    }</span>
+
+<span style="color: #000000">    </span><span style="color: #008000">// custom method: render the view to dom</span>
+<span style="color: #000000">    </span><span style="color: #795E26">render</span><span style="color: #000000">() {</span>
+<span style="color: #000000">        </span><span style="color: #008000">// example using mithril to update dom</span>
+<span style="color: #000000">        </span><span style="color: #001080">m</span><span style="color: #000000">.</span><span style="color: #795E26">render</span><span style="color: #000000">(</span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">dom</span><span style="color: #000000">, </span><span style="color: #795E26">m</span><span style="color: #000000">(</span><span style="color: #001080">CustomView</span><span style="color: #000000">, </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">viewModel</span><span style="color: #000000">));</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">}</span>
+</code></pre>
+				<p><strong>about <code>update patches</code></strong></p>
+				<blockquote>
+					<p>update({ type: &quot;data:update&quot;, value: { patch } }</p>
+				</blockquote>
+				<p>The editor will always be notified on a change (same updates are ignored). And thus, the editor must update the view to
+				reflect this change. The default flow is:</p>
+				<ol>
+					<li>use <code>this.setData(newValue)</code> to update the data-source. The input does already reflect this</li>
+					<li>an <code>update(patch)</code> is received and the input-form is rerendered (nonetheless)</li>
+				</ol>
+				<p>in order to improve rendering performance, the patch-object (which is a
+					<a href="https://github.com/benjamine/jsondiffpatch/blob/master/docs/deltas.md">jsondiffpatch</a>-diff) can be used to minimize
+				required changes in the ui.</p>
+				<!--
+**about `updatePointer(newPointer)`**
+
+Any editor uses its `pointer` to reference data, schema and to set its id to the rendered view. Changing the `pointer`
+is an implementation detail, but is required for a performant user-experience. In case of reordering array-items
+(i.e. drag & drop), the main view must rerender all UI-forms, which will become sluggish on large documents. Thus
+`updatePointer` is required to reuse existing HTML nodes for a performant rendering. The `AbstractEditor` will change
+all default listeners to the new pointer, but any custom usage of the pointer (and _id_) must be treated manually.
+Note: since version 8, updating pointers of child-editors (using controller.createEditor) is no longer required.
+-->
+				<p><strong>further details</strong></p>
+				<p>For further detail, check the <a href="./editors/AbstractEditor.js">AbstractEditor</a> implementation or the
+				<a href="#advanced">advanced</a>-section below.</p>
+				<a href="#build-setup-webpack" id="build-setup-webpack" style="color: inherit; text-decoration: none;">
+					<h4>Build setup (webpack)</h4>
+				</a>
+				<p>Add editron to your devDependencies <code>npm i editron -D</code>. And start your webpack config with the following</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// webpack.config.js</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">plugin</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;editron/plugin/webpack&quot;</span><span style="color: #000000">);</span>
+<span style="color: #267F99">module</span><span style="color: #000000">.</span><span style="color: #267F99">exports</span><span style="color: #000000"> = </span><span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">createConfig</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;my-custom-editor.js&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;my-custom-editor.scss&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>You can install the required dependencies coming with editron by running
+					<code>npm --prefix node_modules/editron install</code> in your editor directory. Now, running
+				<code>npx NODE_ENV=production webpack</code> in your project, will start bundling the editor to be used with <code>editron-modules.js</code>.</p>
+				<p>@todo build setup, testing, bundling, watching, etc</p>
+				<a href="#plugin-editor" id="plugin-editor" style="color: inherit; text-decoration: none;">
+					<h4>Plugin editor</h4>
+				</a>
+				<p>If you are using the above build setup, exporting the editor by</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// file: my-custom-editor.js</span>
+<span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #001080">plugin</span><span style="color: #000000"> </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;editron/plugin&quot;</span><span style="color: #000000">;</span>
+<span style="color: #001080">plugin</span><span style="color: #000000">.</span><span style="color: #795E26">editor</span><span style="color: #000000">(</span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;./MyCustomEditor&quot;</span><span style="color: #000000">));</span>
+</code></pre>
+				<p>will add your editor by adding the script to your document:</p>
+				<pre><code class="language-html"><span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://.../editron-modules.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://.../editron.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+<span style="color: #008000">&lt;!-- the following script will add the editor when loaded --&gt;</span>
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://.../my-custom-editor.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+</code></pre>
+				<p>Without the build-setup, you can still call the plugin through <code>const { plugin } = editron;</code>.</p>
+				<a href="#delegating-child-editors" id="delegating-child-editors" style="color: inherit; text-decoration: none;">
+					<h4>Delegating child editors</h4>
+				</a>
+				<p>You can also delegate the creation of child-editor back to the controller. Suppose we have an object with a property
+				<code>time</code> and want to pass the time property back to the controller:</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// this follows default editor creation</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">timeDom</span><span style="color: #000000"> = </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">dom</span><span style="color: #000000">.</span><span style="color: #795E26">querySelector</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;.child&quot;</span><span style="color: #000000">); </span><span style="color: #008000">// target node, to insert child editor</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">pointerToTime</span><span style="color: #000000"> = </span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #0000FF">this</span><span style="color: #000000FF">.</span><span style="color: #795E26">getPointer</span><span style="color: #000000FF">()</span><span style="color: #0000FF">}</span><span style="color: #A31515">/time`</span><span style="color: #000000">; </span><span style="color: #008000">// build the JSON-Pointer to the time prop</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">timeEditor</span><span style="color: #000000"> = </span><span style="color: #001080">controller</span><span style="color: #000000">.</span><span style="color: #795E26">createEditor</span><span style="color: #000000">(</span><span style="color: #001080">pointerToTime</span><span style="color: #000000">, </span><span style="color: #001080">timeDom</span><span style="color: #000000">); </span><span style="color: #008000">// create child editor for time</span>
+<span style="color: #008000">// you can also pass options to the editor with</span>
+<span style="color: #008000">// controller.createEditor(pointerToTime, timeDom, editorOptions);</span>
+</code></pre>
+				<p><strong>Note</strong> that managing childeditors also requires delegation of the <code>updatePointer</code> message. In case of the above
+				<em>time</em> example, you would need to notify the child-editor, as follows:</p>
+				<pre><code class="language-javascript"><span style="color: #008000">// within updatePointer(newPointer)</span>
+<span style="color: #0000FF">super</span><span style="color: #000000">.</span><span style="color: #795E26">updatePointer</span><span style="color: #000000">(</span><span style="color: #001080">newPointer</span><span style="color: #000000">);</span>
+<span style="color: #008000">// ...</span>
+<span style="color: #001080">timeEditor</span><span style="color: #000000">.</span><span style="color: #795E26">updatePointer</span><span style="color: #000000">(</span><span style="color: #A31515">`</span><span style="color: #0000FF">${</span><span style="color: #0000FF">this</span><span style="color: #000000FF">.</span><span style="color: #795E26">getPointer</span><span style="color: #000000FF">()</span><span style="color: #0000FF">}</span><span style="color: #A31515">/time`</span><span style="color: #000000">);</span>
+</code></pre>
+				<!-- @todo inspect updatePointer automation -->
+				<a href="#advanced" id="advanced" style="color: inherit; text-decoration: none;">
+					<h4>Advanced</h4>
+				</a>
+				<p>Extending the <code>AbstractEditor</code> is totally optional. For more custom editor-implementations you can write your own
+				class, but you must follow the some basic rules, that are further described in <a href="./editors/AbstractEditor.js">AbstractEditor</a>.</p>
+				<!--
+@todo These rules are
+1. error event
+2. update pointer and event listeners
+3. creating dom element and class convention
+4. exposing helpers getElement, getPointer
+5. Using test-template
+-->
+				<a href="#guidelines" id="guidelines" style="color: inherit; text-decoration: none;">
+					<h4>Guidelines</h4>
+				</a>
+				<pre><code><span style="color: #000000">@</span><span style="color: #001080">todo</span>
+<span style="color: #000000">- </span><span style="color: #001080">use</span><span style="color: #000000"> </span><span style="color: #001080">render</span><span style="color: #000000"> </span><span style="color: #001080">method</span><span style="color: #000000"> </span><span style="color: #001080">for</span><span style="color: #000000"> </span><span style="color: #001080">string</span><span style="color: #000000"> </span><span style="color: #001080">replacement</span>
+<span style="color: #000000">- </span><span style="color: #001080">create</span><span style="color: #000000"> </span><span style="color: #001080">dom</span><span style="color: #000000">-</span><span style="color: #001080">element</span><span style="color: #000000"> </span><span style="color: #001080">using</span><span style="color: #000000"> </span><span style="color: #795E26">helper</span><span style="color: #000000"> (</span><span style="color: #001080">attrs</span><span style="color: #000000">, </span><span style="color: #001080">classnames</span><span style="color: #000000">, </span><span style="color: #001080">etc</span><span style="color: #000000">)</span>
+<span style="color: #000000">- </span><span style="color: #001080">use</span><span style="color: #000000"> </span><span style="color: #001080">given</span><span style="color: #000000"> </span><span style="color: #001080">id</span><span style="color: #000000"> </span><span style="color: #001080">on</span><span style="color: #000000"> </span><span style="color: #001080">input</span><span style="color: #000000">-</span><span style="color: #001080">element</span>
+<span style="color: #000000">- ...</span>
+</code></pre>
+				<!--
+---
+## public api
+
+> generated api
+
+### Controller
+### Services
+### ...
+
+## editors
+- wysiwyg
+- code
+- overview navigation
+
+### todo
+- image
+- taglist editor
+-
+-->
+				<a href="#breaking-changes" id="breaking-changes" style="color: inherit; text-decoration: none;">
+					<h2>Breaking Changes</h2>
+				</a>
+				<p><code>07/2020</code> with <code>v8</code> editron is written using typescript. Due to module-syntax, some exports have changed, mainly:</p>
+				<ul>
+					<li>The EVENTS-object in services is now exported separately and not on its object <code>import { EVENTS } from &quot;./DataService</code> </li>
+					<li>The <code>main</code>-module now exports all helpers separately and the controller is exported as default.</li>
+					<li>All components are exported individually, having no default in <code>src/components/index.ts</code></li>
+					<li>dependency <em>mitt</em> has been replaced by <em>nanoevents</em></li>
+					<li>test-runner <em>ava</em> has been replaced by <em>mocha</em></li>
+				</ul>
+				<p>Additionally all source files have been moved to <code>src</code>-folder, which must be adjusted in the imports</p>
+				<p><code>11/2019</code> with <code>v7</code> editron has been updated to mithril@2, json-schema-library@4, mithril-material-forms@3. and all editors have new required method <code>setActive(boolean)</code> to enable or disabled editor input-interaction. Please refer to each library version for Breaking Changes. In short:</p>
+				<ul>
+					<li><em>mithril-material-forms</em> has a consistent api for forms. Any callbacks have changes to lowercase mithril-style e.g. <code>onclick</code> or <code>onchange</code> (button, checkbox, input are affected)</li>
+					<li><em>json-schema-library</em> has undergone a major change in its api (schema is mostly optional)</li>
+					<li><em>mithril</em> has dropped support for <code>m.withAttrs</code></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Modules</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/components.html">components</a>
+					</li>
+					<li class=" tsd-kind-namespace">
+						<a href="modules/utils.html">utils</a>
+					</li>
+					<li class=" tsd-kind-namespace tsd-parent-kind-namespace">
+						<a href="modules/utils.i18n.html">utils.i18n</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-reference">
+						<a href="modules.html#controller" class="tsd-kind-icon">Controller</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/abstracteditor.html" class="tsd-kind-icon">Abstract<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/abstractvalueeditor.html" class="tsd-kind-icon">Abstract<wbr>Value<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/arrayeditor.html" class="tsd-kind-icon">Array<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/autocompleteeditor.html" class="tsd-kind-icon">Autocomplete<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/dataservice.html" class="tsd-kind-icon">Data<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/delegationplugin.html" class="tsd-kind-icon">Delegation<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/locationservice.html" class="tsd-kind-icon">Location<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/objecteditor.html" class="tsd-kind-icon">Object<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/oneofeditor.html" class="tsd-kind-icon">One<wbr>OfEditor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/remotedataplugin.html" class="tsd-kind-icon">Remote<wbr>Data<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/schemaservice.html" class="tsd-kind-icon">Schema<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/selectionplugin.html" class="tsd-kind-icon">Selection<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/sortableplugin.html" class="tsd-kind-icon">Sortable<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/syncplugin.html" class="tsd-kind-icon">Sync<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/validationservice.html" class="tsd-kind-icon">Validation<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/valueeditor.html" class="tsd-kind-icon">Value<wbr>Editor</a>
+					</li>
+					<li class=" tsd-kind-class">
+						<a href="classes/default.html" class="tsd-kind-icon">default</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/editor.html" class="tsd-kind-icon">Editor</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="interfaces/editorplugin.html" class="tsd-kind-icon">Editor<wbr>Plugin</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#direction" class="tsd-kind-icon">Direction</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#editoroptions" class="tsd-kind-icon">Editor<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#editorupdateevent" class="tsd-kind-icon">Editor<wbr>Update<wbr>Event</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#editronconfigattrs" class="tsd-kind-icon">Editron<wbr>Config<wbr>Attrs</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#formatvalidator" class="tsd-kind-icon">Format<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#jsonschema" class="tsd-kind-icon">JSONSchema</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#keywordvalidator" class="tsd-kind-icon">Keyword<wbr>Validator</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#options" class="tsd-kind-icon">Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias">
+						<a href="modules.html#validationerror" class="tsd-kind-icon">Validation<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-property">
+						<a href="modules.html#sessionservice" class="tsd-kind-icon">Session<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-property">
+						<a href="modules.html#plugin" class="tsd-kind-icon">plugin</a>
+					</li>
+					<li class=" tsd-kind-variable">
+						<a href="modules.html#overlayservice" class="tsd-kind-icon">Overlay<wbr>Service</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

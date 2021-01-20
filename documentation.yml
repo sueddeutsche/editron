@@ -1,6 +1,0 @@
-toc:
-  #- name: Overview
-  #  file: README.md
-  - name: Package Export
-  - editron
-  - name: API
