@@ -1,9 +1,9 @@
-import Controller from "../../Controller";
-import { JSONPointer } from "../../types";
-import { QueryListForm, QueryListFormAttrs } from 'mithril-material-forms';
-import m from "mithril";
-import { Options as EditorOptions } from "../Editor";
 import AbstractValueEditor, { ViewModel } from '../AbstractValueEditor';
+import Controller from "../../Controller";
+import m from "mithril";
+import { JSONPointer } from "../../types";
+import { Options as EditorOptions } from "../Editor";
+import { QueryListForm, QueryListFormAttrs } from "mithril-material-forms";
 
 
 export type SuggestionInput = {

@@ -20,7 +20,7 @@
     "dist": "rm -rf dist; yarn dist:es5 && yarn dist:module",
     "dist:es5": "NODE_ENV=production webpack && NODE_ENV=production webpack --config webpack.build.js",
     "dist:module": "tsc --outDir distmodule",
-    "docs": "typedoc editron.ts --out docs/api --name editron api",
+    "docs": "typedoc editron.ts --out docs/api",
     "lint": "eslint src",
     "prepublishOnly": "npm run release",
     "release": "yarn dist",

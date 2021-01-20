@@ -1,4 +1,6 @@
 /app
-/docs
 /build
+/docs
+/examples
 /testbuild
+webpack.*.js
