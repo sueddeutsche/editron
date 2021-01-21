@@ -216,4 +216,4 @@ editron.createEditor("#/title", dom, {
 Any options passed here, will override options defined in json-schema
 
 
-[back to README](../README.MD)
+[back to README](/README.MD)
