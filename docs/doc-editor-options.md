@@ -2,11 +2,16 @@
 
 > Editor configurations may set titles and descriptions, hide an editor, modify its behaviour, add an icon, etc.
 
-Configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and go into a nested object-property, where its configuration **must be an object**. e.g.
+From a given JSON-Schema, its properties `title` and `description` are used for labels and inline-information of the
+input-element or group. Additional configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and go into a nested object-property, where its configuration **must be an object**. e.g.
 
 ```js
 {
   type: "object",
+  // json-schema properties used per default in editor configuration
+  title: "default-title",
+  description: "optional description of data-item",
+  // additional, extended editor configuration
   "editron:ui": {
     // default settings
     // ...
