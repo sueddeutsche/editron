@@ -282,7 +282,7 @@ const validInputData = controller.service("schema").addDefaultData(inputData, js
 
 **Customize base editors from json-schema**
 
-To configure a specific editron-editor, please refer to the [documentation of editor options](../docs/doc-editor-options.md)
+To configure a specific editron-editor, please refer to the [documentation of editor options](./docs/doc-editor-options.md)
 
 
 **Add additional editors**
