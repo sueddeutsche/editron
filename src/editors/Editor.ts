@@ -79,6 +79,6 @@ export interface Editor {
     getPointer(): JSONPointer;
     /** returns the editors root element */
     getElement(): HTMLElement;
-    /** destroy editor-instance */
+    /** destroys editor-instance - this function not be called directly. Use `editron.destroyEditor(myEditor)` instead */
     destroy(): void;
 }
