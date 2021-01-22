@@ -28,7 +28,7 @@ input-element or group. All additional configuration for an _editron_-widget goe
 ```
 
 - [Shared options across widgets](#shared-widget-options)
-- [Widget Options](#widget-options)
+- [Widgets](#widgets)
   - [Object widget options](#object-widget-options)
   - [Array widget options](#array-widget-options)
   - [Value widget options](#value-widget-options)
@@ -36,6 +36,7 @@ input-element or group. All additional configuration for an _editron_-widget goe
   - [OneOf widget options](#oneof-widget-options)
   - [Minimap widget options](#minimap-widget-options)
 - [Overriding widget options](#overriding-widget-options)
+
 
 ## Shared widget options
 
@@ -66,10 +67,12 @@ property            | type      | description
 `instantUpdate`     | boolean   | if supported, set to true to update (and validate) on each keystroke, instead of on blur
 
 
+**_title_ and _description_** _title_ and _description_ are properties directly supported by json-schema specification. Thus, editron will pass these values to the options-object of a widget. For consistency, _title_ and _description_ properties are also supported in `editron:ui` configuration object and will override any _title_ or _description_ placed directly on a schema, like in `{ type: "string", title: "my title" }`.
+
 **about instantUpdate** The default-widgets only update data on a change-event which is mostly triggered on a blur action. That is, when a user exits an input-field, the value is sent and validation started, resulting in fast feedback. In some cases, you want to trigger data-updates and its error-validation while typing. Thus, an option `instantUpdate: true` will tell the widget to send an update on each keystroke. Depending on the validation (e.g. remote requests for validation), _instantUpdate_ will result in bad behaviour.
 
 
-## Widget options
+## Widgets
 
 Custom widget options are defined by the widget itself. To prevent configuration collisions, each widget's settings should be placed into a unique property in `editron:ui`. Each widget must document its own settings. For the default widgets, bundled with editron, see the following descriptions:
 
