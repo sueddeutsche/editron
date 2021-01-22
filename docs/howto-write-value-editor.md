@@ -189,5 +189,5 @@ render() {
 > Note, that writing custom editors is usually only necessary in some situations, where you need improve the usability or preview data in a more appropriate way. When writing a custom editor, you can take full control on rendering, interaction and interpretation of the data. But this means, some custom implementations must be met, like supporting options (depending on your requirements), managing events and rendering title, description, errors, etc along side the input. The _AbstractValueEditor_ tries to minimize the effort of writing a complete standalone editor.
 
 - Using the _AbstractValueEditor_ is totally optional, but is very helpful in bootstrapping an editor and following editron-migrations
-- For a more detailed description of an editor and its interaction with editron, refer to [docs-editron.editor.md](docs-editron.editor.md)
+- For a more detailed description of an editor and its interaction with editron, refer to [docs-editron-editor.md](docs-editron-editor.md)
 - @todo a running example should be within this repository
