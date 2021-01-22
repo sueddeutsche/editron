@@ -1,6 +1,8 @@
 # Editor Options
 
-> Editor configurations may set titles and descriptions, hide an editor, modify its behaviour, add an icon, etc.
+> Editor configurations may set titles and descriptions, hide an editor, modify its behaviour, add an icon, etc.. Here is a description of editor-options supported of the default editors that are bundled along with editron. These editors ensure, that all basic json-values can be displayed and edited. Each editor supports its own configuration settings. But there are some configuration-values that should be supported per default, like changing a _title_ or _description_. These default configuration values are described here as **shared editor options**, where alle specific editor options are described in **editor options for each editor** individually.
+> 
+> So, editron per se does not support any options, besides `hidden: boolean`. All other configuration values are defined by the editors in use.
 
 From a given JSON-Schema, its optinal properties `title` and `description` are used for labels and inline-information of the generated
 input-element or group. All additional configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and should be added with a unique property-name , where its contents **must be an object**. e.g.: The _autocomplete_-Editor, has its custom configuration in a corresponding property _autocomplete_, like in the following example:
@@ -127,8 +129,7 @@ The _value-editor_ is a single editor, supporting all basic input types like _bo
 
 #### select
 
-Per default, a selection (_html: select_) is rendered for a json-schema containing an enum, with the following setting  
-(Selection labels may differentiate from the enum values)
+Per default, a selection (_html: select_) is rendered for a json-schema containing an enum. Per json-schema specification it is defined as list of values, for example `enum: Array<string>`. In user interfaces we usually want to display more readable values, thus we need another enum-setting, containing the selection's display values, like in the following example:
 
 ```js
 {
@@ -213,7 +214,8 @@ property            | type      | description
 
 > Recap: for each _data-value_ an _editor_ is assigned to it, to render the user-interface and manage the data updates. Here the json-schema is passed to the editor with an options object, containing the sanitized options from `editron:ui`-property. Each editron-ui starts with a call to `editron.createEditor`. In this case, options may also be passed directly to the method, which will override any options, defined in json-schema, for this editor-instance.
 
-So, you can override editor options using the `editron.createEditor`-method:
+
+Using a json-schema through `new Editron(jsonSchema)`, each _editor_-instance will received the options, defined in `editron:ui`. But you can override any editor option using the `editron.createEditor`-method and pass in specific options, for this instance (at json-pointer):
 
 ```ts
 editron.createEditor("#/title", dom as HTMLElement, {
@@ -224,10 +226,10 @@ editron.createEditor("#/title", dom as HTMLElement, {
 Any options passed here, will override options defined in json-schema. From the editors perspective
 
 ```js
-import { Controller, EditorOptions } from "editron";
+import Editron, { EditorOptions } from "editron";
 
 class MyEditor {
-  constructor(pointer: string, controller: Controller, options: EditorOptions) {
+  constructor(pointer: string, controller: Editron, options: EditorOptions) {
     // here, options contains the settings from _editron:ui_ as well as the option _invertOrder: true_ as shown above.
     // options passed to the createEditor-method, overwrite any settings given in `editron:ui`
   }
