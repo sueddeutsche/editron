@@ -133,7 +133,7 @@ For an editor to be a good citizen, the following features should be supported. 
 
 ### display title, description and errors
 
-> Describing the value, giving context and informing about incorrect data is important. Thus we have to ensure, these value are rendered from the editor.
+> Describing the value, giving context and informing about incorrect data is important. Thus we have to ensure, these value are rendered by the editor.
 
 ```ts
 // MyCustomEditor
