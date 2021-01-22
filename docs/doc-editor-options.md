@@ -66,7 +66,7 @@ property            | type      | description
 `instantUpdate`     | boolean   | if supported, set to true to update (and validate) on each keystroke, instead of on blur
 
 
-**about instantUpdate** The default-widgets only update data on a change-event which is mostly triggered on a blur action. That is, when a user exits an input-field, the value is sent and validation started, resulting in fast feedback. In some cases, you want to trigger data-updates and its error-validation while typing. Thus, an option `instantUpdate: true` will tell the widget to send an update on each keystroke. Depending on the validation (e.g. remote requests to an object), _instantUpdate_ will result in bad behaviour.
+**about instantUpdate** The default-widgets only update data on a change-event which is mostly triggered on a blur action. That is, when a user exits an input-field, the value is sent and validation started, resulting in fast feedback. In some cases, you want to trigger data-updates and its error-validation while typing. Thus, an option `instantUpdate: true` will tell the widget to send an update on each keystroke. Depending on the validation (e.g. remote requests for validation), _instantUpdate_ will result in bad behaviour.
 
 
 ## Widget options
