@@ -1,9 +1,10 @@
 # Editor Options
 
+// TODO: Maybe mention, that description is optional  
 > Editor configurations may set titles and descriptions, hide an editor, modify its behaviour, add an icon, etc.
 
-From a given JSON-Schema, its properties `title` and `description` are used for labels and inline-information of the
-input-element or group. Additional configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and go into a nested object-property, where its configuration **must be an object**. e.g.
+From a given JSON-Schema, its properties `title` and `description` are used for labels and inline-information of the generated
+input-element or group. All additional configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and go into a nested object-property, where its configuration **must be an object**. e.g. // TODO: _must be an object_ this could be misunderstood -> it only needs to be an object when the options are intended for the object editor, right? E.g.: _...editor-specific. For the object-Editor, they need to go into a nested object-property. e.g._
 
 ```js
 {
@@ -53,9 +54,9 @@ property            | type      | description
 |-------------------|-----------|---------------------------------------------|
 `title`             | string    | set or override the title of the editor
 `attrs`             | object    | attributes object, passed to the editors html-element, e.g. `class: "my-theme"`
-`description`       | string    | set or override the description of the editor
-`disabled`          | boolean   | if set to `true`, will disable input of editor
-`hidden`            | boolean   | if set to `true`, will not render the editor
+`description`       | string    | set or override the description of the editor // TODO: the whole editor or just the prop group /element?
+`disabled`          | boolean   | if set to `true`, will disable input of editor // TODO: the whole editor or just the prop group / element?
+`hidden`            | boolean   | if set to `true`, will not render the editor // TODO: the whole editor or just the prop group / element?
 `hideTitle`         | boolean   | if set to `true`, does not render a title
 `icon`              | string    | if supported, set an icon from [material icon](https://material.io/tools/icons/?style=baseline)
 `placeholder`       | string    | if supported, adds placeholder-text to input
@@ -65,7 +66,7 @@ property            | type      | description
 
 ## Editor options
 
-Custom editor options are defined by the editor itself. to prevent configuration collisions, each editor's settings should be placed into a unique property in `editron:ui`. Each editor must document its own settings. For the default editors, bundled with editron, see the following descriptions:
+Custom editor options are defined by the editor itself. To prevent configuration collisions, each editor's settings should be placed into a unique property in `editron:ui`. Each editor must document its own settings. For the default editors, bundled with editron, see the following descriptions:
 
 
 ### Object editor options
@@ -89,7 +90,7 @@ property            | type      | description
 `collapsed`         | boolean   | if set, will add a collapse button for the object contents. If set to `true`, will initially collapse the editor
 `collapseIcon`      | string    | the collapse [icon](https://material.io/tools/icons/?style=baseline), when not collapsed
 `collapsedIcon`     | string    | the collapsed [icon](https://material.io/tools/icons/?style=baseline), when collapsed
-`headerContent`     | boolean   | experimental: if set to `true`, will place objects contents into the object-header
+`headerContent`     | boolean   | experimental: if set to `true`, will place objects contents into the object-header //TODO: maybe add a sidenote what _experimental_ means here
 
 
 ### Array editor options
@@ -110,7 +111,7 @@ The _array-editors-options_ are placed into its property `array`:
 property            | type      | description                                 
 |-------------------|-----------|---------------------------------------------|
 `add`               | boolean   | if set to `true`, will insert an add-action to add another item
-`addTitle`          | string    | button text of add-action
+`addTitle`          | string    | button text of add-action //TODO: why button? array-editor always generates a btn? maybe this will be described in an extra doc for each default editor?
 `clone`             | boolean   | if set to `true`, will insert a clone-action to duplicate selected item
 `collapsed`         | boolean   | if set, will add a collapse button for the array contents. If set to `true`, will initially collapse the editor
 `insert`            | boolean   | if set to `true`, will add an insert-action between elements, to add another item
@@ -127,7 +128,9 @@ The _value-editor_ is a single editor, supporting all basic input types like _bo
 
 #### select
 
-Per default, a selection is rendered for a json-schema containing an enum. Selection values may have different labels (from the values) with the following setting
+// TODO: maybe link mmf-selection component to _a selection_  
+Per default, a selection is rendered for a json-schema containing an enum, with the following setting  
+(Selection labels may differentiate from the enum values)
 
 ```js
 {
@@ -183,7 +186,7 @@ property            | type      | description
 
 ### Minimap editor options
 
-As probably mentioned, the _minimap-editor_ is a special-case, considering editors. It is only used as a main-editor and has to be triggered manually using its options:
+As probably mentioned, the _minimap-editor_ is a special-case, considering editors. It is only used as a main-editor and has to be triggered manually using the option in the `editron.createEditor`-method: //TODO: What do you mean as main-editor? 
 
 ```js
 editron.createEditor("#", dom, {
@@ -219,6 +222,8 @@ editron.createEditor("#/title", dom, {
 ```
 
 Any options passed here, will override options defined in json-schema
+
+//TODO: Maybe explain the difference between editron.createEditor and in json schema in one or two sentences.
 
 
 [back to README](../../README.MD)
