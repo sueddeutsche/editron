@@ -194,7 +194,7 @@ editron.createEditor("#", domOfNavigation, {
 });
 ```
 
-Consequently, it will render the main parts of data as a navigation tree.
+Consequently, it will render a navigation based on the data. That is, for each object or array, a _title_ will be rendered and linked to the corresponding form (if present). For more details, refer to the [editron-minimap-editor documentation](../src/editors/minimapeditor/README.md).
 
 property            | type      | description                                 
 |-------------------|-----------|---------------------------------------------|
