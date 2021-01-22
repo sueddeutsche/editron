@@ -229,6 +229,7 @@ import { Controller, EditorOptions } from "editron";
 class MyEditor {
   constructor(pointer: string, controller: Controller, options: EditorOptions) {
     // here, options contains the settings from _editron:ui_ as well as the option _invertOrder: true_ as shown above.
+    // options passed to the createEditor-method, overwrite any settings given in `editron:ui`
   }
 }
 ```
