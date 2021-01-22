@@ -1,6 +1,6 @@
 # Editor Options
 
-> Editor configurations may set titles and descriptions, hide an editor, modify its behaviour, add an icon, etc.. Here is a description of editor-options supported of the default editors that are bundled along with editron. These editors ensure, that all basic json-values can be displayed and edited. Each editor supports its own configuration settings. But there are some configuration-values that should be supported per default, like changing a _title_ or _description_. These default configuration values are described here as **shared editor options**, where alle specific editor options are described in **editor options for each editor** individually.
+> Editor configurations may set titles and descriptions, hide an editor, modify its behaviour, add an icon, etc.. Here is a description of editor-options supported by the default editors that are bundled along with _editron_. These editors ensure, that all basic json-values can be displayed and edited. Each editor supports its own configuration settings. But there are some configuration-values that _should_ be supported per default, like changing a _title_ or _description_. These default configuration values are described here as **shared editor options**, where all specific editor options are described in **editor options for each editor** individually.
 > 
 > So, editron per se does not support any options, besides `hidden: boolean`. All other configuration values are defined by the editors in use.
 
