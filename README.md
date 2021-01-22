@@ -1,4 +1,4 @@
-Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for user input and live validation. The editor can be used as a component in your web application and completly customized by custom editors and plugins.
+Editron creates an html user interface with validation for your data, solely based on a json-schema, with almost no programming required. Then, use Editron with your own components and plugins to completely customize the user interface according to your needs.
 
 ![editron](./docs/images/logo.png)
 
