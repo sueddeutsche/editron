@@ -1,24 +1,24 @@
 # Editor Options
 
-// TODO: Maybe mention, that description is optional  
 > Editor configurations may set titles and descriptions, hide an editor, modify its behaviour, add an icon, etc.
 
-From a given JSON-Schema, its properties `title` and `description` are used for labels and inline-information of the generated
-input-element or group. All additional configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and go into a nested object-property, where its configuration **must be an object**. e.g. // TODO: _must be an object_ this could be misunderstood -> it only needs to be an object when the options are intended for the object editor, right? E.g.: _...editor-specific. For the object-Editor, they need to go into a nested object-property. e.g._
+From a given JSON-Schema, its optinal properties `title` and `description` are used for labels and inline-information of the generated
+input-element or group. All additional configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and should be added with a unique property-name , where its contents **must be an object**. e.g.: The _autocomplete_-Editor, has its custom configuration in a corresponding property _autocomplete_, like in the following example:
 
 ```js
 {
-  type: "object",
+  type: "string",
+  format: "autocomplete",
   // json-schema properties used per default in editor configuration
-  title: "default-title",
-  description: "optional description of data-item",
+  title: "optional title",
+  description: "optional description",
   // additional, extended editor configuration
   "editron:ui": {
     // default settings
     // ...
     
-    // specific settings for the (default) object-editor
-    object: {
+    // specific settings for the (default) autocomplete-editor
+    autocomplete: {
       // ...
     }
   }
@@ -54,9 +54,9 @@ property            | type      | description
 |-------------------|-----------|---------------------------------------------|
 `title`             | string    | set or override the title of the editor
 `attrs`             | object    | attributes object, passed to the editors html-element, e.g. `class: "my-theme"`
-`description`       | string    | set or override the description of the editor // TODO: the whole editor or just the prop group /element?
-`disabled`          | boolean   | if set to `true`, will disable input of editor // TODO: the whole editor or just the prop group / element?
-`hidden`            | boolean   | if set to `true`, will not render the editor // TODO: the whole editor or just the prop group / element?
+`description`       | string    | set or override the ui-description of the value
+`disabled`          | boolean   | if set to `true`, will disable ui for this value
+`hidden`            | boolean   | if set to `true`, will not render the value
 `hideTitle`         | boolean   | if set to `true`, does not render a title
 `icon`              | string    | if supported, set an icon from [material icon](https://material.io/tools/icons/?style=baseline)
 `placeholder`       | string    | if supported, adds placeholder-text to input
@@ -90,7 +90,6 @@ property            | type      | description
 `collapsed`         | boolean   | if set, will add a collapse button for the object contents. If set to `true`, will initially collapse the editor
 `collapseIcon`      | string    | the collapse [icon](https://material.io/tools/icons/?style=baseline), when not collapsed
 `collapsedIcon`     | string    | the collapsed [icon](https://material.io/tools/icons/?style=baseline), when collapsed
-`headerContent`     | boolean   | experimental: if set to `true`, will place objects contents into the object-header //TODO: maybe add a sidenote what _experimental_ means here
 
 
 ### Array editor options
@@ -111,7 +110,7 @@ The _array-editors-options_ are placed into its property `array`:
 property            | type      | description                                 
 |-------------------|-----------|---------------------------------------------|
 `add`               | boolean   | if set to `true`, will insert an add-action to add another item
-`addTitle`          | string    | button text of add-action //TODO: why button? array-editor always generates a btn? maybe this will be described in an extra doc for each default editor?
+`addTitle`          | string    | alternative add-button text of enabled add-action
 `clone`             | boolean   | if set to `true`, will insert a clone-action to duplicate selected item
 `collapsed`         | boolean   | if set, will add a collapse button for the array contents. If set to `true`, will initially collapse the editor
 `insert`            | boolean   | if set to `true`, will add an insert-action between elements, to add another item
@@ -119,7 +118,7 @@ property            | type      | description
 `move`              | boolean   | if set to `true`, will add a move-action to move selected item
 `passActions`       | boolean   | if set to `true`, will delegate item actions to child-editor (which must be treated there)
 `remove`            | boolean   | if set to `true`, will add a remove-action to remove selected item
-`showIndex`         | boolean   | if set to `true`, will add and an index-label, e.g. _3 / 5_ to each item
+`showIndex`         | boolean   | if set to `true`, will add and an index-label, e.g. _3/5_, to each item
 
 
 ### Value editor options
@@ -128,8 +127,7 @@ The _value-editor_ is a single editor, supporting all basic input types like _bo
 
 #### select
 
-// TODO: maybe link mmf-selection component to _a selection_  
-Per default, a selection is rendered for a json-schema containing an enum, with the following setting  
+Per default, a selection (_html: select_) is rendered for a json-schema containing an enum, with the following setting  
 (Selection labels may differentiate from the enum values)
 
 ```js
@@ -186,10 +184,10 @@ property            | type      | description
 
 ### Minimap editor options
 
-As probably mentioned, the _minimap-editor_ is a special-case, considering editors. It is only used as a main-editor and has to be triggered manually using the option in the `editron.createEditor`-method: //TODO: What do you mean as main-editor? 
+As probably mentioned, the _minimap-editor_ is a special-case, considering editors. As an editor, it is usually created directly through the `editron.createEditor`-method and not by registering it through the json-schema.
 
 ```js
-editron.createEditor("#", dom, {
+editron.createEditor("#", domOfNavigation {
   minimap: {
     use: true
   }
@@ -213,7 +211,9 @@ property            | type      | description
 
 ## Overriding editor options
 
-Remember, you can override editor options using the `editron.createEditor`-method:
+> Recap: for each _data-value_ an _editor_ is assigned to it, to render the user-interface and manage the data updates. Here the json-schema is passed to the editor with an options object, containing the sanitized options from `editron:ui`-property. Each editron-ui starts with a call to `editron.createEditor`. In this case, options may also be passed directly to the method, which will override any options, defined in json-schema, for this editor-instance.
+
+So, you can override editor options using the `editron.createEditor`-method:
 
 ```js
 editron.createEditor("#/title", dom, {
@@ -221,9 +221,15 @@ editron.createEditor("#/title", dom, {
 });
 ```
 
-Any options passed here, will override options defined in json-schema
+Any options passed here, will override options defined in json-schema. From the editors perspective
 
-//TODO: Maybe explain the difference between editron.createEditor and in json schema in one or two sentences.
+```js
+class MyEditor {
+  constructor(pointer, controller, options) {
+    // here, options contains the settings from _editron:ui_ as well as the option _invertOrder: true_ as shown above.
+  }
+}
+```
 
 
 [back to README](../../README.MD)
