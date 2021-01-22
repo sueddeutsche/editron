@@ -27,7 +27,7 @@ input-element or group. All additional configuration for an _editron_-editor goe
 }
 ```
 
-- [Shared options across editors](#shared-editor-options)
+- [Default editor options](#default-editor-options)
 - [Editron Editors](#editron-editors)
   - [Object editor options](#object-editor-options)
   - [Array editor options](#array-editor-options)
