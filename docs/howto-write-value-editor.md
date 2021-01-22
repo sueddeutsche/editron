@@ -71,7 +71,7 @@ const editor = editron.createEditor("#", document.body);
 
 ## Updating The Value
 
-> When interacting with _editron_, you do not update your dom directly. Instead, you pass any value changes to _editron_, which in turn will notify all affected editors through an _update_-event, which in turn should trigger the _render_-method. Extending from the _AbstractValueEditor_, this is already setup and all you have to do is 1) send an data-update to editron and 2) ensure you render the updated value given in `viewModel.value`.
+> When interacting with _editron_, you do not update your dom directly. Instead, you pass any value changes to _editron_, which in turn will notify all affected editors through an _update_-event, which in turn should trigger the _render_-method. Just like using [redux](https://github.com/reduxjs/redux), which is used internally. Extending from the _AbstractValueEditor_, this is already setup and all you have to do is 1) send an data-update to editron and 2) ensure you render the updated value given in `viewModel.value`.
 
 For convinience, there is a `this.setData(value)`-helper, which will notify _editron_ and update the value at our _json-pointer_:
 
@@ -189,5 +189,5 @@ render() {
 > Note, that writing custom editors is usually only necessary in some situations, where you need improve the usability or preview data in a more appropriate way. When writing a custom editor, you can take full control on rendering, interaction and interpretation of the data. But this means, some custom implementations must be met, like supporting options (depending on your requirements), managing events and rendering title, description, errors, etc along side the input. The _AbstractValueEditor_ tries to minimize the effort of writing a complete standalone editor.
 
 - Using the _AbstractValueEditor_ is totally optional, but is very helpful in bootstrapping an editor and following editron-migrations
-- For a more detailed description of an editor and its interaction with editron, refer to [docs-editron-editor.md](docs-editron-editor.md)
+- For a more detailed description of an editor and its interaction with editron, refer to [doc-editron-editor.md](doc-editron-editor.md)
 - @todo a running example should be within this repository
