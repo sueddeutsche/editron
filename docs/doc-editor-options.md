@@ -187,7 +187,7 @@ property            | type      | description
 As probably mentioned, the _minimap-editor_ is a special-case, considering editors. As an editor, it is usually created directly through the `editron.createEditor`-method and not by registering it through the json-schema.
 
 ```js
-editron.createEditor("#", domOfNavigation {
+editron.createEditor("#", domOfNavigation, {
   minimap: {
     use: true
   }
@@ -215,8 +215,8 @@ property            | type      | description
 
 So, you can override editor options using the `editron.createEditor`-method:
 
-```js
-editron.createEditor("#/title", dom, {
+```ts
+editron.createEditor("#/title", dom as HTMLElement, {
   invertOrder: true
 });
 ```
@@ -224,8 +224,10 @@ editron.createEditor("#/title", dom, {
 Any options passed here, will override options defined in json-schema. From the editors perspective
 
 ```js
+import { Controller, EditorOptions } from "editron";
+
 class MyEditor {
-  constructor(pointer, controller, options) {
+  constructor(pointer: string, controller: Controller, options: EditorOptions) {
     // here, options contains the settings from _editron:ui_ as well as the option _invertOrder: true_ as shown above.
   }
 }
