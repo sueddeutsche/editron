@@ -60,6 +60,14 @@ const editor = editron.createEditor("#", document.body);
 // an input containing value "test of a custom editor"
 ```
 
+- [Updating The Value](#updating-the-value)
+- Additional Editor Features
+  - [display title, description and errors](display-title-description-and-errors)
+  - [support disabled option](support-disabled-option)
+  - [support focus & blur](support-focus-blur)
+- [Summary](summary)
+
+
 
 ## Updating The Value
 
@@ -79,8 +87,10 @@ export class MyCustomEditor extends AbstractValueEditor {
       const input = document.createElement("input");
       // set the initial value
       input.value = this.viewModel.value;
+
       // create a change listener and store it for later reference
       this.callback = () => this.setData(input.value);
+
       // add register callback to send an update on changed inputs
       input.addEventListener("change", this.callback);
       dom.appendChild(input);      
@@ -115,6 +125,7 @@ export class MyCustomEditor extends AbstractValueEditor {
 ``` 
 
 
+
 ## Additional Editor Features
 
 For an editor to be a good citizen, the following features should be supported. In addition, you can refer to the [default editor options](doc-editor-options.md), which features should or may be supported.
@@ -129,10 +140,10 @@ For an editor to be a good citizen, the following features should be supported. 
 render() {
   const { title, description, errors } = this.viewModel;
   // render something like:
-  // TITEL
+  // TITLE
   // DESCRIPTION
   // INPUT
-  // LIST OF ERRORSa
+  // LIST OF ERRORS
 }
 ```
 
@@ -154,7 +165,7 @@ render() {
 ```
 
 
-### notify editron about focus, blur state of editor
+### support focus & blur
 
 > For a set of specific functions, like changing the ui, based on the active editor oder highlighting the current location, an editor should notify _editron_ about its active state, using focus and blur events.
 
@@ -170,3 +181,13 @@ render() {
 ```
 
 **about focus/blur** As with data-updates, the current focus state is managed by a _editron_-service _LocationService_. In this context, `this.focus()` is just a shortcut to `this.controller.service("lcoation").setCurrent(this.getPointer());`.
+
+
+
+## Summary
+
+> Note, that writing custom editors is usually only necessary in some situations, where you need improve the usability or preview data in a more appropriate way. When writing a custom editor, you can take full control on rendering, interaction and interpretation of the data. But this means, some custom implementations must be met, like supporting options (depending on your requirements), managing events and rendering title, description, errors, etc along side the input. The _AbstractValueEditor_ tries to minimize the effort of writing a complete standalone editor.
+
+- Using the _AbstractValueEditor_ is totally optional, but is very helpful in bootstrapping an editor and following editron-migrations
+- For a more detailed description of an editor and its interaction with editron, refer to [docs-editron.editor.md](docs-editron.editor.md)
+- @todo a running example should be within this repository
