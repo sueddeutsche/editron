@@ -702,18 +702,6 @@ const timeEditor = controller.createEditor(pointerToTime, timeDom); // create ch
 // controller.createEditor(pointerToTime, timeDom, editorOptions);
 ```
 
-**Note** that managing childeditors also requires delegation of the `updatePointer` message. In case of the above
-_time_ example, you would need to notify the child-editor, as follows:
-
-```javascript
-// within updatePointer(newPointer)
-super.updatePointer(newPointer);
-// ...
-timeEditor.updatePointer(`${this.getPointer()}/time`);
-```
-
-<!-- @todo inspect updatePointer automation -->
-
 
 #### Advanced
 
