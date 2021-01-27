@@ -1,6 +1,6 @@
 # Editron Editor
 
-> Here, all required tasks of a custom _editor_, quirks and conventions are documented in detail. If you are looking for a more simple approach, read the [howto of writing a custom value editor](howto-write-value-editor.md), using the AbstractValueEditor helper.
+> Here, all required tasks of a custom _editor_, quirks and conventions are documented in detail. If you are looking for a more simple approach, read the [howto of writing a custom value editor](howto-write-value-editor.md), using the _AbstractValueEditor_ helper.
 
 A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation and error-reporting and helps choosing the right _editor_ is assigned to the specified value, as defined in the _json-schema_ (and confirmed by the `editorOf`-method of an _editor_).
 
@@ -45,7 +45,54 @@ class MyEditor {
 
 ## Update Events
 
-`@todo`
+_Editron_ services emit their events to each editor's `update`-method. To inspect these events and sequence, you can log them in your editor. Each events has a `type:string` and a specific `value:T` dependening on the type of event. Some events send data-updates, emit errors and change the active state of an editor. This should be processed and end with an update of your view.
+
+
+```ts
+import { EditorUpdateEvent } from "editron";
+
+class MyEditor {
+    update(event: EditorUpdateEvent) {
+        console.log(event);
+        this.render();
+    }
+}
+``` 
+
+**Note** Editor events are typed in [Editor.ts](../src/editors/Editor.ts)
+
+Usually a switch statement is helpful, to process the events:
+
+```ts
+import { EditorUpdateEvent } from "editron";
+
+class MyEditor {
+    update(event: EditorUpdateEvent) {
+        switch(event.type) {
+            case "data:update":
+                this.data = event.value;
+                break;
+            case "validation:errors": 
+                this.errors = event.value;
+                break;
+            case "active":
+                this.disabled = event.value === false;
+                break;
+        }
+        this.render();
+    }
+}
+``` 
+
+Overview of update events:
+
+type                | value     | description
+--------------------|-----------|-----------------
+data:update         | any               | the new `data` of your editor to display
+validation:errors   | [ValidationError] | list of validation `errors` in your _data_
+active              | boolean           | if `false`, the input should not be editable
+pointer             | string            | the _pointer_ (position in data) of your editor has changed
+
 
 
 ## Additional Focus Hooks
@@ -79,10 +126,6 @@ myDom.addEventListener("blur", () => {
 For an implementation example, see the bundled [AbstractValueEditor](../src/editors/AbstractValueEditor.ts) or [AbstractEditor](../src/editors/AbstractEditor.ts) _blur_ and _focus_ methods. The _location-service_ is documented in code in [services/LocationService.ts](../src/services/LocationService.ts).
 
 
-
-## Example Implementation
-
-`@todo`
 
 
 ## Editron Helpers
@@ -184,6 +227,108 @@ As a result, your `update`-event will be called for all changes on your data, st
 - performance and rendering
 - sync-feature
 
+
+## Example Implementation
+
+```ts
+import Editron, { Editor, EditorUpdateEvent, EditorOptions } from "editron";
+
+class URLEditor implements Editor {
+    
+    // we register this editor to all strings with a format "url"
+    static editorOf(pointer: string, editron: Editron, options: EditorOptions) {
+
+        // fetch the json-schema for this pointer
+        const schema = editron.service("schema").get(pointer);
+        if (schema.type === "string" && schema.format === "url") {
+
+            // this is the schema, we support. Thus we return `true`, which will get this editor to be instantiated for his value
+            return true;
+        }
+
+        // returning false, we tell editron to ignore this editor and keep searching for a matching editor
+        return false;
+    }
+
+    // same arguments as in editorOf - this only gets called, when our editorOf returned `true` for this pointer
+    constructor(pointer: string, editron: Editron, options: EditorOptions) {
+
+        // get our current value, the initial _url_-string
+        const value = editron.service("data").get(pointer);
+
+        // and possible validation errors
+        const errors = editron.service("validation").getErrorsAndWarnings(pointer);
+
+        // setup editron integration using this.pointer`, which is always up to date check _The Pointer Property_ for details
+        const focus = () => editron.service("location").setCurrent(this.pointer);
+        const blur = () => editron.service("location").blur(this.pointer);
+        const changeValue = (event) => editron.service("data").set(this.pointer, event.target.value);
+
+        // from our options, we get the basic settings of this editor, mainly retrieved from its json-schema
+        const { disabled, title, description } = options;
+
+        // for rendering and reuse, we create a state variable, which will be updated from our update events
+        this.state = { changeValue, focus, blur, value, errors, tile, description, disabled };
+
+        // create our root dom element, which will be passed to editron by getElement()
+        this.dom = document.createElement("div");
+        this.dom.classList.add("ed-value", "ed-value--string");
+
+        // render this editor initially 
+        this.render();
+    }
+
+    getElement() {
+        return this.dom;
+    }
+
+    update(event: EditorUpdateEvent) {
+        switch(event.type) {
+            case "data:update":
+                this.state.data = event.value;
+                break;
+            case "validation:errors": 
+                this.state.errors = event.value;
+                break;
+            case "active":
+                this.state.disabled = event.value === false;
+                break;
+        }
+        this.render();
+    }
+
+    render() {
+        // using pseudo-jsx-code here, you can use the rendering of your choice or none at all
+        const errors = this.state.errors.map(error => <li>error.message</li>);
+        
+        this.dom.innerHTML = (
+            <div>
+                <label>
+                    {this.state.title}
+                    <input 
+                        type="text" value="this.state.value" disabled = {this.state.disabled ? "disabled" : ""}
+                        data-id="{this.pointer}" 
+                        onChange={this.state.changeValue}
+                        onFocus={this.state.focus}
+                        onBlur={this.state.blur}
+                    >
+                </label>
+                <em>{this.description}</em>
+                <ul class="errors">{errors}</ul>
+            </div>
+        );
+    }
+
+    destroy() {
+        if (this.state == null) {
+            // check if we havent been destroyed yet
+            return;
+        }
+        this.state = null;
+        // and remove all event listeners registered on dom elements
+    }
+}
+```
 
 
 [Back to README](../README.md)
