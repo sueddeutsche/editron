@@ -7,7 +7,6 @@
 - [Changing Data](#changing-data)
 - [Update Events](#update-events)
 - [Focus Hook](#focus-hooks)
-- [Editron Helpers](#editron-helpers)
 - [Further Details](#further-details)
     - [HTML Conventions](#html-conventions)
     - [The Pointer Property](#the-pointer-property)
@@ -145,19 +144,6 @@ For an implementation example, see the bundled [AbstractValueEditor](../src/edit
 
 
 
-
-## Editron Helpers
-
-### Language Support
-
-`@todo`
-
-
-### Create Element
-
-`@todo`
-
-
 ## Further Details
 
 ### HTML Conventions
@@ -215,9 +201,9 @@ Tracking your own _json-pointer_ or dependending on the initial _pointer_ receiv
 
 ### Delegating Child-Editors
 
-`@todo`
+> When creating a custom _object_ or custom _array_ editor and you just want to add functionality on the surrounding node (which contains further values), but you do not wish to add functionality to those editors, you can delegate the creation of child-editors back to _editron_. Thus, you can hook into any node of the data-tree, inject your ui-features and continue rendering of child-nodes/editors by passing each location back to editron. For this, you can use `editron.createEditor()` like adding an initial root-editor for your initial _editron_ view, as described on the [README](../README.md).
 
-- using controller.createEditor
+`@todo`
 
 
 ### Receiving Child Events
@@ -244,6 +230,7 @@ As a result, your `update`-event will be called for all changes on your data, st
 
 - performance and rendering
 - sync-feature
+
 
 
 ## Example Implementation
@@ -359,6 +346,13 @@ class URLEditor implements Editor {
     }
 }
 ```
+
+
+
+## @todos
+
+- _editron_ display-strings may be customized using the ii8n-setting, but the current setup prevents using the translation helper independent of en editron-dependency. This will create a cyclic dependency which must be prevented _@todo expose the translation helper on the editron-instance in a next release_
+- _editron_ has a _mithril_ based _createElement_-method, which can be used to simplify the creation of a root-dom element. But in future releases, we do not want to depend on a _mithril_-dependency, thus documenting this helper is omitted.
 
 
 [Back to README](../README.md)
