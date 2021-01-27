@@ -6,7 +6,7 @@
 - [Editor](#editor)
 - [Changing Data](#changing-data)
 - [Update Events](#update-events)
-- [Focus Hook](#focus-hook)
+- [Focus Hook](#focus-hooks)
 - [Editron Helpers](#editron-helpers)
 - [Further Details](#further-details)
     - [HTML Conventions](#html-conventions)
@@ -14,13 +14,13 @@
     - [Delegating Child-Editors](#delegating-child-editors)
     - [Receiving Child Events](#receiving-child-events)
     - [Arrays: Working With Patches](#arrays-working-with-patches)
-- [Example Implementation](#example-implementationa)
+- [Example Implementation](#example-implementation)
 
 
 
 ## Editor
 
-A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation and error-reporting and helps choosing the right _editor_ is assigned to the specified value, as defined in the _json-schema_ (and confirmed by the `editorOf`-method of an _editor_).
+> A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation and error-reporting and helps choosing the right _editor_ is assigned to the specified value, as defined in the _json-schema_ (and confirmed by the `editorOf`-method of an _editor_).
 
 An _editron editor_ **must** be a class (or instantiatable function) with the following attributes
 
