@@ -2,6 +2,24 @@
 
 > Here, all required tasks of a custom _editor_, quirks and conventions are documented in detail. If you are looking for a more simple approach, read the [howto of writing a custom value editor](howto-write-value-editor.md), using the _AbstractValueEditor_ helper.
 
+
+- [Editor](#editor)
+- [Changing Data](#changing-data)
+- [Update Events](#update-events)
+- [Focus Hook](#focus-hook)
+- [Editron Helpers](#editron-helpers)
+- [Further Details](#further-details)
+    - [HTML Conventions](#html-conventions)
+    - [The Pointer Property](#the-pointer-property)
+    - [Delegating Child-Editors](#delegating-child-editors)
+    - [Receiving Child Events](#receiving-child-events)
+    - [Arrays: Working With Patches](#arrays-working-with-patches)
+- [Example Implementation](#example-implementationa)
+
+
+
+## Editor
+
 A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation and error-reporting and helps choosing the right _editor_ is assigned to the specified value, as defined in the _json-schema_ (and confirmed by the `editorOf`-method of an _editor_).
 
 An _editron editor_ **must** be a class (or instantiatable function) with the following attributes
@@ -10,6 +28,7 @@ An _editron editor_ **must** be a class (or instantiatable function) with the fo
 - An `update`-method, which will receive all update events, like new _validation-errors_ or _data-updates_
 - An additional method `getElement` to pass the root-dom element of the _editor_ to _editron_ 
 - and a method `destroy` which will be called when the editors is _unmounted_
+
 
 
 ## Changing Data
@@ -95,7 +114,7 @@ pointer             | string            | the _pointer_ (position in data) of yo
 
 
 
-## Additional Focus Hooks
+## Focus Hooks
 
 > An editor **should** notify _editron_ of its current active state by sending its _pointer_ to the _location-service_ when it is _focused_ and _blured_. This enables other _editors_ to respond to the current-selected element, e.g. highlighting the position in an overview-representation, rendering additional informations based on the current selection or changing the shown portion of the data (pagination).
 
