@@ -4,8 +4,8 @@
 > 
 > So, _editron_ per se does not support any options, besides `hidden: boolean`. All other configuration values are defined by the editors in use.
 
-From a given JSON-Schema, its optional properties `title` and `description` are used for labels and inline-information of the generated
-input-element or group. All additional configuration for an _editron_-editor goes into the _editron:ui_ property in each json-schema-definition. Some configuration settings are supported per default, and should be supported by a _custom_-editor. Other configuration settings are editor-specific and should be added with a unique property-name , where its contents **must be an object**. e.g.: The _autocomplete_-Editor, has its custom configuration in a corresponding property _autocomplete_, like in the following example:
+From a given JSON-Schema, its optional properties `title` and `description` are used for labels and inline information of the generated
+input element or group. All additional configuration for an _editron editor_ is placed in the _editron:ui_ property in each json-schema definition. Some configuration settings are supported per default, and should be supported by a _custom editor_. Other configuration settings are editor specific and should be added with a unique property name , where its contents **must be an object**. e.g.: The _autocomplete editor_, has its custom configuration in a corresponding property _autocomplete_, like in the following example:
 
 ```js
 {
@@ -67,7 +67,7 @@ property            | type      | description
 `instantUpdate`     | boolean   | if supported, set to true to update (and validate) on each keystroke, instead of on blur
 
 
-**_title_ and _description_** _title_ and _description_ are properties directly supported by json-schema specification. Thus, editron will pass these values to the options-object of a editor. For consistency, _title_ and _description_ properties are also supported in `editron:ui` configuration object and will override any _title_ or _description_ placed directly on a schema, like in `{ type: "string", title: "my title" }`.
+**title and description** _title_ and _description_ are properties directly supported by json-schema specification. Thus, editron will pass these values to the options-object of a editor. For consistency, _title_ and _description_ properties are also supported in `editron:ui` configuration object and will override any _title_ or _description_ placed directly on a schema, like in `{ type: "string", title: "my title" }`.
 
 **about instantUpdate** The default-editors only update data on a change-event which is mostly triggered on a blur action. That is, when a user exits an input-field, the value is sent and validation started, resulting in fast feedback. In some cases, you want to trigger data-updates and its error-validation while typing. Thus, an option `instantUpdate: true` will tell the editor to send an update on each keystroke. Depending on the validation (e.g. remote requests for validation), _instantUpdate_ will result in bad behaviour.
 
@@ -243,4 +243,4 @@ class MyEditor {
 ```
 
 
-[back to README](../../README.MD)
+[Back to README](../README.md)

@@ -49,13 +49,12 @@ dataService.set(myPointer, newValue);
 ```ts
 class MyEditor {
     render() {
-        // using hyperscript here, but can be rendered with the FW of your choice
-        this.dom.innerHTML = h("input", {
-            "data-id": this.pointer,
-            onchange: event => {
-                this.editron.service("data").set(this.pointer, event.target.value);
-            }
-        });
+        const dataService = this.editron.service("data");
+        const { pointer } = this;
+        const onChange = event => dataService.set(pointer, event.target.value);
+
+        // using jsx-like syntad here, but can be rendered with the FW of your choice
+        this.dom.innerHTML = <input data-id="{this.pointer}" onChange={onChange}>;
     }
 }
 ```
@@ -72,7 +71,7 @@ import { EditorUpdateEvent } from "editron";
 
 class MyEditor {
     update(event: EditorUpdateEvent) {
-        console.log(event);
+        console.log(event.type, event.value);
         this.render();
     }
 }
@@ -261,15 +260,19 @@ class URLEditor implements Editor {
         const schema = editron.service("schema").get(pointer);
         if (schema.type === "string" && schema.format === "url") {
 
-            // this is the schema, we support. Thus we return `true`, which will get this editor to be instantiated for his value
+            // this is the schema, we support. Thus we return 
+            // `true`, which will get this editor to be 
+            // instantiated for his value
             return true;
         }
 
-        // returning false, we tell editron to ignore this editor and keep searching for a matching editor
+        // returning false, we tell editron to ignore this 
+        // editor and keep searching for a matching editor
         return false;
     }
 
-    // same arguments as in editorOf - this only gets called, when our editorOf returned `true` for this pointer
+    // same arguments as in editorOf - this only gets called, 
+    // when our editorOf returned `true` for this pointer
     constructor(pointer: string, editron: Editron, options: EditorOptions) {
 
         // get our current value, the initial _url_-string
@@ -278,18 +281,22 @@ class URLEditor implements Editor {
         // and possible validation errors
         const errors = editron.service("validation").getErrorsAndWarnings(pointer);
 
-        // setup editron integration using this.pointer`, which is always up to date check _The Pointer Property_ for details
+        // setup editron integration using this.pointer`, which 
+        // is always up to date check _The Pointer Property_ for details
         const focus = () => editron.service("location").setCurrent(this.pointer);
         const blur = () => editron.service("location").blur(this.pointer);
         const changeValue = (event) => editron.service("data").set(this.pointer, event.target.value);
 
-        // from our options, we get the basic settings of this editor, mainly retrieved from its json-schema
+        // from our options, we get the basic settings of this 
+        // editor, mainly retrieved from its json-schema
         const { disabled, title, description } = options;
 
-        // for rendering and reuse, we create a state variable, which will be updated from our update events
+        // for rendering and reuse, we create a state variable, 
+        // which will be updated from our update events
         this.state = { changeValue, focus, blur, value, errors, tile, description, disabled };
 
-        // create our root dom element, which will be passed to editron by getElement()
+        // create our root dom element, which will be passed to 
+        // editron by getElement()
         this.dom = document.createElement("div");
         this.dom.classList.add("ed-value", "ed-value--string");
 
@@ -317,15 +324,16 @@ class URLEditor implements Editor {
     }
 
     render() {
-        // using pseudo-jsx-code here, you can use the rendering of your choice or none at all
-        const errors = this.state.errors.map(error => <li>error.message</li>);
+        // using pseudo-jsx-code here, you can use the rendering of 
+        // your choice or none at all
+        const errors = this.state.errors.map(error => <li>{error.message}</li>);
         
         this.dom.innerHTML = (
             <div>
                 <label>
                     {this.state.title}
                     <input 
-                        type="text" value="this.state.value" disabled = {this.state.disabled ? "disabled" : ""}
+                        type="text" value="this.state.value" disabled={this.state.disabled ? "disabled" : ""}
                         data-id="{this.pointer}" 
                         onChange={this.state.changeValue}
                         onFocus={this.state.focus}
@@ -344,7 +352,10 @@ class URLEditor implements Editor {
             return;
         }
         this.state = null;
-        // and remove all event listeners registered on dom elements
+        // remove all event listeners not yet unregistered on dom elements
+        // ...
+        // and maybe acleanup the dom
+        this.dom.innerHTML = "";
     }
 }
 ```

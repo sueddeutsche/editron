@@ -191,3 +191,6 @@ render() {
 - Using the _AbstractValueEditor_ is totally optional, but is very helpful in bootstrapping an editor and following editron-migrations
 - For a more detailed description of an editor and its interaction with editron, refer to [doc-editron-editor.md](doc-editron-editor.md)
 - @todo a running example should be within this repository
+
+
+[Back to README](../README.md)
