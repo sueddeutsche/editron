@@ -183,3 +183,7 @@ As a result, your `update`-event will be called for all changes on your data, st
 
 - performance and rendering
 - sync-feature
+
+
+
+[Back to README](../README.md)
