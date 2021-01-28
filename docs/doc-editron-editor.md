@@ -203,6 +203,43 @@ Tracking your own _json-pointer_ or dependending on the initial _pointer_ receiv
 
 > When creating a custom _object_ or custom _array_ editor and you just want to add functionality on the surrounding node (which contains further values), but you do not wish to add functionality to those editors, you can delegate the creation of child-editors back to _editron_. Thus, you can hook into any node of the data-tree, inject your ui-features and continue rendering of child-nodes/editors by passing each location back to editron. For this, you can use `editron.createEditor()` like adding an initial root-editor for your initial _editron_ view, as described on the [README](../README.md).
 
+Suppose we have an custom editor for an object, but want to modify the objects representation only:
+
+```ts
+class MyObject implements Editor {
+    // ...
+    constructor(pointer: string, editron: Editron) {
+
+        // we need to track the child editors in order to
+        // recreate or destroy them
+        this.childEditors = [];
+
+        // create a dom element to gather all childNodes
+        this.$children = document.createElement("div");
+
+        // fetch the current data object
+        const myObject = editron.service("data").get(pointer);
+
+        // iterate data and create an editor for each property
+        Object.keys(myObject)
+            .forEach(property => {
+                const childPointer = `${this.pointer}/${property}`;
+                // this will create a child editor and appended it to $children
+                const childEditor = editron.createEditor(childPointer, this.$children);
+                this.childEditors.push(childEditor);
+            });
+    }
+
+    update() {
+        // @todo recreate child nodes on data-change
+    }
+
+    render() {
+        // @todo render custom view and inject $children element in correct position
+    }
+}
+```
+
 `@todo`
 
 
@@ -334,15 +371,19 @@ class URLEditor implements Editor {
     }
 
     destroy() {
+        // check if we havent been destroyed yet
         if (this.state == null) {
-            // check if we havent been destroyed yet
             return;
         }
-        this.state = null;
+
         // remove all event listeners not yet unregistered on dom elements
         // ...
-        // and maybe acleanup the dom
+        
+        // maybe cleanup the dom
         this.dom.innerHTML = "";
+
+        // free the state and flag instance to be deleted
+        this.state = null;
     }
 }
 ```
