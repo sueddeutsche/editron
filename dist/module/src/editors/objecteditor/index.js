@@ -31,6 +31,9 @@ export default class ObjectEditor extends AbstractEditor {
             });
         }
         this.childOptions = {};
+        if (options.disabled) {
+            this.childOptions.disabled = true;
+        }
         if (options.theme) {
             this.childOptions.theme = options.theme;
         }

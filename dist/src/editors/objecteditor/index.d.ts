@@ -43,6 +43,7 @@ export default class ObjectEditor extends AbstractEditor {
     $headerChildren: HTMLElement;
     childOptions: {
         theme?: string;
+        disabled?: boolean;
     };
     static editorOf(pointer: JSONPointer, controller: Controller): boolean;
     constructor(pointer: JSONPointer, controller: Controller, options: Options);
