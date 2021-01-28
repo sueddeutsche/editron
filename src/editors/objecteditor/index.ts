@@ -69,7 +69,7 @@ export default class ObjectEditor extends AbstractEditor {
     childEditors: Array<Editor> = [];
     $children: HTMLElement;
     $headerChildren: HTMLElement;
-    childOptions: { theme?: string };
+    childOptions: { theme?: string, disabled?: boolean };
 
 
     static editorOf(pointer: JSONPointer, controller: Controller) {
@@ -97,7 +97,11 @@ export default class ObjectEditor extends AbstractEditor {
             });
         }
 
+
         this.childOptions = {};
+        if (options.disabled) {
+            this.childOptions.disabled = true;
+        }
         if (options.theme) {
             this.childOptions.theme = options.theme;
         }

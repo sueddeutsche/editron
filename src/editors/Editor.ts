@@ -7,6 +7,8 @@ import { Action } from "../components/actions";
 export type Options = {
     /** object title from json-schema */
     title: string;
+    /** hide the title */
+    hideTitle?: boolean;
     /** if set to true, editor should not allow data-modification */
     disabled: boolean;
     /** object description from json-schema */
@@ -17,8 +19,6 @@ export type Options = {
     actions?: Array<Action>;
     /** icon to display in object-header */
     icon?: string;
-    /** hide the title */
-    hideTitle?: boolean;
     /** optional root-element html attributes */
     attrs?: { [p: string]: any };
     /** theme options for value-editors */
@@ -79,6 +79,6 @@ export interface Editor {
     getPointer(): JSONPointer;
     /** returns the editors root element */
     getElement(): HTMLElement;
-    /** destroy editor-instance */
+    /** destroys editor-instance - this function not be called directly. Use `editron.destroyEditor(myEditor)` instead */
     destroy(): void;
 }

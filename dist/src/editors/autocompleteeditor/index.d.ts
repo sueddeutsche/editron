@@ -1,8 +1,8 @@
+import AbstractValueEditor, { ViewModel } from '../AbstractValueEditor';
 import Controller from "../../Controller";
 import { JSONPointer } from "../../types";
-import { QueryListFormAttrs } from 'mithril-material-forms';
 import { Options as EditorOptions } from "../Editor";
-import AbstractValueEditor, { ViewModel } from '../AbstractValueEditor';
+import { QueryListFormAttrs } from "mithril-material-forms";
 export declare type SuggestionInput = {
     /** display name of value */
     name?: string;

@@ -1,4 +1,4 @@
-Editron is a JSON-Editor, which takes a JSON-Schema to generate an HTML form for user input and live validation. The editor can be used as a component in your web application.
+Editron creates an html user interface with validation for your data, solely based on a json-schema, with almost no programming required. Then, use Editron with your own components and plugins to completely customize the user interface according to your needs.
 
 ![editron](./docs/images/logo.png)
 
@@ -282,57 +282,7 @@ const validInputData = controller.service("schema").addDefaultData(inputData, js
 
 **Customize base editors from json-schema**
 
-From a given JSON-Schema, its properties `title` and `description` are used for labels and inline-information of the
-input-element or group. For all further editron and editor-widget-settings an object `"editron:ui"` is supported, where
-all editor and ui configurations may be placed. By the base editor-widgets, the following options are supported
-
-property            | type          | description
-:-------------------|:--------------|:--------------------------------------------------------------------------
-title               | String        | set or override the title
-description         | String        | set or override the description
-attrs               | Object        | attributes object, passed to the editors html-element
-icon                | String        | if supported, define the type of [material icon](https://material.io/tools/icons/?style=baseline)
-hidden              | Boolean       | hide the value from the user-interface
-enum                | String[]      | ui titles for an enum-selection
-placeholder         | String        | placeholder, if editor uses an input-element
-
-
-Example:
-
-```javascript
-{
-    type: "object",
-    "editron:ui": {
-        attrs: { class: "mmf-card" }, // additional html attributes for the object-editor
-        title: "SEO-Settings",
-        description: "",
-        icon: "panorama_horizontal",
-        hidden: false, // hide this value
-        "object:compact": true // (fake) custom setting for the *object*-editor`
-    }
-}
-```
-
-All (custom) editors may support additional configuration settings, which should be checked on their corresponding README.
-
-Array-Editor options:
-
-property            | type          | description
-:-------------------|:--------------|:--------------------------------------------------------------------------
-"array:index"       | Boolean=false | show list indices
-controls            | Object        | controls options, for list item manipulation
-controls.add        | Boolean=false | additional add item button
-controls.remove     | Boolean=true  | remove button on each item
-controls.move       | Boolean=true  | up and down move cursors
-controls.insert     | Boolean=true  | insert button between elements
-
-
-Object-Editor options:
-
-property            | type          | description
-:-------------------|:--------------|:--------------------------------------------------------------------------
-collapsed           | Boolean?      | If defined, adds a collapsible-icon. If true, will hide properties per default. Besides a `hidden` class, will add a class `collapsible` to the object-container
-addDelete           | Boolean?      | Adds an delete option for this object (added automatically on array-items)
+To configure a specific editron-editor, please refer to the [documentation of editor options](./docs/doc-editor-options.md)
 
 
 **Add additional editors**
@@ -751,18 +701,6 @@ const timeEditor = controller.createEditor(pointerToTime, timeDom); // create ch
 // you can also pass options to the editor with
 // controller.createEditor(pointerToTime, timeDom, editorOptions);
 ```
-
-**Note** that managing childeditors also requires delegation of the `updatePointer` message. In case of the above
-_time_ example, you would need to notify the child-editor, as follows:
-
-```javascript
-// within updatePointer(newPointer)
-super.updatePointer(newPointer);
-// ...
-timeEditor.updatePointer(`${this.getPointer()}/time`);
-```
-
-<!-- @todo inspect updatePointer automation -->
 
 
 #### Advanced

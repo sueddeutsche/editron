@@ -1,6 +1,6 @@
-import { QueryListForm } from 'mithril-material-forms';
-import m from "mithril";
 import AbstractValueEditor from '../AbstractValueEditor';
+import m from "mithril";
+import { QueryListForm } from "mithril-material-forms";
 export default class AutocompleteEditor extends AbstractValueEditor {
     constructor(pointer, controller, options) {
         super(pointer, controller, options);

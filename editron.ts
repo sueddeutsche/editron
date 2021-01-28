@@ -36,7 +36,6 @@ export { default as ObjectEditor } from "./src/editors/objecteditor";
 export { default as OneOfEditor } from "./src/editors/oneofeditor";
 export { default as ValueEditor } from "./src/editors/valueeditor";
 export { default as AutocompleteEditor } from "./src/editors/autocompleteeditor";
-
 // services
 export { default as DataService } from "./src/services/dataservice";
 export { default as LocationService } from "./src/services/LocationService";
@@ -51,3 +50,6 @@ export { default as RemoteDataPlugin } from "./src/plugin/remotedataplugin";
 export { default as SelectionPlugin } from "./src/plugin/selectionplugin";
 export { default as SortablePlugin } from "./src/plugin/sortableplugin";
 export { default as SyncPlugin } from "./src/plugin/syncplugin";
+// diff
+export type { Patch } from "./src/services/utils/createDiff";
+export { default as diffpatch } from "./src/services/utils/diffpatch";
