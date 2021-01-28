@@ -24,7 +24,7 @@ export * as components from "./src/components";
 export * as utils from "./src/utils";
 export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/editors/Editor";
 export type { EditorUpdateEvent } from "./src/editors/Editor";
-export type { ValidationError, EditronConfigAttrs, FormatValidator, KeywordValidator, JSONSchema } from "./src/types";
+export type { ValidationError, EditronConfigAttrs, FormatValidator, KeywordValidator, JSONSchema, JSONPointer, JSONData } from "./src/types";
 export type { Direction } from "./src/utils/selection";
 export { default as AbstractEditor } from "./src/editors/AbstractEditor";
 export { default as AbstractValueEditor } from "./src/editors/AbstractValueEditor";
