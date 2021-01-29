@@ -201,11 +201,42 @@ Tracking your own _json-pointer_ or dependending on the initial _pointer_ receiv
 
 ### Delegating Child-Editors
 
-> When creating a custom _object_ or custom _array_ editor and you just want to add functionality on the surrounding node (which contains further values), but you do not wish to add functionality to those editors, you can delegate the creation of child-editors back to _editron_. Thus, you can hook into any node of the data-tree, inject your ui-features and continue rendering of child-nodes/editors by passing each location back to editron. For this, you can use `editron.createEditor()` like adding an initial root-editor for your initial _editron_ view, as described on the [README](../README.md).
+> When creating a custom _object_ or custom _array_ editor and you just want to add functionality on the surrounding node (which contains further values), but you do not wish to add functionality to those editors, you can delegate the creation of child-editors back to _editron_. Thus, you can hook into any node of the data-tree, inject your ui-features and continue rendering of child-nodes/editors by passing each location back to editron. For this, you can use `editron.createEditor()`, like adding an initial root-editor for your initial _editron_ view, as described on the [README](../README.md).
+
+You can delegate one, some or all _properties_ or _items_ of your editor back to _editron_. In this case, _editron_ will choose and setup the _editor_ for this property, but you have to place the returned dom into you editor's view:
+
+```ts
+    // we to delegate our first item, that is: our pointer + target-property:
+    const delegatedPointer: string = `${this.pointer}/0`; 
+    // a dom-element, where child-editors should be placed
+    const childDom: HTMLElement = document.createElement("div");
+    // following the basic editor creation, create the editor, which will be 
+    // appended to childDom
+    const delegatedEditor: Editor = editron.createEditor(delegatedPointer, childDom);
+```
+
+Remember: the api between _editors_ and _editron_ is a _dom-element_. Following the above example
+
+```ts
+    // now, we have a child-editor rendered to `childDom` and must inject it into
+    // our view. Thus, in e.g. the our render()-method
+    this.dom.innerHTML = (
+        <div>
+            <h1>My Custom Editor</h1>
+            <div class="ed-children">
+                // inject our child-dom element into our editor's view
+                {childDom}
+            </div>
+        </div>
+    )
+```
 
 Suppose we have an custom editor for an object, but want to modify the objects representation only:
 
 ```ts
+import { EditorUpdateEvent } from "editron";
+
+
 class MyObject implements Editor {
     // ...
     constructor(pointer: string, editron: Editron) {
@@ -224,23 +255,55 @@ class MyObject implements Editor {
         Object.keys(myObject)
             .forEach(property => {
                 const childPointer = `${this.pointer}/${property}`;
-                // this will create a child editor and appended it to $children
+                // this will create a child editor and append it to $children
                 const childEditor = editron.createEditor(childPointer, this.$children);
                 this.childEditors.push(childEditor);
             });
     }
 
-    update() {
-        // @todo recreate child nodes on data-change
+    update(event: EditorUpdateEvent) {
+        switch(event.type) {
+            // for an object, a data update is triggered (only), when a property is added or removed
+            case "data:update": {
+                // 1. destroy previous editors
+                this.childEditors.forEach(editor => controller.destroyEditor(editor));
+                this.childEditors.length = 0; // reset stored editors
+                this.$children.innerHTML = ""; // reset html
+
+                // 2. featch current data
+                const myObject = event.value; // or using `editron.service("data").get(this.pointer)`
+
+                // 3. iterate data and (re)create an editor for each property
+                Object.keys(myObject)
+                    .forEach(property => {
+                        const childPointer = `${this.pointer}/${property}`;
+                        // this will create a child editor and append it to $children
+                        const childEditor = editron.createEditor(childPointer, this.$children);
+                        this.childEditors.push(childEditor);
+                    });
+
+                break;
+            }
+        }
     }
 
     render() {
-        // @todo render custom view and inject $children element in correct position
+        // using pseudo-jsx-code here, you can use a rendering of your choice
+        this.dom.innerHTML = (
+            <div>
+                <h1>My Custom Object Editor</h1>
+                // ... other custom stuff
+                <div class="ed-children">
+                    // important: following this example, you need a way to inject 
+                    // a dom-element for the children. Dependending on your choice 
+                    // of framework you may need a different solution
+                    {this.$children}
+                </div>
+            </div>
+        );
     }
 }
 ```
-
-`@todo`
 
 
 ### Receiving Child Events
