@@ -10,6 +10,7 @@
 - [Further Details](#further-details)
     - [HTML Conventions](#html-conventions)
     - [The Pointer Property](#the-pointer-property)
+    - [Injecting DOM-Elements](#injecting-dom-elements)
     - [Delegating Child-Editors](#delegating-child-editors)
     - [Receiving Child Events](#receiving-child-events)
     - [Arrays: Working With Patches](#arrays-working-with-patches)
@@ -199,11 +200,57 @@ Internally, each editor is identified by its _pointer_. For this reason an _edit
 Tracking your own _json-pointer_ or dependending on the initial _pointer_ received in the constructor will cause errors in behaviour (@see [HTML Attributes](#html-attributes)) or errors in rendering child-editors. @see [Delegating Child-Editors](#delegating-child-editors).
 
 
+### Injecting DOM-Elements
+
+> _Editron_ uses DOM-Elements as an interface between _editors_. This ensures _editron_ is framework agnostic. But this may cause some headaches managing and injecting _DOM_-nodes outside the frawework in use.
+
+Basically, there are two possibilities to append _DOM_-nodes using a framework
+
+1. append your node within the view on a _on-create-hook_
+2. use _document.querySelector_ to fetch the _parent-node_ of a prerendered view and append the your node
+
+
+**1. append your node within the view**
+
+For example, [mithriljs](https://mithril.js.org/) supports an `oncreate`-hook, which will pass the _DOM_-node of the element:
+
+```ts
+m.render(this.dom,
+    m(".ed-children", {
+        // append $myNode once, to a managed view
+        oncreate: ({ dom }) => dom.appendChild(this.$myNode);
+    })
+);
+```
+
+Following this api, our jsx-like examples in this document simplify the step to
+
+```ts
+this.dom.innerHTML = (
+    <div class=".ed-children">
+        {this.$myNode}
+    </div>
+);
+```
+
+
+**2. _querySelector_ on a prerendered view**
+
+Optionally render your view twice: Once initially to setup the DOM-hierarchy, append your node to the selected target and render the full view:
+
+```ts
+// initial render
+this.render();
+const target = this.dom.querySelector(".ed-children");
+target.appendChild(this.$myNode);
+```
+
+
 ### Delegating Child-Editors
 
 > When creating a custom _object_ or custom _array_ editor and you just want to add functionality on the surrounding node (which contains further values), but you do not wish to add functionality to those editors, you can delegate the creation of child-editors back to _editron_. Thus, you can hook into any node of the data-tree, inject your ui-features and continue rendering of child-nodes/editors by passing each location back to editron. For this, you can use `editron.createEditor()`, like adding an initial root-editor for your initial _editron_ view, as described on the [README](../README.md).
 
-You can delegate one, some or all _properties_ or _items_ of your editor back to _editron_. In this case, _editron_ will choose and setup the _editor_ for this property, but you have to place the returned dom into you editor's view:
+You can delegate one, some or all _properties_ or _items_ of your editor back to _editron_. In this case, _editron_ will choose and setup the _editor_ for this property, but you have to place the returned _DOM_ into you editor's view:
 
 ```ts
     // we to delegate our first item, that is: our pointer + target-property:
@@ -215,7 +262,7 @@ You can delegate one, some or all _properties_ or _items_ of your editor back to
     const delegatedEditor: Editor = editron.createEditor(delegatedPointer, childDom);
 ```
 
-Remember: the api between _editors_ and _editron_ is a _dom-element_. Following the above example
+Remember: the api between _editors_ and _editron_ is a _DOM-element_. Following the above example
 
 ```ts
     // now, we have a child-editor rendered to `childDom` and must inject it into
