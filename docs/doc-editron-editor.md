@@ -82,13 +82,16 @@ class MyEditor {
 Usually a switch statement is helpful, to process the events:
 
 ```ts
-import { EditorUpdateEvent } from "editron";
+import EditronController, { EditorUpdateEvent } from "editron";
 
 class MyEditor {
+
+    editron: EditronController;
+
     update(event: EditorUpdateEvent) {
         switch(event.type) {
             case "data:update":
-                this.data = event.value;
+                this.data = this.editron.service("data").get(this.pointer);
                 break;
             case "validation:errors": 
                 this.errors = event.value;
@@ -106,7 +109,7 @@ Overview of update events:
 
 type                | value     | description
 --------------------|-----------|-----------------
-data:update         | any               | the new `data` of your editor to display
+data:update         | { pointer, patch } | `data` has changed
 validation:errors   | [ValidationError] | list of validation `errors` in your _data_
 active              | boolean           | if `false`, the input should not be editable
 pointer             | string            | the _pointer_ (position in data) of your editor has changed
@@ -275,7 +278,7 @@ class MyObject implements Editor {
                 this.$children.innerHTML = ""; // reset html
 
                 // 2. featch current data
-                const myObject = event.value; // or using `editron.service("data").get(this.pointer)`
+                const myObject = this.editron.service("data").get(this.pointer);
 
                 // 3. iterate data and (re)create an editor for each property
                 Object.keys(myObject)
@@ -395,7 +398,7 @@ As a result, your `update`-event will be called for all changes on your data, st
 
 Internally, _editron_ uses diffs on _json-data_ to determine if data has changed and determine the location and type of change. For a change in data, the corresponding diff is passed along to the _update-event_, which can be used to update a view in place, optimizing rerendering the view. For a complete implementation, refer to the bundled [Array-Editor#applyPatches](../src/editors/arrayeditor/index.ts#196).
 
-@todo overview, details of a patch, implementation-example, consider renaming patch to diff (in docu) - depending on its contents
+`@todo` overview, details of a patch, implementation-example, consider renaming patch to diff (in docu) - depending on its contents
 
 
 
@@ -468,7 +471,7 @@ class URLEditor implements Editor {
     update(event: EditorUpdateEvent) {
         switch(event.type) {
             case "data:update":
-                this.state.data = event.value;
+                this.state.data = this.editron.service("data").get(this.pointer);
                 break;
             case "validation:errors": 
                 this.state.errors = event.value;
