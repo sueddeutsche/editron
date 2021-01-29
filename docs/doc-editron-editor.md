@@ -193,7 +193,7 @@ Each root _dom_-element receives a class `ed-<JSTYPE>` and for values an additio
 
 ### The Pointer Property
 
-> A _json-pointer_ of an _editor_ may change, when its position is changed, due to modifications of an array. Arrays are modified when another items is inserted or deleted or items are resorted. To improve rendering speed and maintain the current input-focus an _editor_ may be moved and reused (instead of destroyed and recreated). But this will change the editor's original position and requires a change of events, dom-attributes and possibly accessing child-editors.  
+> A _json-pointer_ of an _editor_ may change, when its position is changed, due to [modifications of an array](#arrays-working-with-patches). Arrays are modified when another items is inserted or deleted or items are resorted. To improve rendering speed and maintain the current input-focus an _editor_ may be moved and reused (instead of destroyed and recreated). But this will change the editor's original position and requires a change of events, _DOM_-attributes and possibly accessing child-editors.  
 
 Internally, each editor is identified by its _pointer_. For this reason an _editor_-instance, will receive a managed property `pointer:string`, placed directly on the instance's object. So, if you create an instance by `const instance = editron.createEditor("#/article", dom);` you may access (but must not modify) the _json-pointer_ of an _editor_ through `instance.pointer`. 
 
@@ -277,6 +277,9 @@ Remember: the api between _editors_ and _editron_ is a _DOM-element_. Following 
         </div>
     )
 ```
+
+[@see Injecting DOM-Elements](#injecting-dom-elements) for working with _DOM_-nodes
+
 
 Suppose we have an custom editor for an object, but want to modify the objects representation only:
 
@@ -373,10 +376,15 @@ As a result, your `update`-event will be called for all changes on your data, st
 
 ### Arrays: Working With Patches
 
-`@todo`
+> An _array-editor_ can be written by following the guidelines in this document. But, arrays have a unqiue behaviour, in which items are not fixed to their position like object-properties (usally). So, rearranging item positions is a behaviour unique to arrays and has a special impact on the rendering. A naive implementation may just destroy the whole user-interface and create it from scratch, whenever an item is moved to another position.
+>
+> Recreating an array for each change in item-positions can have a huge impact on performance, dependening on the complexity of the array contents (e.g. multiple objects and form elements per item). And it can mess with the current user interaction, where a focus input element becomes defocused after recreation. This will be extremely noticable when synching changes across multiple users. On the other hand, only positions do change, not the corresponding view. Making a reuse of array-items a logic choice.
+>
+> In the context of `editron`, position of a _editor_ (_view_) is referenced by a _json-pointer_. For this case, the _json-pointer_ is managed for each editor from _editron_ and can be access by `this.pointer` as is explained in [The Pointer Property](#the-pointer-property).
 
-- performance and rendering
-- sync-feature
+Internally, _editron_ uses diffs on _json-data_ to determine if data has changed and determine the location and type of change. For a change in data, the corresponding diff is passed along to the _update-event_, which can be used to update a view in place, optimizing rerendering the view. For a complete implementation, refer to the bundled [Array-Editor#applyPatches](../src/editors/arrayeditor/index.ts#196).
+
+@todo overview, details of a patch, implementation-example, consider renaming patch to diff (in docu) - depending on its contents
 
 
 
@@ -385,7 +393,11 @@ As a result, your `update`-event will be called for all changes on your data, st
 ```ts
 import Editron, { Editor, EditorUpdateEvent, EditorOptions } from "editron";
 
+
 class URLEditor implements Editor {
+    
+    // this property is managed by editron (its instance-service)
+    pointer: string;
     
     // we register this editor to all strings with a format "url"
     static editorOf(pointer: string, editron: Editron, options: EditorOptions) {
