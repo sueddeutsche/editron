@@ -398,8 +398,50 @@ As a result, your `update`-event will be called for all changes on your data, st
 
 Internally, _editron_ uses diffs on _json-data_ to determine if data has changed and determine the location and type of change. For a change in data, the corresponding diff is passed along to the _update-event_, which can be used to update a view in place, optimizing rerendering the view. For a complete implementation, refer to the bundled [Array-Editor#applyPatches](../src/editors/arrayeditor/index.ts#196).
 
-`@todo` overview, details of a patch, implementation-example, consider renaming patch to diff (in docu) - depending on its contents
+Each _data:update_ event contains the location of change and a patch-object on its _value_ property:
 
+```ts
+type DataUpdateEvent {
+    type: "data:update",
+    value: {
+        pointer: string;
+        patch: Patch;
+    }
+}
+```
+
+Where a `Patch` is defined by the [jsondiffpatch library](https://github.com/benjamine/jsondiffpatch) and documented in [docs/delta](https://github.com/benjamine/jsondiffpatch/blob/master/docs/deltas.md).
+
+Using jsondiffpatch we can apply the patch directly to our child-editors list and update the dom correspondingly:
+
+```ts
+import { diffpatch } from "editron";a
+
+class MyObject implements Editor {
+
+    // list of all delegated childeditors, matching array-data structure
+    childEditors: Array<Editor>;
+    
+    // ...
+
+    update(event: EditorUpdateEvent) {
+        switch(event.type) {
+            case "data:update": {
+                // clone our current editor list
+                const children = Array.from(this.childEditors);
+                // create the current list of childnodes)
+                diffpatch.patch(children, event.value.patch);
+                
+                // then iterate children and update dom correspondingly
+                // for an implementation, please refer to ArrayEditor#applyPatches
+                // ...
+
+                break;
+            }
+        }
+    }
+}
+```
 
 
 ## Example Implementation
