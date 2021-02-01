@@ -47,6 +47,7 @@ function validator(core, schema, value, pointer) {
 ```
 
 
+
 ## Custom Format Validator
 
 Following the example above, you add a _format-validator_ by
@@ -56,6 +57,16 @@ import Editron from "editron";
 const editron = new Editron(mySchema);
 editron.addFormatValidator("image-url", validator);
 ```
+
+This will trigger the validator for each _json-schema_ definition, containing `format: "image-url"` like
+
+```json
+{
+  "type": "string",
+  "format": "image-url"
+}
+``` 
+
 
 
 ## Custom Keyword Validator
@@ -67,6 +78,18 @@ import Editron from "editron";
 const editron = new Editron(mySchema);
 editron.addKeywordValidator("string", "hasLicense", validator);
 ```
+
+This will trigger the validator for each _json-schema_ definition, containing `type: "string", hasLicense: "any-value"` like
+
+```json
+{
+  "type": "string",
+  "hasLicense": "test"
+}
+``` 
+
+But it will not trigger on any non-strings, like `type: "number", hasLicense: "any-value"`.
+
 
 
 ## Further Reading
