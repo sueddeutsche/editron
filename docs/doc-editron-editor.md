@@ -1,4 +1,4 @@
-# Editron Editor
+# Custom Editron Editors
 
 > Here, all required tasks of a custom _editor_, quirks and conventions are documented in detail. If you are looking for a more simple approach, read the [howto of writing a custom value editor](howto-write-value-editor.md), using the _AbstractValueEditor_ helper.
 
@@ -20,24 +20,24 @@
 
 ## Editor
 
-> A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation and error-reporting and helps choosing the right _editor_ is assigned to the specified value, as defined in the _json-schema_ (and confirmed by the `editorOf`-method of an _editor_).
+> A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation and error-reporting. // TODO: Verstehe den nachfolgenden Satz nicht. Wie hilft Editron "den richtigen Editor zu wählen? // helps choosing the right _editor_ is assigned to the specified value, as defined in the _json-schema_ (and confirmed by the `editorOf`-method of an _editor_).
 
-An _editron editor_ **must** be a class (or instantiatable function) with the following attributes
+An custom _editron editor_ **needs** to be a class (or instantiatable function) with the following attributes
 
-- A static `editorOf`-method, which will be called to evaluate, if this _editor_ should be used to render for the current _value_
+- A static `editorOf`-method, which will be called to evaluate, if this _editor_ should be used to render for the current _value_ 
 - An `update`-method, which will receive all update events, like new _validation-errors_ or _data-updates_
-- An additional method `getElement` to pass the root-dom element of the _editor_ to _editron_ 
+- An additional method `getElement` to pass the root-dom element of the _editor_ to _editron_  //TODO: Was macht diese getElement Methode? //
 - and a method `destroy` which will be called when the editors is _unmounted_
+**Note** A full example of a custom editor, implementing all these attributes, can be found at the end of this README: [Example Implementation](#example-implementation)
 
 
-
-## Changing Data
+## Changing / Updating Data
 
 > Each _editor_ is responsible to pass data changes from a user directly to _editron_. For all data changes, no manual update in rendering is required. Instead, each change in data will notify your `update`-method, after which your view should be updated. 
 
 To update data that the custom _editor_ is managing under its _json-pointer_, you **must** notify _editron_ of the changes to update the main data, trigger validation and notify all responsible editors to render the update. This conforms to the basic redux-pattern, which is used internally.
 
-To update the data you access the editron _data-service_ and change the data at your position:
+To update data, you use the editron _data-service_ and change the data at the specific position:
 
 ```ts
 const dataService = editron.service("data");
@@ -53,7 +53,7 @@ class MyEditor {
         const { pointer } = this;
         const onChange = event => dataService.set(pointer, event.target.value);
 
-        // using jsx-like syntad here, but can be rendered with the FW of your choice
+        // using jsx-like syntax here, but can be rendered with a framework of your choice
         this.dom.innerHTML = <input data-id="{this.pointer}" onChange={onChange}>;
     }
 }
@@ -62,14 +62,14 @@ class MyEditor {
 
 
 ## Update Events
-
-_Editron_ services emit their events to each editor's `update`-method. To inspect these events and sequence, you can log them in your editor. Each events has a `type:string` and a specific `value:T` dependening on the type of event. Some events send data-updates, emit errors and change the active state of an editor. This should be processed and end with an update of your view.
-
+// TODO: "registered" = jedem aktuell verwendeten Editor //  
+_Editron_ services emit their events to each registered editor's `update`-method. To inspect these events and sequence // TODO: Was meinst du mit squence //, you can log them in your editor. Each event has a `type:string` and a specific `value:T` dependening on the type of event. Some events send data-updates, emit errors and change the active state of an editor. If needed, the specific events should be processed and trigger an update of your view.
 
 ```ts
 import { EditorUpdateEvent } from "editron";
 
 class MyEditor {
+    // ...
     update(event: EditorUpdateEvent) {
         console.log(event.type, event.value);
         this.render();
@@ -77,16 +77,16 @@ class MyEditor {
 }
 ``` 
 
-**Note** Editor events are typed in [Editor.ts](../src/editors/Editor.ts)
+**Note** Editor events (`EditorUpdateEvent`) are typed in [Editor.ts](../src/editors/Editor.ts)
 
 Usually a switch statement is helpful, to process the events:
 
 ```ts
-import EditronController, { EditorUpdateEvent } from "editron";
+import { EditorUpdateEvent } from "editron";
 
 class MyEditor {
-
     editron: EditronController;
+    // ...
 
     update(event: EditorUpdateEvent) {
         switch(event.type) {
@@ -154,9 +154,9 @@ For an implementation example, see the bundled [AbstractValueEditor](../src/edit
 
 #### HTML Attributes
 
-Your root _dom_-element is assigned the current json-pointer to an html-attribute `[data-point=<json-pointer>]`. If your choice of rendering overwrites this attribute, it is recommended to add it on your own. The attribute _data-point_ enables an integration by querying the dom-hierarchy for a match using this convention.
+Your root _dom_-element is assigned the current json-pointer as html-attribute `[data-point=<json-pointer>]`. If your choice of rendering overwrites this attribute, it is recommended to readd it on your own. The attribute _data-point_ enables querying the dom-hierarchy for a match using this convention, and is utilized by other Editron services. // TODO: Oder was meintest du mit integration? //
 
-In addtion to an attribute on your root-element, an attribute `[data-id]=<json-pointer>` _should_ be placed to each html-input-form (_input_, _select_, _textarea_, etc) for the same reasons.
+In addtion to this data-point attribute on your root-element, an attribute `[data-id]=<json-pointer>` _should_ be placed to each html-input-form (_input_, _select_, _textarea_, etc) for the same reason.
 
 `data-point` and `data-id` is currently used in
 
@@ -206,11 +206,12 @@ Tracking your own _json-pointer_ or dependending on the initial _pointer_ receiv
 ### Delegating Child-Editors
 
 > When creating a custom _object_ or custom _array_ editor and you just want to add functionality on the surrounding node (which contains further values), but you do not wish to add functionality to those editors, you can delegate the creation of child-editors back to _editron_. Thus, you can hook into any node of the data-tree, inject your ui-features and continue rendering of child-nodes/editors by passing each location back to editron. For this, you can use `editron.createEditor()`, like adding an initial root-editor for your initial _editron_ view, as described on the [README](../README.md).
+// TODO: Maybe describe an actual example why you would want to do that. //
 
 You can delegate one, some or all _properties_ or _items_ of your editor back to _editron_. In this case, _editron_ will choose and setup the _editor_ for this property, but you have to place the returned _DOM_ into you editor's view:
 
 ```ts
-    // we to delegate our first item, that is: our pointer + target-property:
+    // we delegate our first item, that is: our pointer + target-property:
     const delegatedPointer: string = `${this.pointer}/0`; 
     // a dom-element, where child-editors should be placed
     const childDom: HTMLElement = document.createElement("div");
@@ -219,7 +220,7 @@ You can delegate one, some or all _properties_ or _items_ of your editor back to
     const delegatedEditor: Editor = editron.createEditor(delegatedPointer, childDom);
 ```
 
-Remember: the api between _editors_ and _editron_ is a _DOM-element_. Following the above example
+Remember: the api between _editors_ and _editron_ is a _DOM-element_. Following the above example:
 
 ```ts
     // now, we have a child-editor rendered to `childDom` and must inject it into
@@ -238,7 +239,7 @@ Remember: the api between _editors_ and _editron_ is a _DOM-element_. Following 
 [@see Injecting DOM-Elements](#injecting-dom-elements) for working with _DOM_-nodes
 
 
-Suppose we have an custom editor for an object, but want to modify the objects representation only:
+Suppose we have a custom editor for an object, but want to modify the objects representation only:
 
 ```ts
 import { EditorUpdateEvent } from "editron";
@@ -372,9 +373,9 @@ target.appendChild(this.$myNode);
 
 ### Receiving Child Events
 
-> For convenience and optimization each _editor_ registers to events on its own location (_json-pointer_) only. That is, it will receive updates on errors or data changes only regarding its own value. Thus, an _object_ or _array_ will not be notified if its _property_ or _item_ receive a change of its value and has a validation-error.
+> For convenience and optimization each _editor_ registers to events on its own location (_json-pointer_) only. It will only receive updates on errors or data changes regarding its own value. Thus, an _object_ or _array_ will not be notified if its _property_ or _item_ receives a change of its value or has a validation-error.
 
-In some cases it is required that an editors listens to changes in its child values or errors. For example, an _editor_ manages its whole object, not relying on child-editors, it will require all updates within to trigger a dom-update. For this reason, you may set properties on your instance, to register to nested events:
+In some cases it is required that an editor listens to changes on its child values or errors. For example, an _editor_ manages its whole object, not relying on child-editors, it will require all updates within to trigger a dom-update. For this reason, you may set properties on your instance, to register to nested events:
 
 ```ts
 class MyEditor {
@@ -393,8 +394,9 @@ As a result, your `update`-event will be called for all changes on your data, st
 > An _array-editor_ can be written by following the guidelines in this document. But, arrays have a unqiue behaviour, in which items are not fixed to their position like object-properties (usally). So, rearranging item positions is a behaviour unique to arrays and has a special impact on the rendering. A naive implementation may just destroy the whole user-interface and create it from scratch, whenever an item is moved to another position.
 >
 > Recreating an array for each change in item-positions can have a huge impact on performance, dependening on the complexity of the array contents (e.g. multiple objects and form elements per item). And it can mess with the current user interaction, where a focus input element becomes defocused after recreation. This will be extremely noticable when synching changes across multiple users. On the other hand, only positions do change, not the corresponding view. Making a reuse of array-items a logic choice.
+// TODO: Hier fehlt irgendwie das "Daher machen wir das so und so". Oder vielleicht verstehe ich das auch falsch. "Wir wollen nicht die komplette UI neu rendern... daher machen wir XY", und das XY fehlt eben.
 >
-> In the context of `editron`, position of a _editor_ (_view_) is referenced by a _json-pointer_. For this case, the _json-pointer_ is managed for each editor from _editron_ and can be access by `this.pointer` as is explained in [The Pointer Property](#the-pointer-property).
+> In the context of `editron`, the position of an _editor_ (_view_) is referenced by a _json-pointer_. For this case, the _json-pointer_ is managed for each editor from _editron_ and can be access by `this.pointer` as is explained in [The Pointer Property](#the-pointer-property).
 
 Internally, _editron_ uses diffs on _json-data_ to determine if data has changed and determine the location and type of change. For a change in data, the corresponding diff is passed along to the _update-event_, which can be used to update a view in place, optimizing rerendering the view. For a complete implementation, refer to the bundled [Array-Editor#applyPatches](../src/editors/arrayeditor/index.ts#196).
 
@@ -446,6 +448,8 @@ class MyObject implements Editor {
 
 ## Example Implementation
 
+Here is a full example for a custom Editron Editor:
+
 ```ts
 import Editron, { Editor, EditorUpdateEvent, EditorOptions } from "editron";
 
@@ -455,6 +459,7 @@ class URLEditor implements Editor {
     // this property is managed by editron (its instance-service)
     pointer: string;
     
+    // decide wether this editor should be registered
     // we register this editor to all strings with a format "url"
     static editorOf(pointer: string, editron: Editron, options: EditorOptions) {
 
@@ -468,7 +473,7 @@ class URLEditor implements Editor {
             return true;
         }
 
-        // returning false, we tell editron to ignore this 
+        // with returning false, we tell editron to ignore this 
         // editor and keep searching for a matching editor
         return false;
     }
@@ -477,14 +482,14 @@ class URLEditor implements Editor {
     // when our editorOf returned `true` for this pointer
     constructor(pointer: string, editron: Editron, options: EditorOptions) {
 
-        // get our current value, the initial _url_-string
+        // get our current value, the initial url-string
         const value = editron.service("data").get(pointer);
 
         // and possible validation errors
         const errors = editron.service("validation").getErrorsAndWarnings(pointer);
 
-        // setup editron integration using this.pointer`, which 
-        // is always up to date check _The Pointer Property_ for details
+        // setup editron integration using this.pointer, which 
+        // is always up to date, check The Pointer Property for details
         const focus = () => editron.service("location").setCurrent(this.pointer);
         const blur = () => editron.service("location").blur(this.pointer);
         const changeValue = (event) => editron.service("data").set(this.pointer, event.target.value);
