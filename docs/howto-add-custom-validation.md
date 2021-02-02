@@ -21,6 +21,7 @@ with `VError` defined by
 ```ts
 type VError = {
     type: "error";
+    code: string;
     message: string; 
     data: { 
         pointer: string;
@@ -37,6 +38,7 @@ function validator(core, schema, value, pointer) {
   if (!hasImageExtension) {
       return {
           type: "error",
+          code: "image-url-error",
           message: "url does not have a valid image extension of png, jpg, gif or webp",
           data: {
               pointer
