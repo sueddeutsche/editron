@@ -8,9 +8,9 @@ Editron creates an html user interface with validation for your data, solely bas
 
 ---
 
-- _editron_ is a JSON-Editor, which generates an user interface based on a JSON-Schema
-- _editron_ will display the JSON-Schema's title, detailed descriptions, structure and live validation results in an HTML form
-- to improve usability, _editron_ can be customized to display data in an appropriate way
+> - _editron_ is a JSON-Editor, which generates an user interface based on a JSON-Schema
+> - _editron_ will display the JSON-Schema's title, detailed descriptions, structure and live validation results in an HTML form
+> - to improve usability, _editron_ can be customized to display data in an appropriate way
 
 <details><summary>why use a schema-based editor?</summary>
 
@@ -52,7 +52,21 @@ Editron creates an html user interface with validation for your data, solely bas
 
 ## Key Concepts
 Before using _editron_, you should be familiar with some specifications, like [JSON-Schema](https://json-schema.org/), [JSON-Schema Validation](https://json-schema.org/latest/json-schema-validation.html) and [JSON-Pointer](https://tools.ietf.org/html/rfc6901).
-For a quick intro to key concepts, refer to [docs/doc-key-concepts](./docs/doc-key-concepts.md).
+
+<details><summary>What is a JSON-Schema</summary>
+
+**[JSON-Schema](https://json-schema.org/)** is a [declarative format for describing the structure of data](https://json-schema.org/understanding-json-schema/about.html) and itself is stored as a JSON-file. A JSON-Schema may be used to describe the data you need and also describe the user-interface to create this data.
+</details>
+
+<details><summary>What is JSON-Schema Validation</summary>
+
+ **[JSON-Schema Validation](https://json-schema.org/latest/json-schema-validation.html)** extends the JSON-Schema with validation rules for the input values. These rules are used to further evaluate the corresponding data and respond with errors, if the given rules are not met.
+</details>
+
+<details><summary>What is a JSON-Pointer</summary>
+
+**[JSON-Pointer](https://tools.ietf.org/html/rfc6901)** defines a string syntax for identifying a specific value within a JSON document and is [supported by JSON-Schema](https://json-schema.org/understanding-json-schema/structuring.html). Given a JSON document, it behaves similar to a [lodash path](https://lodash.com/docs/4.17.5#get) (`a[0].b.c`), which follows JS-syntax, but instead uses `/` separators, e.g. (`a/0/b/c`). In the end, you describe a path into the JSON data to a specific point.
+</details>
 
 
 ## Installation
