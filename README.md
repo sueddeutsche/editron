@@ -63,7 +63,7 @@ Editron creates an html user interface with validation for your data, solely bas
 There are three basic concepts that you should be familiar, when working with a JSON-Schema based editor:
 
 1. **[JSON-Schema](https://json-schema.org/)** is a [declarative format for describing the structure of data](https://json-schema.org/understanding-json-schema/about.html) and itself is stored as a JSON-file. A JSON-Schema may be used to describe the data you need and also describe the user-interface to create this data.
-2. **[JSON-Schema validation](https://json-schema.org/latest/json-schema-validation.html)** extends the JSON-Schema with validation rules for the input values. These rules are used to further evaluate the corresponding data and respond with errors, if the given rules are not met.
+2. **[JSON-Schema Validation](https://json-schema.org/latest/json-schema-validation.html)** extends the JSON-Schema with validation rules for the input values. These rules are used to further evaluate the corresponding data and respond with errors, if the given rules are not met.
 3. **[JSON-Pointer](https://tools.ietf.org/html/rfc6901)** defines a string syntax for identifying a specific value within a JSON document and is [supported by JSON-Schema](https://json-schema.org/understanding-json-schema/structuring.html). Given a JSON document, it behaves similar to a [lodash path](https://lodash.com/docs/4.17.5#get) (`a[0].b.c`), which follows JS-syntax, but instead uses `/` separators, e.g. (`a/0/b/c`). In the end, you describe a path into the JSON data to a specific point.
 
 
@@ -278,14 +278,8 @@ const validInputData = controller.service("schema").addDefaultData(inputData, js
 
 ### Configuration
 
-#### editors
 
-**Customize base editors from json-schema**
-
-To configure a specific editron-editor, please refer to the [documentation of editor options](./docs/doc-editor-options.md)
-
-
-**Add additional editors**
+#### Add Additional Editors
 
 To add new or custom editors globally, use the plugin interface
 
@@ -327,62 +321,24 @@ To completely reset the available list of editors, you can modify the _editors_ 
 controller.editors.length = 0;
 ```
 
-#### validators
-
-Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests
-if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything,
-even remote ressources, which are validated asynchronous.
-
-There can be two types of validators
-
-1. a special format validator, which is executed on a schema, like `{ type: "string", format: "my-custom-format" }` or
-2. any custom attribute, like `{ type: number, "my-custom-validator": 42 }`
-
-A validator is a function with the following signature
-
-```javascript
-/**
- * @param  {JSON-Schema-Core} core
- * @param  {Object} schema  - the json schema triggering the validator
- * @param  {Any} value      - the given input data to validate
- * @param  {String} pointer - JSON-Pointer of the given _value_
- * @return {undefined|Object|Promise} undefined or an error-object
- *          `{type: "error", message: "err-msg", data: { pointer }}`
- */
-function validate(core, schema, value, pointer)
-```
-
-<!-- @todo global vs instance registration -->
-You can reference the json-schema-library
-[format-validators](https://github.com/sagold/json-schema-library/blob/master/lib/validation/format.js) for more examples
 
 
-Adding a _format_-validator
 
-```javascript
-controller.addFormatValidator("my-custom-format", validator);
-```
 
-Adding a _keyword_-validator
+### Configure Editors
+> Each instance of an _editor_ supports a set of options, that can be added on a json-schema property, called _editron:ui_.
 
-```javascript
-// @param {datatype} JSON-Schema datatype, to register this attribute. Here: "string"
-// @param {keyword} custom attribute to register validator. Here: "my-custom-keyword"
-// @param {Function} validation function
-controller.addKeywordValidator("string", "my-custom-keyword", validator);
-```
+For configuration options, of all _editors_ bundled with editron, refer to [docs/doc-editor-options](docs/doc-editor-options.mda)
 
-Or use the plugin interface
 
-```javascript
-const { plugin } = editron;
-// format-validator
-plugin.validator("format-value", function formatValidator() {});
-// keyword validator
-plugin.keywordValidator(datatype, propertyName, function propertyValidator() {});
-```
 
-For further details, see the [json-schema-library](https://github.com/sagold/json-schema-library#add-custom-validators)
+### Input Validation
+> Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything, even remote ressources, which are validated asynchronous.
+
+See how to add, write and setup validators in [docs/howto-add-custom-validator](./docs/howto-add-custom-validator).
+
+
+
 
 
 #### language
