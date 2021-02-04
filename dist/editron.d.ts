@@ -33,6 +33,7 @@ export { default as ObjectEditor } from "./src/editors/objecteditor";
 export { default as OneOfEditor } from "./src/editors/oneofeditor";
 export { default as ValueEditor } from "./src/editors/valueeditor";
 export { default as AutocompleteEditor } from "./src/editors/autocompleteeditor";
+export { default as MinimapEditor } from "./src/editors/minimapeditor";
 export { default as DataService } from "./src/services/dataservice";
 export { default as LocationService } from "./src/services/LocationService";
 export { default as SchemaService } from "./src/services/SchemaService";

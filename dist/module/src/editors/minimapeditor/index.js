@@ -1,8 +1,6 @@
 import m from "mithril";
 import gp from "gson-pointer";
 import View, { buildTree } from "./View";
-import "./layout.scss";
-import "./theme-default.scss";
 import AbstractEditor from "../AbstractEditor";
 export default class MinimapEditor extends AbstractEditor {
     constructor(pointer, controller, options) {
