@@ -52,7 +52,6 @@ Editron creates an html user interface with validation for your data, solely bas
 
 ## Key Concepts
 Before using _editron_, you should be familiar with some specifications, like [JSON-Schema](https://json-schema.org/), [JSON-Schema Validation](https://json-schema.org/latest/json-schema-validation.html) and [JSON-Pointer](https://tools.ietf.org/html/rfc6901).
-
 For a quick intro to key concepts, refer to [docs/doc-key-concepts](./docs/doc-key-concepts.md).
 
 
@@ -66,14 +65,12 @@ For details about _editron_ **configuration** and **interaction** refer to [docs
 
 ## Configure Bundled Editors
 Each instance of an _editor_ supports a set of options, that can be added on a json-schema property, called _editron:ui_.
-
 For configuration options, of all _editors_ bundled with editron, refer to [docs/doc-editor-options](docs/doc-editor-options.mda)
 
 
 ## Custom Input Validation
-Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything, even remote ressources, which are validated asynchronous.
-
-See how to add, write and setup validators in [docs/howto-add-custom-validator](./docs/howto-add-custom-validator).
+Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything, even remote ressources, which are validated asynchronous. 
+See how to write, add and setup validators in [docs/howto-add-custom-validator](./docs/howto-add-custom-validator).
 
 
 ## Custom Editor
@@ -89,14 +86,12 @@ With a custom _editor_ you take complete control of rendering and interaction of
 For a general overview of setting up _editors_, refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). You can read about adding a custom value _editor_ extending from _AbstractValueEditor_ in [docs/howto-write-value-editor](howto-write-value-editor.md) or the complete _editor_-documentation in [docs/docs-editron-editord](./docs/docs-editron-editor.md).
 
 
-
 ## Further examples
 
 Besides [getting-started](./examples/getting-started.html), the following examples can be found in the [./examples](./examples) directory
 
 * see how to create multiple editors from one instance in [examples/multiple-editors](./examples/multiple-editors.html)
 * see how to create multiple independent editron instances in [examples/multiple-controller](./examples/multiple-controller.html)
-
 
 
 ## Breaking Changes
