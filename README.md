@@ -50,7 +50,8 @@ Editron creates an html user interface with validation for your data, solely bas
 </details>
 
 
-## Key Concepts
+**Key Concepts**
+
 Before using _editron_, you should be familiar with some specifications, like [JSON-Schema](https://json-schema.org/), [JSON-Schema Validation](https://json-schema.org/latest/json-schema-validation.html) and [JSON-Pointer](https://tools.ietf.org/html/rfc6901).
 
 <details><summary>What is a JSON-Schema</summary>
