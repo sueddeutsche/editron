@@ -7,13 +7,6 @@ Editron creates an html user interface with validation for your data, solely bas
 </p>
 
 ---
-<!-- TOC start -->
-
-<!-- TOC end -->
-
-
----
-## About
 
 - _editron_ is a JSON-Editor, which generates an user interface based on a JSON-Schema
 - _editron_ will display the JSON-Schema's title, detailed descriptions, structure and live validation results in an HTML form
