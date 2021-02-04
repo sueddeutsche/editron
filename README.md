@@ -97,7 +97,12 @@ Default input-forms will not always be best suited for your data. For this reaso
 
 With a custom _editor_ you take complete control of rendering and interaction of data. In addition, you may choose, which child-values are rendered with _editron_ or should be taken care of in the custom-_editor_.
 
-For a general overview of setting up _editors_, refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). You can read about adding a custom value _editor_ extending from _AbstractValueEditor_ in [docs/howto-write-value-editor](howto-write-value-editor.md) or the complete _editor_-documentation in [docs/docs-editron-editord](./docs/docs-editron-editor.md).
+For a general overview of setting up _editors_, refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). You can read about adding a custom value _editor_ extending from _AbstractValueEditor_ in [docs/howto-write-value-editor](howto-write-value-editor.md) or the complete _editor_-documentation in [docs/docs-editron-editor](./docs/docs-editron-editor.md).
+
+
+## Plugins
+
+_Editron_ does support plugins through a plugin-api that exposes lifecycle-hooks. You can refer to the [plugin-interface](./src/plugin/index.ts#L12) or read through the implementation of [default plugins](./src/plugin).
 
 
 ## Further examples
