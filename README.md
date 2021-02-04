@@ -125,7 +125,7 @@ and finally, remove editron
 editron.destroy();
 ```
 
-The complete _editron_-api is desrcibed explained in [docs/howto-work-with-editron](./docs/howto-work-with-editron.md)
+The complete _editron_-api is explained in [docs/howto-work-with-editron](./docs/howto-work-with-editron.md)
 
 
 
