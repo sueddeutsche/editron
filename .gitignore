@@ -8,6 +8,7 @@
 *.sublime-workspace
 *.tmp
 *.zip
+*.code-*
 .cache/
 .DS_Store
 .idea/
