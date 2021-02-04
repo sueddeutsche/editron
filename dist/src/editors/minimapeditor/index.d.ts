@@ -3,8 +3,6 @@ import { EditorUpdateEvent } from "../Editor";
 import Controller from "../../Controller";
 import { JSONPointer, ValidationError } from "../../types";
 import { Event as LocationEvent } from "../../services/LocationService";
-import "./layout.scss";
-import "./theme-default.scss";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 export declare type ViewModel = {
     controller: Controller;
