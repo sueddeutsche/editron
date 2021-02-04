@@ -15,18 +15,21 @@ Editron creates an html user interface with validation for your data, solely bas
 ---
 ## About
 
-**what does editron do?**
 - _editron_ is a JSON-Editor, which generates an user interface based on a JSON-Schema
 - _editron_ will display the JSON-Schema's title, detailed descriptions, structure and live validation results in an HTML form
 - to improve usability, _editron_ can be customized to display data in an appropriate way
 
-**why use a schema-based editor?**
+<details><summary>why use a schema-based editor?</summary>
+
 - a JSON-Schema is quick to write, readable and easy to extend
 - because it represents all types of JSON data structures, it can be the single interface for all forms
 - being JSON and thus serializable it can be distributed over http, stored in a database and read by any programming language
 - JSON-Schema is a standard and has a range of [validators for many common languages](https://json-schema.org/implementations.html#validators)
+</details>
 
-**why use editron**
+
+<details><summary>why use editron</summary>
+
 - customizability
     - via json-schema
     - selection of what to render and where (specific properties, trees or lists within the data)
@@ -42,55 +45,45 @@ Editron creates an html user interface with validation for your data, solely bas
     - complete json-schema draft04 spec
     - support for multiple languages
     - tested and used in production
+</details>
 
-**limitations**
+<details><summary>limitations</summary>
+
 - requires programming skills for a custom editor-widget
 - currently no theming options: for layout adjustments either custom css or custom editor-widgets are required
 - not recommended for text-heavy applications like in docs or word
 - if you only need a login-form, this project might not be worth the _Kb_
 - complex data-types result in complex user-interfaces. could be solved through specific editor-widgets
-
-<!--
-### demos
--  @todo setup github.io page
--  @todo website demonstrating custom-editors, live schema modification and selection of schema examples
--  example with default types like select
--->
+</details>
 
 
----
-## Documentation
-
-
-### Key Concepts
-> Before using _editron_, you should be familiar with some specifications, like [JSON-Schema](https://json-schema.org/), [JSON-Schema Validation](https://json-schema.org/latest/json-schema-validation.html) and [JSON-Pointer](https://tools.ietf.org/html/rfc6901).
+## Key Concepts
+Before using _editron_, you should be familiar with some specifications, like [JSON-Schema](https://json-schema.org/), [JSON-Schema Validation](https://json-schema.org/latest/json-schema-validation.html) and [JSON-Pointer](https://tools.ietf.org/html/rfc6901).
 
 For a quick intro to key concepts, refer to [docs/doc-key-concepts](./docs/doc-key-concepts.md).
 
 
-### Installation
-
+## Installation
 _Editron_ can be loaded through script tags in HMTL or bundled with your application. This README will refer to a bundled setup using import-statements. For a detailed setup using HTML-scripts or bundling, refer to [docs/how-setup-editron](./docs/howto-setup-editron.md).
 
 
-### Using Editron
-
+## Working With Editron
 For details about _editron_ **configuration** and **interaction** refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md).
 
 
-### Configure Bundled Editors Using JSON-Schema Settings
-> Each instance of an _editor_ supports a set of options, that can be added on a json-schema property, called _editron:ui_.
+## Configure Bundled Editors
+Each instance of an _editor_ supports a set of options, that can be added on a json-schema property, called _editron:ui_.
 
 For configuration options, of all _editors_ bundled with editron, refer to [docs/doc-editor-options](docs/doc-editor-options.mda)
 
 
-### Custom Input Validation
-> Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything, even remote ressources, which are validated asynchronous.
+## Custom Input Validation
+Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything, even remote ressources, which are validated asynchronous.
 
 See how to add, write and setup validators in [docs/howto-add-custom-validator](./docs/howto-add-custom-validator).
 
 
-### Custom Editor
+## Custom Editor
 
 Default input-forms will not always be best suited for your data. For this reason, editron can be extended by or completly replaced with custom editors. In general, you create custom editors to 
 
@@ -104,7 +97,7 @@ For a general overview of setting up _editors_, refer to [docs/howto-work-with-e
 
 
 
-### Further examples
+## Further examples
 
 Besides [getting-started](./examples/getting-started.html), the following examples can be found in the [./examples](./examples) directory
 
@@ -112,24 +105,7 @@ Besides [getting-started](./examples/getting-started.html), the following exampl
 * see how to create multiple independent editron instances in [examples/multiple-controller](./examples/multiple-controller.html)
 
 
-<!--
-custom build
-- npm i
-- webpack build
-- hello world
-- linking editors
 
-Quickstart and hack away (boilerplate)
-- working example with editor testpage
-
-Build setup (webpack)
-
-Plugin editor
-
-Guidelines
---->
-
----
 ## Breaking Changes
 
 `07/2020` with `v8` editron is written using typescript. Due to module-syntax, some exports have changed, mainly:
@@ -151,3 +127,19 @@ Additionally all source files have been moved to `src`-folder, which must be adj
 
 
 
+<!--
+custom build
+- npm i
+- webpack build
+- hello world
+- linking editors
+
+Quickstart and hack away (boilerplate)
+- working example with editor testpage
+
+Build setup (webpack)
+
+Plugin editor
+
+Guidelines
+--->
