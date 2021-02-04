@@ -70,11 +70,63 @@ Before using _editron_, you should be familiar with some specifications, like [J
 
 
 ## Installation
+
+`npm install editron`
+
 _Editron_ can be loaded through script tags in HMTL or bundled with your application. This README will refer to a bundled setup using import-statements. For a detailed setup using HTML-scripts or bundling, refer to [docs/how-setup-editron](./docs/howto-setup-editron.md).
 
 
 ## Working With Editron
-For details about _editron_ **configuration** and **interaction** refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md).
+For details about _editron_ **configuration** and **interaction** refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). What follow is a quick overview:
+
+Create an instance of editron, passung your json-schema
+
+```ts
+import Editron from "editron";
+const editron = new Editron(schema);
+```
+
+Then, pick a DOM-element and render a form for all your data
+
+```ts
+const editor = editron.createEditor("#", document.querySelector(".editron"));
+```
+
+finally, remove the view with
+
+```ts
+editron.destroyEditor(editor);
+```
+
+**Interaction**
+
+Get the current data
+
+```ts
+const data = editron.getData();
+```
+
+change the data
+
+```ts
+editron.setData(data);
+````
+
+get the current validation errors
+
+```ts
+const errors = editron.getErrors();
+const isValid = errors.length === 0;
+```
+
+and finally, remove editron
+
+```ts
+editron.destroy();
+```
+
+The complete _editron_-api is desrcibed explained in [docs/howto-work-with-editron](./docs/howto-work-with-editron.md)
+
 
 
 ## Configure Bundled Editors
