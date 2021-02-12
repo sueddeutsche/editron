@@ -37,13 +37,15 @@ declare function getOption(pointer: JSONPointer, controller: Controller, ...opti
 declare function getTitle(pointer: JSONPointer, controller: Controller): any;
 declare function getDefaultOption(schema: JSONSchema, option: string): "" | any;
 declare const _default: {
-    UI_PROPERTY: string;
-    getOption: typeof getOption;
     copyOptions: typeof copyOptions;
+    enumOptions: typeof enumOptions;
     extendSchema: typeof extendSchema;
     getBreadcrumps: typeof getBreadcrumps;
-    getTitle: typeof getTitle;
-    enumOptions: typeof enumOptions;
     getDefaultOption: typeof getDefaultOption;
+    getEditronOptions: typeof getEditronOptions;
+    getOption: typeof getOption;
+    getTitle: typeof getTitle;
+    isPointer: typeof isPointer;
+    UI_PROPERTY: string;
 };
 export default _default;
