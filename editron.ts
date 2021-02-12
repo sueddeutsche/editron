@@ -23,6 +23,7 @@ export default Controller;
 export { Controller, Options };
 export * as components from "./src/components";
 export * as utils from "./src/utils";
+export * as store from "./src/store/global";
 // types
 export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/editors/Editor";
 export type { EditorUpdateEvent } from "./src/editors/Editor";
@@ -42,6 +43,7 @@ export { default as MinimapEditor } from "./src/editors/minimapeditor";
 // services
 export { default as DataService } from "./src/services/dataservice";
 export { default as LocationService } from "./src/services/LocationService";
+export type { FocusEvent, BlurEvent, PageEvent, TargetEvent, ScrollStartEvent, ScrollFinishEvent, Watcher as LocationWatcher, Event as LocationEvent } from "./src/services/LocationService";
 export { default as SchemaService } from "./src/services/SchemaService";
 export { default as ValidationService } from "./src/services/ValidationService";
 export { default as OverlayService } from "./src/services/OverlayService";
