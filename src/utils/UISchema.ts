@@ -209,12 +209,14 @@ function getDefaultOption(schema: JSONSchema, option: string): ""|any {
 
 
 export default {
-    UI_PROPERTY,
-    getOption,
     copyOptions,
+    enumOptions,
     extendSchema,
     getBreadcrumps,
+    getDefaultOption,
+    getEditronOptions,
+    getOption,
     getTitle,
-    enumOptions,
-    getDefaultOption
+    isPointer,
+    UI_PROPERTY,
 };
