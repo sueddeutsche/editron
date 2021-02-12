@@ -45,6 +45,6 @@ export { default as plugin } from "./src/plugin";
 export { default as DelegationPlugin } from "./src/plugin/delegationplugin";
 export { default as RemoteDataPlugin } from "./src/plugin/remotedataplugin";
 export { default as SelectionPlugin } from "./src/plugin/selectionplugin";
-export { default as SortablePlugin } from "./src/plugin/sortableplugin";
+export { default as SortablePlugin, onAddSortable, onEndSortable } from "./src/plugin/sortableplugin";
 export { default as SyncPlugin } from "./src/plugin/syncplugin";
 export { default as diffpatch } from "./src/services/utils/diffpatch";
