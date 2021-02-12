@@ -24,8 +24,10 @@ import * as components_1 from "./src/components";
 export { components_1 as components };
 import * as utils_1 from "./src/utils";
 export { utils_1 as utils };
+import * as store_1 from "./src/store/global";
+export { store_1 as store };
 // editors
-export { default as AbstractEditor } from "./src/editors/AbstractEditor";
+export { default as AbstractEditor, getTypeClass } from "./src/editors/AbstractEditor";
 export { default as AbstractValueEditor } from "./src/editors/AbstractValueEditor";
 export { default as ArrayEditor } from "./src/editors/arrayeditor";
 export { default as ObjectEditor } from "./src/editors/objecteditor";

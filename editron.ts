@@ -23,14 +23,17 @@ export default Controller;
 export { Controller, Options };
 export * as components from "./src/components";
 export * as utils from "./src/utils";
+export * as store from "./src/store/global";
 // types
 export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/editors/Editor";
 export type { EditorUpdateEvent } from "./src/editors/Editor";
 export type { ValidationError, EditronConfigAttrs, FormatValidator, KeywordValidator, JSONSchema, JSONPointer, JSONData } from "./src/types";
 export type { Direction } from "./src/utils/selection";
 // editors
-export { default as AbstractEditor } from "./src/editors/AbstractEditor";
+export { default as AbstractEditor, getTypeClass } from "./src/editors/AbstractEditor";
+export type { Options as AbstractEditorOptions }  from "./src/editors/AbstractEditor";
 export { default as AbstractValueEditor } from "./src/editors/AbstractValueEditor";
+export type { ViewModel as ValueEditorViewModel } from "./src/editors/AbstractValueEditor";
 export { default as ArrayEditor } from "./src/editors/arrayeditor";
 export { default as ObjectEditor } from "./src/editors/objecteditor";
 export { default as OneOfEditor } from "./src/editors/oneofeditor";
@@ -40,6 +43,7 @@ export { default as MinimapEditor } from "./src/editors/minimapeditor";
 // services
 export { default as DataService } from "./src/services/dataservice";
 export { default as LocationService } from "./src/services/LocationService";
+export type { FocusEvent, BlurEvent, PageEvent, TargetEvent, ScrollStartEvent, ScrollFinishEvent, Watcher as LocationWatcher, Event as LocationEvent } from "./src/services/LocationService";
 export { default as SchemaService } from "./src/services/SchemaService";
 export { default as ValidationService } from "./src/services/ValidationService";
 export { default as OverlayService } from "./src/services/OverlayService";
@@ -52,6 +56,7 @@ export { default as SelectionPlugin } from "./src/plugin/selectionplugin";
 export { default as SortablePlugin, onAddSortable, onEndSortable  } from "./src/plugin/sortableplugin";
 export { default as SyncPlugin } from "./src/plugin/syncplugin";
 export type { Plugin } from "./src/plugin";
+
 // diff
 export type { Patch } from "./src/services/utils/createDiff";
 export { default as diffpatch } from "./src/services/utils/diffpatch";

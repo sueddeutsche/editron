@@ -166,12 +166,14 @@ function getDefaultOption(schema, option) {
     return schema[UI_PROPERTY] ? (schema[UI_PROPERTY][option] || "") : "";
 }
 export default {
-    UI_PROPERTY,
-    getOption,
     copyOptions,
+    enumOptions,
     extendSchema,
     getBreadcrumps,
+    getDefaultOption,
+    getEditronOptions,
+    getOption,
     getTitle,
-    enumOptions,
-    getDefaultOption
+    isPointer,
+    UI_PROPERTY,
 };
