@@ -78,9 +78,9 @@ _Editron_ can be loaded through script tags in HMTL or bundled with your applica
 
 
 ## Working With Editron
-For details about _editron_ **configuration** and **interaction** refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). What follow is a quick overview:
+For details about _editron_ **configuration** and **interaction** refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). What follows is a quick overview:
 
-Create an instance of editron, passung your json-schema
+Create an instance of editron, passing your json-schema
 
 ```ts
 import Editron from "editron";
@@ -132,25 +132,25 @@ The complete _editron_-api is explained in [docs/howto-work-with-editron](./docs
 
 ## Configure Bundled Editors
 Each instance of an _editor_ supports a set of options, that can be added on a json-schema property, called _editron:ui_.
-For configuration options, of all _editors_ bundled with editron, refer to [docs/doc-editor-options](docs/doc-editor-options.mda)
+For configuration options for all _editors_ bundled with editron, refer to [docs/doc-editor-options](docs/doc-editor-options.mda)
 
 
 ## Custom Input Validation
-Validators are used to validate input-data for a JSON-Schema. e.g. a schema `{ type: "string", minLength: 1 }`, tests if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything, even remote ressources, which are validated asynchronous. 
+Validators are used to validate input-data for a JSON-Schema. E.g. a schema `{ type: "string", minLength: 1 }` tests if the passed input is a string, another validator checks if the given `minLength`-rule passes. You can validate everything, even remote ressources, which are validated asynchronous. 
 See how to write, add and setup validators in [docs/howto-add-custom-validator](./docs/howto-add-custom-validator).
 
 
 ## Custom Editor
 
-Default input-forms will not always be best suited for your data. For this reason, editron can be extended by or completly replaced with custom editors. In general, you create custom editors to 
+Default input-forms will not always be suited best for your data. For this reason, editron can be extended by or completly replaced with custom editors. In general, you create custom editors to 
 
-- **improve usability of input**, collecting data in a more appropriated way, e.g. pointing to a map, instead of asking for x- and y-coordinates
+- **improve usability of input**, collecting data in a more appropriate way, e.g. pointing to a map, instead of asking for x- and y-coordinates
 - **improve usability of form**, where you break the rendering flow, hiding details per default
 - **preview data**, e.g. show an image to an image-url input
 
-With a custom _editor_ you take complete control of rendering and interaction of data. In addition, you may choose, which child-values are rendered with _editron_ or should be taken care of in the custom-_editor_.
+With a custom _editor_ you take complete control of rendering of and interaction with data. In addition, you may choose, which child-values are rendered with _editron_ or should be taken care of in the custom-_editor_.
 
-For a general overview of setting up _editors_, refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). You can read about adding a custom value _editor_ extending from _AbstractValueEditor_ in [docs/howto-write-value-editor](howto-write-value-editor.md) or the complete _editor_-documentation in [docs/docs-editron-editor](./docs/docs-editron-editor.md).
+For a general overview how to set up _editors_, refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). You can read about adding a custom value _editor_ extending from _AbstractValueEditor_ in [docs/howto-write-value-editor](howto-write-value-editor.md) or the complete _editor_-documentation in [docs/docs-editron-editor](./docs/docs-editron-editor.md).
 
 
 ## Plugins
