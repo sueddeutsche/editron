@@ -7,6 +7,7 @@ export default class MinimapEditor extends AbstractEditor {
         var _a;
         super(pointer, controller, options);
         this.notifyNestedChanges = true;
+        this.notifyNestedErrors = true;
         options.notifyNestedChanges = true;
         // override all default classes
         this.dom.className = "ed-minimap";

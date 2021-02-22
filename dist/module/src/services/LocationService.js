@@ -17,13 +17,13 @@ function scrollIntoView(targetElement, scrollTopOffset = 0, callback) {
     const scrollContainer = getScrollParent(targetElement);
     const bound = targetElement.getBoundingClientRect();
     if (isWindow(scrollContainer)) {
-        const viewportHeight = getViewportHeight();
-        if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
-            window.scrollTo(0, bound.top + scrollTopOffset);
-        }
+        window.scrollTo(0, window.scrollY + (bound.top - scrollTopOffset));
+        // const viewportHeight = getViewportHeight();
+        // if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
+        //     window.scrollTo(0, window.scrollY + (bound.top - scrollTopOffset));
+        // } else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
         if (callback)
             callback();
-        // else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
         return;
     }
     // scroll target element to top of scroll container
@@ -84,6 +84,7 @@ export default class LocationService {
     goto(targetPointer, rootElement = this.options.rootElement) {
         const matches = targetPointer.match(new RegExp(this.options.pagePattern));
         if (!matches) {
+            console.log("abort - not pagePattern match");
             return;
         }
         const nextPage = matches.pop();
