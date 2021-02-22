@@ -77,12 +77,12 @@ function scrollIntoView(targetElement: HTMLElement, scrollTopOffset = 0, callbac
     const bound = targetElement.getBoundingClientRect();
 
     if (isWindow(scrollContainer)) {
-        const viewportHeight = getViewportHeight();
-        if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
-            window.scrollTo(0, bound.top + scrollTopOffset);
-        }
+        window.scrollTo(0, window.scrollY + (bound.top - scrollTopOffset));
+        // const viewportHeight = getViewportHeight();
+        // if (bound.top < scrollTopOffset || bound.bottom > viewportHeight) {
+        //     window.scrollTo(0, window.scrollY + (bound.top - scrollTopOffset));
+        // } else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
         if (callback) callback();
-        // else { console.log("skip scrolling - already in viewport", viewportHeight, bound.top); }
         return;
     }
 
@@ -97,7 +97,7 @@ function scrollIntoView(targetElement: HTMLElement, scrollTopOffset = 0, callbac
     if (callback) {
         const scrollMax = scrollContainer.scrollHeight - scrollContainer.clientHeight;
         const onScroll = () => {
-            if (scrollContainer.scrollTop === scrollPosition 
+            if (scrollContainer.scrollTop === scrollPosition
                 || (scrollPosition > scrollMax && scrollContainer.scrollTop === scrollMax)
             ){
                 scrollContainer.removeEventListener('scroll', onScroll);
@@ -157,6 +157,7 @@ export default class LocationService {
     goto(targetPointer: JSONPointer, rootElement = this.options.rootElement) {
         const matches = targetPointer.match(new RegExp(this.options.pagePattern));
         if (!matches) {
+            console.log("abort - not pagePattern match");
             return;
         }
 
@@ -193,9 +194,9 @@ export default class LocationService {
     /** focus target pointer */
     focus(rootElement = this.options.rootElement) {
         clearTimeout(this.timeout);
-
         const pointer = getState().ui.currentPointer;
-        const targetElement = <HTMLElement>rootElement.querySelector(`[data-point="${pointer}"]`);
+        const targetElement = <HTMLElement>rootElement.querySelector(`[data-point="${pointer}"]`)    ;
+
         if (targetElement == null) {
             console.log(`Location:focus - target ${pointer} not found`);
             return;
@@ -207,8 +208,8 @@ export default class LocationService {
             if (this.options.scrollCallback) {
                 this.notifyWatcher(<ScrollStartEvent>{ type: "location:scroll-start", value: pointer });
                 scrollIntoView(
-                    targetElement, 
-                    scrollTopOffset, 
+                    targetElement,
+                    scrollTopOffset,
                     () => this.notifyWatcher(<ScrollFinishEvent>{ type: "location:scroll-finish", value: pointer })
                 );
             } else {
