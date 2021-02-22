@@ -1,6 +1,6 @@
 # How To Write A Custom Editron Editor For Values
 
-> There is a difference, between a editor for arrays and object and more simple editors for values, like string, boolean, number. Object- and array-editors have to manage child-editors (or multiple values). This documentation refers to custom editors for _simple values_ only, but the concepts are the same.
+> There is a difference, between an editor for arrays and objects or editors for more simple values like string, boolean, number. Object- and array-editors have to manage child-editors (or multiple values). This documentation refers to custom editors for _simple values_ only, but the concepts are the same.
 
 
 Starting with the most simplest implementation, inheriting from the [AbstractValueEditor](../src/editors/AbstractValueEditor.ts), the following implementations are required:
@@ -30,7 +30,11 @@ export class MyCustomEditor extends AbstractValueEditor {
 }
 ```
 
-When adding this editor to you editron-instance, like `editron.registerEditor(MyCustomEditor);`, the result is as follows: Each data-value having a json-schema with a property `format: "custom-editor"` will be rendered with a string `"My Custom Editor for: <initial value>"`. Here, you can decide what the ui should look like , how the interactions should be, how the value is interpreted and perform updates on data, show validation-errors, etc.
+The `viewModel` in this case, refers to a managed object which contain all relevant properties for rendering the ui. For details, take a look at _AbstractValueEditor_ or simply log the object. Most importantely the object contains `{ value, errors, title, description, pointer }` for you data-value.
+
+When adding this editor to your editron-instance with `editron.registerEditor(MyCustomEditor);`, the result is as follows: Each data-value having a json-schema with a property `format: "custom-editor"` will be rendered with a string `"My Custom Editor for: <initial value>"` (as stated in the example above). You are free to decide what the ui should look like, how the interactions should be, how the value is interpreted and perform updates on data, show validation-errors, etc.
+
+> In case you missed the intro, the interaction of a json-schema and an editor is explained in [doc-schema-and-editor](./doc-schema-and-editor.md).
 
 From start to finish:
 
@@ -60,7 +64,7 @@ const editor = editron.createEditor("#", document.body);
 // an input containing value "test of a custom editor"
 ```
 
-- [Updating The Value](#updating-the-value)
+- [Updating Data Value](#updating-the-value)
 - Additional Editor Features
   - [display title, description and errors](display-title-description-and-errors)
   - [support disabled option](support-disabled-option)
@@ -69,9 +73,9 @@ const editor = editron.createEditor("#", document.body);
 
 
 
-## Updating The Value
+## Updating Data Values
 
-> When interacting with _editron_, you do not update your dom directly. Instead, you pass any value changes to _editron_, which in turn will notify all affected editors through an _update_-event, which in turn should trigger the _render_-method. Just like using [redux](https://github.com/reduxjs/redux), which is used internally. Extending from the _AbstractValueEditor_, this is already setup and all you have to do is 1) send an data-update to editron and 2) ensure you render the updated value given in `viewModel.value`.
+> When interacting with _editron_, you do not need to update your dom directly. Instead, you pass any data-value changes to _editron_, which will notify all affected editors through an _update_-event. This should then trigger the _render_-method. Just like using [redux](https://github.com/reduxjs/redux), which is used internally. Extending from the _AbstractValueEditor_, this is already setup and all you have to do is 1) send a data-update to _editron_ and 2) ensure you render the updated value given in `viewModel.value`.
 
 For convinience, there is a `this.setData(value)`-helper, which will notify _editron_ and update the value at our _json-pointer_:
 
@@ -103,9 +107,9 @@ export class MyCustomEditor extends AbstractValueEditor {
 }
 ```
 
-**about setData(value)** `setData(value)` is a shortcut for the _editron_ interaction. In detail, you send a message to the _editron_ _DataService_ to change the value of the given position: `this.controller.service("data").set(this.getPointer(), newValue)`.
+**about setData(value)** `setData(value)` is a shortcut for updating data: it sends a message to the _editron_ _DataService_ to change the value at the given json-pointer position: `this.controller.service("data").set(this.getPointer(), newValue)`.
 
-Editors will be constantly added and removed, so ensure, that all event-listeners and properties are removed when an editor is abput to be destroyed. For this, used the `destroy`-method in your custom editor, like in the following example:
+Editors will be constantly added and removed, so ensure, that all event-listeners and properties are removed when an editor is about to be destroyed. For this, used the `destroy`-method in your custom editor, like in the following example:
 
 ```ts
 export class MyCustomEditor extends AbstractValueEditor {
@@ -128,10 +132,10 @@ export class MyCustomEditor extends AbstractValueEditor {
 
 ## Additional Editor Features
 
-For an editor to be a good citizen, the following features should be supported. In addition, you can refer to the [default editor options](doc-editor-options.md), which features should or may be supported.
+For an editor to be a good citizen, the following features should be supported. In addition, you can refer to the [default editor options](doc-editor-options.md), to check which features should or may be supported. In case your application does not make use of these features, the implementation may be omitted.
 
 
-### display title, description and errors
+### title, description and errors
 
 > Describing the value, giving context and informing about incorrect data is important. Thus we have to ensure, these value are rendered by the editor.
 
@@ -148,9 +152,9 @@ render() {
 ```
 
 
-### support disabled option
+### disabled
 
-> Individual or all editors may be disabled. Either due to missing data-values or to present the form in read-only mode.
+> Individual or all editors may be disabled. Either due to missing data-values or to present data in read-only mode.
 
 Following our example, we should ensure, that the current _disabled_-state is rendered correctly. Using the _AbstractValueEditor_, you may reference `this.viewModel.disabled`;
 
@@ -165,9 +169,9 @@ render() {
 ```
 
 
-### support focus & blur
+### focus & blur
 
-> For a set of specific functions, like changing the ui, based on the active editor oder highlighting the current location, an editor should notify _editron_ about its active state, using focus and blur events.
+> For specific functionality or editor statuses, like changing the ui, based on an active editor or highlighting the current location, an editor should notify _editron_ about its active state, using focus and blur events.
 
 Following our example and using our convenient-methods `this.focus()` and `this.blur()` from _AsbtractValueEditor_:
 
@@ -186,9 +190,9 @@ render() {
 
 ## Summary
 
-> Note, that writing custom editors is usually only necessary in some situations, where you need improve the usability or preview data in a more appropriate way. When writing a custom editor, you can take full control on rendering, interaction and interpretation of the data. But this means, some custom implementations must be met, like supporting options (depending on your requirements), managing events and rendering title, description, errors, etc along side the input. The _AbstractValueEditor_ tries to minimize the effort of writing a complete standalone editor.
+> Note, that writing custom editors is usually only necessary in some situations, where you need to improve the usability or preview data in a more appropriate way. When writing a custom editor, you can take full control on rendering, interaction and interpretation of data. But this means, some custom implementations must be met, like supporting options (depending on your requirements), managing events and rendering title, description, errors, etc. alongside the input. The _AbstractValueEditor_ tries to minimize the effort of writing a complete standalone editor.
 
-- Using the _AbstractValueEditor_ is totally optional, but is very helpful in bootstrapping an editor and following editron-migrations
+- Using the _AbstractValueEditor_ is totally optional, but very helpful to bootstrapp an editor and follow editron-migrations
 - For a more detailed description of an editor and its interaction with editron, refer to [doc-editron-editor.md](doc-editron-editor.md)
 - @todo a running example should be within this repository
 

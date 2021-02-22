@@ -9,7 +9,7 @@ import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 
 
 export type ViewModel = {
-    controller: Controller,
+    controller: Controller;
     currentSelection: JSONPointer;
     errors: Array<ValidationError>;
     /** minimap tree structure of input-data */
@@ -26,7 +26,7 @@ export type Options = EditorOptions & {
     minimap?: {
         use?: boolean;
         depth?: number;
-    }
+    };
 };
 
 
@@ -34,6 +34,7 @@ export default class MinimapEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
     notifyNestedChanges = true;
+    notifyNestedErrors = true;
 
 
     static editorOf(pointer: JSONPointer, controller: Controller, options?: Options) {

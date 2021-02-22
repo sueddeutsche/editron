@@ -26,6 +26,7 @@ export default class MinimapEditor extends AbstractEditor {
     viewModel: ViewModel;
     options: Options;
     notifyNestedChanges: boolean;
+    notifyNestedErrors: boolean;
     static editorOf(pointer: JSONPointer, controller: Controller, options?: Options): boolean;
     constructor(pointer: any, controller: any, options: any);
     update(event: EditorUpdateEvent): void;
