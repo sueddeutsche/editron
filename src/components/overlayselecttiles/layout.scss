@@ -22,13 +22,13 @@ $overlay-select-tiles: 4 * $mmf-block;
 
     &:hover .ed-form-box__content {
         background-color: rgba(map-get($color-material, 0), map-get($opacity, 2));
-        @include elevation4();
+        @include elevation(4);
     }
 }
 
 .ed-form-box__content {
     border-radius: $mmf-radius;
-    @include elevation2();
+    @include elevation(2);
 
     box-sizing: border-box;
     margin: $mmf-unit;
