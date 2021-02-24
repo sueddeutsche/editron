@@ -155,7 +155,7 @@ For a general overview how to set up _editors_, refer to [docs/howto-work-with-e
 
 ## Plugins
 
-_Editron_ does support plugins through a plugin-api that exposes lifecycle-hooks. You can refer to the [plugin-interface](./src/plugin/index.ts#L12) or read through the implementation of [default plugins](./src/plugin).
+_Editron_ does support plugins through a plugin-api that exposes lifecycle-hooks. This allows you to add data-based features and cross-editor features. You can refer to the [plugin overview](./docs/doc-plugin.md) or read through [howto write a plugin](./docs/howto-write-plugin.md).
 
 
 ## Further examples
