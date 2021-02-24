@@ -10,7 +10,7 @@ export type Options = {
 
 interface ModifiedEditor extends Editor {
     __selectionPlugin?: {
-        select: (editor) => void;
+        select: (event: MouseEvent) => void;
         options: any;
     }
 }
@@ -63,6 +63,8 @@ export default class SelectionPlugin implements Plugin {
     }
 
     onCreateEditor(pointer, editor: ModifiedEditor, options?) {
+        // only register editors, that are configured as selectable, for example
+        // in a json-schema, e.g. { "editron:ui": { selectable: true } }
         if (options && options.selectable) {
             editor.__selectionPlugin = {
                 options,
