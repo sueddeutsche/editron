@@ -45,7 +45,6 @@ class SelectionPlugin implements Plugin {
   initialize(editron: Editron) {
     // store for later use in lifecycle-hooks
     this.editron = editron;
-    return this;
   }
 }
 ```
