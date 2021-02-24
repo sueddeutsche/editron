@@ -6,6 +6,7 @@ Using the plugin api, you can add features across editors, data based features a
 
 ```ts
 import Editron, { Options, Plugin } from "editron";
+
 class SelectionPlugin implements Plugin {
   id: "MyPlugin",
   initialize(ed: Editron) {}

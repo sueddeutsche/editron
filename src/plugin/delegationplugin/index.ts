@@ -94,7 +94,7 @@ export default class DelegationPlugin {
         class DelegationEditor extends AbstractDelegationEditor {}
         DelegationEditor.prototype.delegate = this.delegate.bind(this);
 
-        this.controller.editors.unshift(DelegationEditor);
+        this.controller.registerEditor(DelegationEditor);
         return this;
     }
 
