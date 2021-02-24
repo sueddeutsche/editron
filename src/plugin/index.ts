@@ -11,7 +11,7 @@ type EditorOptions = { [p: string]: any; }
 
 export interface Plugin {
     id: string;
-    initialize(controller: Controller): Plugin;
+    initialize(controller: Controller) => void;
     onModifiedData?: (changes: Array<SimpleChange>) => void;
     onEditorOptions?: (pointer: JSONPointer, options: EditorOptions) => void;
     onCreateEditor?: (pointer: JSONPointer, editor: Editor, options: EditorOptions) => void;

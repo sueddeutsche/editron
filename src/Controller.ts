@@ -228,7 +228,10 @@ export default class Controller {
 
         // @lifecycle hook initialize on controller ready
         if (Array.isArray(options.plugins)) {
-            this.plugins = options.plugins.map(plugin => plugin.initialize(this));
+            this.plugins = options.plugins.map(plugin => {
+                plugin.initialize(this);
+                return plugin;
+            });
         }
     }
 
