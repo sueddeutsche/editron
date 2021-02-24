@@ -29,6 +29,7 @@ export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/edito
 export type { EditorUpdateEvent } from "./src/editors/Editor";
 export type { ValidationError, EditronConfigAttrs, FormatValidator, KeywordValidator, JSONSchema, JSONPointer, JSONData } from "./src/types";
 export type { Direction } from "./src/utils/selection";
+export type { SimpleChange, Change, AddChange, DeleteChange, MoveChange, ValueChange } from "./src/services/dataservice/change";
 // editors
 export { default as AbstractEditor, getTypeClass } from "./src/editors/AbstractEditor";
 export type { Options as AbstractEditorOptions }  from "./src/editors/AbstractEditor";
