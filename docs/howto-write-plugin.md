@@ -33,7 +33,7 @@ class SelectionPlugin implements Plugin {
 }
 ```
 
-With this, we can add the SelectionPlugin to editron, which will nothing yet:
+With this, we can add the SelectionPlugin to editron, which will do nothing yet:
 
 ```ts
 new Editron(schema, data, {
@@ -49,7 +49,7 @@ new Editron(schema, data, {
 
 ## Adding Selection Behaviour
 
-Next, we add our selection behaviour. We track an active element, manage a selected class and call our user hooks _onSelect_ and _onDeselect_.
+Next, we add our selection logic. We track an active element, manage a css-class `selected` and call our user hooks _onSelect_ and _onDeselect_.
 
 
 ```ts
@@ -97,7 +97,7 @@ Now that we have a basic Plugin and selection behaviour, we need to register our
 
 ## Tracking An Instance And Event-Listeners
 
-We will add an event-listener for each editor, so we store a function directly on each instance to remove it again later. In order to track editor instances that are registered to our _selection-plugin_, we extend editor instances by adding a configuration field directly on each editor:
+We will add an event-listener for each editor, so we store a function directly on each instance for later removal. In order to track editor instances that are registered to our _selection-plugin_, we extend editor instances by adding a configuration field directly on each editor:
 
 ```ts
 interface ModifiedEditor extends Editor {
