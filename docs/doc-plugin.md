@@ -30,6 +30,7 @@ interface Plugin {
     onCreateEditor?: (pointer: JSONPointer, editor: Editor, options: EditorOptions) => void;
     onChangePointer?: (oldPointer: JSONPointer, newPointer: JSONPointer, editor: Editor) => void;
     onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
+    destroy?: () => void;
 }
 ```
 
@@ -49,6 +50,12 @@ class SelectionPlugin implements Plugin {
   }
 }
 ```
+
+
+## destroy
+
+When plugins are destroyed, ths optional method should be used to remove any created data or event-listeners.
+
 
 
 ## _onModifiedData_-hook
