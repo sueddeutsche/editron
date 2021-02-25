@@ -44,11 +44,10 @@ export default class RemoteDataPlugin implements Plugin {
         removeObserver: () => void;
     }} = {};
 
-    initialize(controller: Controller): Plugin {
+    initialize(controller: Controller): void {
         this.controller = controller;
         // root pointer is not tracked, run initially to grab config on root
         this.onModifiedData([{ type: "add", pointer: "#" }]);
-        return this;
     }
 
     onModifiedData(changes: Array<SimpleChange>) {

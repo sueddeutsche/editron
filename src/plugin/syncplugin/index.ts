@@ -25,11 +25,10 @@ export default class SyncPlugin implements Plugin {
     hooks = {};
 
 
-    initialize(controller: Controller): Plugin {
+    initialize(controller: Controller): void {
         this.controller = controller;
         // root pointer is not tracked, run initially to grab config on root
         this.onModifiedData([{ type: "add", pointer: "#" }]);
-        return this;
     }
 
     copyData(pointer: JSONPointer, syncOptions: EditronSchemaOptions["sync"], previous) {

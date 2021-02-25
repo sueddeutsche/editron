@@ -88,14 +88,13 @@ export default class DelegationPlugin {
         this.dom = document.createElement("div");
     }
 
-    initialize(controller: Controller): Plugin {
+    initialize(controller: Controller): void {
         this.controller = controller;
 
         class DelegationEditor extends AbstractDelegationEditor {}
         DelegationEditor.prototype.delegate = this.delegate.bind(this);
 
         this.controller.registerEditor(DelegationEditor);
-        return this;
     }
 
     delegateToOverlay(editor: Editor): Promise<void> {

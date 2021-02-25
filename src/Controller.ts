@@ -485,6 +485,7 @@ export default class Controller {
         }
         this.destroyed = true;
         Object.keys(this.services).forEach(id => this.services[id].destroy());
+        this.plugins?.forEach(plugin => plugin.destroy && plugin.destroy());
     }
 }
 

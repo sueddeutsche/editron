@@ -126,9 +126,8 @@ export default class SortablePlugin implements Plugin {
         this.options = options;
     }
 
-    initialize(controller: Controller): Plugin {
+    initialize(controller: Controller): void {
         this.controller = controller;
-        return this;
     }
 
     onCreateEditor(pointer, editor: SortableEditor, options?: EditronSchemaOptions) {
