@@ -2,7 +2,7 @@
 import { strict as assert } from "assert";
 import sinon from "sinon";
 
-import Controller from "../../../src/Controller";
+import Editron from "../../../src/Editron";
 import ArrayEditor from "../../../src/editors/arrayeditor";
 
 
@@ -25,7 +25,7 @@ describe("ArrayEditor.applyPatches", () => {
 
         const data = { list: [{ title: "first" }, { title: "second" }, { title: "third" }] };
         // @ts-ignore
-        controller = new Controller(schema, data, { editors: [ArrayEditor] });
+        controller = new Editron(schema, data, { editors: [ArrayEditor] });
         editor = controller.createEditor("#/list", document.body);
     });
 

@@ -1,4 +1,4 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
 
@@ -37,7 +37,7 @@ export default class SelectionPlugin implements Plugin {
 
     dom: HTMLElement;
     current: Editor;
-    controller: Controller;
+    editron: Editron;
 
     currentSelection: ModifiedEditor;
     onSelect: SelectionPluginOptions["onSelect"];
@@ -49,8 +49,8 @@ export default class SelectionPlugin implements Plugin {
         this.onDeselect = options.onDeselect;
     }
 
-    initialize(controller: Controller): void {
-        this.controller = controller;
+    initialize(editron: Editron): void {
+        this.editron = editron;
         this.deselect = this.deselect.bind(this);
         document.body.addEventListener("click", this.deselect);
     }

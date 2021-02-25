@@ -24,7 +24,7 @@ Besides a mandatory `initialize`-method and a unique id, there are several lifec
 ```ts
 interface Plugin {
     id: string;
-    initialize(controller: Controller) => void;
+    initialize(controller: Editron) => void;
     onModifiedData?: (changes: Array<SimpleChange>) => void;
     onEditorOptions?: (pointer: JSONPointer, options: EditorOptions) => void;
     onCreateEditor?: (pointer: JSONPointer, editor: Editor, options: EditorOptions) => void;

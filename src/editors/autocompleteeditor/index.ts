@@ -1,5 +1,5 @@
 import AbstractValueEditor, { ViewModel } from '../AbstractValueEditor';
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import m from "mithril";
 import { JSONPointer } from "../../types";
 import { Options as EditorOptions } from "../Editor";
@@ -38,21 +38,21 @@ export default class AutocompleteEditor extends AbstractValueEditor {
     getSuggestions: Array<SuggestionInput> | GetSuggestions;
     viewModel: QueryListFormAttrs & ViewModel;
 
-    static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.service("schema").get(pointer);
+    static editorOf(pointer: JSONPointer, editron: Editron) {
+        const schema = editron.service("schema").get(pointer);
 
         return schema.type === "string" && schema.format === "autocomplete";
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
-        super(pointer, controller, options);
+    constructor(pointer: JSONPointer, editron: Editron, options: Options) {
+        super(pointer, editron, options);
 
         const { suggestions, showCurrentInput, currentInputDescription } = options.autocomplete;
 
         if (Array.isArray(suggestions)) {
             this.getSuggestions = suggestions;
         } else {
-            this.getSuggestions = (value: string) => controller.proxy()
+            this.getSuggestions = (value: string) => editron.proxy()
                 .get(suggestions.proxyMethod, { source: value })
                 .catch(e => {
                     console.warn(`Failed retrieving suggestions for ${value}: ${e.message}`);

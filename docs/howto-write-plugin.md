@@ -155,7 +155,7 @@ Being good citizens, we want to remove all custom data and listeners when an edi
 Finally, we add the missing deselect hook and are done implementing the plugin
 
 ```ts
-  initialize(controller: Controller): Plugin {
+  initialize(controller: Editron): Plugin {
       this.controller = controller;
 
       // listen to clicks on document for deselecting any editors

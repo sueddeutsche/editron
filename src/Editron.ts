@@ -28,7 +28,7 @@ import valueEditor from "./editors/valueeditor";
 const { JsonEditor: Core } = jsonSchemaLibrary.cores;
 
 export type i18nFunction = (object?) => string;
-export type i18nErrorFunction = (controller: Controller, error: ValidationError) => string;
+export type i18nErrorFunction = (editron: Editron, error: ValidationError) => string;
 
 
 export type Options = {
@@ -62,27 +62,27 @@ export type Services = {
 
 
 /**
- * Main component to build editors. Each editor should receive the controller, which carries all required services
+ * Main component to build editors. Each editor should receive the editron, which carries all required services
  * for editor initialization
  *
  * # Usage
  *
- * Instantiate the controller
+ * Instantiate the editron
  *
  * ```js
- * import Controller from "editron";
+ * import Editron from "editron";
  * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
- * const editron = new Controller(jsonSchema);
+ * const editron = new Editron(jsonSchema);
  * ```
  *
  * or, using all parameters
  *
  * ```js
- *  import Controller from "editron";
+ *  import Editron from "editron";
  *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  *  // data = { title: "Hello" } - or simply use {}
  *  // options = { editors: [ complete list of custom editors ] }
- *  const editron = new Controller(jsonSchema, data, options);
+ *  const editron = new Editron(jsonSchema, data, options);
  * ```
  *
  * and start rendering editors
@@ -98,7 +98,7 @@ export type Services = {
  *  const data = editron.getData();
  * ```
  */
-export default class Controller {
+export default class Editron {
     core;
     /** internal helper. Set to `true`, if editron has been destroyed */
     destroyed = false;
@@ -122,7 +122,7 @@ export default class Controller {
 
     /**
      * Create a new editron instance, which will be used to create ui-forms for specific
-     * data-points via `controller.createEditor(pointer, dom);`
+     * data-points via `editron.createEditor(pointer, dom);`
      *
      * @param [schema] - json schema describing required data/form template
      * @param [data] - initial data for given json-schema
@@ -226,7 +226,7 @@ export default class Controller {
         // run initial validation
         this.validateAll();
 
-        // @lifecycle hook initialize on controller ready
+        // @lifecycle hook initialize on editron ready
         if (Array.isArray(options.plugins)) {
             this.plugins = options.plugins.map(plugin => {
                 plugin.initialize(this);
@@ -388,7 +388,7 @@ export default class Controller {
 
         this.services.instances.remove(editor);
 
-        // controller inserted child and removes it here again
+        // editron inserted child and removes it here again
         const $element = editor.getElement();
         $element?.parentNode?.removeChild($element);
         editor.destroy();

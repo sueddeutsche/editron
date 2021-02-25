@@ -1,6 +1,6 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
-import Controller from "../../src/Controller";
+import Editron from "../../src/Editron";
 import LocationService from "../../src/services/LocationService";
 import { MoveChange, DeleteChange } from "../../src/services/dataservice/change";
 

@@ -1,6 +1,6 @@
 import ArrayItem, { Options as ArrayItemOptions } from "./ArrayItem";
 import { Action } from "../../components/actions";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import diffpatch from "../../services/utils/diffpatch";
 import m from "mithril";
 import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
@@ -75,19 +75,19 @@ export default class ArrayEditor extends AbstractEditor {
     /** parent container for array children */
     $items: HTMLElement;
     children: Array<ArrayItem> = [];
-    controller: Controller;
+    editron: Editron;
     pointer: JSONPointer;
     viewModel: ViewModel;
     /** options template for array child creation */
     childOptions: ArrayItemOptions;
 
-    static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.service("schema").get(pointer);
+    static editorOf(pointer: JSONPointer, editron: Editron) {
+        const schema = editron.service("schema").get(pointer);
         return schema.type === "array";
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
-        super(pointer, controller, options);
+    constructor(pointer: JSONPointer, editron: Editron, options: Options) {
+        super(pointer, editron, options);
         this.dom.classList.add("with-insert-button");
 
         const schema = this.getSchema();
@@ -110,14 +110,14 @@ export default class ArrayEditor extends AbstractEditor {
         this.viewModel = {
             attrs: {},
             disabled: options.disabled === true,
-            errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            errors: editron.service("validation").getErrorsAndWarnings(pointer),
             pointer,
             actions: options.actions ?? [],
             insertAction: {
                 icon: "add",
                 title: this.childOptions.addTitle,
                 disabled: () => this.getLength() < schema.maxItems,
-                action: () => arrayUtils.addItem(this.pointer, this.controller, this.getLength())
+                action: () => arrayUtils.addItem(this.pointer, this.editron, this.getLength())
             },
             ...options
         };
@@ -151,7 +151,7 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     createArrayItem(index: number): ArrayItem {
-        return new ArrayItem(`${this.pointer}/${index}`, this.controller, {
+        return new ArrayItem(`${this.pointer}/${index}`, this.editron, {
             title: `${index}`,
             ...this.childOptions
         });
@@ -194,7 +194,7 @@ export default class ArrayEditor extends AbstractEditor {
     }
 
     applyPatches(patch: Patch): void {
-        const { pointer, controller, children, $items } = this;
+        const { pointer, editron, children, $items } = this;
 
         // fetch a copy of the original list
         const originalChildren = Array.from(children);
@@ -217,7 +217,7 @@ export default class ArrayEditor extends AbstractEditor {
         });
 
         // update view: move and inserts nodes
-        const currentLocation = controller.service("location").getCurrent();
+        const currentLocation = editron.service("location").getCurrent();
         const changePointer = {};
 
         for (let i = 0, l = children.length; i < l; i += 1) {
@@ -227,7 +227,7 @@ export default class ArrayEditor extends AbstractEditor {
             // update current location
             if (currentLocation.indexOf(previousPointer) === 0) {
                 const editorLocation = currentLocation.replace(previousPointer, currentPointer);
-                controller.service("location").setCurrent(editorLocation);
+                editron.service("location").setCurrent(editorLocation);
             }
 
             // update child views to match patched list

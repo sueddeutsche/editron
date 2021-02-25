@@ -85,7 +85,7 @@ Usually a switch statement is helpful, to process the events:
 import { EditorUpdateEvent } from "editron";
 
 class MyEditor {
-    editron: EditronController;
+    editron: EditronEditron;
     // ...
 
     update(event: EditorUpdateEvent) {

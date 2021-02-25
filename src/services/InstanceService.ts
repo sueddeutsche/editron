@@ -1,7 +1,7 @@
 import { Editor, ChangePointerEvent, SetEnabledEvent } from "../editors/Editor";
 import { JSONPointer } from "../types";
 import { Change, isMoveChange, isDeleteChange } from "./dataservice/change";
-import Controller from "../Controller";
+import Editron from "../Editron";
 
 
 /**
@@ -9,13 +9,13 @@ import Controller from "../Controller";
  * tracks and notifies instances over their lifetime on changes
  */
 export default class InstanceService {
-    controller: Controller;
+    editron: Editron;
     /** active editor instances */
     instances: Array<Editor> = [];
 
 
-    constructor(controller) {
-        this.controller = controller;
+    constructor(editron) {
+        this.editron = editron;
     }
 
     add(editor: Editor) {
@@ -24,8 +24,8 @@ export default class InstanceService {
         editor.update = editor.update.bind(editor);
 
         editor.pointer = pointer;
-        this.controller.service("data").observe(pointer, editor.update, editor.notifyNestedChanges);
-        this.controller.service("validation").observe(pointer, editor.update, editor.notifyNestedErrors);
+        this.editron.service("data").observe(pointer, editor.update, editor.notifyNestedChanges);
+        this.editron.service("validation").observe(pointer, editor.update, editor.notifyNestedErrors);
 
         this.instances.push(editor);
     }
@@ -43,8 +43,8 @@ export default class InstanceService {
     }
 
     remove(editor: Editor) {
-        this.controller.service("data").removeObserver(editor.pointer, editor.update);
-        this.controller.service("validation").removeObserver(editor.pointer, editor.update);
+        this.editron.service("data").removeObserver(editor.pointer, editor.update);
+        this.editron.service("validation").removeObserver(editor.pointer, editor.update);
         this.instances = this.instances.filter(ed => ed !== editor);
     }
 
@@ -53,7 +53,7 @@ export default class InstanceService {
      *  - changes pointers and observers and
      *  - notifies editors
      */
-    updateContainer(pointer: JSONPointer, controller, changes: Array<Change>) {
+    updateContainer(pointer: JSONPointer, editron, changes: Array<Change>) {
         const changePointers = [];
 
         for (let i = 0, l = changes.length; i < l; i += 1) {
@@ -69,7 +69,7 @@ export default class InstanceService {
 
             // destroy editor instances
             } else if (isDeleteChange(change)) {
-                this.findFrom(change.pointer).forEach(ed => controller.destroyEditor(ed));
+                this.findFrom(change.pointer).forEach(ed => editron.destroyEditor(ed));
             }
         }
 
@@ -80,11 +80,11 @@ export default class InstanceService {
                 const oldPointer = instance.pointer;
                 const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);
 
-                this.controller.service("data")
+                this.editron.service("data")
                     .removeObserver(instance.pointer, instance.update)
                     .observe(newPointer, instance.update, instance.notifyNestedChanges);
 
-                this.controller.service("validation")
+                this.editron.service("validation")
                     .removeObserver(instance.pointer, instance.update)
                     .observe(newPointer, instance.update, instance.notifyNestedChanges);
 
@@ -93,7 +93,7 @@ export default class InstanceService {
                 instance.pointer = newPointer;
                 instance.getElement().setAttribute("data-point", newPointer);
 
-                controller.plugins.forEach(plugin => {
+                editron.plugins.forEach(plugin => {
                     if (plugin.onChangePointer) {
                         plugin.onChangePointer(oldPointer, newPointer, instance);
                     }

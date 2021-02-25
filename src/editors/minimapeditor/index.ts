@@ -2,14 +2,14 @@ import m from "mithril";
 import gp from "gson-pointer";
 import View, { buildTree, Node } from "./View";
 import { EditorUpdateEvent } from "../Editor";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer, ValidationError } from "../../types";
 import { Event as LocationEvent } from "../../services/LocationService";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 
 
 export type ViewModel = {
-    controller: Controller;
+    editron: Editron;
     currentSelection: JSONPointer;
     errors: Array<ValidationError>;
     /** minimap tree structure of input-data */
@@ -37,37 +37,37 @@ export default class MinimapEditor extends AbstractEditor {
     notifyNestedErrors = true;
 
 
-    static editorOf(pointer: JSONPointer, controller: Controller, options?: Options) {
+    static editorOf(pointer: JSONPointer, editron: Editron, options?: Options) {
         return options?.minimap?.use === true;
     }
 
-    constructor(pointer, controller, options) {
-        super(pointer, controller, options);
+    constructor(pointer, editron, options) {
+        super(pointer, editron, options);
         options.notifyNestedChanges = true;
         // override all default classes
         this.dom.className = "ed-minimap";
         const { minimap } = options;
-        const locationService = controller.service("location");
+        const locationService = editron.service("location");
 
         this.viewModel = {
-            controller,
-            node: buildTree(pointer, this.getData(), controller, minimap.depth ?? 2),
+            editron,
+            node: buildTree(pointer, this.getData(), editron, minimap.depth ?? 2),
             errors: [],
             currentSelection: locationService.getCurrent(),
             onSelect: pointer => locationService.goto(pointer),
 
-            onAdd: (item) => controller.addItemTo(item.pointer),
+            onAdd: (item) => editron.addItemTo(item.pointer),
             onChange(pointerToList, reorderedList/*, targetIndex*/) {
                 // update data
-                const data = controller.service("data").get(pointerToList);
+                const data = editron.service("data").get(pointerToList);
                 const sorted = [];
                 for (let i = 0, l = data.length; i < l; i += 1) {
                     sorted.push(data[reorderedList[i]]);
                 }
-                controller.service("data").set(pointerToList, sorted);
+                editron.service("data").set(pointerToList, sorted);
 
                 // refocus
-                // controller.location().goto(`${pointerToList}/${targetIndex}`);
+                // editron.location().goto(`${pointerToList}/${targetIndex}`);
                 const currentPointer = locationService.getCurrent();
                 const localPointer = currentPointer.replace(pointerToList, "");
 
@@ -105,7 +105,7 @@ export default class MinimapEditor extends AbstractEditor {
                 // this.pointer has been set by service. Continue with data-update // no-break;
             case "data:update": { // eslint-disable-line no-fallthrough
                 const data = this.getData();
-                this.viewModel.node = buildTree(this.pointer, data, this.controller, this.options.minimap?.depth ?? 2);
+                this.viewModel.node = buildTree(this.pointer, data, this.editron, this.options.minimap?.depth ?? 2);
                 // console.log("node", this.viewModel.node);
                 break;
             }
@@ -144,7 +144,7 @@ export default class MinimapEditor extends AbstractEditor {
         if (this.viewModel) {
             this.viewModel = null;
             m.render(this.dom, m("i"));
-            this.controller.service("location").removeWatcher(this.updateLocation);
+            this.editron.service("location").removeWatcher(this.updateLocation);
         }
     }
 }

@@ -1,5 +1,5 @@
 import m from "mithril";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import AbstractEditor, { Options as EditorOptions } from "../../editors/AbstractEditor";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
@@ -13,14 +13,14 @@ class AbstractDelegationEditor extends AbstractEditor {
 
     options: EditronSchemaOptions & EditorOptions;
 
-    static editorOf(pointer: JSONPointer, controller: Controller, options) {
+    static editorOf(pointer: JSONPointer, editron: Editron, options) {
         return options.delegate != null && options.isDelegated !== true;
     }
 
 
-    constructor(pointer: JSONPointer, controller: Controller, options) {
+    constructor(pointer: JSONPointer, editron: Editron, options) {
         options.isDelegated = true;
-        super(pointer, controller, options);
+        super(pointer, editron, options);
         this.render();
     }
 
@@ -49,7 +49,7 @@ class AbstractDelegationEditor extends AbstractEditor {
 
 export type DelegationEvent = {
     pointer: JSONPointer;
-    controller: Controller;
+    editron: Editron;
     editor: Editor;
 }
 
@@ -79,7 +79,7 @@ export default class DelegationPlugin {
 
     dom: HTMLElement;
     current: Editor;
-    controller: Controller;
+    editron: Editron;
     onDelegation?: (event: DelegationEvent) => void;
 
 
@@ -88,27 +88,27 @@ export default class DelegationPlugin {
         this.dom = document.createElement("div");
     }
 
-    initialize(controller: Controller): void {
-        this.controller = controller;
+    initialize(editron: Editron): void {
+        this.editron = editron;
 
         class DelegationEditor extends AbstractDelegationEditor {}
         DelegationEditor.prototype.delegate = this.delegate.bind(this);
 
-        this.controller.registerEditor(DelegationEditor);
+        this.editron.registerEditor(DelegationEditor);
     }
 
     delegateToOverlay(editor: Editor): Promise<void> {
         return OverlayService
             .open(editor.getElement(), { abortButton: false })
-            .then(() => this.controller.destroyEditor(editor));
+            .then(() => this.editron.destroyEditor(editor));
     }
 
     delegate(pointer: JSONPointer, options: EditronSchemaOptions) {
         if (this.current) {
-            this.controller.destroyEditor(this.current);
+            this.editron.destroyEditor(this.current);
         }
 
-        this.current = this.controller.createEditor(pointer, this.dom, { isDelegated: true });
+        this.current = this.editron.createEditor(pointer, this.dom, { isDelegated: true });
 
         if (options?.delegate?.delegateTo === DelegationTarget.Overlay) {
             this.delegateToOverlay(this.current);
@@ -117,7 +117,7 @@ export default class DelegationPlugin {
 
         if (this.onDelegation) {
             this.onDelegation({
-                controller: this.controller,
+                editron: this.editron,
                 pointer,
                 editor: this.current
             });

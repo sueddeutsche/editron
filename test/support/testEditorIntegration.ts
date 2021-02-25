@@ -3,7 +3,7 @@ import { strict as assert } from "assert";
 import sinon from "sinon";
 import gp from "gson-pointer";
 
-import Controller from "../../src/Controller";
+import Editron from "../../src/Editron";
 
 
 function copyPointerToLocation(controller, fromLocation, newLocation) {
@@ -44,7 +44,7 @@ export default function testEditorIntegration(Constructor, pointer, schema, data
         let controller;
 
         beforeEach(() => {
-            controller = new Controller(schema, data, { editors: [Constructor] });
+            controller = new Editron(schema, data, { editors: [Constructor] });
             sinon.spy(controller.services.data, "observe");
             sinon.spy(controller.services.data, "removeObserver");
             sinon.spy(controller.services.validation, "observe");

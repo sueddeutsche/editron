@@ -1,7 +1,7 @@
 import m from "mithril";
 import View from "./View";
 import AbstractValueEditor from "../AbstractValueEditor";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Options } from "../Editor";
 
@@ -18,13 +18,13 @@ export type EditronSchemaOptions = {
 
 export default class ValueEditor extends AbstractValueEditor {
 
-    static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.service("schema").get(pointer);
+    static editorOf(pointer: JSONPointer, editron: Editron) {
+        const schema = editron.service("schema").get(pointer);
         return schema.type !== "object" && schema.type !== "array";
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
-        super(pointer, controller, options);
+    constructor(pointer: JSONPointer, editron: Editron, options: Options) {
+        super(pointer, editron, options);
         this.render();
     }
 

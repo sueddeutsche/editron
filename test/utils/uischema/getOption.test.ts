@@ -1,5 +1,5 @@
 import { strict as assert } from "assert";
-import Controller from "../../../src/Controller";
+import Editron from "../../../src/Editron";
 import UISchema from "../../../src/utils/UISchema";
 
 
@@ -14,7 +14,7 @@ describe("UISchema.getOption", () => {
             description: "description of object",
             "editron:ui": {}
         };
-        controller = new Controller(schema, {}, {});
+        controller = new Editron(schema, {}, {});
     });
 
     // it("should return the options object if no option is given", () => {

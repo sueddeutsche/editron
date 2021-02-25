@@ -1,6 +1,6 @@
 import { EditorPlugin, Editor } from "../editors/Editor";
 import { JSONPointer, FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
-import Controller from "../Controller";
+import Editron from "../Editron";
 import { SimpleChange } from "../services/dataservice/change";
 
 const editors: Array<EditorPlugin> = [];
@@ -14,7 +14,7 @@ export interface Plugin {
     /** unique id of your plugin */
     id: string;
     /** called, when editron has been initialized */
-    initialize(controller: Controller): void;
+    initialize(editron: Editron): void;
     /** called, when editron data has changed */
     onModifiedData?: (changes: Array<SimpleChange>) => void;
     /** called, before a new editor will be instantiated */
@@ -32,7 +32,7 @@ export interface Plugin {
 
 export default {
 
-    /** register an editor (widget) to use in editron-controller */
+    /** register an editor (widget) to use in editron-editron */
     editor(constructor: EditorPlugin): void {
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);
