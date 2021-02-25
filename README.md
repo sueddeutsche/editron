@@ -3,7 +3,7 @@ Editron creates an html user interface with validation for your data, solely bas
 ![editron](./docs/images/logo.png)
 
 <p align="center">
-    demo (coming soon) | <a href="#working-with-editron">working with editron</a> | <a href="#configure">customize editron</a>
+    demo (coming soon) | <a href="#working-with-editron">working with editron</a> | <a href="#configure">customize editron</a> | <a href="https://sueddeutsche.github.io/editron/api/">api</a>
 </p>
 
 ---
