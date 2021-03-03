@@ -1,6 +1,6 @@
 {
   "name": "editron",
-  "version": "9.0.1",
+  "version": "9.0.2",
   "description": "Editron - json-editor",
   "main": "dist/editron.js",
   "types": "dist/editron.d.ts",

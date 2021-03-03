@@ -65,9 +65,10 @@ export default class ValidationService {
         // reset stored list of events
         let remainingErrors = [];
         if (pointer !== "#") {
+            const startsWithPointer = new RegExp(`^${pointer}(/|$)`);
             // the following filtering is a duplicate from BubblingCollectionObservable.clearEvents
             remainingErrors = this.store.get(ID)
-                .filter(e => e.data.pointer == null || e.data.pointer.startsWith(pointer) === false);
+                .filter(e => e.data.pointer == null || startsWithPointer.test(e.data.pointer) === false);
         }
 
         this.store.dispatch.errors.set(remainingErrors);

@@ -138,9 +138,10 @@ class BubblingCollectionObservable {
      */
     clearEvents(pointer, clearChildren = true) {
         let changed = false;
+        const startsWithPointer = new RegExp(`^${pointer}(/|$)`);
         if (clearChildren) {
             Object.keys(this.eventCollection).forEach(target => {
-                if (!(target.startsWith(pointer) && target !== pointer)) {
+                if (!(startsWithPointer.test(target) && target !== pointer)) {
                     return;
                 }
                 if (this.eventCollection[target].length > 0) {

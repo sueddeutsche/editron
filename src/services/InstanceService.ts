@@ -32,7 +32,8 @@ export default class InstanceService {
     }
 
     findFrom(parentPointer: JSONPointer) {
-        return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer));
+        const containsParentPointer = new RegExp(`^${parentPointer}(/|$)`);
+        return this.instances.filter(editor => containsParentPointer.test(editor.getPointer()));
     }
 
     editorFromElement(dom: HTMLElement) {

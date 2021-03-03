@@ -20,7 +20,8 @@ export default class InstanceService {
         this.instances.push(editor);
     }
     findFrom(parentPointer) {
-        return this.instances.filter(editor => editor.getPointer().startsWith(parentPointer));
+        const containsParentPointer = new RegExp(`^${parentPointer}(/|$)`);
+        return this.instances.filter(editor => containsParentPointer.test(editor.getPointer()));
     }
     editorFromElement(dom) {
         return this.instances.find(editor => editor.dom === dom);
