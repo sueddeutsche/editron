@@ -1,6 +1,6 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
-import Controller from "../../src/Controller";
+import Editron from "../../src/Editron";
 function createEditor(pointer = "#/target") {
     return {
         destroyed: false,
@@ -17,7 +17,7 @@ describe("InstanceService", () => {
     let controller;
     let editor;
     beforeEach(() => {
-        controller = new Controller();
+        controller = new Editron();
         instanceService = controller.services.instances;
         editor = createEditor();
     });

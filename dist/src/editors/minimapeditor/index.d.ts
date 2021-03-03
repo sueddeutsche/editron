@@ -1,11 +1,11 @@
 import { Node } from "./View";
 import { EditorUpdateEvent } from "../Editor";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer, ValidationError } from "../../types";
 import { Event as LocationEvent } from "../../services/LocationService";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
 export declare type ViewModel = {
-    controller: Controller;
+    editron: Editron;
     currentSelection: JSONPointer;
     errors: Array<ValidationError>;
     /** minimap tree structure of input-data */
@@ -27,8 +27,8 @@ export default class MinimapEditor extends AbstractEditor {
     options: Options;
     notifyNestedChanges: boolean;
     notifyNestedErrors: boolean;
-    static editorOf(pointer: JSONPointer, controller: Controller, options?: Options): boolean;
-    constructor(pointer: any, controller: any, options: any);
+    static editorOf(pointer: JSONPointer, editron: Editron, options?: Options): boolean;
+    constructor(pointer: any, editron: any, options: any);
     update(event: EditorUpdateEvent): void;
     render(): void;
     updateLocation(event: LocationEvent): void;

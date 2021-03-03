@@ -2,7 +2,7 @@ import m from "mithril";
 import Sortable from "sortablejs";
 import { ValidationError } from "../../types";
 import { JSONPointer } from "../../types";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 export declare type Node = {
     pointer: JSONPointer;
     title: string;
@@ -12,10 +12,10 @@ export declare type Node = {
     sortableGroup?: string;
     children: Array<Node>;
 };
-export declare function buildTree(pointer: JSONPointer, data: any, controller: Controller, depth?: number): Node;
+export declare function buildTree(pointer: JSONPointer, data: any, editron: Editron, depth?: number): Node;
 export declare type Attrs = {
     withHandle?: boolean;
-    controller: Controller;
+    editron: Editron;
     node: Node;
     errors: Array<ValidationError>;
     currentSelection: JSONPointer;

@@ -1,5 +1,5 @@
 import { JSONData, ValidationError } from "../types";
-import Controller from "../Controller";
+import Editron from "../Editron";
 export declare function translate(key: string, data?: JSONData): any;
 export declare namespace translate {
     var strings: {
@@ -9,7 +9,7 @@ export declare namespace translate {
         "array:button:clone": string;
     };
 }
-export declare function translateError(controller: Controller, error: ValidationError): ValidationError;
+export declare function translateError(editron: Editron, error: ValidationError): ValidationError;
 export declare namespace translateError {
     var strings: {};
 }

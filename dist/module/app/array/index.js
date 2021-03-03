@@ -1,4 +1,4 @@
-import Controller from "../../src/Controller";
+import Controller from "../../src/Editron";
 import SortablePlugin from "../../src/plugin/sortableplugin";
 import "./index.scss";
 import "./index.html";

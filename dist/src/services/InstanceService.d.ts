@@ -1,16 +1,16 @@
 import { Editor } from "../editors/Editor";
 import { JSONPointer } from "../types";
 import { Change } from "./dataservice/change";
-import Controller from "../Controller";
+import Editron from "../Editron";
 /**
  * manages editor instance events -
  * tracks and notifies instances over their lifetime on changes
  */
 export default class InstanceService {
-    controller: Controller;
+    editron: Editron;
     /** active editor instances */
     instances: Array<Editor>;
-    constructor(controller: any);
+    constructor(editron: any);
     add(editor: Editor): void;
     findFrom(parentPointer: JSONPointer): Editor[];
     editorFromElement(dom: HTMLElement): Editor;
@@ -21,7 +21,7 @@ export default class InstanceService {
      *  - changes pointers and observers and
      *  - notifies editors
      */
-    updateContainer(pointer: JSONPointer, controller: any, changes: Array<Change>): void;
+    updateContainer(pointer: JSONPointer, editron: any, changes: Array<Change>): void;
     /** change all editors active-state */
     setActive(active: boolean): void;
     destroy(): void;

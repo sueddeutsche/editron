@@ -1,4 +1,4 @@
-import Controller from "../../src/Controller";
+import Controller from "../../src/Editron";
 import RemoteDataPlugin from "../../src/plugin/remotedataplugin";
 import SyncPlugin from "../../src/plugin/syncplugin";
 import "./index.scss";

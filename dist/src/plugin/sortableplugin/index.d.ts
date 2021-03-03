@@ -1,18 +1,18 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
 import Sortable, { SortableEvent } from "sortablejs";
 export { Sortable };
 export declare type Options = {
-    onAdd?: ({ pointer: string, controller: Controller, event: SortableEvent }: {
+    onAdd?: ({ pointer: string, editron: Editron, event: SortableEvent }: {
         pointer: any;
-        controller: any;
+        editron: any;
         event: any;
     }) => void;
 };
-export declare function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent): string;
-export declare function onEndSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent): void;
+export declare function onAddSortable(pointer: JSONPointer, editron: Editron, event: SortableEvent): string;
+export declare function onEndSortable(pointer: JSONPointer, editron: Editron, event: SortableEvent): void;
 /** required settings in editron:ui config */
 export declare type EditronSchemaOptions = {
     sortable?: {
@@ -32,10 +32,10 @@ interface SortableEditor extends Editor {
 }
 export default class SortablePlugin implements Plugin {
     id: string;
-    controller: Controller;
+    editron: Editron;
     options: Options;
     constructor(options?: Options);
-    initialize(controller: Controller): Plugin;
+    initialize(editron: Editron): void;
     onCreateEditor(pointer: any, editor: SortableEditor, options?: EditronSchemaOptions): void;
     onChangePointer(oldPointer: JSONPointer, newPointer: JSONPointer, editor: SortableEditor): void;
     onDestroyEditor(pointer: any, editor: SortableEditor): void;

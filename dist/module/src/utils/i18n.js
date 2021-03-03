@@ -15,13 +15,13 @@ export function translate(key, data) {
     }
     return key;
 }
-export function translateError(controller, error) {
+export function translateError(editron, error) {
     if (typeof translateError.strings[error.code] === "string") {
         error.message = error.data == null ?
             translateError.strings[error.code] : render(translateError.strings[error.code], error.data);
     }
     else if (typeof translateError.strings[error.code] === "function") {
-        error.message = translateError.strings[error.code](controller, error);
+        error.message = translateError.strings[error.code](editron, error);
     }
     return error;
 }

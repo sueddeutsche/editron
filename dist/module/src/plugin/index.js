@@ -1,7 +1,7 @@
 const editors = [];
 const validators = [];
 export default {
-    /** register an editor (widget) to use in editron-controller */
+    /** register an editor (widget) to use in editron-editron */
     editor(constructor) {
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);

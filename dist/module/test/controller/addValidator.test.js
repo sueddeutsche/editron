@@ -1,7 +1,7 @@
 /* eslint max-len: 0 */
 import { strict as assert } from "assert";
-import Controller from "../../src/Controller";
-describe("Controller.addValidator", () => {
+import Editron from "../../src/Editron";
+describe("Editron.addValidator", () => {
     let controller;
     beforeEach(() => {
         const schema = {
@@ -18,7 +18,7 @@ describe("Controller.addValidator", () => {
             }
         };
         const data = { customFormat: "custom-fornat-value" };
-        controller = new Controller(schema, data);
+        controller = new Editron(schema, data);
     });
     it("should register validator for format", () => {
         controller.addFormatValidator("custom-format", (core, schema, value, pointer) => {

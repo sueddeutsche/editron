@@ -1,5 +1,5 @@
 import AbstractValueEditor, { ViewModel } from '../AbstractValueEditor';
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Options as EditorOptions } from "../Editor";
 import { QueryListFormAttrs } from "mithril-material-forms";
@@ -29,8 +29,8 @@ interface GetSuggestions {
 export default class AutocompleteEditor extends AbstractValueEditor {
     getSuggestions: Array<SuggestionInput> | GetSuggestions;
     viewModel: QueryListFormAttrs & ViewModel;
-    static editorOf(pointer: JSONPointer, controller: Controller): boolean;
-    constructor(pointer: JSONPointer, controller: Controller, options: Options);
+    static editorOf(pointer: JSONPointer, editron: Editron): boolean;
+    constructor(pointer: JSONPointer, editron: Editron, options: Options);
     render(): void;
 }
 export {};

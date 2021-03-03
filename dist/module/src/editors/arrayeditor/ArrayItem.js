@@ -13,10 +13,10 @@ const ActionsView = {
 };
 export const EditorTarget = ".ed-item";
 export default class ArrayItemEditor {
-    constructor(pointer, controller, options) {
+    constructor(pointer, editron, options) {
         // eslint-disable-next-line max-len
-        this.$element = controller.createElement(".ed-child", options.attrs);
-        this.controller = controller;
+        this.$element = editron.createElement(".ed-child", options.attrs);
+        this.editron = editron;
         this.passActions = (options === null || options === void 0 ? void 0 : options.passActions) === true;
         this.viewModel = {
             ...options,
@@ -43,7 +43,7 @@ export default class ArrayItemEditor {
             editorOptions.actions = this.viewModel.actions;
         }
         const $target = this.$element.querySelector(EditorTarget);
-        this.editor = controller.createEditor(pointer, $target, editorOptions);
+        this.editor = editron.createEditor(pointer, $target, editorOptions);
     }
     createActions(controls) {
         const actions = [];
@@ -89,19 +89,19 @@ export default class ArrayItemEditor {
         return actions;
     }
     add() {
-        arrayUtils.addItem(this.parentPointer, this.controller, this.index);
+        arrayUtils.addItem(this.parentPointer, this.editron, this.index);
     }
     clone() {
-        arrayUtils.cloneItem(this.parentPointer, this.controller, this.index);
+        arrayUtils.cloneItem(this.parentPointer, this.editron, this.index);
     }
     remove() {
-        arrayUtils.removeItem(this.parentPointer, this.controller, this.index);
+        arrayUtils.removeItem(this.parentPointer, this.editron, this.index);
     }
     move(to) {
-        arrayUtils.moveItem(this.parentPointer, this.controller, this.index, to);
+        arrayUtils.moveItem(this.parentPointer, this.editron, this.index, to);
     }
     getLength() {
-        const list = this.controller.service("data").get(this.parentPointer);
+        const list = this.editron.service("data").get(this.parentPointer);
         if (Array.isArray(list)) {
             return list.length;
         }
@@ -137,7 +137,7 @@ export default class ArrayItemEditor {
             return;
         }
         this.viewModel = null;
-        this.controller.destroyEditor(this.editor);
+        this.editron.destroyEditor(this.editor);
         this.$element.parentNode && this.$element.parentNode.removeChild(this.$element);
     }
     render() {

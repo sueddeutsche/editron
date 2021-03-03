@@ -1,4 +1,4 @@
-import Controller from "../Controller";
+import Editron from "../Editron";
 export declare type Direction = "up" | "down" | "left" | "right";
 export declare type Blurable = {
     mayBlur(direction: any): boolean;
@@ -7,11 +7,11 @@ export declare type FocusableElement = HTMLInputElement | HTMLSelectElement | HT
 /** returns true if one may trigger blur on the element via cursor movement **/
 declare function mayBlur(element: FocusableElement | Blurable, direction: Direction): boolean;
 /** returns the current active (editron) input element or false */
-declare function getActiveInput(controller: Controller, parent?: HTMLElement): FocusableElement | false;
+declare function getActiveInput(editron: Editron, parent?: HTMLElement): FocusableElement | false;
 /** returns a list of available editron input-elements (including textaras, select) */
 declare function getAvailableInputs(parent: HTMLElement): Array<FocusableElement>;
 /** returns the next input element in direction or false if it is last/first */
-declare function getNextInput(controller: Controller, direction?: Direction, { parent }?: {
+declare function getNextInput(editron: Editron, direction?: Direction, { parent }?: {
     parent?: HTMLElement;
 }): false | HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement;
 declare type Options = {
@@ -25,7 +25,7 @@ declare type Options = {
  * inputs being (textarea, input and select with an id-attribute containing a json-pointer-id)
  * @returns true - if there was a new target was found or the move prevented
  */
-declare function focusNextInput(controller: Controller, direction?: Direction, options?: Options): boolean;
+declare function focusNextInput(editron: Editron, direction?: Direction, options?: Options): boolean;
 declare const _default: {
     focusNextInput: typeof focusNextInput;
     getNextInput: typeof getNextInput;

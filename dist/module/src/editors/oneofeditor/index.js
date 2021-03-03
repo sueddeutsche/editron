@@ -4,8 +4,8 @@ import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import AbstractEditor, { getTypeClass } from "../AbstractEditor";
 import { getEditronOptions } from "../../utils/UISchema";
 export default class OneOfEditor extends AbstractEditor {
-    constructor(pointer, controller, options) {
-        super(pointer, controller, options);
+    constructor(pointer, editron, options) {
+        super(pointer, editron, options);
         /** catch inner changes (changes are compared by a diff which may not notify parent pointer) */
         this.notifyNestedChanges = true;
         this.dom.classList.add(`ed-${getTypeClass(this.getSchema())}--oneof`);
@@ -36,14 +36,14 @@ export default class OneOfEditor extends AbstractEditor {
         this.rebuild();
         this.render();
     }
-    static editorOf(pointer, controller, options) {
-        const schema = controller.service("schema").get(pointer);
+    static editorOf(pointer, editron, options) {
+        const schema = editron.service("schema").get(pointer);
         return schema.oneOfSchema && !schema.items && !options.renderOneOf;
     }
     changeChild(schema) {
-        this.controller.destroyEditor(this.childEditor);
-        const data = this.controller.service("schema").getTemplate(schema);
-        this.controller.service("data").set(this.pointer, data);
+        this.editron.destroyEditor(this.childEditor);
+        const data = this.editron.service("schema").getTemplate(schema);
+        this.editron.service("data").set(this.pointer, data);
     }
     getIndexOf(currentSchema) {
         for (let i = 0, l = this.schema.oneOf.length; i < l; i += 1) {
@@ -78,9 +78,9 @@ export default class OneOfEditor extends AbstractEditor {
         this.render();
     }
     rebuild() {
-        this.controller.destroyEditor(this.childEditor);
+        this.editron.destroyEditor(this.childEditor);
         this.$childContainer.innerHTML = "";
-        this.childEditor = this.controller.createEditor(this.pointer, this.$childContainer, {
+        this.childEditor = this.editron.createEditor(this.pointer, this.$childContainer, {
             // @attention this is very important or else we create an infinite loop through selectEditor
             renderOneOf: true
         });
@@ -94,7 +94,7 @@ export default class OneOfEditor extends AbstractEditor {
         }
         this.viewModel = null;
         m.render(this.dom, "i");
-        this.controller.destroyEditor(this.childEditor);
-        this.controller.service("data").removeObserver(this.pointer, this.update);
+        this.editron.destroyEditor(this.childEditor);
+        this.editron.service("data").removeObserver(this.pointer, this.update);
     }
 }

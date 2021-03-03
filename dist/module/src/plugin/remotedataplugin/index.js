@@ -12,16 +12,15 @@ export default class RemoteDataPlugin {
         this.id = "remote-data-plugin";
         this.remotes = {};
     }
-    initialize(controller) {
-        this.controller = controller;
+    initialize(editron) {
+        this.editron = editron;
         // root pointer is not tracked, run initially to grab config on root
         this.onModifiedData([{ type: "add", pointer: "#" }]);
-        return this;
     }
     onModifiedData(changes) {
         changes.forEach(change => {
             if (change.type === "add") {
-                const schema = this.controller.service("schema").get(change.pointer);
+                const schema = this.editron.service("schema").get(change.pointer);
                 const options = getEditronOptions(schema);
                 if (options === null || options === void 0 ? void 0 : options.remoteData) {
                     this.createLink(change.pointer, options === null || options === void 0 ? void 0 : options.remoteData);
@@ -47,16 +46,16 @@ export default class RemoteDataPlugin {
             console.warn(`editron remote-data-plugin: Expected option 'responseMapping' to be an object. Given: ${remote.responseMapping}`);
             return;
         }
-        const { controller } = this;
+        const { editron } = this;
         const sourcePointer = gp.join(pointer, remote.requestParamValues);
         const observer = async () => this.setRemoteData(pointer, remote);
-        controller.service("data").observe(sourcePointer, observer, true);
+        editron.service("data").observe(sourcePointer, observer, true);
         // @todo sometimes the pointer does not exist (timing issues?)
         this.setRemoteData(pointer, remote);
         this.remotes[pointer] = {
             options: remote,
             removeObserver: () => {
-                controller.service("data").removeObserver(sourcePointer, observer);
+                editron.service("data").removeObserver(sourcePointer, observer);
             }
         };
     }
@@ -67,11 +66,11 @@ export default class RemoteDataPlugin {
         }
     }
     async setRemoteData(pointer, remote) {
-        const { controller } = this;
-        const currentData = controller.service("data").getDataByReference();
+        const { editron } = this;
+        const currentData = editron.service("data").getDataByReference();
         // source of data for url values
         const sourcePointer = gp.join(pointer, remote.requestParamValues);
-        let sourceData = controller.service("data").get(sourcePointer);
+        let sourceData = editron.service("data").get(sourcePointer);
         if (sourceData == null || sourceData === "") {
             return;
         }
@@ -80,7 +79,7 @@ export default class RemoteDataPlugin {
         }
         // build request-url from 'url' and sourceData-properties and fetch data
         const remoteUrl = render(remote.requestParam, sourceData);
-        const json = await controller.proxy().get(remote.proxyMethod, ({ source: remoteUrl }));
+        const json = await editron.proxy().get(remote.proxyMethod, ({ source: remoteUrl }));
         Object.keys(remote.responseMapping)
             .forEach(key => {
             const targetPointer = gp.join(pointer, remote.responseMapping[key]);
@@ -90,7 +89,7 @@ export default class RemoteDataPlugin {
             }
             const targetValue = gp.get(json, key);
             try {
-                controller.service("data").set(targetPointer, targetValue, { addToHistory: remote.addToHistory });
+                editron.service("data").set(targetPointer, targetValue, { addToHistory: remote.addToHistory });
             }
             catch (error) {
                 console.warn(`@todo`, error);

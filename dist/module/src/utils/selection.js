@@ -46,8 +46,8 @@ function mayBlur(element, direction) {
     return true;
 }
 /** returns the current active (editron) input element or false */
-function getActiveInput(controller, parent = document.body) {
-    const currentPointer = controller.service("location").getCurrent();
+function getActiveInput(editron, parent = document.body) {
+    const currentPointer = editron.service("location").getCurrent();
     if (currentPointer === "#") {
         console.log("abort empty selection", currentPointer, "active element", document.activeElement);
         return false;
@@ -66,8 +66,8 @@ function getAvailableInputs(parent) {
     return Array.from(parent.querySelectorAll("input,textarea,select"));
 }
 /** returns the next input element in direction or false if it is last/first */
-function getNextInput(controller, direction = "down", { parent = document.body } = {}) {
-    const activeElement = getActiveInput(controller, parent);
+function getNextInput(editron, direction = "down", { parent = document.body } = {}) {
+    const activeElement = getActiveInput(editron, parent);
     if (activeElement === false) {
         return false;
     }
@@ -88,9 +88,9 @@ function getNextInput(controller, direction = "down", { parent = document.body }
  * inputs being (textarea, input and select with an id-attribute containing a json-pointer-id)
  * @returns true - if there was a new target was found or the move prevented
  */
-function focusNextInput(controller, direction = "down", options = {}) {
+function focusNextInput(editron, direction = "down", options = {}) {
     const { force = false, parent = document.body } = options;
-    const activeElement = getActiveInput(controller, parent);
+    const activeElement = getActiveInput(editron, parent);
     if (activeElement === false) {
         return false;
     }
@@ -98,7 +98,7 @@ function focusNextInput(controller, direction = "down", options = {}) {
         // console.log("prevent blur of", activeElement);
         return true;
     }
-    const nextElement = getNextInput(controller, direction, options);
+    const nextElement = getNextInput(editron, direction, options);
     if (nextElement) {
         nextElement.focus();
         return true;

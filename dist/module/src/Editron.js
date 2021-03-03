@@ -35,27 +35,27 @@ import objectEditor from "./editors/objecteditor";
 import valueEditor from "./editors/valueeditor";
 const { JsonEditor: Core } = jsonSchemaLibrary.cores;
 /**
- * Main component to build editors. Each editor should receive the controller, which carries all required services
+ * Main component to build editors. Each editor should receive the editron, which carries all required services
  * for editor initialization
  *
  * # Usage
  *
- * Instantiate the controller
+ * Instantiate the editron
  *
  * ```js
- * import Controller from "editron";
+ * import Editron from "editron";
  * // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
- * const editron = new Controller(jsonSchema);
+ * const editron = new Editron(jsonSchema);
  * ```
  *
  * or, using all parameters
  *
  * ```js
- *  import Controller from "editron";
+ *  import Editron from "editron";
  *  // jsonSchema = { type: "object", required: ["title"], properties: { title: { type: "string" } } }
  *  // data = { title: "Hello" } - or simply use {}
  *  // options = { editors: [ complete list of custom editors ] }
- *  const editron = new Controller(jsonSchema, data, options);
+ *  const editron = new Editron(jsonSchema, data, options);
  * ```
  *
  * and start rendering editors
@@ -71,10 +71,10 @@ const { JsonEditor: Core } = jsonSchemaLibrary.cores;
  *  const data = editron.getData();
  * ```
  */
-export default class Controller {
+export default class Editron {
     /**
      * Create a new editron instance, which will be used to create ui-forms for specific
-     * data-points via `controller.createEditor(pointer, dom);`
+     * data-points via `editron.createEditor(pointer, dom);`
      *
      * @param [schema] - json schema describing required data/form template
      * @param [data] - initial data for given json-schema
@@ -177,9 +177,12 @@ export default class Controller {
         this.service("validation").setErrorHandler(error => translateError(this, error));
         // run initial validation
         this.validateAll();
-        // @lifecycle hook initialize on controller ready
+        // @lifecycle hook initialize on editron ready
         if (Array.isArray(options.plugins)) {
-            this.plugins = options.plugins.map(plugin => plugin.initialize(this));
+            this.plugins = options.plugins.map(plugin => {
+                plugin.initialize(this);
+                return plugin;
+            });
         }
     }
     service(serviceName) {
@@ -314,7 +317,7 @@ export default class Controller {
         this.plugins.filter(plugin => plugin.onDestroyEditor)
             .forEach(plugin => plugin.onDestroyEditor(editor.getPointer(), editor));
         this.services.instances.remove(editor);
-        // controller inserted child and removes it here again
+        // editron inserted child and removes it here again
         const $element = editor.getElement();
         (_a = $element === null || $element === void 0 ? void 0 : $element.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild($element);
         editor.destroy();
@@ -393,11 +396,13 @@ export default class Controller {
     }
     /** Destroy the editor, its widgets and services */
     destroy() {
+        var _a;
         if (this.destroyed === true) {
             return;
         }
         this.destroyed = true;
         Object.keys(this.services).forEach(id => this.services[id].destroy());
+        (_a = this.plugins) === null || _a === void 0 ? void 0 : _a.forEach(plugin => plugin.destroy && plugin.destroy());
     }
 }
 _proxy = new WeakMap();
