@@ -1,15 +1,17 @@
 # Editron Plugins
 
-> Editron editors manage the visual portion of the data. Its the data they represent. Thus, within editron editors, you only manage visible data. Features, like working on data (e.g. fetching remote data based in an id that is not yet displayed) or cross-cutting features like drag'n'drop between different editors, requires a different approach. For this, there is a plugin api, where you have access to all editor lifecycle events, data-changes and error-updates. 
+// TODO: add link to [How to write a Plugin](./howto-write-plugin.md) guide?
 
-Using the plugin api, you can add features across editors, data based features and expose custom events. Plugins are added in options to the editron constructor:
+> Editron editors manage the visual portion of the data. It is the data they represent. Thus, within editron editors, you **only** manage visible data. Other functionality, like working on data (e.g. fetching remote data based on an id that is not yet displayed) or cross-cutting features like drag'n'drop between different editors, requires a different approach. For this, there is a plugin api, that has access to all editor lifecycle events, data-changes and error-updates. 
+
+Using the plugin api, you can add features that work across editors, data based features and expose custom events. Plugins are added as options to the editron constructor:
 
 ```ts
 import Editron, { Options, Plugin } from "editron";
 
 class SelectionPlugin implements Plugin {
   id: "MyPlugin",
-  initialize(ed: Editron) {}
+  initialize(controller: Editron) {}
 }
 
 const editron = new Editron(jsonSchema, jsonData, {
@@ -19,7 +21,7 @@ const editron = new Editron(jsonSchema, jsonData, {
 });
 ```
 
-Besides a mandatory `initialize`-method and a unique id, there are several lifecycle-hooks that a plugin may define:
+Besides a mandatory `initialize`-method and an unique id, there are several lifecycle-hooks that a plugin may define:
 
 ```ts
 interface Plugin {
@@ -35,9 +37,9 @@ interface Plugin {
 ```
 
 
-## initialize
+### _initialize_
 
-A plugin's mandatory `initialize`-hook is called when editron is created. It will pass the editron instance to the plugin, which usually stores the reference for later access to editron-functions:
+The plugin's mandatory `initialize`-method is called when editron is created. It passes the editron instance to the plugin, which should store a reference for later access to editron-functions:
 
 ```ts
 import Editron, { Options, Plugin } from "editron";
@@ -52,15 +54,23 @@ class SelectionPlugin implements Plugin {
 ```
 
 
-## destroy
+### _destroy_
 
-When plugins are destroyed, ths optional method should be used to remove any created data or event-listeners.
+When plugins are destroyed, this optional method should be used to remove any created data or event-listeners.
 
+//TODO: missing example? 
+```ts
+class SelectionPlugin implements Plugin {
+    // ...
+    destroy() => {
+        // TODO: e.g. remove event listener?
+    }
+}
+```
 
+### _onModifiedData_-hook
 
-## _onModifiedData_-hook
-
-Each time data changes `onModifiedData` will be called on each plugin, that has the method defined. Those plugins receive a list of changes made to the data and a json-pointer of the data-change. This allows you to watch for any or specific changes and perform your custom action:
+Each time data changes `onModifiedData` will be called on each plugin, that has the method defined. Those plugins receive a list of changes made to the data and a json-pointer to the changed data. This allows you to watch for any or specific changes and perform your custom actions:
 
 ```ts
 class MyPlugin implements Plugin {
@@ -87,22 +97,23 @@ For an implementation example, refer to the [RemoteDataPlugin](../src/plugin/rem
 
 
 
-## _onEditorOptions_-hook
+### _onEditorOptions_-hook
 
 Before any editor-instance is created, an _options-object_ is assembled and then passed to the editor's _contrucutor_ as options. Before an editor-instance receives the _options-object_, the `onEditorOptions` hook will receive the json-pointer and its _options_. This allows you to modify any values on this object, before the editor will receive them.
 
+// TODO: Example when you would need that?
 
 
 ## Editor Lifecycle Events
 
-Editor lifecycle-hooks are called for each editor-instances, once when it is created and destroyed and for each change of its location in data by array movement. This allows you to track an editors lifetime and e.g. hook into its HTML via `editor.getElement();`.
+Editor lifecycle-hooks are called for each editor-instance: when it is created, destroyed and for each location-change in data caused by array movement. This allows you to track an editors lifetime and e.g. hook into its HTML via `editor.getElement();`.
 
-For an implementation example, refer to the [DelegationPlugin](../src/plugin/delegationplugin/index.ts)
+For a complete implementation example, refer to the [DelegationPlugin](../src/plugin/delegationplugin/index.ts)
 
 
 ### _onCreateEditor_-hook
 
-Use the `onCreateEditor`-hook to add your custom feature and start tracking this editor instance. Usually a feature is selected by a specific json-schema setting that can be retrieved using the editron instance:
+Use the `onCreateEditor`-hook to add your custom plugin-feature(s) and start tracking this editor instance. To decide if your feature should be added, you usually check the json-schema for specific settings or options. The json-schema can be retrieved using the editron instance:
 
 ```ts
 import Editron, { Plugin, EditorOptions, Editor, JSONPointer } from "editron";
@@ -115,7 +126,7 @@ class MyPlugin implements Plugin {
   }
   onCreateEditor(pointer: JSONPointer, editor: Editor, options: EditorOptions) {
     const jsonSchema = this.editron.service("schema").get(pointer);
-    // check for options or jsonSchema settings if your feature should be added
+    // check for options or json-schema settings if your feature should be added
     // ...
   }
 }
@@ -123,9 +134,9 @@ class MyPlugin implements Plugin {
 
 ### _onChangePointer_-hook
 
-Editors may change their location. When an item is moved within an array, its editor is usually reused and its pointer changes. Pointer changes are manage on a `pointer` property of each editor. In case you track editor instances on your own, you must watch to these changes and update your stored editors.
+Editors may change their location. When an item is moved within an array, its editor is usually reused and its pointer changes. Pointer changes are manage on a `pointer` property of each editor. In case you track editor instances on your own, you must watch to these changes and update your stored editors. // TODO: and the onChangePointer-hook gets triggered when the editron pointer changes? Small example would also be nice :) 
 
 
 ### _onDestroyEditor_-hook
 
-When a editor instance is destroyed, the `onDestroyEditor`-hook will be called, allowing you to cleanup any tracked editor-instance.
+When an editor instance is destroyed, the `onDestroyEditor`-hook in your plugin will be called, allowing you to cleanup any tracked editor-instances.
