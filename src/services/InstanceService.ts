@@ -2,6 +2,7 @@ import { Editor, ChangePointerEvent, SetEnabledEvent } from "../editors/Editor";
 import { JSONPointer } from "../types";
 import { Change, isMoveChange, isDeleteChange } from "./dataservice/change";
 import Editron from "../Editron";
+import { changePointer } from "../utils/changePointer";
 
 
 /**
@@ -60,7 +61,7 @@ export default class InstanceService {
             const change = changes[i];
 
             // we have to collect editors up front or patch-sequences get mangled
-            // between update and not yet udpated editor
+            // between update and not yet updated editor
             if (isMoveChange(change)) {
                 changePointers.push({
                     ...change,
@@ -78,7 +79,7 @@ export default class InstanceService {
             const { pointer: prevPtr, to: nextPtr, editors } = change;
             editors.forEach((instance: Editor) => {
                 const oldPointer = instance.pointer;
-                const newPointer: JSONPointer = instance.getPointer().replace(prevPtr, nextPtr);
+                const newPointer: JSONPointer = changePointer(instance.getPointer(), prevPtr, nextPtr);
 
                 this.editron.service("data")
                     .removeObserver(instance.pointer, instance.update)
