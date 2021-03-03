@@ -5,6 +5,7 @@ import View, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import AbstractEditor from "../AbstractEditor";
 import arrayUtils from "../../utils/array";
 import { translate as _ } from "../../utils/i18n";
+import { changePointer as replacePointer } from "../../utils/changePointer";
 export const defaultOptions = {
     add: true,
     addTitle: "add",
@@ -141,7 +142,7 @@ export default class ArrayEditor extends AbstractEditor {
             const currentPointer = `${pointer}/${i}`;
             // update current location
             if (currentLocation.indexOf(previousPointer) === 0) {
-                const editorLocation = currentLocation.replace(previousPointer, currentPointer);
+                const editorLocation = replacePointer(currentLocation, previousPointer, currentPointer);
                 editron.service("location").setCurrent(editorLocation);
             }
             // update child views to match patched list

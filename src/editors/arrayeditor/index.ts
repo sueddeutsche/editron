@@ -11,6 +11,7 @@ import { ValidationError } from "../../types";
 import { Patch } from "../../services/utils/createDiff";
 import arrayUtils from "../../utils/array";
 import { translate as _ } from "../../utils/i18n";
+import { changePointer as replacePointer } from "../../utils/changePointer";
 
 
 /** type definitions for json-schema array-options (editron:ui) */
@@ -226,7 +227,7 @@ export default class ArrayEditor extends AbstractEditor {
 
             // update current location
             if (currentLocation.indexOf(previousPointer) === 0) {
-                const editorLocation = currentLocation.replace(previousPointer, currentPointer);
+                const editorLocation = replacePointer(currentLocation, previousPointer, currentPointer);
                 editron.service("location").setCurrent(editorLocation);
             }
 

@@ -4,6 +4,7 @@ import { isPointer } from "../../utils/UISchema";
 import { JSONPointer } from "../../types";
 import { PatchResult } from "../utils/createDiff";
 import pointersOf from "./pointersOf";
+import { changePointer } from "../../utils/changePointer";
 
 
 export type AddChange = {
@@ -84,10 +85,10 @@ export function changesWithChildPointers(changes: Array<Change>, previousData, c
 
         } else if (change.type === "move") {
             pointersOf(gp.get(previousData, change.pointer), change.pointer).forEach(pointer => {
-                changeStream.push({ type: "delete", pointer, to: pointer.replace(change.pointer, change.to) });
+                changeStream.push({ type: "delete", pointer, to: changePointer(pointer, change.pointer, change.to) });
             });
             pointersOf(gp.get(currentData, change.to), change.to).forEach(pointer => {
-                changeStream.push({ type: "add", pointer, from: pointer.replace(change.to, change.pointer) });
+                changeStream.push({ type: "add", pointer, from: changePointer(pointer, change.to, change.pointer) });
             });
         } else {
             // value change

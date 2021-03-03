@@ -2,6 +2,7 @@ import m from "mithril";
 import gp from "gson-pointer";
 import View, { buildTree } from "./View";
 import AbstractEditor from "../AbstractEditor";
+import { changePointer as replacePointer } from "../../utils/changePointer";
 export default class MinimapEditor extends AbstractEditor {
     constructor(pointer, editron, options) {
         var _a;
@@ -31,7 +32,7 @@ export default class MinimapEditor extends AbstractEditor {
                 // refocus
                 // editron.location().goto(`${pointerToList}/${targetIndex}`);
                 const currentPointer = locationService.getCurrent();
-                const localPointer = currentPointer.replace(pointerToList, "");
+                const localPointer = replacePointer(currentPointer, pointerToList, "");
                 if (localPointer === currentPointer) {
                     // console.log("current focus is outside of reordered list - keep focus");
                     return locationService.focus();

@@ -6,6 +6,7 @@ import Editron from "../../Editron";
 import { JSONPointer, ValidationError } from "../../types";
 import { Event as LocationEvent } from "../../services/LocationService";
 import AbstractEditor, { Options as EditorOptions } from "../AbstractEditor";
+import { changePointer as replacePointer } from "../../utils/changePointer";
 
 
 export type ViewModel = {
@@ -69,7 +70,7 @@ export default class MinimapEditor extends AbstractEditor {
                 // refocus
                 // editron.location().goto(`${pointerToList}/${targetIndex}`);
                 const currentPointer = locationService.getCurrent();
-                const localPointer = currentPointer.replace(pointerToList, "");
+                const localPointer = replacePointer(currentPointer, pointerToList, "");
 
                 if (localPointer === currentPointer) {
                     // console.log("current focus is outside of reordered list - keep focus");
