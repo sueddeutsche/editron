@@ -1,10 +1,10 @@
 # How To Write A Plugin
 
-An overview of the plugin api is described in [doc-plugin](./doc-plugin.md)
+An overview of the plugin API is described in [doc-plugin](./doc-plugin.md)
 
-> The following example describes an implementation for the SelectionPlugin in Typescript. The goal is to make an editor selectable, so it is highlighted and exposes an _selection-hook_ for further consumption. You can refer to the full implementation in [SelectionPlugin](../src/plugin/selectionplugin/index.ts).
+> The following example describes an implementation for the [SelectionPlugin](../src/plugin/selectionplugin/index.ts) in Typescript. The goal is to make an editor selectable, so it is highlighted and exposes an _selection-hook_ for further consumption. You can refer to the full implementation in [SelectionPlugin](../src/plugin/selectionplugin/index.ts).
 
-Using typescript, we start defining our plugin-options to expose our _selection-hooks_
+Using Typescript, we start defining our plugin-options type to expose our _selection-hooks_
 
 ```ts
 type SelectionPluginOptions = {
@@ -33,7 +33,7 @@ class SelectionPlugin implements Plugin {
 }
 ```
 
-With this, we can add the SelectionPlugin to editron, which will do nothing yet:
+With this, we can add the SelectionPlugin with our SelectionPluginOptions to editron, which will do nothing yet:
 
 ```ts
 new Editron(schema, data, {
@@ -49,21 +49,21 @@ new Editron(schema, data, {
 
 ## Adding Selection Behaviour
 
-Next, we add our selection logic. We track an active element, manage a css-class `selected` and call our user hooks _onSelect_ and _onDeselect_.
+Next, we add our selection logic. We track an active element, manage a css-class `selected` and call our hooks _onSelect_ and _onDeselect_.
 
 
 ```ts
 class SelectionPlugin implements Plugin {
 
+  // ...
   options: SeletionPluginOptions;
+
   // track the currently selected editor instance
   currentSelection: Editor;
 
   deselect() {
-    if (this.currentSelection == null) {
-      // bail, if we have no active selection
-      return;
-    }
+    // stop here, if we have no active selection
+    if (this.currentSelection == null) return;
 
     const editor = this.currentSelection;
     // remove the selection flag from the editors root DOM element
@@ -75,10 +75,9 @@ class SelectionPlugin implements Plugin {
   }
 
   select(editor: Editor) {
-    if (this.currentSelection === editor) {
-      // bail, if this editor is already selected
-      return;
-    }
+    // stop here, if this editor is already selected
+    if (this.currentSelection === editor) return;
+
     // deselect any current active editor
     this.deselect();
     // add a selected flag on the editors root DOM element
@@ -97,7 +96,7 @@ Now that we have a basic Plugin and selection behaviour, we need to register our
 
 ## Tracking An Instance And Event-Listeners
 
-We will add an event-listener for each editor, so we store a function directly on each instance for later removal. In order to track editor instances that are registered to our _selection-plugin_, we extend editor instances by adding a configuration field directly on each editor:
+We will add an event-listener for each editor, so we store a function directly on each editor-instance for later removal. In order to track editor instances that are registered to our _selection-plugin_, we extend editor instances by adding a configuration field directly on each editor:
 
 ```ts
 interface ModifiedEditor extends Editor {
@@ -107,7 +106,7 @@ interface ModifiedEditor extends Editor {
 }
 ```
 
-This gives us the ability (within typescript) to store properties onto an editor. Using the `onCreateEditor`-hook, we store our event-listener for later reuse.
+This gives us the ability (within Typescript) to store properties onto an editor. Using the `onCreateEditor`-hook, we store our event-listener for later reuse.
 
 ```ts
 class SelectionPlugin implements Plugin {
@@ -121,7 +120,7 @@ class SelectionPlugin implements Plugin {
       return;
     }
     
-    // store our plugin information on this instance, 
+    // store our plugin information on this instance
     editor.__selectionPlugin = {
       // add an event-listener, that we can access again later
       select: (event: MouseEvent) => {
@@ -129,20 +128,19 @@ class SelectionPlugin implements Plugin {
         this.select(editor);
     };
 
-    // and finally register the event
+    // and finally register the event listener
     editor.getElement().addEventListener("click", editor.__selectionPlugin.select);
   }
 }
 ```
 
-Being good citizens, we want to remove all custom data and listeners when an editor instance is removed. Therefore we watch `onDestroyEditor`-hook to cleanup
+Being good citizens, we want to remove all custom data and listeners when an editor instance is removed. Therefore we watch the `onDestroyEditor`-hook for cleanup
 
 ```ts
   onDestroyEditor(pointer, editor: ModifiedEditor, options?): void {
-    // bail, if this is not a tracked editor instance
-    if (editor.__selectionPlugin == null) {
-      return;
-    }
+    // stop here, if this is not a tracked editor instance
+    if (editor.__selectionPlugin == null) return;
+
     // remove the event-listener
     editor.getElement().removeEventListener("click", editor.__selectionPlugin.select);
     // remove our custom properties
@@ -150,7 +148,7 @@ Being good citizens, we want to remove all custom data and listeners when an edi
   }
 ```
 
-**Note** In case we are relying on an editor's json-pointer, we should add a `onChangePointer`-hook, which is described in [doc-plugin](./doc-plugin#onchangepointer-hook). For an implementation example, refer to the [SortablePlugin](../src/plugin/sortableplugon/index.ts).
+**Note** In case we are relying on an editor's json-pointer, we should add the `onChangePointer`-hook, which is described in [doc-plugin](./doc-plugin#onchangepointer-hook). For an implementation example, refer to the [SortablePlugin](../src/plugin/sortableplugon/index.ts).
 
 Finally, we add the missing deselect hook and are done implementing the plugin
 
