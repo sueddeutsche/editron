@@ -2,6 +2,7 @@ import diffpatch from "../utils/diffpatch";
 import gp from "gson-pointer";
 import { isPointer } from "../../utils/UISchema";
 import pointersOf from "./pointersOf";
+import { changePointer } from "../../utils/changePointer";
 export const isAddChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "add";
 export const isDeleteChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "delete";
 export const isMoveChange = (change) => (change === null || change === void 0 ? void 0 : change.type) === "move";
@@ -52,10 +53,10 @@ export function changesWithChildPointers(changes, previousData, currentData) {
         }
         else if (change.type === "move") {
             pointersOf(gp.get(previousData, change.pointer), change.pointer).forEach(pointer => {
-                changeStream.push({ type: "delete", pointer, to: pointer.replace(change.pointer, change.to) });
+                changeStream.push({ type: "delete", pointer, to: changePointer(pointer, change.pointer, change.to) });
             });
             pointersOf(gp.get(currentData, change.to), change.to).forEach(pointer => {
-                changeStream.push({ type: "add", pointer, from: pointer.replace(change.to, change.pointer) });
+                changeStream.push({ type: "add", pointer, from: changePointer(pointer, change.to, change.pointer) });
             });
         }
         else {

@@ -1,7 +1,7 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
 import { changePointer } from "../../src/utils/changePointer";
-describe("utils/replacePointer", () => {
+describe("utils/changePointer", () => {
     it("should replace pointer with the change", () => {
         const result = changePointer("#/article/title", "#/article", "#/story");
         assert.equal(result, "#/story/title");
@@ -21,5 +21,9 @@ describe("utils/replacePointer", () => {
     it("should replace pointer when jsonPointer and changedPointer match", () => {
         const result = changePointer("#/article/title", "#/article/title", "#/story/title");
         assert.equal(result, "#/story/title");
+    });
+    it("should remove pointer correctly", () => {
+        const result = changePointer("#/story/article/title", "#/story", "");
+        assert.equal(result, "/article/title");
     });
 });
