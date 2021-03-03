@@ -3,7 +3,7 @@ Editron creates an html user interface with validation for your data, solely bas
 ![editron](./docs/images/logo.png)
 
 <p align="center">
-    demo (coming soon) | <a href="#user-content-getting-started">getting started</a> | <a href="#user-content-custom-editor-widget">custom editor-widget</a> | API (coming soon)
+    demo (coming soon) | <a href="#working-with-editron">working with editron</a> | <a href="#configure">customize editron</a> | <a href="https://sueddeutsche.github.io/editron/api/">api</a>
 </p>
 
 ---
@@ -155,7 +155,7 @@ For a general overview how to set up _editors_, refer to [docs/howto-work-with-e
 
 ## Plugins
 
-_Editron_ does support plugins through a plugin-api that exposes lifecycle-hooks. You can refer to the [plugin-interface](./src/plugin/index.ts#L12) or read through the implementation of [default plugins](./src/plugin).
+_Editron_ does support plugins through a plugin-api that exposes lifecycle-hooks. This allows you to add data-based features and cross-editor features. You can refer to the [plugin overview](./docs/doc-plugin.md) or read through [howto write a plugin](./docs/howto-write-plugin.md).
 
 
 ## Further examples
@@ -170,6 +170,8 @@ Besides [getting-started](./examples/getting-started.html), the following exampl
 
 `07/2020` with `v8` editron is written using typescript. Due to module-syntax, some exports have changed, mainly:
 
+- accessing services has change to a method `editron.service(serviceName)`
+- Event system has mostly been replaced with a simple watch-method receiving all events
 - The EVENTS-object in services is now exported separately and not on its object `import { EVENTS } from "./DataService` 
 - The `main`-module now exports all helpers separately and the controller is exported as default.
 - All components are exported individually, having no default in `src/components/index.ts`

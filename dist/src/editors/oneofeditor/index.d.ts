@@ -1,4 +1,4 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { SelectFormAttrs } from "mithril-material-forms";
 import { Editor, EditorUpdateEvent, Options as EditorOptions } from "../Editor";
 import { JSONSchema, JSONPointer } from "../../types";
@@ -26,7 +26,7 @@ export default class OneOfEditor extends AbstractEditor {
     $childContainer: HTMLElement;
     childEditor: Editor;
     childSchema: JSONSchema;
-    controller: Controller;
+    editron: Editron;
     dom: HTMLElement;
     /** catch inner changes (changes are compared by a diff which may not notify parent pointer) */
     notifyNestedChanges: boolean;
@@ -34,8 +34,8 @@ export default class OneOfEditor extends AbstractEditor {
     schema: JSONSchema;
     viewModel: ViewModel;
     selectModel: SelectFormAttrs;
-    static editorOf(pointer: JSONPointer, controller: Controller, options: Options): boolean;
-    constructor(pointer: JSONPointer, controller: Controller, options: Options);
+    static editorOf(pointer: JSONPointer, editron: Editron, options: Options): boolean;
+    constructor(pointer: JSONPointer, editron: Editron, options: Options);
     changeChild(schema: any): void;
     getIndexOf(currentSchema: any): number;
     update(event: EditorUpdateEvent): void;

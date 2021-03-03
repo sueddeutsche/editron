@@ -1,5 +1,5 @@
 import { JSONData, JSONPointer, JSONSchema } from "../types";
-import Controller from "../Controller";
+import Editron from "../Editron";
 import { Editor, EditorUpdateEvent } from "./Editor";
 
 
@@ -21,7 +21,7 @@ export type Options = {
 /**
  * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
  * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
- * the tedious and redundant controller/serivce/pointer bootstraping.
+ * the tedious and redundant editron/serivce/pointer bootstraping.
  *
  * Still required is
  *
@@ -38,25 +38,25 @@ export type Options = {
  *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
  *
  * @param pointer - pointer referencing the current data and schema
- * @param controller - editron controller instance
+ * @param editron - editron instance
  * @param options - resolved options object
  */
 export default class AbstractEditor implements Editor {
     pointer: JSONPointer;
-    controller: Controller;
+    editron: Editron;
     options: Options;
     dom: HTMLElement;
 
-    static editorOf(pointer: JSONPointer, controller: Controller, options?) { // eslint-disable-line
+    static editorOf(pointer: JSONPointer, editron: Editron, options?) { // eslint-disable-line
         throw new Error("Missing editorOf-method in custom editor");
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options) {
+    constructor(pointer: JSONPointer, editron: Editron, options) {
         this.pointer = pointer;
-        this.controller = controller;
+        this.editron = editron;
         this.options = options;
         const schema = this.getSchema();
-        this.dom = this.controller
+        this.dom = this.editron
             .createElement(`.ed-${getTypeClass(schema)}`, options.attrs);
         if (schema.format) {
             this.dom.classList.add(`ed-${getTypeClass(schema)}--${schema.format}`);
@@ -68,19 +68,19 @@ export default class AbstractEditor implements Editor {
     }
 
     getData(): any {
-        return this.controller.service("data").get(this.pointer);
+        return this.editron.service("data").get(this.pointer);
     }
 
     setData(data: JSONData) {
-        return this.controller.service("data").set(this.pointer, data);
+        return this.editron.service("data").set(this.pointer, data);
     }
 
     getErrors() {
-        return this.controller.service("validation").getErrorsAndWarnings(this.pointer);
+        return this.editron.service("validation").getErrorsAndWarnings(this.pointer);
     }
 
     getSchema(): JSONSchema {
-        return this.controller.service("schema").get(this.pointer);
+        return this.editron.service("schema").get(this.pointer);
     }
 
     getPointer(): JSONPointer {
@@ -92,11 +92,11 @@ export default class AbstractEditor implements Editor {
     }
 
     focus(): void {
-        this.controller.service("location").setCurrent(this.pointer);
+        this.editron.service("location").setCurrent(this.pointer);
     }
 
     blur(): void {
-        this.controller.service("location").blur(this.pointer);
+        this.editron.service("location").blur(this.pointer);
     }
 
     destroy(): void {

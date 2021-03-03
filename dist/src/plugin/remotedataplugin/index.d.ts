@@ -1,4 +1,4 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Plugin } from "../index";
 import { SimpleChange } from "../../services/dataservice/change";
@@ -29,14 +29,14 @@ export declare const defaultOptions: {
 };
 export default class RemoteDataPlugin implements Plugin {
     id: string;
-    controller: Controller;
+    editron: Editron;
     remotes: {
         [pointer: string]: {
             options: EditronSchemaOptions["remoteData"];
             removeObserver: () => void;
         };
     };
-    initialize(controller: Controller): Plugin;
+    initialize(editron: Editron): void;
     onModifiedData(changes: Array<SimpleChange>): void;
     createLink(pointer: JSONPointer, options: EditronSchemaOptions["remoteData"]): void;
     destroyLink(pointer: JSONPointer): void;

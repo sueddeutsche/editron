@@ -1,6 +1,6 @@
 import ArrayItem, { Options as ArrayItemOptions } from "./ArrayItem";
 import { Action } from "../../components/actions";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { EditorUpdateEvent, Options as EditorOptions } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
@@ -61,13 +61,13 @@ export default class ArrayEditor extends AbstractEditor {
     /** parent container for array children */
     $items: HTMLElement;
     children: Array<ArrayItem>;
-    controller: Controller;
+    editron: Editron;
     pointer: JSONPointer;
     viewModel: ViewModel;
     /** options template for array child creation */
     childOptions: ArrayItemOptions;
-    static editorOf(pointer: JSONPointer, controller: Controller): boolean;
-    constructor(pointer: JSONPointer, controller: Controller, options: Options);
+    static editorOf(pointer: JSONPointer, editron: Editron): boolean;
+    constructor(pointer: JSONPointer, editron: Editron, options: Options);
     createArrayItem(index: number): ArrayItem;
     getLength(): number;
     update(event: EditorUpdateEvent): void;

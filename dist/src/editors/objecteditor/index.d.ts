@@ -1,5 +1,5 @@
 import { JSONPointer } from "../../types";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { Editor, Options as EditorOptions, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { Action } from "../../components/actions";
@@ -45,8 +45,8 @@ export default class ObjectEditor extends AbstractEditor {
         theme?: string;
         disabled?: boolean;
     };
-    static editorOf(pointer: JSONPointer, controller: Controller): boolean;
-    constructor(pointer: JSONPointer, controller: Controller, options: Options);
+    static editorOf(pointer: JSONPointer, editron: Editron): boolean;
+    constructor(pointer: JSONPointer, editron: Editron, options: Options);
     update(event: EditorUpdateEvent): void;
     /** deletes this object from data */
     deleteObject(): void;

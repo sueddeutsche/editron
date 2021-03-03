@@ -1,4 +1,4 @@
-import Controller from "../Controller";
+import Editron from "../Editron";
 import { JSONPointer, ValidationError } from "../types";
 import { Patch } from "../services/utils/createDiff";
 import { Action } from "../components/actions";
@@ -28,10 +28,10 @@ export type Options = {
 
 /** Editor Constructor API */
 export interface EditorPlugin {
-    new (pointer: JSONPointer, controller: Controller, options: Options): Editor;
+    new (pointer: JSONPointer, editron: Editron, options: Options): Editor;
     prototype: Editor;
 
-    editorOf(pointer: JSONPointer, controller: Controller, options: Options): boolean;
+    editorOf(pointer: JSONPointer, editron: Editron, options: Options): boolean;
 }
 
 

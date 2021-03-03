@@ -1,6 +1,6 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
-import Controller from "../../src/Controller";
+import Editron from "../../src/Editron";
 import RemoteDataPlugin from "../../src/plugin/remotedataplugin";
 
 
@@ -71,7 +71,7 @@ describe("RemoteDataPlugin", () => {
         let called = false;
         handler.json = () => (called = true) && Promise.resolve(response); // `called` is set sync!
 
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
 
         assert.ok(called, "should have called 'json'-handler");
     });
@@ -82,7 +82,7 @@ describe("RemoteDataPlugin", () => {
         let called = false;
         handler.custom = () => (called = true) && Promise.resolve(response); // `called` is set sync!
 
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
 
         assert.ok(called, "should have called 'custom'-handler");
     });
@@ -95,7 +95,7 @@ describe("RemoteDataPlugin", () => {
         let requestParam;
         handler.json = ({ source }) => (requestParam = source) && Promise.resolve(response); // `called` is set sync!
 
-        const controller = new Controller(schema, { source: { type: "image", id: "hash4" }}, options);
+        const controller = new Editron(schema, { source: { type: "image", id: "hash4" }}, options);
 
         assert.equal(requestParam, "http://content/image/hash4");
     });
@@ -111,7 +111,7 @@ describe("RemoteDataPlugin", () => {
         }
 
         handler.json = ({ source }) => (requestUrl = source) && Promise.resolve(responseData);
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
 
         await pause(1);
         const finalData = controller.getData();
@@ -128,7 +128,7 @@ describe("RemoteDataPlugin", () => {
         data.result = { remoteValue: "initial string" };
         handler.json = ({ source }) => (requestUrl = source) && Promise.resolve(responseData);
 
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
         const finalData = controller.getData();
 
         assert.equal(finalData.result.remoteValue, "initial string");
@@ -143,7 +143,7 @@ describe("RemoteDataPlugin", () => {
         data.result = { remoteValue: "initial string" };
         handler.json = ({ source }) => (requestUrl = source) && Promise.resolve(responseData);
 
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
         await pause(1);
         const finalData = controller.getData();
 
@@ -159,7 +159,7 @@ describe("RemoteDataPlugin", () => {
         ]
         handler.json = ({ source }) => Promise.resolve(responses.pop());
 
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
         await pause(1);
 
         controller.service("data").set("#/source/id", "abc");

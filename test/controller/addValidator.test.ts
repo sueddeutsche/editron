@@ -1,9 +1,9 @@
 /* eslint max-len: 0 */
 import { strict as assert } from "assert";
-import Controller from "../../src/Controller";
+import Editron from "../../src/Editron";
 
 
-describe("Controller.addValidator", () => {
+describe("Editron.addValidator", () => {
     let controller;
 
     beforeEach(() => {
@@ -22,7 +22,7 @@ describe("Controller.addValidator", () => {
         };
 
         const data = { customFormat: "custom-fornat-value" };
-        controller = new Controller(schema, data);
+        controller = new Editron(schema, data);
     });
 
 

@@ -3,33 +3,33 @@ import gp from "gson-pointer";
 import View, { buildTree } from "./View";
 import AbstractEditor from "../AbstractEditor";
 export default class MinimapEditor extends AbstractEditor {
-    constructor(pointer, controller, options) {
+    constructor(pointer, editron, options) {
         var _a;
-        super(pointer, controller, options);
+        super(pointer, editron, options);
         this.notifyNestedChanges = true;
         this.notifyNestedErrors = true;
         options.notifyNestedChanges = true;
         // override all default classes
         this.dom.className = "ed-minimap";
         const { minimap } = options;
-        const locationService = controller.service("location");
+        const locationService = editron.service("location");
         this.viewModel = {
-            controller,
-            node: buildTree(pointer, this.getData(), controller, (_a = minimap.depth) !== null && _a !== void 0 ? _a : 2),
+            editron,
+            node: buildTree(pointer, this.getData(), editron, (_a = minimap.depth) !== null && _a !== void 0 ? _a : 2),
             errors: [],
             currentSelection: locationService.getCurrent(),
             onSelect: pointer => locationService.goto(pointer),
-            onAdd: (item) => controller.addItemTo(item.pointer),
+            onAdd: (item) => editron.addItemTo(item.pointer),
             onChange(pointerToList, reorderedList /*, targetIndex*/) {
                 // update data
-                const data = controller.service("data").get(pointerToList);
+                const data = editron.service("data").get(pointerToList);
                 const sorted = [];
                 for (let i = 0, l = data.length; i < l; i += 1) {
                     sorted.push(data[reorderedList[i]]);
                 }
-                controller.service("data").set(pointerToList, sorted);
+                editron.service("data").set(pointerToList, sorted);
                 // refocus
-                // controller.location().goto(`${pointerToList}/${targetIndex}`);
+                // editron.location().goto(`${pointerToList}/${targetIndex}`);
                 const currentPointer = locationService.getCurrent();
                 const localPointer = currentPointer.replace(pointerToList, "");
                 if (localPointer === currentPointer) {
@@ -54,7 +54,7 @@ export default class MinimapEditor extends AbstractEditor {
         // console.log("node", this.viewModel.node);
         this.render();
     }
-    static editorOf(pointer, controller, options) {
+    static editorOf(pointer, editron, options) {
         var _a;
         return ((_a = options === null || options === void 0 ? void 0 : options.minimap) === null || _a === void 0 ? void 0 : _a.use) === true;
     }
@@ -65,7 +65,7 @@ export default class MinimapEditor extends AbstractEditor {
             // this.pointer has been set by service. Continue with data-update // no-break;
             case "data:update": { // eslint-disable-line no-fallthrough
                 const data = this.getData();
-                this.viewModel.node = buildTree(this.pointer, data, this.controller, (_b = (_a = this.options.minimap) === null || _a === void 0 ? void 0 : _a.depth) !== null && _b !== void 0 ? _b : 2);
+                this.viewModel.node = buildTree(this.pointer, data, this.editron, (_b = (_a = this.options.minimap) === null || _a === void 0 ? void 0 : _a.depth) !== null && _b !== void 0 ? _b : 2);
                 // console.log("node", this.viewModel.node);
                 break;
             }
@@ -97,7 +97,7 @@ export default class MinimapEditor extends AbstractEditor {
         if (this.viewModel) {
             this.viewModel = null;
             m.render(this.dom, m("i"));
-            this.controller.service("location").removeWatcher(this.updateLocation);
+            this.editron.service("location").removeWatcher(this.updateLocation);
         }
     }
 }

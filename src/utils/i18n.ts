@@ -1,6 +1,6 @@
 import render from "json-schema-library/lib/utils/render";
 import { JSONData, ValidationError } from "../types";
-import Controller from "../Controller";
+import Editron from "../Editron";
 
 translate.strings = {
     "array:button:moveup": "move up",
@@ -21,12 +21,12 @@ export function translate(key: string, data?: JSONData) {
 }
 
 
-export function translateError(controller: Controller, error: ValidationError): ValidationError {
+export function translateError(editron: Editron, error: ValidationError): ValidationError {
     if (typeof translateError.strings[error.code] === "string") {
         error.message = error.data == null ?
             translateError.strings[error.code] : render(translateError.strings[error.code], error.data);
     } else if (typeof translateError.strings[error.code] === "function") {
-        error.message = translateError.strings[error.code](controller, error);
+        error.message = translateError.strings[error.code](editron, error);
     }
     return error;
 }

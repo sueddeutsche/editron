@@ -16,7 +16,7 @@ All services offer an interface based on [JSON-pointer](https://tools.ietf.org/h
 
 ### Location-Service
 
-get the location singleton from `controller.location()`
+get the location singleton from `editron.location()`
 
 - Manages current user-focus as a json-pointer
 - emits events

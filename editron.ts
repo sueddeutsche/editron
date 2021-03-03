@@ -2,25 +2,25 @@
  * Editron-Core. Depending on your build setup, use
  *
  * ```js
- * import { Controller } from "editron";
+ * import { Editron } from "editron";
  * // or
- * const Controller = require("editron").Controller;
+ * const Editron = require("editron").Editron;
  * ```
  *
  * to get the editron core entry point for a enjoyable formular world
  *
  * @type exported methods and utilities
- * @property Controller    - the main Editron-Class you want to start all form applications
+ * @property Editron    - the main Editron-Class you want to start all form applications
  * @property components        - mithril components, for default html-generation of headers and containers
  * @property editors           - basic editron editors for object, array and simple value reprensentation
  * @property services          - services to work on data, json-schema, validation and more
  * @property utils             - utility functions, to generate ids, translate strings and resolve editors
  * @property plugin            - basic plugin implementation for editor registration
  */
-import Controller, { Options } from "./src/Controller";
+import Editron, { Options } from "./src/Editron";
 
-export default Controller;
-export { Controller, Options };
+export default Editron;
+export { Editron, Options };
 export * as components from "./src/components";
 export * as utils from "./src/utils";
 export * as store from "./src/store/global";
@@ -29,6 +29,7 @@ export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/edito
 export type { EditorUpdateEvent } from "./src/editors/Editor";
 export type { ValidationError, EditronConfigAttrs, FormatValidator, KeywordValidator, JSONSchema, JSONPointer, JSONData } from "./src/types";
 export type { Direction } from "./src/utils/selection";
+export type { SimpleChange, Change, AddChange, DeleteChange, MoveChange, ValueChange } from "./src/services/dataservice/change";
 // editors
 export { default as AbstractEditor, getTypeClass } from "./src/editors/AbstractEditor";
 export type { Options as AbstractEditorOptions }  from "./src/editors/AbstractEditor";

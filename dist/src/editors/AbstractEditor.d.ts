@@ -1,5 +1,5 @@
 import { JSONData, JSONPointer, JSONSchema } from "../types";
-import Controller from "../Controller";
+import Editron from "../Editron";
 import { Editor, EditorUpdateEvent } from "./Editor";
 export declare function getTypeClass(schema: JSONSchema): string;
 export declare type Options = {
@@ -15,7 +15,7 @@ export declare type Options = {
 /**
  * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
  * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
- * the tedious and redundant controller/serivce/pointer bootstraping.
+ * the tedious and redundant editron/serivce/pointer bootstraping.
  *
  * Still required is
  *
@@ -32,16 +32,16 @@ export declare type Options = {
  *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
  *
  * @param pointer - pointer referencing the current data and schema
- * @param controller - editron controller instance
+ * @param editron - editron instance
  * @param options - resolved options object
  */
 export default class AbstractEditor implements Editor {
     pointer: JSONPointer;
-    controller: Controller;
+    editron: Editron;
     options: Options;
     dom: HTMLElement;
-    static editorOf(pointer: JSONPointer, controller: Controller, options?: any): void;
-    constructor(pointer: JSONPointer, controller: Controller, options: any);
+    static editorOf(pointer: JSONPointer, editron: Editron, options?: any): void;
+    constructor(pointer: JSONPointer, editron: Editron, options: any);
     update(event: EditorUpdateEvent): void;
     getData(): any;
     setData(data: JSONData): void;

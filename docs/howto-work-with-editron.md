@@ -17,28 +17,28 @@
 To add new or custom editors globally, use the plugin interface
 
 ```javascript
-const { plugin, Controller } = editron;
+const { plugin, Editron } = editron;
 plugin.editor(MyCustomEditor);
-const controller = new Controller(jsonSchema, data);
+const controller = new Editron(jsonSchema, data);
 ```
 
-Adding editors to a single `Controller`-instance, use the options or add them directly. Using options, you add additional editors to the default editor list (prepended)
+Adding editors to a single `Editron`-instance, use the options or add them directly. Using options, you add additional editors to the default editor list (prepended)
 
 ```javascript
-const { editors, plugin, Controller } = editron;
+const { editors, plugin, Editron } = editron;
 const options = {
     editors: [
         MyCustomEditor
     ]
 };
 
-const controller = new Controller(jsonSchema, data, options);
+const controller = new Editron(jsonSchema, data, options);
 ```
 
 Or add your editor directly to the instance by
 
 ```javascript
-const controller = new Controller(jsonSchema, data);
+const controller = new Editron(jsonSchema, data);
 controller.registerEditor(MyCustomEditor);
 ```
 
@@ -69,7 +69,7 @@ class CustomEditor {
     /**
      * Decide, if the given JSON-Schema should use this editor
      * @param  {String} pointer         - JSON-Pointer
-     * @param  {Controller} controller  - Controller-instance
+     * @param  {Editron} controller  - Editron-instance
      * @param  {Object} options         - options-object as described above
      * @return {Boolean} returns `true` if this class should be used for the pased JSON-Pointer
      */
@@ -95,8 +95,8 @@ each property resolves to the given template string.
 ```javascript
 
 // either pass translations via options in constructor
-import Controller from "editron";
-const editron = new Controller(schema, data, {
+import Editron from "editron";
+const editron = new Editron(schema, data, {
     i18n: {
         strings: {
             "editor:mediaimage:metadata": "Bildgröße: {{width}}x{{height}} [{{size}}]",
@@ -143,8 +143,8 @@ i18n.addLanguage({
 
 ### Editron Interaction
 
-The `Controller` manages editors and editor-instances. Most of the time, you want to work with the actual data and
-validation. Each `Controller`-instance will therefore expose three main services: `DataService`, `ValidationService` and
+The `Editron` manages editors and editor-instances. Most of the time, you want to work with the actual data and
+validation. Each `Editron`-instance will therefore expose three main services: `DataService`, `ValidationService` and
 the `SchemaService`.
 
 
@@ -259,7 +259,7 @@ notify each update. e.g. For two errors you receive three events `[]`, `[{ error
 
 **Validating data**
 
-Data validation is triggered on each change by the `Controller`. In order to manually start validation, you can use the
+Data validation is triggered on each change by the `Editron`. In order to manually start validation, you can use the
 convenience method
 
 ```javascript

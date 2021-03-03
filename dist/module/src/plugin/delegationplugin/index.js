@@ -4,12 +4,12 @@ import { Button } from "mithril-material-forms";
 import OverlayService from "../../services/OverlayService";
 import { translate } from "../../utils/i18n";
 class AbstractDelegationEditor extends AbstractEditor {
-    constructor(pointer, controller, options) {
+    constructor(pointer, editron, options) {
         options.isDelegated = true;
-        super(pointer, controller, options);
+        super(pointer, editron, options);
         this.render();
     }
-    static editorOf(pointer, controller, options) {
+    static editorOf(pointer, editron, options) {
         return options.delegate != null && options.isDelegated !== true;
     }
     update(event) {
@@ -36,32 +36,31 @@ export default class DelegationPlugin {
         this.onDelegation = options.onDelegation || this.onDelegation;
         this.dom = document.createElement("div");
     }
-    initialize(controller) {
-        this.controller = controller;
+    initialize(editron) {
+        this.editron = editron;
         class DelegationEditor extends AbstractDelegationEditor {
         }
         DelegationEditor.prototype.delegate = this.delegate.bind(this);
-        this.controller.editors.unshift(DelegationEditor);
-        return this;
+        this.editron.registerEditor(DelegationEditor);
     }
     delegateToOverlay(editor) {
         return OverlayService
             .open(editor.getElement(), { abortButton: false })
-            .then(() => this.controller.destroyEditor(editor));
+            .then(() => this.editron.destroyEditor(editor));
     }
     delegate(pointer, options) {
         var _a;
         if (this.current) {
-            this.controller.destroyEditor(this.current);
+            this.editron.destroyEditor(this.current);
         }
-        this.current = this.controller.createEditor(pointer, this.dom, { isDelegated: true });
+        this.current = this.editron.createEditor(pointer, this.dom, { isDelegated: true });
         if (((_a = options === null || options === void 0 ? void 0 : options.delegate) === null || _a === void 0 ? void 0 : _a.delegateTo) === DelegationTarget.Overlay) {
             this.delegateToOverlay(this.current);
             return;
         }
         if (this.onDelegation) {
             this.onDelegation({
-                controller: this.controller,
+                editron: this.editron,
                 pointer,
                 editor: this.current
             });

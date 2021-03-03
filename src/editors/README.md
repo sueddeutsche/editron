@@ -12,12 +12,12 @@ An editor requires a method `getPointer(): string`, which must return its curren
 
 
 **destroy** 
-An editor requires a method `destroy()`, which will be called by controller to remove the editor. Its called
+An editor requires a method `destroy()`, which will be called by editron to remove the editor. Its called
 
 - when data is removed or
 - when editor is removed from view (change of entry pointer). 
 
-In the last case, all child editors must be removed manually, because the editor does not know which child-instance to remove. Removing editors must be done through `controller.destroyEditor(editor)`
+In the last case, all child editors must be removed manually, because the editor does not know which child-instance to remove. Removing editors must be done through `editron.destroyEditor(editor)`
 
 > Note: a created editor would be more simply destroyed directly:
 
@@ -43,7 +43,7 @@ editron.destroyEditor(page);
 
 ### Editor widget DOM convention
 
-Each root-element of a widget must have a property `data-point`. This is assigned by the controller, but be sure not to 
+Each root-element of a widget must have a property `data-point`. This is assigned by the editron, but be sure not to 
 remove this attribute. e.g.
 
 ```html

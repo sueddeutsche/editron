@@ -1,5 +1,5 @@
 import { Action } from "../../components/actions";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { Editor } from "../Editor";
 import { JSONPointer, EditronConfigAttrs } from "../../types";
 export declare type ActionsAttrs = {
@@ -49,7 +49,7 @@ export declare type ChildEditorOptions = {
 };
 export default class ArrayItemEditor {
     $element: HTMLElement;
-    controller: Controller;
+    editron: Editron;
     editor: Editor;
     viewModel: ViewModel;
     /** pass actions to child editor */
@@ -58,7 +58,7 @@ export default class ArrayItemEditor {
     index: number;
     /** json-pointer to array */
     parentPointer: JSONPointer;
-    constructor(pointer: JSONPointer, controller: Controller, options: Options);
+    constructor(pointer: JSONPointer, editron: Editron, options: Options);
     createActions(controls: any): Array<Action>;
     add(): void;
     clone(): void;

@@ -1,6 +1,6 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
-import Controller from "../../src/Controller";
+import Editron from "../../src/Editron";
 import InstanceService from "../../src/services/InstanceService";
 import { MoveChange, DeleteChange } from "../../src/services/dataservice/change";
 
@@ -25,7 +25,7 @@ describe("InstanceService", () => {
     let editor;
 
     beforeEach(() => {
-        controller = new Controller();
+        controller = new Editron();
         instanceService = controller.services.instances;
         editor = createEditor();
     });

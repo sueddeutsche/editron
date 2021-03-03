@@ -1,4 +1,4 @@
-import Controller from "../Controller";
+import Editron from "../Editron";
 
 
 export type Direction = "up"|"down"|"left"|"right";
@@ -65,8 +65,8 @@ function mayBlur(element: FocusableElement|Blurable, direction: Direction): bool
 }
 
 /** returns the current active (editron) input element or false */
-function getActiveInput(controller: Controller, parent: HTMLElement = document.body): FocusableElement|false {
-    const currentPointer = controller.service("location").getCurrent();
+function getActiveInput(editron: Editron, parent: HTMLElement = document.body): FocusableElement|false {
+    const currentPointer = editron.service("location").getCurrent();
     if (currentPointer === "#") {
         console.log("abort empty selection", currentPointer, "active element", document.activeElement);
         return false;
@@ -86,8 +86,8 @@ function getAvailableInputs(parent: HTMLElement): Array<FocusableElement> {
 }
 
 /** returns the next input element in direction or false if it is last/first */
-function getNextInput(controller: Controller, direction: Direction = "down", { parent = document.body } = {}) {
-    const activeElement = getActiveInput(controller, parent);
+function getNextInput(editron: Editron, direction: Direction = "down", { parent = document.body } = {}) {
+    const activeElement = getActiveInput(editron, parent);
     if (activeElement === false) {
         return false;
     }
@@ -119,9 +119,9 @@ type Options = {
  * inputs being (textarea, input and select with an id-attribute containing a json-pointer-id)
  * @returns true - if there was a new target was found or the move prevented
  */
-function focusNextInput(controller: Controller, direction: Direction = "down", options: Options = {}) {
+function focusNextInput(editron: Editron, direction: Direction = "down", options: Options = {}) {
     const { force = false, parent = document.body } = options;
-    const activeElement = getActiveInput(controller, parent);
+    const activeElement = getActiveInput(editron, parent);
     if (activeElement === false) {
         return false;
     }
@@ -131,7 +131,7 @@ function focusNextInput(controller: Controller, direction: Direction = "down", o
         return true;
     }
 
-    const nextElement = getNextInput(controller, direction, options);
+    const nextElement = getNextInput(editron, direction, options);
     if (nextElement) {
         nextElement.focus();
         return true;

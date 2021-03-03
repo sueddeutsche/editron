@@ -1,4 +1,4 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Plugin } from "../index";
 import { SimpleChange } from "../../services/dataservice/change";
@@ -15,9 +15,9 @@ export declare type EditronSchemaOptions = {
 };
 export default class SyncPlugin implements Plugin {
     id: string;
-    controller: Controller;
+    editron: Editron;
     hooks: {};
-    initialize(controller: Controller): Plugin;
+    initialize(editron: Editron): void;
     copyData(pointer: JSONPointer, syncOptions: EditronSchemaOptions["sync"], previous: any): void;
     onModifiedData(changes: Array<SimpleChange>): void;
     startSync(pointer: any, options: EditronSchemaOptions["sync"]): void;

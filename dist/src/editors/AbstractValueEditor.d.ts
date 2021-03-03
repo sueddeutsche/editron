@@ -1,5 +1,5 @@
 import { JSONPointer, JSONSchema, ValidationError } from "../types";
-import Controller from "../Controller";
+import Editron from "../Editron";
 import { Editor, EditorUpdateEvent } from "./Editor";
 export declare type ViewModel = {
     pointer: JSONPointer;
@@ -22,12 +22,12 @@ export declare type ViewModel = {
  */
 export default class AbstractValueEditor implements Editor {
     dom: HTMLElement;
-    controller: Controller;
+    editron: Editron;
     notifyNestedChanges: boolean;
     options: any;
     pointer: JSONPointer;
     viewModel: ViewModel;
-    static editorOf(pointer: JSONPointer, controller: Controller): boolean;
+    static editorOf(pointer: JSONPointer, editron: Editron): boolean;
     /**
      * options
      *    - editorValueType:String - custom type of editor value (added as classname)
@@ -35,10 +35,10 @@ export default class AbstractValueEditor implements Editor {
      *    - viewModel:Object - viewModel which extends base viewmodel
      *
      * @param pointer - json pointer to value
-     * @param controller - json editor controller
+     * @param editron - json editor editron
      * @param options
      */
-    constructor(pointer: JSONPointer, controller: Controller, options: any);
+    constructor(pointer: JSONPointer, editron: Editron, options: any);
     update(event: EditorUpdateEvent): void;
     focus(): void;
     blur(): void;

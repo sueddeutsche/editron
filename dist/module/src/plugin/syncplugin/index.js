@@ -6,17 +6,16 @@ export default class SyncPlugin {
         this.id = "sync-plugin";
         this.hooks = {};
     }
-    initialize(controller) {
-        this.controller = controller;
+    initialize(editron) {
+        this.editron = editron;
         // root pointer is not tracked, run initially to grab config on root
         this.onModifiedData([{ type: "add", pointer: "#" }]);
-        return this;
     }
     copyData(pointer, syncOptions, previous) {
         const { mappingFromTo: mapping, addToHistory } = syncOptions;
-        const { controller } = this;
+        const { editron } = this;
         const from = Object.keys(mapping);
-        const data = controller.getData();
+        const data = editron.getData();
         from
             .forEach(key => {
             // select data
@@ -34,12 +33,12 @@ export default class SyncPlugin {
             gp.set(data, toPointer, fromValue);
         });
         // write data
-        controller.setData(data, { addToHistory });
+        editron.setData(data, { addToHistory });
     }
     onModifiedData(changes) {
         changes.forEach(change => {
             if (change.type === "add") {
-                const schema = this.controller.service("schema").get(change.pointer);
+                const schema = this.editron.service("schema").get(change.pointer);
                 const options = getEditronOptions(schema);
                 if (options === null || options === void 0 ? void 0 : options.sync) {
                     this.startSync(change.pointer, options.sync);
@@ -60,11 +59,11 @@ export default class SyncPlugin {
             return;
         }
         // @todo listen to change pointer updates
-        const { controller } = this;
+        const { editron } = this;
         const sourcePointers = Object.keys(options.mappingFromTo).map(source => gp.join(pointer, source));
         // initialize
         const previousData = {};
-        const data = controller.getData();
+        const data = editron.getData();
         const observers = [];
         sourcePointers
             .forEach(sourcePointer => {
@@ -72,13 +71,13 @@ export default class SyncPlugin {
             previousData[sourcePointer] = gp.get(data, sourcePointer);
             // listen to changes for sync
             const observer = () => this.copyData(pointer, options, previousData);
-            controller.service("data").observe(sourcePointer, observer, true);
+            editron.service("data").observe(sourcePointer, observer, true);
             observers.push([sourcePointer, observer]);
         });
         // initial sync
         this.copyData(pointer, options, previousData);
         this.hooks[pointer] = {
-            removeObservers: () => observers.forEach(([pointer, observer]) => controller.service("data").removeObserver(pointer, observer)),
+            removeObservers: () => observers.forEach(([pointer, observer]) => editron.service("data").removeObserver(pointer, observer)),
             options
         };
     }

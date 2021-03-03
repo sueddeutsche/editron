@@ -1,6 +1,6 @@
 import { EditorPlugin, Editor } from "../editors/Editor";
 import { JSONPointer, FormatValidator, KeywordValidator, JSONSchemaTypes } from "../types";
-import Controller from "../Controller";
+import Editron from "../Editron";
 import { SimpleChange } from "../services/dataservice/change";
 
 const editors: Array<EditorPlugin> = [];
@@ -9,20 +9,30 @@ const validators = [];
 
 type EditorOptions = { [p: string]: any; }
 
+
 export interface Plugin {
+    /** unique id of your plugin */
     id: string;
-    initialize(controller: Controller): Plugin;
+    /** called, when editron has been initialized */
+    initialize(editron: Editron): void;
+    /** called, when editron data has changed */
     onModifiedData?: (changes: Array<SimpleChange>) => void;
+    /** called, before a new editor will be instantiated */
     onEditorOptions?: (pointer: JSONPointer, options: EditorOptions) => void;
+    /** called, after a new editor was instantiated */
     onCreateEditor?: (pointer: JSONPointer, editor: Editor, options: EditorOptions) => void;
+    /** called, when a editor's pointer changes */
     onChangePointer?: (oldPointer: JSONPointer, newPointer: JSONPointer, editor: Editor) => void;
+    /** called, when a editor instance is destroyed */
     onDestroyEditor?: (pointer: JSONPointer, editor: Editor) => void;
+    /** called, when plugin should be removed */
+    destroy?: () => void;
 }
 
 
 export default {
 
-    /** register an editor (widget) to use in editron-controller */
+    /** register an editor (widget) to use in editron-editron */
     editor(constructor: EditorPlugin): void {
         console.log(`register editor ${constructor.name}`);
         editors.push(constructor);

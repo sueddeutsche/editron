@@ -4,14 +4,14 @@ import OverlayService from "../../services/OverlayService";
 import Container, { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { CHILD_CONTAINER_SELECTOR as HEADER_CONTAINER_SELECTOR } from "../../components/header";
 import { JSONPointer, JSONData } from "../../types";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { Editor, Options as EditorOptions, EditorUpdateEvent } from "../Editor";
 import AbstractEditor from "../AbstractEditor";
 import { Action } from "../../components/actions";
 
 
-function showJSON(controller: Controller, data: JSONData, title: string) {
-    const element = controller.createElement(".overlay__item.overlay__item--json");
+function showJSON(editron: Editron, data: JSONData, title: string) {
+    const element = editron.createElement(".overlay__item.overlay__item--json");
     OverlayService.open(element, { confirmButton: "ok" });
     // render textarea after it is injected into dom, to correctly update textarea size
     m.render(element, m(TextareaForm, { title, value: JSON.stringify(data, null, 4) }));
@@ -72,13 +72,13 @@ export default class ObjectEditor extends AbstractEditor {
     childOptions: { theme?: string, disabled?: boolean };
 
 
-    static editorOf(pointer: JSONPointer, controller: Controller) {
-        const schema = controller.service("schema").get(pointer);
+    static editorOf(pointer: JSONPointer, editron: Editron) {
+        const schema = editron.service("schema").get(pointer);
         return schema.type === "object";
     }
 
-    constructor(pointer: JSONPointer, controller: Controller, options: Options) {
-        super(pointer, controller, options);
+    constructor(pointer: JSONPointer, editron: Editron, options: Options) {
+        super(pointer, editron, options);
 
         this.viewModel = {
             pointer,
@@ -142,10 +142,10 @@ export default class ObjectEditor extends AbstractEditor {
 
         switch (event.type) {
             case "data:update": {
-                const { pointer, controller, childEditors, $headerChildren, $children } = this;
+                const { pointer, editron, childEditors, $headerChildren, $children } = this;
                 const { headerContent } = this.viewModel;
                 const data = this.getData();
-                childEditors.forEach(editor => controller.destroyEditor(editor));
+                childEditors.forEach(editor => editron.destroyEditor(editor));
                 childEditors.length = 0;
                 $children.innerHTML = "";
                 if (data == null) {
@@ -156,7 +156,7 @@ export default class ObjectEditor extends AbstractEditor {
                     .forEach(property => {
                         const childPointer = `${pointer}/${property}`;
                         const targetContainer = property === headerContent ? $headerChildren : $children;
-                        childEditors.push(controller.createEditor(childPointer, targetContainer, this.childOptions));
+                        childEditors.push(editron.createEditor(childPointer, targetContainer, this.childOptions));
                     });
                 break;
             }
@@ -198,18 +198,18 @@ export default class ObjectEditor extends AbstractEditor {
 
     /** deletes this object from data */
     deleteObject() {
-        this.controller.service("data").delete(this.pointer);
+        this.editron.service("data").delete(this.pointer);
     }
 
     /** deletes a property from this object */
     deleteProperty(property: string): void {
-        this.controller.service("data").delete(`${this.pointer}/${property}`);
+        this.editron.service("data").delete(`${this.pointer}/${property}`);
     }
 
     /** displays the properties json-value */
     showProperty(property: string): void {
-        const propertyData = this.controller.service("data").get(`${this.pointer}/${property}`);
-        showJSON(this.controller, propertyData, property);
+        const propertyData = this.editron.service("data").get(`${this.pointer}/${property}`);
+        showJSON(this.editron, propertyData, property);
     }
 
     render(): void {
@@ -223,7 +223,7 @@ export default class ObjectEditor extends AbstractEditor {
         }
 
         m.render(this.dom, m("i"));
-        this.childEditors.forEach(ed => this.controller.destroyEditor(ed));
+        this.childEditors.forEach(ed => this.editron.destroyEditor(ed));
         this.childEditors.length = 0;
         this.$children.innerHTML = "";
         this.viewModel = null;

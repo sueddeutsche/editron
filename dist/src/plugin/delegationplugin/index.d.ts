@@ -1,10 +1,9 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
-import { Plugin } from "../index";
 export declare type DelegationEvent = {
     pointer: JSONPointer;
-    controller: Controller;
+    editron: Editron;
     editor: Editor;
 };
 export declare enum DelegationTarget {
@@ -26,10 +25,10 @@ export default class DelegationPlugin {
     id: string;
     dom: HTMLElement;
     current: Editor;
-    controller: Controller;
+    editron: Editron;
     onDelegation?: (event: DelegationEvent) => void;
     constructor(options?: Options);
-    initialize(controller: Controller): Plugin;
+    initialize(editron: Editron): void;
     delegateToOverlay(editor: Editor): Promise<void>;
     delegate(pointer: JSONPointer, options: EditronSchemaOptions): void;
 }

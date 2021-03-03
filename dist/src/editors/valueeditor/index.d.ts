@@ -1,5 +1,5 @@
 import AbstractValueEditor from "../AbstractValueEditor";
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Options } from "../Editor";
 export declare type EditronSchemaOptions = {
@@ -11,7 +11,7 @@ export declare type EditronSchemaOptions = {
     theme?: string;
 };
 export default class ValueEditor extends AbstractValueEditor {
-    static editorOf(pointer: JSONPointer, controller: Controller): boolean;
-    constructor(pointer: JSONPointer, controller: Controller, options: Options);
+    static editorOf(pointer: JSONPointer, editron: Editron): boolean;
+    constructor(pointer: JSONPointer, editron: Editron, options: Options);
     render(): void;
 }

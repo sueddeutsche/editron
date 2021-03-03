@@ -1,6 +1,6 @@
 /* eslint object-property-newline: 0, max-nested-callbacks: 0 */
 import { strict as assert } from "assert";
-import Controller from "../../src/Controller";
+import Editron from "../../src/Editron";
 import SyncPlugin from "../../src/plugin/syncplugin";
 
 
@@ -47,7 +47,7 @@ describe("SyncPlugin", () => {
 
 
     it("should use mapping to copy from source to target", () => {
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
         controller.createEditor("#", document.createElement("div"));
 
         const result = controller.getData();
@@ -59,7 +59,7 @@ describe("SyncPlugin", () => {
 
     it("should not overwrite existing values", () => {
         data.value = "wont change";
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
         controller.createEditor("#", document.createElement("div"));
 
         const result = controller.getData();
@@ -69,7 +69,7 @@ describe("SyncPlugin", () => {
 
 
     it("should watch changes on source-values and sync data", () => {
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
         controller.createEditor("#", document.createElement("div"));
 
         controller.service("data").set("#/source", { title: "update-title", value: "update-value" })
@@ -83,7 +83,7 @@ describe("SyncPlugin", () => {
     it("should overwrite values when they are equal", () => {
         data.value = "will change";
         data.source.value = "will change";
-        const controller = new Controller(schema, data, options);
+        const controller = new Editron(schema, data, options);
         controller.createEditor("#", document.createElement("div"));
 
         controller.service("data").set("#/source", { value: "update-value" })

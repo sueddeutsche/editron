@@ -15,7 +15,7 @@ ensure the editron-proxy is configured with your data-handler and the plugin is
 added. Per default `json`-handler will be called
 
 ```js
-import { Controller, RemoteDataPlugin } from "editron";
+import { Editron, RemoteDataPlugin } from "editron";
 const options = {
   proxy: {
   handlers: [{
@@ -25,7 +25,7 @@ const options = {
   },
   plugins: [ new RemoteDataPlugin() ]
 }
-const editron = new Controller(schema, data, options);
+const editron = new Editron(schema, data, options);
 ```
 
 then setup the remoteData plugin in your schema
@@ -85,11 +85,11 @@ this example will send a request when source `type` and `id` have been set and s
 ensure the plugin is added to editron options.
 
 ```js
-import { Controller, SyncPlugin } from "editron";
+import { Editron, SyncPlugin } from "editron";
 const options = {
   plugins: [ new SyncPlugin() ]
 }
-const editron = new Controller(schema, data, options);
+const editron = new Editron(schema, data, options);
 ```
 
 then setup the sync plugin in your schema
@@ -149,11 +149,11 @@ type SortableOptions = {
 ensure the plugin is added to editron options.
 
 ```js
-import { Controller, SortablePlugin } from "editron";
+import { Editron, SortablePlugin } from "editron";
 const options = {
   plugins: [ new SortablePlugin() ]
 }
-const editron = new Controller(schema, data, options);
+const editron = new Editron(schema, data, options);
 ```
 
 - currently, child-container for array items must match `CHILD_CONTAINER_SELECTOR` from `components/container`

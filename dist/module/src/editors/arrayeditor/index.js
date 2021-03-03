@@ -18,9 +18,9 @@ export const defaultOptions = {
     passActions: false,
 };
 export default class ArrayEditor extends AbstractEditor {
-    constructor(pointer, controller, options) {
+    constructor(pointer, editron, options) {
         var _a, _b;
-        super(pointer, controller, options);
+        super(pointer, editron, options);
         this.children = [];
         this.dom.classList.add("with-insert-button");
         const schema = this.getSchema();
@@ -41,14 +41,14 @@ export default class ArrayEditor extends AbstractEditor {
         this.viewModel = {
             attrs: {},
             disabled: options.disabled === true,
-            errors: controller.service("validation").getErrorsAndWarnings(pointer),
+            errors: editron.service("validation").getErrorsAndWarnings(pointer),
             pointer,
             actions: (_a = options.actions) !== null && _a !== void 0 ? _a : [],
             insertAction: {
                 icon: "add",
                 title: this.childOptions.addTitle,
                 disabled: () => this.getLength() < schema.maxItems,
-                action: () => arrayUtils.addItem(this.pointer, this.controller, this.getLength())
+                action: () => arrayUtils.addItem(this.pointer, this.editron, this.getLength())
             },
             ...options
         };
@@ -75,12 +75,12 @@ export default class ArrayEditor extends AbstractEditor {
         this.$items = this.dom.querySelector(CHILD_CONTAINER_SELECTOR);
         this.rebuildChildren();
     }
-    static editorOf(pointer, controller) {
-        const schema = controller.service("schema").get(pointer);
+    static editorOf(pointer, editron) {
+        const schema = editron.service("schema").get(pointer);
         return schema.type === "array";
     }
     createArrayItem(index) {
-        return new ArrayItem(`${this.pointer}/${index}`, this.controller, {
+        return new ArrayItem(`${this.pointer}/${index}`, this.editron, {
             title: `${index}`,
             ...this.childOptions
         });
@@ -115,7 +115,7 @@ export default class ArrayEditor extends AbstractEditor {
         this.render();
     }
     applyPatches(patch) {
-        const { pointer, controller, children, $items } = this;
+        const { pointer, editron, children, $items } = this;
         // fetch a copy of the original list
         const originalChildren = Array.from(children);
         // and patch the current list
@@ -134,7 +134,7 @@ export default class ArrayEditor extends AbstractEditor {
             }
         });
         // update view: move and inserts nodes
-        const currentLocation = controller.service("location").getCurrent();
+        const currentLocation = editron.service("location").getCurrent();
         const changePointer = {};
         for (let i = 0, l = children.length; i < l; i += 1) {
             const previousPointer = children[i].getPointer();
@@ -142,7 +142,7 @@ export default class ArrayEditor extends AbstractEditor {
             // update current location
             if (currentLocation.indexOf(previousPointer) === 0) {
                 const editorLocation = currentLocation.replace(previousPointer, currentPointer);
-                controller.service("location").setCurrent(editorLocation);
+                editron.service("location").setCurrent(editorLocation);
             }
             // update child views to match patched list
             if (previousPointer !== currentPointer) {

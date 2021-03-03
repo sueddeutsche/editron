@@ -4,7 +4,7 @@ export function getTypeClass(schema) {
 /**
  * This is an optional base class for a custom editor. Inheriting from AbstractEditor will setup most required
  * editor-methods to work by default, while still allowing custom implementations. Most of all, it removes
- * the tedious and redundant controller/serivce/pointer bootstraping.
+ * the tedious and redundant editron/serivce/pointer bootstraping.
  *
  * Still required is
  *
@@ -21,38 +21,38 @@ export function getTypeClass(schema) {
  *      - `focus()` and `blur()` to manage the selection state of the current input (requires correct placement of _id_)
  *
  * @param pointer - pointer referencing the current data and schema
- * @param controller - editron controller instance
+ * @param editron - editron instance
  * @param options - resolved options object
  */
 export default class AbstractEditor {
-    constructor(pointer, controller, options) {
+    constructor(pointer, editron, options) {
         this.pointer = pointer;
-        this.controller = controller;
+        this.editron = editron;
         this.options = options;
         const schema = this.getSchema();
-        this.dom = this.controller
+        this.dom = this.editron
             .createElement(`.ed-${getTypeClass(schema)}`, options.attrs);
         if (schema.format) {
             this.dom.classList.add(`ed-${getTypeClass(schema)}--${schema.format}`);
         }
     }
-    static editorOf(pointer, controller, options) {
+    static editorOf(pointer, editron, options) {
         throw new Error("Missing editorOf-method in custom editor");
     }
     update(event) {
         throw new Error("Missing implementation of method 'update' in custom editor");
     }
     getData() {
-        return this.controller.service("data").get(this.pointer);
+        return this.editron.service("data").get(this.pointer);
     }
     setData(data) {
-        return this.controller.service("data").set(this.pointer, data);
+        return this.editron.service("data").set(this.pointer, data);
     }
     getErrors() {
-        return this.controller.service("validation").getErrorsAndWarnings(this.pointer);
+        return this.editron.service("validation").getErrorsAndWarnings(this.pointer);
     }
     getSchema() {
-        return this.controller.service("schema").get(this.pointer);
+        return this.editron.service("schema").get(this.pointer);
     }
     getPointer() {
         return this.pointer;
@@ -61,10 +61,10 @@ export default class AbstractEditor {
         return this.dom;
     }
     focus() {
-        this.controller.service("location").setCurrent(this.pointer);
+        this.editron.service("location").setCurrent(this.pointer);
     }
     blur() {
-        this.controller.service("location").blur(this.pointer);
+        this.editron.service("location").blur(this.pointer);
     }
     destroy() {
         throw new Error("Missing implementation of method 'destroy' in custom editor");

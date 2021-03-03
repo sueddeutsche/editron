@@ -3,10 +3,10 @@ import Sortable from "sortablejs";
 import arrayUtils from "../../utils/array";
 import gp from "gson-pointer";
 export { Sortable };
-export function onAddSortable(pointer, controller, event) {
+export function onAddSortable(pointer, editron, event) {
     let action = "moved";
     const { from, newIndex, item } = event;
-    const schema = controller.service("schema").get(pointer);
+    const schema = editron.service("schema").get(pointer);
     // always remove node - we create it from data
     item.parentNode.removeChild(item);
     if (from.dataset.parent == null) {
@@ -15,20 +15,20 @@ export function onAddSortable(pointer, controller, event) {
         try {
             data = JSON.parse(item.dataset.content);
             // for convinience, add missing data
-            data = controller.service("schema").core.getTemplate([data], schema)[0];
+            data = editron.service("schema").core.getTemplate([data], schema)[0];
             action = "created";
         }
         catch (e) {
             console.log("abort - drag element requires attribute 'data-content' with a valid json-string");
             return;
         }
-        const toList = controller.service("data").get(pointer);
+        const toList = editron.service("data").get(pointer);
         toList.splice(newIndex, 0, data);
-        controller.service("data").set(pointer, toList);
+        editron.service("data").set(pointer, toList);
     }
     return action;
 }
-export function onEndSortable(pointer, controller, event) {
+export function onEndSortable(pointer, editron, event) {
     // const element = event.item;  // dragged HTMLElement
     const { to, from, oldIndex, newIndex } = event;
     if (to === from && oldIndex === newIndex) {
@@ -45,7 +45,7 @@ export function onEndSortable(pointer, controller, event) {
             from.insertBefore(event.item, from.childNodes[oldIndex]);
             return;
         }
-        arrayUtils.moveItem(pointer, controller, oldIndex, newIndex);
+        arrayUtils.moveItem(pointer, editron, oldIndex, newIndex);
         return;
     }
     if (to !== from) {
@@ -57,15 +57,15 @@ export function onEndSortable(pointer, controller, event) {
             console.log("undefined `fromPointer` on", from);
             return;
         }
-        const toList = controller.service("data").get(toPointer);
-        const fromList = controller.service("data").get(fromPointer);
+        const toList = editron.service("data").get(toPointer);
+        const fromList = editron.service("data").get(fromPointer);
         toList.splice(newIndex, 0, fromList[oldIndex]);
         fromList.splice(oldIndex, 1);
         // join data to make one change request (for undo)
-        const rootData = controller.service("data").get();
+        const rootData = editron.service("data").get();
         gp.set(rootData, fromPointer, fromList);
         gp.set(rootData, toPointer, toList);
-        controller.service("data").set("#", rootData);
+        editron.service("data").set("#", rootData);
     }
 }
 export default class SortablePlugin {
@@ -73,9 +73,8 @@ export default class SortablePlugin {
         this.id = "sortable-plugin";
         this.options = options;
     }
-    initialize(controller) {
-        this.controller = controller;
-        return this;
+    initialize(editron) {
+        this.editron = editron;
     }
     onCreateEditor(pointer, editor, options) {
         var _a, _b;
@@ -83,8 +82,8 @@ export default class SortablePlugin {
         if (sortableOptions == null) {
             return;
         }
-        const { controller } = this;
-        if (((_a = controller.getSchema(pointer)) === null || _a === void 0 ? void 0 : _a.type) !== "array") {
+        const { editron } = this;
+        if (((_a = editron.getSchema(pointer)) === null || _a === void 0 ? void 0 : _a.type) !== "array") {
             return;
         }
         const $children = editor.getElement().querySelector(CHILD_CONTAINER_SELECTOR);
@@ -103,18 +102,18 @@ export default class SortablePlugin {
             onUnchoose: event => {
                 const { to, from, oldIndex, newIndex } = event;
                 if (hasMoved === false && to === from && newIndex == null) {
-                    controller.service("location").setCurrent(`${pointer}/${oldIndex}`);
+                    editron.service("location").setCurrent(`${pointer}/${oldIndex}`);
                 }
                 hasMoved = false;
             },
             onAdd: (event) => {
                 var _a;
-                const action = onAddSortable(pointer, controller, event);
+                const action = onAddSortable(pointer, editron, event);
                 if (action === "created" && ((_a = this.options) === null || _a === void 0 ? void 0 : _a.onAdd)) {
-                    requestAnimationFrame(() => this.options.onAdd({ pointer, controller, event }));
+                    requestAnimationFrame(() => this.options.onAdd({ pointer, editron, event }));
                 }
             },
-            onEnd: (event) => onEndSortable(pointer, controller, event)
+            onEnd: (event) => onEndSortable(pointer, editron, event)
         });
         editor.__sortablePlugin = {
             options: sortableOptions,

@@ -37,8 +37,7 @@
     & > ul {
         position: absolute;
         top: $mmf-block;
-        right: $mmf-block * 0.75;
         margin: 0;
-        transform: translateY(-50%);
+        transform: translateY(-50%) translateX(-100%);
     }
 }

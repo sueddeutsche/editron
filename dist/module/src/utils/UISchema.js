@@ -12,11 +12,11 @@ export function isPointer(string) {
     return typeof string === "string" && /^(#?\/.+|\.?\.\/.+)/.test(string);
 }
 // returns a list of {title, pointer} from root-node to pointer, excluding root node
-function getBreadcrumps(pointer, controller) {
+function getBreadcrumps(pointer, editron) {
     const breadcrumps = [];
     while (pointer !== "#") {
         breadcrumps.unshift({
-            title: getOption(pointer, controller, "title"),
+            title: getOption(pointer, editron, "title"),
             pointer
         });
         pointer = gp.join(pointer, "..");
@@ -47,11 +47,11 @@ function enumOptions(schema) {
 /**
  * Resolves the given pointer absolute or relative in data
  * @param pointer - current base pointer for relative targets
- * @param controller
+ * @param editron
  * @param pointerToResolve - relative or absolute pointer (must start with `/` or `../`)
  * @return target value of at #/pointer/pointerToResolve or false
  */
-function resolveReference(pointer, controller, pointerToResolve) {
+function resolveReference(pointer, editron, pointerToResolve) {
     if (populated(pointerToResolve) === false || isPointer(pointerToResolve) === false) {
         return null;
     }
@@ -59,28 +59,28 @@ function resolveReference(pointer, controller, pointerToResolve) {
     if (targetPointer[0] !== "#") {
         targetPointer = gp.join(pointer, targetPointer);
     }
-    const result = controller.service("data").get(targetPointer);
+    const result = editron.service("data").get(targetPointer);
     return populated(result, result, null);
 }
 /**
- * Returns the resolved copy of an options object. This method is used by the controller to help setup the
+ * Returns the resolved copy of an options object. This method is used by the editron to help setup the
  * main options object of an editor instance. It is simplified, in that it currently does  not resolve any reference
  * on the current data
  * @return a resolved copy of the editron:ui settings
  */
-function copyOptions(pointer, controller) {
-    const schema = controller.service("schema").get(pointer);
+function copyOptions(pointer, editron) {
+    const schema = editron.service("schema").get(pointer);
     const settings = {
         hidden: false,
         description: schema.description,
         ...schema.options,
         ...schema[UI_PROPERTY]
     };
-    settings.title = getTitle(pointer, controller); // this comes last, because ensures an '*' is appended if required
+    settings.title = getTitle(pointer, editron); // this comes last, because ensures an '*' is appended if required
     Object
         .keys(settings)
         .forEach(option => {
-        settings[option] = resolveOption(pointer, controller, settings[option]);
+        settings[option] = resolveOption(pointer, editron, settings[option]);
     });
     return settings;
 }
@@ -113,12 +113,12 @@ function extendSchema(rootSchema) {
  *
  * @return the option value
  */
-function resolveOption(pointer, controller, optionValue) {
+function resolveOption(pointer, editron, optionValue) {
     if (Array.isArray(optionValue)) {
         for (let i = 0; i < optionValue.length; i += 1) {
             const option = optionValue[i];
             if (isPointer(option)) {
-                const value = resolveReference(pointer, controller, option);
+                const value = resolveReference(pointer, editron, option);
                 if (populated(value)) {
                     return value;
                 }
@@ -134,20 +134,20 @@ function resolveOption(pointer, controller, optionValue) {
  * Returns the first defined option set in schema. Supports relative and absolute pointers in data
  *
  * @param pointer
- * @param controller
+ * @param editron
  * @param options - a list of option properties. The first non-empty option will be returned
  * @return the first non-empty option
  */
-function getOption(pointer, controller, ...options) {
+function getOption(pointer, editron, ...options) {
     if (options.length === 0) {
         throw new Error("Expected at least one options property to be given in getOption");
     }
-    const schema = controller.service("schema").get(pointer);
+    const schema = editron.service("schema").get(pointer);
     const editronOptions = schema[UI_PROPERTY] || {};
     for (let i = 0; i < options.length; i += 1) {
         const option = editronOptions[options[i]];
         const resolver = isPointer(option) ? resolveReference : resolveOption;
-        const value = resolver(pointer, controller, option);
+        const value = resolver(pointer, editron, option);
         if (populated(value)) {
             return value;
         }
@@ -157,9 +157,9 @@ function getOption(pointer, controller, ...options) {
     }
     return null;
 }
-function getTitle(pointer, controller) {
-    const schema = controller.service("schema").get(pointer);
-    const title = getOption(pointer, controller, "title") || "";
+function getTitle(pointer, editron) {
+    const schema = editron.service("schema").get(pointer);
+    const title = getOption(pointer, editron, "title") || "";
     return schema.minLength && title ? `${title.replace(/\s*\*\s*$/, "")} *` : title;
 }
 function getDefaultOption(schema, option) {

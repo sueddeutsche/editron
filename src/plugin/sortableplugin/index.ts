@@ -1,4 +1,4 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { CHILD_CONTAINER_SELECTOR } from "../../components/container";
 import { JSONPointer } from "../../types";
 import { Editor } from "../../editors/Editor";
@@ -11,14 +11,14 @@ import gp from "gson-pointer";
 export { Sortable };
 
 export type Options = {
-    onAdd?: ({ pointer: string, controller: Controller, event: SortableEvent }) => void;
+    onAdd?: ({ pointer: string, editron: Editron, event: SortableEvent }) => void;
 }
 
 
-export function onAddSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
+export function onAddSortable(pointer: JSONPointer, editron: Editron, event: SortableEvent) {
     let action = "moved";
     const { from, newIndex, item } = event;
-    const schema = controller.service("schema").get(pointer);
+    const schema = editron.service("schema").get(pointer);
 
     // always remove node - we create it from data
     item.parentNode.removeChild(item);
@@ -29,7 +29,7 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
         try {
             data = JSON.parse(item.dataset.content);
             // for convinience, add missing data
-            data = controller.service("schema").core.getTemplate([data], schema)[0];
+            data = editron.service("schema").core.getTemplate([data], schema)[0];
             action = "created";
 
         } catch (e) {
@@ -37,16 +37,16 @@ export function onAddSortable(pointer: JSONPointer, controller: Controller, even
             return;
         }
 
-        const toList = controller.service("data").get(pointer);
+        const toList = editron.service("data").get(pointer);
         toList.splice(newIndex, 0, data);
-        controller.service("data").set(pointer, toList);
+        editron.service("data").set(pointer, toList);
     }
 
     return action;
 }
 
 
-export function onEndSortable(pointer: JSONPointer, controller: Controller, event: SortableEvent) {
+export function onEndSortable(pointer: JSONPointer, editron: Editron, event: SortableEvent) {
     // const element = event.item;  // dragged HTMLElement
     const { to, from, oldIndex, newIndex } = event;
 
@@ -66,7 +66,7 @@ export function onEndSortable(pointer: JSONPointer, controller: Controller, even
             from.insertBefore(event.item, from.childNodes[oldIndex]);
             return;
         }
-        arrayUtils.moveItem(pointer, controller, oldIndex, newIndex);
+        arrayUtils.moveItem(pointer, editron, oldIndex, newIndex);
         return;
     }
 
@@ -80,16 +80,16 @@ export function onEndSortable(pointer: JSONPointer, controller: Controller, even
             return;
         }
 
-        const toList = controller.service("data").get(toPointer);
-        const fromList = controller.service("data").get(fromPointer);
+        const toList = editron.service("data").get(toPointer);
+        const fromList = editron.service("data").get(fromPointer);
         toList.splice(newIndex, 0, fromList[oldIndex]);
         fromList.splice(oldIndex, 1);
 
         // join data to make one change request (for undo)
-        const rootData = controller.service("data").get();
+        const rootData = editron.service("data").get();
         gp.set(rootData, fromPointer, fromList);
         gp.set(rootData, toPointer, toList);
-        controller.service("data").set("#", rootData);
+        editron.service("data").set("#", rootData);
     }
 }
 
@@ -118,7 +118,7 @@ interface SortableEditor extends Editor {
 export default class SortablePlugin implements Plugin {
 
     id = "sortable-plugin";
-    controller: Controller;
+    editron: Editron;
     options: Options;
 
 
@@ -126,9 +126,8 @@ export default class SortablePlugin implements Plugin {
         this.options = options;
     }
 
-    initialize(controller: Controller): Plugin {
-        this.controller = controller;
-        return this;
+    initialize(editron: Editron): void {
+        this.editron = editron;
     }
 
     onCreateEditor(pointer, editor: SortableEditor, options?: EditronSchemaOptions) {
@@ -137,8 +136,8 @@ export default class SortablePlugin implements Plugin {
             return;
         }
 
-        const { controller } = this;
-        if (controller.getSchema(pointer)?.type !== "array") {
+        const { editron } = this;
+        if (editron.getSchema(pointer)?.type !== "array") {
             return;
         }
 
@@ -160,17 +159,17 @@ export default class SortablePlugin implements Plugin {
             onUnchoose: event => {
                 const { to, from, oldIndex, newIndex } = event;
                 if (hasMoved === false && to === from && newIndex == null) {
-                    controller.service("location").setCurrent(`${pointer}/${oldIndex}`);
+                    editron.service("location").setCurrent(`${pointer}/${oldIndex}`);
                 }
                 hasMoved = false;
             },
             onAdd: (event: SortableEvent) => {
-                const action = onAddSortable(pointer, controller, event);
+                const action = onAddSortable(pointer, editron, event);
                 if (action === "created" && this.options?.onAdd) {
-                    requestAnimationFrame(() => this.options.onAdd({ pointer, controller, event }));
+                    requestAnimationFrame(() => this.options.onAdd({ pointer, editron, event }));
                 }
             },
-            onEnd: (event: SortableEvent) => onEndSortable(pointer, controller, event)
+            onEnd: (event: SortableEvent) => onEndSortable(pointer, editron, event)
         });
 
         editor.__sortablePlugin = {

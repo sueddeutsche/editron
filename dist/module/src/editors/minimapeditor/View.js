@@ -7,25 +7,25 @@ import gp from "gson-pointer";
 // import isNodeContext from "../../utils/isNodeContext";
 // if (!isNodeContext()) {
 import UISchema, { EDITRON_OPTION_PROPERTY } from "../../utils/UISchema";
-export function buildTree(pointer, data, controller, depth = 1) {
+export function buildTree(pointer, data, editron, depth = 1) {
     var _a, _b, _c, _d, _e;
     // @ui-option hidden
-    if (depth < 0 || UISchema.getOption(pointer, controller, "hidden")) {
+    if (depth < 0 || UISchema.getOption(pointer, editron, "hidden")) {
         return undefined;
     }
     // @todo this is one step in rebuilding UISchema
-    const schema = controller.service("schema").get(pointer);
+    const schema = editron.service("schema").get(pointer);
     const schemaOptions = schema[EDITRON_OPTION_PROPERTY] || {};
     const skipTo = (_a = schemaOptions.minimap) === null || _a === void 0 ? void 0 : _a.skipTo;
     if (skipTo) {
         const nextData = gp.get(data, skipTo);
         const nextPointer = gp.join(pointer, skipTo);
-        return buildTree(nextPointer, nextData, controller, depth);
+        return buildTree(nextPointer, nextData, editron, depth);
     }
     const node = {
         pointer,
         title: ((_b = schemaOptions.minimap) === null || _b === void 0 ? void 0 : _b.title) || schema.title || pointer,
-        icon: UISchema.getOption(pointer, controller, "minimap:icon", "icon"),
+        icon: UISchema.getOption(pointer, editron, "minimap:icon", "icon"),
         collapsible: false,
         sortable: false,
         sortableGroup: ((_c = schemaOptions.sortable) === null || _c === void 0 ? void 0 : _c.group) || pointer,
@@ -33,7 +33,7 @@ export function buildTree(pointer, data, controller, depth = 1) {
     };
     if ((_d = schemaOptions.minimap) === null || _d === void 0 ? void 0 : _d.titlePointer) {
         const titlePointer = gp.join(pointer, (_e = schemaOptions.minimap) === null || _e === void 0 ? void 0 : _e.titlePointer);
-        const value = controller.service("data").get(titlePointer);
+        const value = editron.service("data").get(titlePointer);
         if (!(value == null || value == "")) {
             node.title = value;
         }
@@ -42,14 +42,14 @@ export function buildTree(pointer, data, controller, depth = 1) {
         node.collapsible = depth !== 0;
         node.sortable = true;
         node.children = data
-            .map((item, index) => buildTree(`${pointer}/${index}`, data[index], controller, depth - 1))
+            .map((item, index) => buildTree(`${pointer}/${index}`, data[index], editron, depth - 1))
             .filter((value) => value !== undefined);
     }
     if (data != null && typeof data === "object") {
         node.collapsible = depth !== 0;
         node.children = Object
             .keys(data)
-            .map((key) => buildTree(`${pointer}/${key}`, data[key], controller, depth - 1))
+            .map((key) => buildTree(`${pointer}/${key}`, data[key], editron, depth - 1))
             .filter((value) => value !== undefined);
     }
     return node;
@@ -74,7 +74,7 @@ function getClass(node, activeTarget, errors) {
 }
 const NodeComponent = {
     view(vnode) {
-        const { node, controller, withHandle, onSelect, onUpdate, currentSelection, errors } = vnode.attrs;
+        const { node, editron, withHandle, onSelect, onUpdate, currentSelection, errors } = vnode.attrs;
         const { sortable, title, icon, pointer, collapsible, sortableGroup: group } = node;
         return m(".ed-minimap__child", {
             "data-nav": pointer,
@@ -87,7 +87,7 @@ const NodeComponent = {
             }
         }, isCollapsed(pointer) ? "expand_more" : "expand_less"), !(icon == null || icon === "") && m("span.mmf-icon", icon), m(".ed-minimap__title", {
             onclick: () => onSelect(pointer)
-        }, title || pointer), sortable && m("span.mmf-icon", { onclick: () => controller.addItemTo(pointer, 0) }, "add"), withHandle && m("span.ed-minimap__handle.mmf-icon", "drag_handle")), m(".ed-minimap__children", {
+        }, title || pointer), sortable && m("span.mmf-icon", { onclick: () => editron.addItemTo(pointer, 0) }, "add"), withHandle && m("span.ed-minimap__handle.mmf-icon", "drag_handle")), m(".ed-minimap__children", {
             class: sortable ? "sortable" : "",
             // @sortable plugin
             "data-parent": pointer,
@@ -97,10 +97,10 @@ const NodeComponent = {
                         group,
                         handle: ".ed-minimap__handle",
                         onAdd(event) {
-                            onAddSortable(pointer, controller, event);
+                            onAddSortable(pointer, editron, event);
                         },
                         onEnd(event) {
-                            onEndSortable(pointer, controller, event);
+                            onEndSortable(pointer, editron, event);
                         }
                     });
                 }
@@ -108,7 +108,7 @@ const NodeComponent = {
             onremove: () => this.sortable && this.sortable.destroy()
         }, node.children.map(nextNode => m(NodeComponent, {
             node: nextNode,
-            controller,
+            editron,
             withHandle: sortable,
             onSelect,
             onUpdate,
@@ -127,7 +127,7 @@ const MinimapComponent = {
         }
         return m(".ed-minimap", attrs.node.children.map(node => m(NodeComponent, {
             node,
-            controller: attrs.controller,
+            editron: attrs.editron,
             withHandle: attrs.withHandle,
             onSelect: attrs.onSelect,
             onUpdate: attrs.onUpdate,

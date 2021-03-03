@@ -1,4 +1,4 @@
-import Controller from "../../src/Controller";
+import Controller from "../../src/Editron";
 import DelegationPlugin from "../../src/plugin/delegationplugin";
 import SortablePlugin from "../../src/plugin/sortableplugin";
 import RemoteDataPlugin from "../../src/plugin/remotedataplugin";

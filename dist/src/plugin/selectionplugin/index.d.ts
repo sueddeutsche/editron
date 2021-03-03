@@ -1,12 +1,14 @@
-import Controller from "../../Controller";
+import Editron from "../../Editron";
 import { Editor } from "../../editors/Editor";
 import { Plugin } from "../index";
-export declare type Options = {
+export declare type SelectionPluginOptions = {
+    /** onSelect-hook that will get called, when a selectable editor has been selected */
     onSelect({ pointer, editor, options }: {
         pointer: any;
         editor: any;
         options: any;
     }): void;
+    /** onDeselect-hook that will get called, when a selectable editor was deselected */
     onDeselect({ pointer, editor, options }: {
         pointer: any;
         editor: any;
@@ -15,23 +17,37 @@ export declare type Options = {
 };
 interface ModifiedEditor extends Editor {
     __selectionPlugin?: {
-        select: (editor: any) => void;
-        options: any;
+        select: (event: MouseEvent) => void;
+        options: Record<string, any>;
     };
 }
+/**
+ * The SelectionPlugin will add a selection api for editors, that have a
+ * json-schema option set to `selectable: true`, e.g.:
+ *
+ * ```js
+ * {
+ *   type: "object",
+ *   "editron:ui": {
+ *     selectable: true
+ *   }
+ * }
+ * ```
+ */
 export default class SelectionPlugin implements Plugin {
     id: string;
     dom: HTMLElement;
     current: Editor;
-    controller: Controller;
+    editron: Editron;
     currentSelection: ModifiedEditor;
-    onSelect: Options["onSelect"];
-    onDeselect: Options["onDeselect"];
-    constructor(options: Options);
-    initialize(controller: Controller): Plugin;
+    onSelect: SelectionPluginOptions["onSelect"];
+    onDeselect: SelectionPluginOptions["onDeselect"];
+    constructor(options: SelectionPluginOptions);
+    initialize(editron: Editron): void;
     deselect(): void;
-    select(event: any, editor: ModifiedEditor): void;
+    select(editor: ModifiedEditor): void;
     onCreateEditor(pointer: any, editor: ModifiedEditor, options?: any): void;
     onDestroyEditor(pointer: any, editor: ModifiedEditor): void;
+    destroy(): void;
 }
 export {};
