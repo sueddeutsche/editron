@@ -6,25 +6,8 @@ const schema = {
     title: "An object with collapsable property",
     type: "object",
     properties: {
-        title: { type: "string", title: "Title", minLength: 1 },
-        details: {
-            title: "Details",
-            type: "object",
-            properties: {
-                description: {
-                    title: "Extensive description",
-                    type: "string",
-                    format: "textarea",
-                },
-                layout: {
-                    title: "Layout",
-                    type: "string",
-                    enum: ["default", "small", "large"],
-                }
-            }
-        },
         list: {
-            title: "list",
+            title: "Array-Tests:",
             type: "array",
             "editron:ui": {
                 sortable: {}
@@ -33,7 +16,7 @@ const schema = {
                 oneOfProperty: "type",
                 oneOf: [
                     {
-                        title: "long",
+                        title: "ONE",
                         type: "object",
                         properties: {
                             type: {
@@ -41,18 +24,20 @@ const schema = {
                                     hidden: true
                                 },
                                 type: "string",
-                                pattern: "^long$",
-                                default: "long"
+                                pattern: "^item1$",
+                                default: "item1"
                             },
                             description: {
-                                title: "Extensive description",
-                                type: "string",
-                                format: "textarea",
+                                type: "array",
+                                minLength: 1,
+                                items: {
+                                    type: "string"
+                                }
                             },
                         }
                     },
                     {
-                        title: "short",
+                        title: "TWO",
                         type: "object",
                         properties: {
                             type: {
@@ -60,8 +45,8 @@ const schema = {
                                     hidden: true
                                 },
                                 type: "string",
-                                pattern: "^short$",
-                                default: "short"
+                                pattern: "^item2$",
+                                default: "item2"
                             },
                             description: {
                                 title: "description one-liner ",
@@ -78,15 +63,55 @@ const schema = {
 const data = {
     list: [
         {
-            type: "short",
-            description: "123"
+            type: "item2",
+            description: "Hans"
         },
         {
-            type: "long",
-            description: "abc"
+            type: "item1",
+            description: ["123", "abc", "def"]
         },
         {
-            type: "short",
+            type: "item1",
+            description: ["123", "abc", "def"]
+        },
+        {
+            type: "item1",
+            description: ["123", "abc", "def"]
+        },
+        {
+            type: "item2",
+            description: "Hans"
+        },
+        {
+            type: "item2",
+            description: "Hans"
+        },
+        {
+            type: "item2",
+            description: "Hans"
+        },
+        {
+            type: "item2",
+            description: "Hans"
+        },
+        {
+            type: "item2",
+            description: "Hans"
+        },
+        {
+            type: "item2",
+            description: "Hans"
+        },
+        {
+            type: "item2",
+            description: "Hans"
+        },
+        {
+            type: "item1",
+            description: ["abc", "1234"]
+        },
+        {
+            type: "item2",
             description: "Hans"
         }
     ]

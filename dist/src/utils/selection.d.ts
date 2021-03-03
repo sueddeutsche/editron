@@ -13,7 +13,7 @@ declare function getAvailableInputs(parent: HTMLElement): Array<FocusableElement
 /** returns the next input element in direction or false if it is last/first */
 declare function getNextInput(editron: Editron, direction?: Direction, { parent }?: {
     parent?: HTMLElement;
-}): false | HTMLTextAreaElement | HTMLInputElement | HTMLSelectElement;
+}): false | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
 declare type Options = {
     /** ignores movement restrictions (e.g. navigation in textarea) */
     force?: boolean;
