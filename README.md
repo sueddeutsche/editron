@@ -170,6 +170,8 @@ Besides [getting-started](./examples/getting-started.html), the following exampl
 
 `07/2020` with `v8` editron is written using typescript. Due to module-syntax, some exports have changed, mainly:
 
+- accessing services has change to a method `editron.service(serviceName)`
+- Event system has mostly been replaced with a simple watch-method receiving all events
 - The EVENTS-object in services is now exported separately and not on its object `import { EVENTS } from "./DataService` 
 - The `main`-module now exports all helpers separately and the controller is exported as default.
 - All components are exported individually, having no default in `src/components/index.ts`
