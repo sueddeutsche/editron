@@ -1,4 +1,4 @@
-import render from "json-schema-library/lib/utils/render";
+import render from "./render";
 import { JSONData, ValidationError } from "../types";
 import Editron from "../Editron";
 

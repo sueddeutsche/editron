@@ -1,4 +1,4 @@
-import getTypeOf from "json-schema-library/lib/getTypeOf";
+import { getTypeOf } from "json-schema-library";
 const ID_PROPERTY = "_id";
 
 

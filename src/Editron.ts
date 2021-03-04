@@ -1,12 +1,11 @@
 import _createElement from "./utils/createElement";
 import addItem from "./utils/addItem";
-import addValidator from "json-schema-library/lib/addValidator";
+import { addValidator, JsonEditor as Core } from "json-schema-library";
 import createProxy from "./utils/createProxy";
 import DataService from "./services/dataservice";
 import gp from "gson-pointer";
 import { translate, translateError } from "./utils/i18n";
 import InstanceService from "./services/InstanceService";
-import jsonSchemaLibrary from "json-schema-library";
 import LocationService, { Options as LocationServiceOptions } from "./services/LocationService";
 import plugin, { Plugin } from "./plugin";
 import SchemaService from "./services/SchemaService";
@@ -23,9 +22,6 @@ import oneOfEditor from "./editors/oneofeditor";
 import arrayEditor from "./editors/arrayeditor";
 import objectEditor from "./editors/objecteditor";
 import valueEditor from "./editors/valueeditor";
-
-
-const { JsonEditor: Core } = jsonSchemaLibrary.cores;
 
 export type i18nFunction = (object?) => string;
 export type i18nErrorFunction = (editron: Editron, error: ValidationError) => string;
@@ -258,6 +254,7 @@ export default class Editron {
      *      als return a promise
      */
     addFormatValidator(format: string, validator: FormatValidator): void {
+        // @ts-ignore
         addValidator.format(this.core, format, validator);
     }
 
@@ -269,6 +266,7 @@ export default class Editron {
      *      als return a promise
      */
     addKeywordValidator(datatype: string, keyword: string, validator: KeywordValidator): void {
+        // @ts-ignore
         addValidator.keyword(this.core, datatype, keyword, validator);
     }
 

@@ -1,13 +1,11 @@
 import BubblingCollectionObservable, { Observer } from "./utils/BubblingCollectionObservable";
-import jlib from "json-schema-library";
+import { JsonEditor as Core } from "json-schema-library";
 import Store from "../store";
 import Validation, { ValidationErrorMapper } from "./utils/Validation";
 import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
 
 
 const ID = "errors";
-
-const { JsonEditor: Core } = jlib.cores;
 
 
 export { Observer };

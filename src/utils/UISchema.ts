@@ -1,7 +1,6 @@
 import gp from "gson-pointer";
 import populated from "./populated";
-import jlib from "json-schema-library";
-const { eachSchema } = jlib;
+import { eachSchema } from "json-schema-library";
 const UI_PROPERTY = "editron:ui";
 import { JSONPointer, JSONSchema } from "../types";
 import Editron from "../Editron";

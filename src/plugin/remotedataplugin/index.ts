@@ -2,7 +2,7 @@ import Editron from "../../Editron";
 import { JSONPointer } from "../../types";
 import { Plugin } from "../index";
 import gp from "gson-pointer";
-import render from "json-schema-library/lib/utils/render";
+import render from "../../utils/render";
 import isEmpty from "../../utils/isEmpty";
 import { SimpleChange } from "../../services/dataservice/change";
 import { getEditronOptions } from "../../utils/UISchema";
