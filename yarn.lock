@@ -4977,10 +4977,10 @@ json-parse-better-errors@^1.0.2:
   resolved "https://registry.npmjs.org/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
   integrity sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw==
 
-json-schema-library@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/json-schema-library/-/json-schema-library-5.2.0.tgz#65f5f6958d35318143e1112ce4354bb1247dbeb5"
-  integrity sha512-vvFuQ1GSBC/37PpnsQM+bqH/suiw4dHrBoLLhEbqZY0hzSMyLnvjcZCqbmkO7yssSzCYni9WgazmzvpV61eE1g==
+json-schema-library@5.2.1:
+  version "5.2.1"
+  resolved "https://registry.npmjs.org/json-schema-library/-/json-schema-library-5.2.1.tgz#1005aa6533f2cf2a1b50dca1d4c9c61ed01a1b40"
+  integrity sha512-K0VL46nGPcCmSB2ncPhCBshKs4Op8D0Py/sdr0wv5Nl5hjMJKQmaZpL2Y7Re2dP+9eOSuHzLiOAQdusm3s3VaQ==
   dependencies:
     deepmerge "^4.2.2"
     gson-pointer "^4.1.1"
