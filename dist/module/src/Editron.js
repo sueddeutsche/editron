@@ -14,13 +14,12 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
 var _proxy;
 import _createElement from "./utils/createElement";
 import addItem from "./utils/addItem";
-import addValidator from "json-schema-library/lib/addValidator";
+import { addValidator, JsonEditor as Core } from "json-schema-library";
 import createProxy from "./utils/createProxy";
 import DataService from "./services/dataservice";
 import gp from "gson-pointer";
 import { translate, translateError } from "./utils/i18n";
 import InstanceService from "./services/InstanceService";
-import jsonSchemaLibrary from "json-schema-library";
 import LocationService from "./services/LocationService";
 import plugin from "./plugin";
 import SchemaService from "./services/SchemaService";
@@ -33,7 +32,6 @@ import oneOfEditor from "./editors/oneofeditor";
 import arrayEditor from "./editors/arrayeditor";
 import objectEditor from "./editors/objecteditor";
 import valueEditor from "./editors/valueeditor";
-const { JsonEditor: Core } = jsonSchemaLibrary.cores;
 /**
  * Main component to build editors. Each editor should receive the editron, which carries all required services
  * for editor initialization
@@ -205,6 +203,7 @@ export default class Editron {
      *      als return a promise
      */
     addFormatValidator(format, validator) {
+        // @ts-ignore
         addValidator.format(this.core, format, validator);
     }
     /**
@@ -215,6 +214,7 @@ export default class Editron {
      *      als return a promise
      */
     addKeywordValidator(datatype, keyword, validator) {
+        // @ts-ignore
         addValidator.keyword(this.core, datatype, keyword, validator);
     }
     /** reset undo history */

@@ -1,5 +1,5 @@
 import gp from "gson-pointer";
-import render from "json-schema-library/lib/utils/render";
+import render from "../../utils/render";
 import isEmpty from "../../utils/isEmpty";
 import { getEditronOptions } from "../../utils/UISchema";
 export const defaultOptions = {

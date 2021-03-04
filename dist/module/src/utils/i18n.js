@@ -1,4 +1,4 @@
-import render from "json-schema-library/lib/utils/render";
+import render from "./render";
 translate.strings = {
     "array:button:moveup": "move up",
     "array:button:movedown": "move down",

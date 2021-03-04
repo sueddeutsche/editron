@@ -1,3 +1,4 @@
+import { JsonEditor as Core } from "json-schema-library";
 import { JSONSchema, JSONData, JSONPointer } from "../types";
 export default class SchemaService {
     core: any;
@@ -13,7 +14,7 @@ export default class SchemaService {
      * @param [data] - data corresponding to json-schema
      * @param [core] - instance of json-schema-library Core
      */
-    constructor(schema?: JSONSchema, data?: JSONData, core?: any);
+    constructor(schema?: JSONSchema, data?: JSONData, core?: Core);
     /**
      * Update data by any missing (default) values specified in the json-schema
      * @param [data=currentData]   - update given data or use the internal stored data (via `setData(data)`)

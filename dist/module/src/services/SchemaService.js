@@ -1,8 +1,5 @@
 import copy from "./utils/copy";
-import jlib from "json-schema-library";
-import jsl from "json-schema-library";
-const { getChildSchemaSelection } = jlib;
-const { JsonEditor: Core } = jlib.cores;
+import { getSchema, getChildSchemaSelection, JsonEditor as Core } from "json-schema-library";
 export default class SchemaService {
     /**
      * Manages json-schema interactions and adds caching of reoccuring json-schema requests
@@ -70,11 +67,11 @@ export default class SchemaService {
      */
     get(pointer, data) {
         if (data) {
-            const result = jsl.getSchema(this.core, pointer, data, this.schema);
+            const result = getSchema(this.core, pointer, data, this.schema);
             return copy(result);
         }
         if (this.cache[pointer] === undefined) {
-            const result = jsl.getSchema(this.core, pointer, this.data, this.schema);
+            const result = getSchema(this.core, pointer, this.data, this.schema);
             if (result.variableSchema === true) {
                 // @special case: do not cache dynamic schema object (oneOf)
                 return result;

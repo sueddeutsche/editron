@@ -1,9 +1,8 @@
 import BubblingCollectionObservable from "./utils/BubblingCollectionObservable";
-import jlib from "json-schema-library";
+import { JsonEditor as Core } from "json-schema-library";
 import Store from "../store";
 import Validation from "./utils/Validation";
 const ID = "errors";
-const { JsonEditor: Core } = jlib.cores;
 export default class ValidationService {
     constructor(store, schema = { type: "object" }, core = new Core()) {
         this.observer = new BubblingCollectionObservable();

@@ -1,5 +1,5 @@
 import gp from "gson-pointer";
-import validateAsync from "json-schema-library/lib/validateAsync";
+import { validateAsync } from "json-schema-library";
 /**
  * @param data - application json data
  * @param schema - json-schema describing data
@@ -32,7 +32,8 @@ export default class Validation {
             data = gp.get(data, pointer);
         }
         return validateAsync(core, data, { schema, pointer, onError: this.onError.bind(this) })
-            .then(errors => {
+            // @ts-ignore
+            .then((errors) => {
             this.onDone(errors);
             return errors;
         })
