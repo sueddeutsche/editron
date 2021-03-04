@@ -31,7 +31,8 @@ const config = {
         alias: {
             nanoevents: path.resolve("./node_modules/nanoevents/index.js"),
             "medium-editor-styles": path.resolve("./node_modules/medium-editor/dist/css/medium-editor.min.css"),
-            "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css")
+            "medium-editor-theme": path.resolve("./node_modules/medium-editor/dist/css/themes/flat.min.css"),
+            "json-schema-library": path.resolve("./node_modules/json-schema-library")
         }
     },
 

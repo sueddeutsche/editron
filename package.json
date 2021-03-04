@@ -1,6 +1,6 @@
 {
   "name": "editron",
-  "version": "9.0.3",
+  "version": "9.0.4",
   "description": "Editron - json-editor",
   "main": "dist/editron.js",
   "types": "dist/editron.d.ts",
@@ -101,7 +101,7 @@
     "@technik-sde/foxy": "^1.0.0",
     "core-js": "^3.8.2",
     "gson-pointer": "^4.1.1",
-    "json-schema-library": "^5.2.0",
+    "json-schema-library": "^5.2.1",
     "jsondiffpatch": "^0.3.11",
     "mithril": "2.x",
     "mithril-material-forms": "^4.9.0",
