@@ -1,7 +1,7 @@
 import copy from "../utils/copy";
 import diffpatch from "../utils/diffpatch";
 import createDiff from "../utils/createDiff";
-import getTypeOf from "json-schema-library/lib/getTypeOf";
+import { getTypeOf } from "json-schema-library";
 import gp from "gson-pointer";
 import isRootPointer from "../utils/isRootPointer";
 import Store from "../../store";

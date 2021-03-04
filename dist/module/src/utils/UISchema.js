@@ -1,7 +1,6 @@
 import gp from "gson-pointer";
 import populated from "./populated";
-import jlib from "json-schema-library";
-const { eachSchema } = jlib;
+import { eachSchema } from "json-schema-library";
 const UI_PROPERTY = "editron:ui";
 /** property on a schema-definition, containing editron-options */
 export const EDITRON_OPTION_PROPERTY = "editron:ui";

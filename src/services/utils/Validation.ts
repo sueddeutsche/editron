@@ -1,5 +1,5 @@
 import gp from "gson-pointer";
-import validateAsync from "json-schema-library/lib/validateAsync";
+import { validateAsync } from "json-schema-library";
 import { JSONData, JSONPointer, ValidationError } from "../../types";
 
 
@@ -54,9 +54,10 @@ export default class Validation {
         }
 
         return validateAsync(core, data, { schema, pointer, onError: this.onError.bind(this) })
-            .then(errors => {
+            // @ts-ignore
+            .then((errors: Array<ValidationError>) => {
                 this.onDone(errors);
-                return errors as Array<ValidationError>;
+                return errors;
             })
             .catch(error => {
                 this.onFail(error);

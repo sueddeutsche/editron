@@ -1,4 +1,5 @@
 import BubblingCollectionObservable, { Observer } from "./utils/BubblingCollectionObservable";
+import { JsonEditor as Core } from "json-schema-library";
 import Store from "../store";
 import Validation, { ValidationErrorMapper } from "./utils/Validation";
 import { JSONSchema, JSONData, JSONPointer, ValidationError } from "../types";
@@ -18,7 +19,7 @@ export default class ValidationService {
     store: Store;
     /** list of active watchers on update-lifecycle events */
     watcher: any[];
-    constructor(store: Store, schema?: JSONSchema, core?: any);
+    constructor(store: Store, schema?: JSONSchema, core?: Core);
     /** sets a custom error handler to map errors */
     setErrorHandler(callback: ValidationErrorMapper): void;
     /**

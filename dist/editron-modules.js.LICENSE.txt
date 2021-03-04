@@ -4,6 +4,8 @@
 	http://www.jacklmoore.com/autosize
 */
 
+/*!isLiteral &*/
+
 /**!
  * Sortable 1.10.2
  * @author	RubaXa   <trash@rubaxa.org>
