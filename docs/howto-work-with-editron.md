@@ -1,6 +1,6 @@
 # How To Work With Editron
 
-Before reading about working with editron, make sure you have read the overview to [JSON-Schema And Editron Editors](./doc-schema-editor.md)
+Before reading about working with editron, make sure you have read the overview to [docs/json-schema-and-editron-editors](./doc-schema-editor.md)
 
 - [Editron](#editron)
 - [Editron Configuration](#editron-configuration)
