@@ -78,6 +78,9 @@ _Editron_ can be loaded through script tags in HMTL or bundled with your applica
 
 
 ## Working With Editron
+
+For a general understanding of a json-schema and editron editors refer to the introduction [JSON-Schema And Editron Editors](docs/doc-schema-and-editor.md).
+
 For details about _editron_ **configuration** and **interaction** refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). What follows is a quick overview:
 
 Create an instance of editron, passing your json-schema
