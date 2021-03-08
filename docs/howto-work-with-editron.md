@@ -6,6 +6,7 @@
   - [Generate User Forms](#generate-user-forms)
   - [Remove User Forms](#remove-user-forms)
 - [Editron API](#editron-API)
+  - [Editron Editors](#editron-editors)
 - [Editron Services](#editron-services)
   - [DataService](#dataservice)
   - [ValidationService](#validationservice)
@@ -100,10 +101,12 @@ editronInstance.createEditor("#/wordCount", document.querySelector("#my-word-cou
 
 Additionally, input forms can be rendered to multiple locations. _Editron_ will sync updates between them.
 
+> **Note** rendering partial uis enables features like pagination or form details to be shown in a separate place of the application.
+
 
 ### Remove User Forms
 
-Created instances should be correctly removed, either within an _editor_ or when using _editron_ in an application. This step may be omitted, when the whole _editron_ instance is destroyed. For a created _editor_, use the _destroyApplication_-method, to completely remove the _editor_ from _editron_ and the dom:
+Created instances should be correctly removed, either within an _editor_ or when using _editron_ in an application. This step may be omitted, when the whole _editron_ instance is destroyed. For a created _editor_ in your application, use the _destroy_-method to completely remove the _editor_ from _editron_ and the dom:
 
 ```ts
 import { Editron } from "editron";
@@ -153,72 +156,12 @@ method                        | description
 `proxy(): Foxy`               | Will editrons proxy for configurable requests
 `registerEditor(:Editor)`     | adds a custom editron _editor_ to available editors
 
-You can read about _services_ in the next section: [editron-services](#editron-services). Refer to section [proxy](#proxy) to learn how to expose custom requests to _editron editors_.
+You can read about _services_ in the next section [editron-services](#editron-services). Refer to section [proxy](#proxy) to learn how to expose custom requests to _editron editors_.
 
 
-## Editron Services
+### Editron Editors
 
-
-### DataService
-
-
-### ValidationService
-
-
-### SchemaService
-
-
-### LocationService
-
-
-
-
-## Editron Configuration
-
-- editors
-- plugins
-- services
-- translation
-- json-schema options
-
-### Proxy
-
-
-## Editron utilities
-
-
-
-### Add Additional Editors
-
-To add new or custom editors globally, use the plugin interface
-
-```javascript
-const { plugin, Editron } = editron;
-plugin.editor(MyCustomEditor);
-const controller = new Editron(jsonSchema, data);
-```
-
-Adding editors to a single `Editron`-instance, use the options or add them directly. Using options, you add additional editors to the default editor list (prepended)
-
-```javascript
-const { editors, plugin, Editron } = editron;
-const options = {
-    editors: [
-        MyCustomEditor
-    ]
-};
-
-const controller = new Editron(jsonSchema, data, options);
-```
-
-Or add your editor directly to the instance by
-
-```javascript
-const controller = new Editron(jsonSchema, data);
-controller.registerEditor(MyCustomEditor);
-```
-
-**Note** The order of the editors-list is relevant. Any json-schema will be resolved in order, starting at the first
+The order of the editors-list is relevant. Any json-schema will be resolved in order, starting at the first
 index, a matching editor-Constructor is searched. The first editor to return _true_ (for _Class.editorOf_) will be
 used to represent the given json-schema and instantiated. Thus more specific editors should be at the start of list,
 where more generale editors, like _object_ or _default values_ should come last.
@@ -226,148 +169,66 @@ where more generale editors, like _object_ or _default values_ should come last.
 
 To completely reset the available list of editors, you can modify the _editors_ property directly
 
-```javascript
+```ts
 controller.editors.length = 0;
 ```
 
 
-**Hook to a schema**
+## Editron Services
 
-_Editron_ will run through this list, searching for a compatible editor-constructor for the specific schema-type. The
-first editor, returning `true` for the _static_ function `CustomEditor.editorOf` will be instantiated (
-[@see utils/selectEditor]("./utils/selectEditor.js")). e.g. if no editor will match the json-schema
-`type: "object"`, a default _object-editor_ will be instantiated.
+The _editron instance_ exposes all required methods and _services_ for usage in an application, for [custom editors](./doc-editron-editor.md) and for [editron plugins](./doc-plugin.md). Each _editron service_ exposes its own api and manages a specific part of the _json-editor_. You can access a _service_ by the method `service(serviceId: string)` which may be called anytime on an _editron_ instance. What follows is a quick overview of services, followed by a details description of their apis.
 
-You can evaluate any json-schema property, options set in json-schema and the associated data:
 
-```javascript
-class CustomEditor {
-    /**
-     * Decide, if the given JSON-Schema should use this editor
-     * @param  {String} pointer         - JSON-Pointer
-     * @param  {Editron} controller  - Editron-instance
-     * @param  {Object} options         - options-object as described above
-     * @return {Boolean} returns `true` if this class should be used for the pased JSON-Pointer
-     */
-    static editorOf(pointer, controller, options) {
-        // per default, you will want to get the schema of the current JSON-pointer
-        const schema = controller.service("schema").get(pointer);
-        // access data by
-        // const data = controller.service("data").get(pointer);
-        // and evaluate if this is the right editor for the schema
-        return schema.type === "object" && schema.format === "CustomEditor";
-    }
+serviceId   | serviceName       | description
+:-----------|:------------------|------------------------------------------------------------------
+data        | DataService       | Manages data updates, change notifications and undo/redo stack
+validation  | ValidationService | Performs data validation and emits error events
+schema      | SchemaService     | Manages retrieval and caching of json-schemas for each data
+location    | LocationService   | Manages global input selection and scroll to behaviour
 
-    constructor(pointer, controller, options) {}
-}
+
+> All _services_ use the _json-pointer_ specification to describe values within the managed data. Recap: a _json-pointer_ describes a path into data, starting with a hash `#`, and each property is separated by a _slash_. e.g. `"#/todos/2"` describes a path to the third array element of a list on property _todos_. The root or whole object can be described as a _root-pointer_ `"#"`.
+
+
+### DataService
+
+The _DataService_ manages all input-data. Use this _service_ to
+
+- make changes to data
+- get latest data
+- watch for changes made to data
+- watch for changes made on a specific _json-pointer_
+- run undo and redo
+
+You access the service through an _editron instance_ by 
+
+```ts
+const dataService = editron.service("data");
 ```
 
 
-#### language
+**Working on data**
 
-You can change all interface labels, messages and errors. For this, all strings are stored in a simple object, where
-each property resolves to the given template string.
+You can set and get data as usual
 
-```javascript
-
-// either pass translations via options in constructor
-import Editron from "editron";
-const editron = new Editron(schema, data, {
-    i18n: {
-        strings: {
-            "editor:mediaimage:metadata": "Bildgröße: {{width}}x{{height}} [{{size}}]",
-            "editor:wysiwyg:edithtml:tooltip": "HTML Quellcode bearbeiten",
-            "toolbar:errors:tooltip": "Schnellansicht aller Fehler",
-            "toolbar:undo:tooltip": "Undo. Letzte Änderung rückgängig machen",
-            "toolbar:redo:tooltip": "Redo. Letzte Änderung wiederherstellen",
-            "toolbar:description:tooltip": "Beschreibungstexte ein oder ausblenden"
-        },
-        errors: {
-            "format-url-error": "Die angegebene Wert `{{value}}` ist keine gültige url",
-            "maximum-error": "Die Zahl darf nicht größer als {{maximum}} sein.",
-            "max-length-error": "Die Eingabe ist zu lang: {{length}} von {{maxLength}} erlaubten Zeichen.",
-            "minimum-error": "Die Zahl muss größer oder gleich {{minimum}} sein",
-            "min-items-error": "Es müssen mindestens {{minLength}} Elemente vorhanden sein",
-            "min-length-error": (controller, error) => {
-                if (error.data.minLength === 1) {
-                    return "Es wird eine Eingabe benötigt";
-                }
-                return render("Der Text muss eine Mindestlänge von {{minLength}} haben (aktuell {{length}}).", error.data);
-            }
-        }
-    }
-});
-
-// and/or merge translations directly over the i18n helper
-import i18n from "editron/utils/i18n";
-i18n.addLanguage({
-    strings: {
-        // ...
-    },
-    errors: {
-        // ...
-    }
-});
+```ts
+const data = editron.service("data").get();
+editron.service("data").set("#", data);
 ```
 
-<!--
-- theming
-    - ???
--->
+And as might be seen, data may also be directly selected:
 
-
-
-### Editron Interaction
-
-The `Editron` manages editors and editor-instances. Most of the time, you want to work with the actual data and
-validation. Each `Editron`-instance will therefore expose three main services: `DataService`, `ValidationService` and
-the `SchemaService`.
-
-
-#### Data
-
-The `DataService` manages the input-data. It keeps a history of all updates (undo/redo) and notifies any observers for
-changes on the data or a JSON-Pointer. To get the `DataService`-instance, use
-
-```javascript
-const dataService = controller.service("data");
+```ts
+const title = editron.service("data").get("#/title");
+editron.service("data").set("#/title", "modified title");
 ```
 
-**Access data**
-
-```javascript
-// get data matching json-schema
-const data = controller.service("data").get();
-// get data from specific JSON-Pointer
-const title = controller.service("data").get("#/title");
-// set data
-controller.service("data").set("#", { title: "new title" });
-// or change a specific property using JSON-Pointer
-controller.service("data").set("#/title", "new title");
-```
-
-**Events**
-
-You can listen to any change events or specific properties within the data
-
-```javascript
-// listen to any change
-controller.service("data").on("beforeUpdate", (pointer, action) => {});
-controller.service("data").on("afterUpdate", (pointer, action) => {});
-
-// in order to watch specific properties, use the observable-interface
-controller.service("data").observe("#/title", event => {
-    const { pointer, parentPointer, patch } = event
-});
-// you can also watch changes of any childnodes by setting the bubble-option to `true`
-controller.service("data").observe("#/title", event => {}, true);
-```
 
 **Undo/Redo**
 
-The `DataService`-instance also exposes undo/redo states
+The _DataService_ also exposes _undo/redo_ states
 
-```javascript
+```ts
 // get steps
 const undoCount = controller.service("data").undoCount();
 const redoCount = controller.service("data").redoCount();
@@ -376,7 +237,107 @@ controller.service("data").undo();
 controller.service("data").redo();
 ```
 
-#### Validation
+
+**Listen to changes**
+
+The _DataService_ emits events when something in data has changed. It supports two different event systems, a method **watch** to notify about all changes made on data and a method **observe** to listen for changes on a specific _json-pointer_. 
+
+
+**Watch updates**
+
+The _watch_-method is usually used by an application, where you are interested in all changes of data, e.g. you want to sent the latest data when it has beend changed:
+
+```ts
+// This will add 
+editron.service("data").watch(event => {});
+```
+
+The callback in _watch_ receives an event. For an update, multiple events will be sent to each _watcher_, like before update start, when a single change was notified and finally, when all watchers and observers have beend notified (_"data:update:done"_). You might use a switch statement, to select the _event_ you need for your task, like:
+
+```ts
+const watcher => {
+  switch (event.type) {
+    case "data:update:done":
+      // respond to data change
+      console.log(event.value);
+      break;
+  }
+}
+
+editron.service("data").watch(watcher);
+```
+
+And remove the watch with
+
+```ts
+editron.service("data").removeWatcher(watcher);
+```
+
+For an up to date list of events, refer to the callback types in [DataService](../src/services/dataservice/index.ts#L40) or simple log to your console.
+
+> **Note** Each _event_ has a property `type:string` and a property `value`, where the type of `value` will vary based on the event-type.
+
+
+**Watch updates of a value**
+
+Observing data changes for a single value is usually used by an _editron editor_. Each editor updates and displays a single value and thus is interested in this value only. As always, the value is described by a _json-pointer_. To use the observer-api, pass the _json-pointer_ you are interested and a callback-function receiving an updateEvent, with `{ type: "data:update", value }`:
+
+```ts
+const onUpdate = update => {};
+editron.service("data").observe("#/title", onUpdate);
+```
+
+and remove the observer with
+
+```ts
+editron.service("data").removeObserver("#/title", onUpdate);
+```
+
+In same cases you might want updates _from a certain point_ in data. For example, watch an object and all its children. For example: An editor that manages a whole object, like a point on a map with _x_ and _y_ coordinates:
+
+```json
+{
+  "properties": {
+    "mapPoint": {
+      "type": "object",
+      "properties": {
+        "x": { type: "number" },
+        "y": { type: "number" }
+      }
+    }
+  }
+}
+```
+
+Here, there are no individual forms listening to x and y. Some goes for validation errors. A map editor in this example may pass `true` as a second parameter to `observe(callback, true)`. With this, any observer will get notified of data changes on the _json-pointer_ and also receives events if a child-value has been changed:
+
+```ts
+editron.service("data").removeObserver("#/mapPointer", onUpdate, true);
+```
+
+
+**Dataservice API Overview**
+
+method                        | description
+:-----------------------------|:------------------------------------------------
+`set(pointer: string, value)` | sets value at pointer-location to the passed value
+`get(pointer?: string)`       | returns the data at json-pointer. Defaults to all
+`delete(pointer: string)`     | deletes value at the given json-pointer
+`undo()`                      | changes the state back to previous state
+`redo()`                      | reverts the previous undo change
+`getDataByReference(pointer)` | returns a direct reference to stored data
+`undoCount(): number`         | returns a number of available undo steps
+`redoCount(): number`         | returns a number of available redo steps
+`resetUndoRedo()`             | clears the undo/redo-stack
+`watch(callback)`             | adds a watcher to update events
+`removeWatcher(callback)`     | removes a registered watcher from update events
+`observe(pointer, cb, bubble?)`| registers an observer to a json-pointer
+`removeObserver(pointer, cb)` | removes a registered pointer-observer
+`isValid(pointer)`            | returns `true` when the passed location exists in data
+
+
+### ValidationService
+
 
 The `ValidationService` manages the validation process, stores and notifies of any input-errors within the data. To get
 the `ValidationService`-instance, use
@@ -444,7 +405,7 @@ controller.validateAll();
 instead of `controller.service("validation").validate(controller.service("data").get());`.
 
 
-#### Schema
+### SchemaService
 
 The `SchemaService` is a simple wrapper for the json-schema, helping to retrieve a json-schema of a data JSON-Pointer.
 To get the `SchemaService`-instance, use
@@ -469,3 +430,69 @@ const templateData = controller.service("schema").getTemplate(jsonSchema);
 const validInputData = controller.service("schema").addDefaultData(inputData, jsonSchema);
 ```
 
+
+### LocationService
+
+
+
+
+## Editron Configuration
+
+- editors
+- plugins
+- services
+- translation
+- json-schema options
+
+### Proxy
+
+
+## Editron utilities
+
+
+#### language
+
+You can change all interface labels, messages and errors. For this, all strings are stored in a simple object, where
+each property resolves to the given template string.
+
+```javascript
+
+// either pass translations via options in constructor
+import Editron from "editron";
+const editron = new Editron(schema, data, {
+    i18n: {
+        strings: {
+            "editor:mediaimage:metadata": "Bildgröße: {{width}}x{{height}} [{{size}}]",
+            "editor:wysiwyg:edithtml:tooltip": "HTML Quellcode bearbeiten",
+            "toolbar:errors:tooltip": "Schnellansicht aller Fehler",
+            "toolbar:undo:tooltip": "Undo. Letzte Änderung rückgängig machen",
+            "toolbar:redo:tooltip": "Redo. Letzte Änderung wiederherstellen",
+            "toolbar:description:tooltip": "Beschreibungstexte ein oder ausblenden"
+        },
+        errors: {
+            "format-url-error": "Die angegebene Wert `{{value}}` ist keine gültige url",
+            "maximum-error": "Die Zahl darf nicht größer als {{maximum}} sein.",
+            "max-length-error": "Die Eingabe ist zu lang: {{length}} von {{maxLength}} erlaubten Zeichen.",
+            "minimum-error": "Die Zahl muss größer oder gleich {{minimum}} sein",
+            "min-items-error": "Es müssen mindestens {{minLength}} Elemente vorhanden sein",
+            "min-length-error": (controller, error) => {
+                if (error.data.minLength === 1) {
+                    return "Es wird eine Eingabe benötigt";
+                }
+                return render("Der Text muss eine Mindestlänge von {{minLength}} haben (aktuell {{length}}).", error.data);
+            }
+        }
+    }
+});
+
+// and/or merge translations directly over the i18n helper
+import i18n from "editron/utils/i18n";
+i18n.addLanguage({
+    strings: {
+        // ...
+    },
+    errors: {
+        // ...
+    }
+});
+```

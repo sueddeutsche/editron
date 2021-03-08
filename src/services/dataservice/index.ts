@@ -13,22 +13,25 @@ import { Change, SimpleChange, changesFromPatchResult, changesWithChildPointers 
 
 const ID = "data";
 
-
+/** Called before a single change in value will be notified */
 type BeforeUpdateEvent = {
     type: "data:update:before";
     value: { pointer: JSONPointer; action: string; };
 }
 
+/** Called when a single change in value was notified */
 type AfterUpdateEvent = {
     type: "data:update:after";
     value: { pointer: JSONPointer; patch: Patch };
 }
 
+/** Additional event called when for single array or object change */
 type ContainerUpdateEvent = {
     type: "data:update:container";
     value: { pointer: JSONPointer; changes: Array<Change> };
 }
 
+/** Called when all updates have been notified */
 type UpdateDoneEvent = {
     type: "data:update:done";
     value: Array<SimpleChange>;
