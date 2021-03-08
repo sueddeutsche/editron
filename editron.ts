@@ -23,7 +23,8 @@ export default Editron;
 export { Editron, Options };
 export * as components from "./src/components";
 export * as utils from "./src/utils";
-export * as store from "./src/store/global";
+export { translate } from "./src/utils/i18n";
+
 // types
 export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/editors/Editor";
 export type { EditorUpdateEvent } from "./src/editors/Editor";
