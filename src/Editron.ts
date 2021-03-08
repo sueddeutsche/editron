@@ -476,6 +476,10 @@ export default class Editron {
         );
     }
 
+    getErrors() {
+        return this.service("validation").getErrorsAndWarnings();
+    }
+
     /** Destroy the editor, its widgets and services */
     destroy(): void {
         if (this.destroyed === true) {
