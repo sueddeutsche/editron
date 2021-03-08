@@ -1,17 +1,190 @@
 # How To Work With Editron
 
-Before reading about working with editron, make sure you have read the overview to [docs/json-schema-and-editron-editors](./doc-schema-editor.md)
+> Before reading about working with editron, make sure you have read the overview to [docs/json-schema-and-editron-editors](./doc-schema-editor.md)
 
 - [Editron](#editron)
+  - [Generate User Forms](#generate-user-forms)
+  - [Remove User Forms](#remove-user-forms)
+- [Editron API](#editron-API)
+- [Editron Services](#editron-services)
+  - [DataService](#dataservice)
+  - [ValidationService](#validationservice)
+  - [SchemaService](#schemaservice)
+  - [LocationService](#locationservice)
 - [Editron Configuration](#editron-configuration)
-- [Editron Interaction](#editron-interaction)
+  - [proxy](#proxy)
+- [Editron Utils](#editron-utils)
 
 
 ## Editron
 
+With a json-schema like
+
+```ts
+const jsonSchema = {
+  title: "My Data",
+  type: "object",
+  properties: {
+    title: {
+      title: "Title of introduction",
+      type: "string",
+      minLength: 1
+    },
+    wordCount: {
+      title: "Title of cord count",
+      type: "number"
+    }
+  }
+}
+```
+
+we can create an instance of _editron_ to generate data for this schema and perform data validation. Note, that creating an editron instance will not yet render anything.
+
+```ts
+import { Editron } from "editron";
+const editronInstance = new Editron(jsonSchema);
+editronInstance.getData(); // { title: "", wordCount: 0 }
+```
+
+You can also pass initial data to the editron constructor. This will merge the default data generated from your json-schema and the input data, e.g.:
+
+```ts
+import { Editron } from "editron";
+const editronInstance = new Editron(jsonSchema, { title: "Custom Title" });
+editronInstance.getData(); // { title: "Custom Title", wordCount: 0 }
+```
+
+Confirming to json-schema specifications, you can place default values directly in a schema:
+
+```json
+{ 
+  "type": "object", 
+  "properties": {
+    "wordCount": {
+      "type": "number",
+      "default": 100
+    }
+  }
+}
+```
+
+```ts
+import { Editron } from "editron";
+const editronInstance = new Editron(jsonSchema);
+editronInstance.getData(); // { wordCount: 100 }
+```
+
+
+### Generate User Forms
+
+With our _editron_ instance ready, we can start to render input forms for our data. To render a form on an html-element with an id `my-data`:
+
+```ts
+import { Editron } from "editron";
+const editronInstance = new Editron(jsonSchema);
+
+editronInstance.createEditor("#", document.querySelector("#my-data"));
+```
+
+This will create an input form on the given html element, in our example, an input for _title_ and another input for number _wordCount_. The first parameter of _createEditor_ is a _json-pointer_ and specifies, which part of the data should be rendered. `#` refers to the root json-pointer, which means all data. This also means, we can selectively render portions of the data to the ui.
+
+The following example will render one the input for _title_ to a html element _\<div id="my-title"\>_ and the input for _wordCount_ to a html element _\<div id="my-word-count"\>_:
+
+```ts
+import { Editron } from "editron";
+const editronInstance = new Editron(jsonSchema);
+
+editronInstance.createEditor("#/title", document.querySelector("#my-title"));
+editronInstance.createEditor("#/wordCount", document.querySelector("#my-word-count"));
+```
+
+Additionally, input forms can be rendered to multiple locations. _Editron_ will sync updates between them.
+
+
+### Remove User Forms
+
+Created instances should be correctly removed, either within an _editor_ or when using _editron_ in an application. This step may be omitted, when the whole _editron_ instance is destroyed. For a created _editor_, use the _destroyApplication_-method, to completely remove the _editor_ from _editron_ and the dom:
+
+```ts
+import { Editron } from "editron";
+const editronInstance = new Editron(jsonSchema);
+
+const editor = editronInstance.createEditor("#", document.querySelector("#my-data"));
+// ... 
+// when done, destroy the editor 
+editronInstance.destroyEditor(editor);
+```
+
+And when editron should be removed, simply call `destroy`, which will also destroy all created editor instances
+
+```ts
+editronInstance.destroy();
+```
+
+> **Note** To destroy an editor, you have to use the editron-method `editron.destroyEditor(myEditor)`. This will ensure all editor bootstrapping is removed from the editor. e.g. the `update`-method is automatically registered and will continue to be called. So, *do not use editor.destroy()* directly or ensure `controller.destroyEditor(this)` is called on the editors `destroy`-method.
 
 
 
+## Editron API
+
+An editron instance exposes basic functions to set and get data, json-schema and validation results as is listed in the following overview. For more advanced interactions and event-listeners, editron exposes several services that are described in the following section under [editron-services](#editron-services).
+
+So for the editron instance with 
+
+```ts
+import { Editron } from "editron";
+const editron = new Editron(jsonSchema);
+```
+
+the following methods are exposed:
+
+method                        | description
+:-----------------------------|:------------------------------------------------
+`getSchema(): JSONSchema`     | returns the current json-schema
+`setSchema(:JSONSchema)`      | change the used json-schema to the passed schema
+`setData(data)`               | update initial data with passed data
+`getData(): any`              | returns whole date object
+`getData(:JSONPointer): any`  | returns the data from passed json-pointer
+`validateAll()`               | triggers async json-schema validation of whole data
+`getErrors(): Error[]`        | returns all current validation errors and warnings
+`isActive(): boolean`         | returns true, if the user form is in edit mode
+`setActive(:boolean)`         | if `false` is passed, will deactivate all user forms
+`service(:ServiceID)`         | Will return editron service matching _serviceId_
+`proxy(): Foxy`               | Will editrons proxy for configurable requests
+`registerEditor(:Editor)`     | adds a custom editron _editor_ to available editors
+
+You can read about _services_ in the next section: [editron-services](#editron-services). Refer to section [proxy](#proxy) to learn how to expose custom requests to _editron editors_.
+
+
+## Editron Services
+
+
+### DataService
+
+
+### ValidationService
+
+
+### SchemaService
+
+
+### LocationService
+
+
+
+
+## Editron Configuration
+
+- editors
+- plugins
+- services
+- translation
+- json-schema options
+
+### Proxy
+
+
+## Editron utilities
 
 
 
@@ -296,10 +469,3 @@ const templateData = controller.service("schema").getTemplate(jsonSchema);
 const validInputData = controller.service("schema").addDefaultData(inputData, jsonSchema);
 ```
 
-
-#
-
-
-**destroy editor**
-
-To destroy an editor, you have to use the editron-method `editron.destroyEditor(myEditor)`. This will ensure all editor bootstrapping is removed from the editor. e.g. the `update`-method is automatically registered and will continue to be called. So, *do not use editor.destroy()* directly or ensure `controller.destroyEditor(this)` is called on the editors `destroy`-method.
