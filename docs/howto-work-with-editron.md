@@ -124,7 +124,7 @@ And when editron should be removed, simply call `destroy`, which will also destr
 editronInstance.destroy();
 ```
 
-> **Note** To destroy an editor, you have to use the editron-method `editron.destroyEditor(myEditor)`. This will ensure all editor bootstrapping is removed from the editor. e.g. the `update`-method is automatically registered and will continue to be called. So, *do not use editor.destroy()* directly or ensure `controller.destroyEditor(this)` is called on the editors `destroy`-method.
+> **Note** To destroy an editor, you have to use the editron-method `editron.destroyEditor(myEditor)`. This will ensure all editor bootstrapping is removed from the editor. e.g. the `update`-method is automatically registered and will continue to be called. So, *do not use editor.destroy()* directly or ensure `editron.destroyEditor(this)` is called on the editors `destroy`-method.
 
 
 
@@ -170,7 +170,7 @@ where more generale editors, like _object_ or _default values_ should come last.
 To completely reset the available list of editors, you can modify the _editors_ property directly
 
 ```ts
-controller.editors.length = 0;
+editron.editors.length = 0;
 ```
 
 
@@ -230,11 +230,11 @@ The _DataService_ also exposes _undo/redo_ states
 
 ```ts
 // get steps
-const undoCount = controller.service("data").undoCount();
-const redoCount = controller.service("data").redoCount();
+const undoCount = editron.service("data").undoCount();
+const redoCount = editron.service("data").redoCount();
 // and performs undo actions
-controller.service("data").undo();
-controller.service("data").redo();
+editron.service("data").undo();
+editron.service("data").redo();
 ```
 
 
@@ -301,8 +301,8 @@ In same cases you might want updates _from a certain point_ in data. For example
     "mapPoint": {
       "type": "object",
       "properties": {
-        "x": { type: "number" },
-        "y": { type: "number" }
+        "x": { "type": "number" },
+        "y": { "type": "number" }
       }
     }
   }
@@ -316,7 +316,7 @@ editron.service("data").removeObserver("#/mapPointer", onUpdate, true);
 ```
 
 
-**Dataservice API Overview**
+**DataService API Overview**
 
 method                        | description
 :-----------------------------|:------------------------------------------------
@@ -338,101 +338,138 @@ method                        | description
 
 ### ValidationService
 
+The `ValidationService` manages the validation process, stores and notifies any input-errors within the data. Basic validation is usually performed _sync_, but custom validators may also introduce _async_ validation. Thus, validation errors are notifies at once, when they resolve and the service will end with a _validation:done_ event, when all errors have been omitted. As with the _DataService_, the _ValidationService_ has two types of event-system. A simple `watch`-method for general validation updates and an _observe_-method to watch specific values referenced by a _json-pointer_. You can access the _ValidationService_ throuh any _editron instance_:
 
-The `ValidationService` manages the validation process, stores and notifies of any input-errors within the data. To get
-the `ValidationService`-instance, use
-
-```javascript
-const validator = controller.service("validation");
+```ts
+const validationService = editron.service("validation");
 ```
 
-**Access Errors**
+A new validation is started after each data change automatically. To manually start a validation use
 
-Anytime you can get a list of current errors and/or warnings. But you should pay attention that, while validating any
-aysnchronous validation may not be resolved at this time. See the next point _Events_ for handling this situation.
-
-```javascript
-// most of the time, you will be interested in errors
-const errors = controller.service("validation").getErrors();
-// but warnings are also supported `{ type: 'warning' }`
-const warnings = controller.service("validation").getWarnings();
-// or get both
-const problems = controller.service("validation").getErrorsAndWarnings();
+```ts
+editron.validateAll();
 ```
 
-All methods return an array of error-objects, like
 
-```javascript
+**Errors and warning**
+
+Each _ValidationError_ has a type of _error_ e.g.
+
+```ts
 // example errorObject
 code: "min-length-error"
 data: { minLength: 1, length: 0, pointer: "#/title" }
 message: "Value `#/title` should have a minimum length of `1`, but got `0`."
 name: "MinLengthError"
+severity: "error"
 type: "error"
 ```
 
-**Events**
+Each _error_ can be differentiated by a _severity_. For custom validation methods a warning may be placed on a property _severity_. _Editron_ exposes helpers to access the latest validation results, optionally differentiating by _severty_:
 
-You can watch any errors or errors on specific data JSON-Pointer. Following the interface for the `DataService`
-
-```javascript
-// watch any errors using the emitter
-controller.service("validation").on("onError", (errorObject) => {});
-// get notified on a new validation-run (clears all current errors)
-controller.service("validation").on("beforeValidation", () => {});
-// get notified when a validation has finished
-controller.service("validation").on("afterValidation", (listOfErrors) => {});
-
-// to watch specific properties for occurring errors, use the observable-interface
-contoller.service("validation").observe("#/title", (errorObject) => {});
-// or watch all errors, occuring in childnodes, using the bubble-option set to `true`
-contoller.service("validation").observe("#", (errorObject) => {}, true);
+```ts
+// most of the time, you will be interested in errors
+const errors = editron.service("validation").getErrors();
+// but warnings are also supported `{ type: 'warning' }`
+const warnings = editron.service("validation").getWarnings();
+// or get both
+const problems = editron.service("validation").getErrorsAndWarnings();
 ```
 
-**Note** that _onError_ emits each error individually. To get the current list of errors,
-gather all error-events and reset them at the _beforeValidation_-event. Any `observe`-events collect errors and will
-notify each update. e.g. For two errors you receive three events `[]`, `[{ error }]`, `[{ error }, { error }]`.
 
+**Watch validation errors**
 
-**Validating data**
+The _ValidationService_ will emit one event after validation containing all errors on property _value_
 
-Data validation is triggered on each change by the `Editron`. In order to manually start validation, you can use the
-convenience method
-
-```javascript
-controller.validateAll();
+```ts
+const onError = validationEvent => {};
+editron.service("validation").watch(onError);
+// ...
+// and remove the watcher with
+editron.service("validation").unwatch(onError);
 ```
-instead of `controller.service("validation").validate(controller.service("data").get());`.
+
+with a validationEvent defined as `{ type: "validation:done", value: Array<ValidationError> }`
+
+
+**Watch validation errors of a value**
+
+The _ValidationService_ will notify each error individually
+
+```ts
+const onError = validationEvent => {};
+editron.service("validation").observe("#/title", onError);
+// ...
+// and remove the observer with
+editron.service("validation").removeObserver("#/title", onError);
+```
+
+
+**ValidationService API Overview**
+
+method                        | description
+:-----------------------------|:------------------------------------------------
+`getErrors()`                 | returns all errors with _severity: error_ 
+`getErrorsAndWarnings()`      | returns all errors with any _severity_ 
+`getWarning()`                | returns all errors with _severity: warning_ 
+`observe(pointer, cb, bubble?)`| registers an observer to a json-pointer
+`removeObserver(pointer, cb)` | removes a registered pointer-observer
+`setErrorHandler(cb)`         | set handler being called for each _error_ (e.g. error translation)
+`unwatch(callback)`           | removes a registered watcher from validation events
+`watch(callback)`             | adds a watcher to validation:done events
 
 
 ### SchemaService
 
-The `SchemaService` is a simple wrapper for the json-schema, helping to retrieve a json-schema of a data JSON-Pointer.
-To get the `SchemaService`-instance, use
+The `SchemaService` manages schema retrieval based on the current data. Additionally, it caches resolved schemas for the current data object. You can access the _SchemaService_ throuh any _editron instance_:
 
-```javascript
-const schema = controller.service("schema");
+```ts
+const schemaService = editron.service("schema");
 ```
 
-In order to retrieve a json-schema, e.g. the property `title` from the _getting-started-example_
+As usual, you can get a schema based on a _json-pointer_, e.g.
 
-```javascript
-const titleSchema = controller.service("schema").get("#/title");
-// { minLength: 1, title: "simple-string", type: "string", editron:ui: {...} }
+```ts
+const titleSchema = editron.service("schema").get("#/title");
+// { title: "Title of introduction", type: "string", minLength: 1 }
 ```
 
-The `SchemaService` exposes some helper-methods
+_SchemaService_ exposes two additional helpers methods for data generation based in a _json-schema_:
 
-```javascript
+```ts
 // generate data, confirming to the given json-schema
-const templateData = controller.service("schema").getTemplate(jsonSchema);
+const templateData = editron.service("schema").getTemplate(jsonSchema);
 // add any missing data, according to the json-schema
-const validInputData = controller.service("schema").addDefaultData(inputData, jsonSchema);
+const validInputData = editron.service("schema").addDefaultData(inputData, jsonSchema);
 ```
+
+> **Note** Most _json-schema_ can be resolved statically, but in case of e.g. oneOf statements the current data is required. _Editron_ will ensure data is updated in _SchemaService_ automatically
+
+
+**SchemaService API Overview**
+
+method                        | description
+:-----------------------------|:------------------------------------------------
+`get(pointer):JSONSchema`     | returns the _json-schema_ of the given _json-pointer_
+`getTemplate(:JSONSchema)`    | returns generated data matching the passed _json-schema_
+`addDefaultData(data, :JSONSchema)`| returns a merge of passed and generated data matching _json-schema_
 
 
 ### LocationService
 
+The `LocationService` manages input selection, notifies of selection changes and exposes scroll-to helpers. Detailed usage of `LocationService` within a custom editor is documented in [docs/docs-editron-editor.md](./docs-editron-editor.md#focus-hooks).
+
+
+**LocationService API Overview**
+
+method                        | description
+:-----------------------------|:------------------------------------------------
+`goto(pointer, ?:HTMLElement)`| focus the form of the current pointer
+`getCurrent(): pointer`       | returns the currently selected _json-pointer_
+`watch(callback)`             | add watcher for changes in current location
+`removeWatcher(callback)`     | remove a registered watcher
+`setCurrent(pointer)`         | set input for _json-pointer_ as currently focused
+`blur(pointer)`               | unfocus an active and matching input element
 
 
 
@@ -475,7 +512,7 @@ const editron = new Editron(schema, data, {
             "max-length-error": "Die Eingabe ist zu lang: {{length}} von {{maxLength}} erlaubten Zeichen.",
             "minimum-error": "Die Zahl muss größer oder gleich {{minimum}} sein",
             "min-items-error": "Es müssen mindestens {{minLength}} Elemente vorhanden sein",
-            "min-length-error": (controller, error) => {
+            "min-length-error": (editron, error) => {
                 if (error.data.minLength === 1) {
                     return "Es wird eine Eingabe benötigt";
                 }
