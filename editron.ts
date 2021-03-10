@@ -24,6 +24,7 @@ export { Editron, Options };
 export * as components from "./src/components";
 export * as utils from "./src/utils";
 export { translate } from "./src/utils/i18n";
+export { default as render } from "./src/utils/render";
 
 // types
 export type { Editor, EditorPlugin, Options as EditorOptions } from "./src/editors/Editor";
