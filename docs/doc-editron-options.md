@@ -130,7 +130,7 @@ const editron = new Editron(jsonSchema, data || {}, {
 ```
 
 
-### Proxy
+### Option Proxy
 
 _Editron_ uses a frontend adapter [Foxy](https://github.com/sueddeutsche/foxy/) to configure requests outside of _editron_ to be used within _editron_ by custom _editors_. You may pass Foxy-Handlers to the _editron_ constructor, like:
 
