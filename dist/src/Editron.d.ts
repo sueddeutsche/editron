@@ -236,6 +236,7 @@ export default class Editron {
     getRootEditor(editor: Editor): Editor | undefined;
     /** start validation of current data */
     validateAll(): void;
+    getErrors(): ValidationError[];
     /** Destroy the editor, its widgets and services */
     destroy(): void;
 }

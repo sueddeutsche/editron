@@ -3,6 +3,7 @@ import Store from "../../store";
 import { JSONData, JSONPointer } from "../../types";
 import { UpdateDataEvent } from "../../editors/Editor";
 import { Change, SimpleChange } from "./change";
+/** Called before a single change in value will be notified */
 declare type BeforeUpdateEvent = {
     type: "data:update:before";
     value: {
@@ -10,6 +11,7 @@ declare type BeforeUpdateEvent = {
         action: string;
     };
 };
+/** Called when a single change in value was notified */
 declare type AfterUpdateEvent = {
     type: "data:update:after";
     value: {
@@ -17,6 +19,7 @@ declare type AfterUpdateEvent = {
         patch: Patch;
     };
 };
+/** Additional event called when for single array or object change */
 declare type ContainerUpdateEvent = {
     type: "data:update:container";
     value: {
@@ -24,6 +27,7 @@ declare type ContainerUpdateEvent = {
         changes: Array<Change>;
     };
 };
+/** Called when all updates have been notified */
 declare type UpdateDoneEvent = {
     type: "data:update:done";
     value: Array<SimpleChange>;
