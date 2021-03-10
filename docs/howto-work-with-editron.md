@@ -1,6 +1,6 @@
 # How To Work With Editron
 
-> Before reading about working with editron, make sure you have read the overview to [docs/json-schema-and-editron-editors](./doc-schema-editor.md)
+> Before reading about working with editron, make sure you have read the overview to [docs/json-schema-and-editron-editors](./doc-schema-editor.md).
 
 - [Editron](#editron)
   - [Generate User Forms](#generate-user-forms)
@@ -12,8 +12,6 @@
   - [ValidationService](#validationservice)
   - [SchemaService](#schemaservice)
   - [LocationService](#locationservice)
-- [Editron Configuration](#editron-configuration)
-  - [proxy](#proxy)
 - [Editron Utils](#editron-utils)
 
 
@@ -75,6 +73,8 @@ const editronInstance = new Editron(jsonSchema);
 editronInstance.getData(); // { wordCount: 100 }
 ```
 
+> **Options** _Editron_ uses a set of options on initialization. See [docs/doc-editron-options](./doc-editron-options.md) for _editron_ configuration details.
+
 
 ### Generate User Forms
 
@@ -125,7 +125,6 @@ editronInstance.destroy();
 ```
 
 > **Note** To destroy an editor, you have to use the editron-method `editron.destroyEditor(myEditor)`. This will ensure all editor bootstrapping is removed from the editor. e.g. the `update`-method is automatically registered and will continue to be called. So, *do not use editor.destroy()* directly or ensure `editron.destroyEditor(this)` is called on the editors `destroy`-method.
-
 
 
 ## Editron API
@@ -464,7 +463,7 @@ The `LocationService` manages input selection, notifies of selection changes and
 
 method                        | description
 :-----------------------------|:------------------------------------------------
-`goto(pointer, ?:HTMLElement)`| focus the form of the current pointer
+`goto(pointer,?:HTMLElement)` | focus the editor of the passed _json-pointer_
 `getCurrent(): pointer`       | returns the currently selected _json-pointer_
 `watch(callback)`             | add watcher for changes in current location
 `removeWatcher(callback)`     | remove a registered watcher
@@ -472,64 +471,4 @@ method                        | description
 `blur(pointer)`               | unfocus an active and matching input element
 
 
-
-## Editron Configuration
-
-- editors
-- plugins
-- services
-- translation
-- json-schema options
-
-### Proxy
-
-
-## Editron utilities
-
-
-#### language
-
-You can change all interface labels, messages and errors. For this, all strings are stored in a simple object, where
-each property resolves to the given template string.
-
-```javascript
-
-// either pass translations via options in constructor
-import Editron from "editron";
-const editron = new Editron(schema, data, {
-    i18n: {
-        strings: {
-            "editor:mediaimage:metadata": "Bildgröße: {{width}}x{{height}} [{{size}}]",
-            "editor:wysiwyg:edithtml:tooltip": "HTML Quellcode bearbeiten",
-            "toolbar:errors:tooltip": "Schnellansicht aller Fehler",
-            "toolbar:undo:tooltip": "Undo. Letzte Änderung rückgängig machen",
-            "toolbar:redo:tooltip": "Redo. Letzte Änderung wiederherstellen",
-            "toolbar:description:tooltip": "Beschreibungstexte ein oder ausblenden"
-        },
-        errors: {
-            "format-url-error": "Die angegebene Wert `{{value}}` ist keine gültige url",
-            "maximum-error": "Die Zahl darf nicht größer als {{maximum}} sein.",
-            "max-length-error": "Die Eingabe ist zu lang: {{length}} von {{maxLength}} erlaubten Zeichen.",
-            "minimum-error": "Die Zahl muss größer oder gleich {{minimum}} sein",
-            "min-items-error": "Es müssen mindestens {{minLength}} Elemente vorhanden sein",
-            "min-length-error": (editron, error) => {
-                if (error.data.minLength === 1) {
-                    return "Es wird eine Eingabe benötigt";
-                }
-                return render("Der Text muss eine Mindestlänge von {{minLength}} haben (aktuell {{length}}).", error.data);
-            }
-        }
-    }
-});
-
-// and/or merge translations directly over the i18n helper
-import i18n from "editron/utils/i18n";
-i18n.addLanguage({
-    strings: {
-        // ...
-    },
-    errors: {
-        // ...
-    }
-});
-```
+## Editron Utils
