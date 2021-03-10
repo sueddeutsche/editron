@@ -137,7 +137,7 @@ class SelectionPlugin implements Plugin {
 Being good citizens, we want to remove all custom data and listeners when an editor instance is removed. Therefore we watch the `onDestroyEditor`-hook for cleanup
 
 ```ts
-  onDestroyEditor(pointer, editor: ModifiedEditor, options?): void {
+  onDestroyEditor(pointer, editor: ModifiedEditor): void {
     // stop here, if this is not a tracked editor instance
     if (editor.__selectionPlugin == null) return;
 

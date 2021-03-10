@@ -1,6 +1,6 @@
 # Editron Plugins
 
-// TODO: add link to [How to write a Plugin](./howto-write-plugin.md) guide?
+For a how to on writing a plugin please refer to [howto write a plugin](./howto-write-plugin.md) guide.
 
 > Editron editors manage the visual portion of the data. It is the data they represent. Thus, within editron editors, you **only** manage visible data. Other functionality, like working on data (e.g. fetching remote data based on an id that is not yet displayed) or cross-cutting features like drag'n'drop between different editors, requires a different approach. For this, there is a plugin api, that has access to all editor lifecycle events, data-changes and error-updates. 
 
@@ -58,12 +58,11 @@ class SelectionPlugin implements Plugin {
 
 When plugins are destroyed, this optional method should be used to remove any created data or event-listeners.
 
-//TODO: missing example? 
 ```ts
-class SelectionPlugin implements Plugin {
+class MyPlugin implements Plugin {
     // ...
     destroy() => {
-        // TODO: e.g. remove event listener?
+        // remove event listener, instances, etc
     }
 }
 ```
@@ -101,7 +100,23 @@ For an implementation example, refer to the [RemoteDataPlugin](../src/plugin/rem
 
 Before any editor-instance is created, an _options-object_ is assembled and then passed to the editor's _contrucutor_ as options. Before an editor-instance receives the _options-object_, the `onEditorOptions` hook will receive the json-pointer and its _options_. This allows you to modify any values on this object, before the editor will receive them.
 
-// TODO: Example when you would need that?
+Example:
+
+```ts
+import Editron, { Plugin, EditorOptions, Editor, JSONPointer } from "editron";
+
+class MyPlugin implements Plugin {
+  // ...
+  onEditorOptions(pointer: JSONPointer, options: EditorOptions) {
+    const schema = this.editron.service("schema").get(pointer);
+    // based on a individual criteria
+    if (schema.myPlugin === true) {
+      // we could, for example, disable the editor via options
+      options.disabled = true;
+    }
+  }
+}
+```
 
 
 ## Editor Lifecycle Events
@@ -134,7 +149,23 @@ class MyPlugin implements Plugin {
 
 ### _onChangePointer_-hook
 
-Editors may change their location. When an item is moved within an array, its editor is usually reused and its pointer changes. Pointer changes are manage on a `pointer` property of each editor. In case you track editor instances on your own, you must watch to these changes and update your stored editors. // TODO: and the onChangePointer-hook gets triggered when the editron pointer changes? Small example would also be nice :) 
+The `onChangePointer`-hook gets triggered when the pointer of an editor changes. Editors may change their location and thus their pointer changes. When an item is moved within an array, its editor is usually reused and its pointer changes. Pointer changes are manage on a `pointer` property of each editor. In case you track editor instances on your own, you must watch to these changes and update your stored editors.
+
+Example:
+
+```ts
+class MyPlugin implements Plugin {
+  // ...
+  onChangePointer(oldPointer: JSONPointer, newPointer: JSONPointer, editor: Editor) {
+    // fetch our saved callback associated with editor
+    const { callback } = editor.__myPlugin;
+    // remove event-listener for old pointer
+    this.editron.service("data").removeObserver(oldPointer, callback);
+    // and re-register to new pointer
+    this.editron.service("data").observer(newPointer, callback);
+  }
+}
+```
 
 
 ### _onDestroyEditor_-hook

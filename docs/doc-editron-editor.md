@@ -20,7 +20,31 @@
 
 ## Editor
 
-> A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation, error-reporting and initialize editors, based on the _json-schema_ and available _editors_ .
+> A custom _editor_ is **completly responsible for rendering the display of a value to a _dom_-Element, receiving user-events and passing data-changes back to _editron_**. _Editron_ will manage and update values, perform validation, error-reporting and initialize editors, based on the _json-schema_ and available _editors_.
+
+An _editor_ usally renders a single json-schema type, for example a json-schema like
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    }
+  }
+}
+```
+
+can be rendered to a tree of editors like
+
+```jsx
+<ObjectEditor>
+  <ValueEditor title>
+</ObjectEditor>
+```
+
+You can read more details about this in [docs/json-schema-and-editron-editors.md].
+
 
 An custom _editron editor_ **needs** to be a class (or instantiatable function) with the following attributes
 

@@ -78,6 +78,9 @@ _Editron_ can be loaded through script tags in HMTL or bundled with your applica
 
 
 ## Working With Editron
+
+For a general understanding of a json-schema and editron editors refer to the introduction [docs/json-schema-and-editron-editors](./docs/json-schema-and-editron-editors.md).
+
 For details about _editron_ **configuration** and **interaction** refer to [docs/howto-work-with-editron](./docs/howto-work-with-editron.md). What follows is a quick overview:
 
 Create an instance of editron, passing your json-schema
@@ -167,6 +170,9 @@ Besides [getting-started](./examples/getting-started.html), the following exampl
 
 
 ## Breaking Changes
+
+`03/2021` with `v9` `Controller` has been renamed to `Editron` for consistency.
+
 
 `07/2020` with `v8` editron is written using typescript. Due to module-syntax, some exports have changed, mainly:
 
