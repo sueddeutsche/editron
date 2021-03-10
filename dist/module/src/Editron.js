@@ -394,6 +394,9 @@ export default class Editron {
     validateAll() {
         setTimeout(() => this.destroyed !== true && this.service("validation").validate(this.service("data").getDataByReference()));
     }
+    getErrors() {
+        return this.service("validation").getErrorsAndWarnings();
+    }
     /** Destroy the editor, its widgets and services */
     destroy() {
         var _a;

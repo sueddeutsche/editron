@@ -24,8 +24,8 @@ import * as components_1 from "./src/components";
 export { components_1 as components };
 import * as utils_1 from "./src/utils";
 export { utils_1 as utils };
-import * as store_1 from "./src/store/global";
-export { store_1 as store };
+export { translate } from "./src/utils/i18n";
+export { default as render } from "./src/utils/render";
 // editors
 export { default as AbstractEditor, getTypeClass } from "./src/editors/AbstractEditor";
 export { default as AbstractValueEditor } from "./src/editors/AbstractValueEditor";
