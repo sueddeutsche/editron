@@ -140,6 +140,17 @@ describe("BubblingCollectionObservable", () => {
         assert.deepEqual(targetEvents, [{ type: "validation:errors", value: []}], "should have cleared child-events");
     });
 
+    it("should prevent naming collissions when clearing events of children", () => {
+        const parentEvents = [];
+        const b = new Bubbles();
+        b.observe("#/parent/target2", e => parentEvents.push(e.value), true);
+        b.notify("#/parent/target", createValidationError({ id: 1 }));
+        b.notify("#/parent/target2", createValidationError({ id: 2 }));
+
+        b.clearEvents("#/parent/target");
+
+        assert.deepEqual(parentEvents, [[{ id: 2}]], "should not have triggered observer on clearEvents");
+    });
 
     // RESET
 

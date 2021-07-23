@@ -84,9 +84,8 @@ export type Observer = {
  *
  */
 class BubblingCollectionObservable {
-    observers = {};
-    eventCollection = {};
-    bubbleCollection = {};
+    observers: Record<JSONPointer, Observer[]> = {};
+    eventCollection: Record<JSONPointer, ValidationError[]> = {};
 
     /**
      * Observe events on the _pointer_ (`#/observe/location`). May also observe
@@ -97,7 +96,7 @@ class BubblingCollectionObservable {
      * @param observer - observer
      * @param [receiveChildEvents=false]
      */
-    observe(pointer: JSONPointer, observer: Observer, receiveChildEvents = false) {
+    observe(pointer: JSONPointer, observer: Observer, receiveChildEvents = false): Observer {
         this.observers[pointer] = this.observers[pointer] || [];
         if (this.observers[pointer].includes(observer) === false) {
             observer.receiveChildEvents = receiveChildEvents;
@@ -108,10 +107,10 @@ class BubblingCollectionObservable {
 
     /**
      * Remove an observer
-     * @param  {JsonPointer} pointer
-     * @param  {Function} observer
+     * @param pointer
+     * @param observer
      */
-    removeObserver(pointer: JSONPointer, observer) {
+    removeObserver(pointer: JSONPointer, observer: Observer) {
         if (this.observers[pointer] == null) {
             return;
         }
@@ -129,53 +128,39 @@ class BubblingCollectionObservable {
      * an empty event-list `[]`.
      */
     reset() {
+        this.eventCollection = {};
         // notify observers of reset by sending an empty list of events
-        const map = {};
-        Object.keys(this.eventCollection).concat(Object.keys(this.bubbleCollection))
-            // .filter(pointer => pointer.includes(sourcePointer))
-            .forEach(p => { map[p] = true; });
-        this.eventCollection = {};
-        this.bubbleCollection = {};
-        Object.keys(map).forEach(pointer => this._notify(pointer, pointer, []));
-        this.eventCollection = {};
-        this.bubbleCollection = {};
+        Object.keys(this.observers).forEach(pointer => this._notify(pointer, pointer));
     }
 
     /**
      * Clears all events at a given pointer and notifies all listeners with
      * their changed list of events
      *
-     * @param  {JsonPointer} pointer
-     * @param  {boolean} [clearChildren=true]    if false, children of `pointer` will not be reset
+     * @param pointer
+     * @param clearChildren    if false, children of `pointer` will not be reset
      */
     clearEvents(pointer: JSONPointer, clearChildren = true) {
         let changed = false;
-        const startsWithPointer = new RegExp(`^${pointer}(/|$)`);
 
-        if (clearChildren) {
-            Object.keys(this.eventCollection).forEach(target => {
-                if (!(startsWithPointer.test(target) && target !== pointer)) {
-                    return;
-                }
+        const pointerPrefix = `${pointer}/`;
+        for (const target of Object.keys(this.eventCollection)) {
+            if (target === pointer || (clearChildren && target.startsWith(pointerPrefix))) {
                 if (this.eventCollection[target].length > 0) {
                     changed = true;
                     this.eventCollection[target].length = 0;
-                    this.bubbleCollection[target] = {}; // reset bubble collection
-                    this._notify(target, target, this.eventCollection[target]);
-                }
-            });
-        }
 
-        const collection = this.eventCollection[pointer];
-        if ((Array.isArray(collection) && collection.length > 0)) {
-            changed = true;
-            collection.length = 0;
-            this.bubbleCollection[pointer] = {}; // reset bubble collection
+                    // Notify observers on child pointers. _notifyAll below only notifies parent pointers not child ones
+                    if (target !== pointer) {
+                        this._notify(target, target);
+                    }
+                }
+            }
         }
 
         if (changed) {
-            // clear target and notify parents
-            this._notifyAll(pointer, collection);
+            // Notify all parents
+            this._notifyAll(pointer);
         }
     }
 
@@ -185,14 +170,10 @@ class BubblingCollectionObservable {
      * @param pointer
      * @param eventCollection    - array of events at target `pointer`
      */
-    _notifyAll(pointer: JSONPointer, eventCollection: Array<ValidationError>) {
-        const frags = gp.split(pointer);
-        while (frags.length > 0) {
-            const p = gp.join(frags, true);
-            this._notify(p, pointer, eventCollection);
-            frags.pop();
+    _notifyAll(pointer: JSONPointer) {
+        for (const parentPointer of this.getParentPointers(pointer)) {
+            this._notify(parentPointer, pointer);
         }
-        this._notify("#", pointer, eventCollection);
     }
 
     /**
@@ -205,28 +186,51 @@ class BubblingCollectionObservable {
         this.eventCollection[pointer] = this.eventCollection[pointer] || [];
         this.eventCollection[pointer].push(event);
 
-        this._notifyAll(pointer, this.eventCollection[pointer]);
+        this._notifyAll(pointer);
     }
 
-    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, errors: Array<ValidationError> = []) {
+    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer) {
         if (this.observers[observerPointer] == null) {
             return;
         }
+
         this.observers[observerPointer].forEach(observer => {
             if (observer.receiveChildEvents === false && observerPointer === sourcePointer) {
-                observer({ type: "validation:errors", value: errors });
+                observer({ type: "validation:errors", value: this.eventCollection[sourcePointer] ?? [] });
                 return;
             }
-            if (observer.receiveChildEvents === false && observerPointer !== sourcePointer) {
+            if (observer.receiveChildEvents === false) {
                 return;
             }
 
-            this.bubbleCollection[observerPointer] = this.bubbleCollection[observerPointer] || {};
-            const map = this.bubbleCollection[observerPointer];
-            map[sourcePointer] = errors;
-            const combinedErrors = Object.keys(map).reduce((res, next) => res.concat(map[next]), []);
+            const combinedErrors: ValidationError[] = [];
+            for (const [pointer, events] of Object.entries(this.eventCollection)) {
+                if (pointer.startsWith(observerPointer)) {
+                    combinedErrors.push(...events ?? []);
+                }
+            }
+
             observer({ type: "validation:errors", value: combinedErrors });
         });
+    }
+
+    /**
+     * Returns all parent pointers of a given JSON pointer
+     * e.g.: /a/b/c returns ["#", "/a", "/a/b", "/a/b/c"]
+     */
+    getParentPointers(pointer: JSONPointer): JSONPointer[] {
+        if (pointer.length === 0) {
+            return ["#"];
+        }
+
+        const pointers = [];
+        const frags = gp.split(pointer);
+        while (frags.length > 0) {
+            pointers.push(gp.join(frags, true));
+            frags.pop();
+        }
+
+        return [...pointers ?? [], "#"];
     }
 }
 
