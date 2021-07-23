@@ -78,9 +78,8 @@ export declare type Observer = {
  *
  */
 declare class BubblingCollectionObservable {
-    observers: {};
-    eventCollection: {};
-    bubbleCollection: {};
+    observers: Record<JSONPointer, Observer[]>;
+    eventCollection: Record<JSONPointer, ValidationError[]>;
     /**
      * Observe events on the _pointer_ (`#/observe/location`). May also observe
      * events of _child-pointers_ (`#/observe/location/child/item`) with the
@@ -93,10 +92,10 @@ declare class BubblingCollectionObservable {
     observe(pointer: JSONPointer, observer: Observer, receiveChildEvents?: boolean): Observer;
     /**
      * Remove an observer
-     * @param  {JsonPointer} pointer
-     * @param  {Function} observer
+     * @param pointer
+     * @param observer
      */
-    removeObserver(pointer: JSONPointer, observer: any): void;
+    removeObserver(pointer: JSONPointer, observer: Observer): void;
     /**
      * @todo this might become obsolete by clearEvents
      *
@@ -109,8 +108,8 @@ declare class BubblingCollectionObservable {
      * Clears all events at a given pointer and notifies all listeners with
      * their changed list of events
      *
-     * @param  {JsonPointer} pointer
-     * @param  {boolean} [clearChildren=true]    if false, children of `pointer` will not be reset
+     * @param pointer
+     * @param clearChildren    if false, children of `pointer` will not be reset
      */
     clearEvents(pointer: JSONPointer, clearChildren?: boolean): void;
     /**
@@ -119,7 +118,7 @@ declare class BubblingCollectionObservable {
      * @param pointer
      * @param eventCollection    - array of events at target `pointer`
      */
-    _notifyAll(pointer: JSONPointer, eventCollection: Array<ValidationError>): void;
+    _notifyAll(pointer: JSONPointer): void;
     /**
      * Notify observers at _pointer_. Note that the received event is a
      * aggregated event-list []. For a first call the received event will look
@@ -127,6 +126,11 @@ declare class BubblingCollectionObservable {
      * etc, until `reset()` ist called by the observable.
      */
     notify(pointer: JSONPointer, event: ValidationError): void;
-    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer, errors?: Array<ValidationError>): void;
+    _notify(observerPointer: JSONPointer, sourcePointer: JSONPointer): void;
+    /**
+     * Returns all parent pointers of a given JSON pointer
+     * e.g.: /a/b/c returns ["#", "/a", "/a/b", "/a/b/c"]
+     */
+    getParentPointers(pointer: JSONPointer): JSONPointer[];
 }
 export default BubblingCollectionObservable;
