@@ -128,8 +128,6 @@ export default class Editron {
      * @param [options.plugins] - list of editron-plugins to use
      */
     constructor(schema: JSONSchema = { type: "object" }, data: JSONData = {}, options: Options = {}) {
-        schema = UISchema.extendSchema(schema);
-
         this.options = {
             editors: [],
             addDefaultEditors: true,
@@ -431,7 +429,6 @@ export default class Editron {
      * @param schema   - a valid json-schema
      */
     setSchema(schema: JSONSchema): void {
-        schema = UISchema.extendSchema(schema);
         this.service("validation").set(schema);
         this.service("schema").setSchema(schema);
     }

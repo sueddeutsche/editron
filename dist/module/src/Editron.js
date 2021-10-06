@@ -93,7 +93,6 @@ export default class Editron {
         this.plugins = [];
         /** editron proxy instance */
         _proxy.set(this, void 0);
-        schema = UISchema.extendSchema(schema);
         this.options = {
             editors: [],
             addDefaultEditors: true,
@@ -357,7 +356,6 @@ export default class Editron {
      * @param schema   - a valid json-schema
      */
     setSchema(schema) {
-        schema = UISchema.extendSchema(schema);
         this.service("validation").set(schema);
         this.service("schema").setSchema(schema);
     }

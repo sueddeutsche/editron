@@ -20,12 +20,6 @@ export declare type EditorSettings = {
  */
 declare function copyOptions(pointer: JSONPointer, editron: Editron): EditorSettings;
 /**
- * Ensures each schema contains a valid schema[UI_PROPERTY] object
- * @param rootSchema
- * @return extended clone of json-schema
- */
-declare function extendSchema<T extends JSONSchema>(rootSchema: T): T;
-/**
  * Returns the first defined option set in schema. Supports relative and absolute pointers in data
  *
  * @param pointer
@@ -39,7 +33,6 @@ declare function getDefaultOption(schema: JSONSchema, option: string): "" | any;
 declare const _default: {
     copyOptions: typeof copyOptions;
     enumOptions: typeof enumOptions;
-    extendSchema: typeof extendSchema;
     getBreadcrumps: typeof getBreadcrumps;
     getDefaultOption: typeof getDefaultOption;
     getEditronOptions: typeof getEditronOptions;

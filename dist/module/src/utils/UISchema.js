@@ -1,6 +1,5 @@
 import gp from "gson-pointer";
 import populated from "./populated";
-import { eachSchema } from "json-schema-library";
 const UI_PROPERTY = "editron:ui";
 /** property on a schema-definition, containing editron-options */
 export const EDITRON_OPTION_PROPERTY = "editron:ui";
@@ -84,29 +83,6 @@ function copyOptions(pointer, editron) {
     return settings;
 }
 /**
- * Ensures each schema contains a valid schema[UI_PROPERTY] object
- * @param rootSchema
- * @return extended clone of json-schema
- */
-function extendSchema(rootSchema) {
-    rootSchema = JSON.parse(JSON.stringify(rootSchema));
-    eachSchema(rootSchema, childSchema => {
-        if (childSchema.$ref && childSchema[UI_PROPERTY] == null) {
-            // do not add default options for references - json-schema-library
-            // merges on root elements only (which is acceptable)
-            return;
-        }
-        childSchema[UI_PROPERTY] = {
-            hidden: false,
-            title: childSchema.title || "",
-            description: childSchema.description || "",
-            ...childSchema.options,
-            ...childSchema[UI_PROPERTY]
-        };
-    });
-    return rootSchema;
-}
-/**
  * Resolves a list of pointers, where the first found value is returned. Supports simple strings as fallback.
  *  e.g. `["/data/local/title", "/data/local/subtitle", "Title"]`
  *
@@ -142,7 +118,7 @@ function getOption(pointer, editron, ...options) {
         throw new Error("Expected at least one options property to be given in getOption");
     }
     const schema = editron.service("schema").get(pointer);
-    const editronOptions = schema[UI_PROPERTY] || {};
+    const editronOptions = schema[UI_PROPERTY] || schema.options || {};
     for (let i = 0; i < options.length; i += 1) {
         const option = editronOptions[options[i]];
         const resolver = isPointer(option) ? resolveReference : resolveOption;
@@ -167,7 +143,6 @@ function getDefaultOption(schema, option) {
 export default {
     copyOptions,
     enumOptions,
-    extendSchema,
     getBreadcrumps,
     getDefaultOption,
     getEditronOptions,
