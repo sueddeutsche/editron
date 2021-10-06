@@ -1,6 +1,5 @@
 import gp from "gson-pointer";
 import populated from "./populated";
-import { eachSchema } from "json-schema-library";
 const UI_PROPERTY = "editron:ui";
 import { JSONPointer, JSONSchema } from "../types";
 import Editron from "../Editron";
@@ -112,34 +111,6 @@ function copyOptions(pointer: JSONPointer, editron: Editron): EditorSettings {
 
 
 /**
- * Ensures each schema contains a valid schema[UI_PROPERTY] object
- * @param rootSchema
- * @return extended clone of json-schema
- */
-function extendSchema<T extends JSONSchema>(rootSchema: T): T {
-    rootSchema = JSON.parse(JSON.stringify(rootSchema));
-
-    eachSchema(rootSchema, childSchema => {
-        if (childSchema.$ref && childSchema[UI_PROPERTY] == null) {
-            // do not add default options for references - json-schema-library
-            // merges on root elements only (which is acceptable)
-            return;
-        }
-
-        childSchema[UI_PROPERTY] = {
-            hidden: false,
-            title: childSchema.title || "",
-            description: childSchema.description || "",
-            ...childSchema.options, // @legacy options
-            ...childSchema[UI_PROPERTY]
-        };
-    });
-
-    return rootSchema;
-}
-
-
-/**
  * Resolves a list of pointers, where the first found value is returned. Supports simple strings as fallback.
  *  e.g. `["/data/local/title", "/data/local/subtitle", "Title"]`
  *
@@ -177,7 +148,7 @@ function getOption(pointer: JSONPointer, editron: Editron, ...options: Array<str
     }
 
     const schema = editron.service("schema").get(pointer);
-    const editronOptions = schema[UI_PROPERTY] || {};
+    const editronOptions = schema[UI_PROPERTY] || schema.options || {};
 
     for (let i = 0; i < options.length; i += 1) {
         const option = editronOptions[options[i]];
@@ -210,7 +181,6 @@ function getDefaultOption(schema: JSONSchema, option: string): ""|any {
 export default {
     copyOptions,
     enumOptions,
-    extendSchema,
     getBreadcrumps,
     getDefaultOption,
     getEditronOptions,

@@ -29,12 +29,6 @@ describe("UISchema.getOption", () => {
         assert.ok(result === null);
     });
 
-    it("should have option 'hidden' defined per default", () => {
-        const result = UISchema.getOption("#", controller, "hidden");
-
-        assert.ok(result === false);
-    });
-
     it("should return value of option", () => {
         schema["editron:ui"].title = "title in options";
         controller.setSchema(schema);
